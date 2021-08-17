@@ -5,3 +5,7 @@
 html body {
   background-color: #292929;
 }
+
+iframe {
+  margin-right: 5px;
+}
