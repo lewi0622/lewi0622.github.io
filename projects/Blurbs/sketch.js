@@ -17,11 +17,7 @@ let palette;
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
-  palette = [[228, 153, 95, 255], 
-  [145, 202, 195, 255], 
-  [75, 153, 139, 255],
-  [65, 71, 83, 255],
-  [221, 241, 242, 255]]
+  palette = JSON.parse(JSON.stringify(palettes[2]));
 }
 
 
