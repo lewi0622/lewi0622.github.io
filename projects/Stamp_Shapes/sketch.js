@@ -18,13 +18,7 @@ function reset_values(){
 
 //***************************************************
 function setup() {
-  cnv = createCanvas(canvas_x, canvas_y);
-  cnv.mouseClicked(show_hide_controls);
-  seed_scale_button();
-  reset_values();
-  reset_drawing();
-  angleMode(DEGREES);
-  noLoop();
+  common_setup();
 }
 
 function draw() {

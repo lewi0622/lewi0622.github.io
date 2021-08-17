@@ -8,11 +8,7 @@ let arts = [
     "Blurbs_Larger",
     "Stamp_Shapes",
     "Crossy_Blurbs",
-    "Blurbs",
-    "Blurbs_Larger",
-    "Stamp_Shapes",
-    "Crossy_Blurbs",
-    "Blurbs"
+    "Drift_Lines"
 ]
 
 // wait for DOM to be fully loaded before accessing nodes

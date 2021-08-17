@@ -52,6 +52,7 @@ function reduce_array(arr, remove){
 }
 
 function show_hide_controls(){
+  //hides or shows buttons when canvas is clicked
   if(hidden_controls == true){
     input.show();
     button.show();
@@ -66,4 +67,15 @@ function show_hide_controls(){
     
     hidden_controls = true;
   }
+}
+
+function common_setup(){
+  //handles all common setup code
+  cnv = createCanvas(canvas_x, canvas_y);
+  cnv.mouseClicked(show_hide_controls);
+  seed_scale_button();
+  reset_values();
+  reset_drawing();
+  angleMode(DEGREES);
+  noLoop();
 }

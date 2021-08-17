@@ -1,28 +1,69 @@
 //template globals
 let input, button, randomize;
 
-let up_scale = 0.5;
-let canvas_x = 800*up_scale;
-let canvas_y = 800*up_scale;
+let up_scale = 1;
+let canvas_x = 400*up_scale;
+let canvas_y = 400*up_scale;
 let hidden_controls = false;
 
-//project globals
+// project globals
+let i_offset = 0;
+let j_offset = 0;
 let line_length = 60*up_scale;
 let tile_width = canvas_x / line_length;
 let tile_height = canvas_y / line_length;
-let i_offset = 0;
-let j_offset = 0;
 let palette;
+let x_offset_min, x_offset_max, y_offset_min, y_offset_max;
+
 
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
+  i_offset = 0;
+  j_offset = 0;
   palette = [[228, 153, 95, 255], 
   [145, 202, 195, 255], 
   [75, 153, 139, 255],
   [65, 71, 83, 255],
   [221, 241, 242, 255]]
+
+  //set drift direction
+  switch(floor(random(0,3))){
+    case 0:
+      //no x direction
+      x_offset_min = 0;
+      x_offset_max = 0;
+      break;
+    case 1:
+      //+x direction
+      x_offset_min = 0;
+      x_offset_max = 20;
+      break;
+    case 2:
+      //-x direction
+      x_offset_min = -20;
+      x_offset_max = 0;
+      break;
+  }
+  switch(floor(random(0,3))){
+    case 0:
+      //no x direction
+      y_offset_min = 0;
+      y_offset_max = 0;
+      break;
+    case 1:
+      //+x direction
+      y_offset_min = 0;
+      y_offset_max = 20;
+      break;
+    case 2:
+      //-x direction
+      y_offset_min = -20;
+      y_offset_max = 0;
+      break;
+  }
 }
+
 
 //***************************************************
 function setup() {
@@ -30,21 +71,26 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  strokeWeight(75*up_scale);
+  //line width
+  strokeWeight(2*up_scale);
+  
+  //set background, and remove that color from the palette
   bg = random(palette)
   background(bg);
-  let index = palette.indexOf(bg);
-  if (index > -1) {
-    palette.splice(index, 1);
-  }
+  reduce_array(palette, bg);
+  
+  //tile lines
   tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 
-    colors=palette, iterations=1, 
-    x_offset_min=0, x_offset_max=0,
-    y_offset_min=0, y_offset_max=0);
+    colors=palette, iterations=50, 
+    x_offset_min=x_offset_min, x_offset_max=x_offset_max,
+    y_offset_min=y_offset_min, y_offset_max=y_offset_max);
+  
 }
 //***************************************************
 //custom funcs
+
 function draw_diag(len){
+  //draws a diagonal line
   if (random() >= 0.5){
     // top left to bottom right
     line(0, 0, len, len);
@@ -56,6 +102,7 @@ function draw_diag(len){
 }
 
 function draw_cardinal(len){
+  //draws a cardinal line
   if (random() >= 0.5){
     // vertical line
     line(len / 2, 0, len / 2, len);
@@ -67,6 +114,7 @@ function draw_cardinal(len){
 }
 
 function tile(x_tiles, y_tiles, length, funcs, colors=['#000000'], iterations=1, x_offset_min=0, x_offset_max=0, y_offset_min=0, y_offset_max=0){
+  //loops through and calls given funcs across entire canvas
   for (loop_num = 0; loop_num < iterations; loop_num++){
     for (i = 0; i < x_tiles; i++){
       for (j = 0; j < y_tiles; j++){
@@ -82,3 +130,6 @@ function tile(x_tiles, y_tiles, length, funcs, colors=['#000000'], iterations=1,
     j_offset += random(y_offset_min, y_offset_max);
   }
 }
+
+
+
