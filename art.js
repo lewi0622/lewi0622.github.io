@@ -16,10 +16,10 @@ function init(){
     document.getElementById("iframe_parent").appendChild(ifrm);
 
     ifrm.setAttribute("src", base_url.concat(element));
+    ifrm.setAttribute("id", element);
     ifrm.style.width = "400px";
-    ifrm.style.height = "400px";
+    ifrm.style.height = "420px";
     ifrm.style.overflow = "hidden";
     ifrm.setAttribute("scrolling", "no");
-    ifrm.setAttribute("frameborder", "0");
     });
 }
