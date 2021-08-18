@@ -1,4 +1,4 @@
-palettes=[
+const palettes=[
     [[228, 153, 95, 255], //orange
     [145, 202, 195, 255], //light green
     [75, 153, 139, 255], //dark green
@@ -16,4 +16,4 @@ palettes=[
     [255, 75, 89, 255], //pinky
     [232, 227, 217, 255] //greyish
     ]
-]
+];

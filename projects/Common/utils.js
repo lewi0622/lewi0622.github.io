@@ -1,3 +1,5 @@
+let global_palette = palettes[0];
+
 function reset_drawing(seed){
   //call draw after this if manually refreshing canvas
 
@@ -78,8 +80,12 @@ function common_setup(){
   colors = getParamValue('colors');
   seed = getParamValue('seed');
 
+  if(colors != undefined){
+    global_palette=palettes[colors];
+  }
+
   seed_scale_button();
-  reset_values(colors);
+  reset_values();
   reset_drawing(seed);
   angleMode(DEGREES);
   noLoop();

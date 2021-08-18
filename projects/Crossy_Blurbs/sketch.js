@@ -15,12 +15,9 @@ let tile_height = canvas_y / line_length;
 let palette;
 
 //global func, can be blank
-function reset_values(palette_id){
-  if(palette_id == undefined){
-    palette_id = 0;
-  }
+function reset_values(){
   //reset project values here for redrawing 
-  palette = JSON.parse(JSON.stringify(palettes[palette_id]));
+  palette = JSON.parse(JSON.stringify(global_palette));
 }
 
 //***************************************************

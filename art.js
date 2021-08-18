@@ -1,5 +1,3 @@
-//list of links for art
-// let base_url = "https://preview.p5js.org/lewi0622/embed/"
 let base_prefix = "projects/"
 let base_suffix = "/index.html"
 
@@ -15,7 +13,6 @@ let arts = [
 window.onload = init;
 
 function setColor(palette){
-    console.log(palette);
     //changes color palette, keeps seeds the same
     arts.forEach(element => {
         iframe = document.getElementById(element);
