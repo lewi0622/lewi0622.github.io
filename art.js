@@ -8,7 +8,7 @@ let arts = [
     "Crossy_Blurbs",
     "Drift_Lines",
     "Arcs"
-]
+];
 
 // wait for DOM to be fully loaded before accessing nodes
 window.onload = init;
@@ -27,6 +27,7 @@ function setColor(palette){
 
 function init(){
     //create iframe element for each project in arts
+    arts = shuffle(arts);
     arts.forEach(element => {
         var ifrm = document.createElement("iframe");
         document.getElementById("iframe_parent").appendChild(ifrm);
@@ -38,4 +39,22 @@ function init(){
         ifrm.style.overflow = "hidden";
         ifrm.setAttribute("scrolling", "no");
     });
+}
+
+function shuffle(array) {
+    var currentIndex = array.length,  randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (currentIndex != 0) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+  
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+  
+    return array;
 }
