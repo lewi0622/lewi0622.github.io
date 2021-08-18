@@ -15,13 +15,16 @@ let tile_height = canvas_y / line_length;
 let palette;
 let x_offset_min, x_offset_max, y_offset_min, y_offset_max;
 
-
 //global func, can be blank
-function reset_values(){
+function reset_values(palette_id){
+  if(palette_id == undefined){
+    palette_id = 0;
+  }
   //reset project values here for redrawing 
+  palette = JSON.parse(JSON.stringify(palettes[palette_id]));
+
   i_offset = 0;
   j_offset = 0;
-  palette = JSON.parse(JSON.stringify(palettes[2]));
 
   //set drift direction
   switch(floor(random(0,3))){

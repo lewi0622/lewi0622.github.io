@@ -14,6 +14,19 @@ let arts = [
 // wait for DOM to be fully loaded before accessing nodes
 window.onload = init;
 
+function setColor(palette){
+    console.log(palette);
+    //changes color palette, keeps seeds the same
+    arts.forEach(element => {
+        iframe = document.getElementById(element);
+        seed = iframe.contentDocument.getElementById('Seed')['value'];
+
+        addr_req = base_prefix.concat(element).concat(base_suffix).concat("?colors=").concat(palette).concat("&seed=").concat(seed);
+        iframe.setAttribute('src', addr_req);
+
+    });
+}
+
 function init(){
     //create iframe element for each project in arts
     arts.forEach(element => {

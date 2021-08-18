@@ -16,6 +16,16 @@
   <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
     <body>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+          Select Color Palette
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          <li><a class="dropdown-item" href="#" onclick="setColor(0)">Palette 1</a></li>
+          <li><a class="dropdown-item" href="#" onclick="setColor(1)">Palette 2</a></li>
+          <li><a class="dropdown-item" href="#" onclick="setColor(2)">Palette 3</a></li>
+        </ul>
+      </div>
       <div class="container" >
         <div class="row">
           <div class="col" id="iframe_parent">

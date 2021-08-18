@@ -31,6 +31,7 @@ function seed_scale_button(){
   input = createInput("seed");
   input.size(100);
   input.position(0,400);
+  input.id('Seed');
   
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
@@ -73,9 +74,25 @@ function common_setup(){
   //handles all common setup code
   cnv = createCanvas(canvas_x, canvas_y);
   cnv.mouseClicked(show_hide_controls);
+  //check for colors or seed values in url
+  colors = getParamValue('colors');
+  seed = getParamValue('seed');
+
   seed_scale_button();
-  reset_values();
-  reset_drawing();
+  reset_values(colors);
+  reset_drawing(seed);
   angleMode(DEGREES);
   noLoop();
+}
+
+function getParamValue(paramName)
+{
+    var url = window.location.search.substring(1); //get rid of "?" in querystring
+    var qArray = url.split('&'); //get key-value pairs
+    for (var i = 0; i < qArray.length; i++) 
+    {
+        var pArr = qArray[i].split('='); //split key and value
+        if (pArr[0] == paramName) 
+            return pArr[1]; //return value
+    }
 }
