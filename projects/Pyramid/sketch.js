@@ -10,7 +10,7 @@ let hidden_controls = false;
 let line_length = 60*up_scale;
 let tile_width = canvas_x / line_length;
 let tile_height = canvas_y / line_length;
-let palette;
+let palette, bg, pyramid;
 
 //global func, can be blank
 function reset_values(){
@@ -25,29 +25,57 @@ function setup() {
 //***************************************************
 function draw() {  
   //set background, and remove that color from the palette
-  bg = random(palette);
+  bg = random(palette)
   background(bg);
   reduce_array(palette, bg);
 
+  pyramid = random(palette)
+  reduce_array(palette, pyramid);
+
+  push();
+  noStroke();
+  fill(pyramid);
+  translate(canvas_x/2, canvas_y/2);
+  leg = (canvas_y/2)/cos(30);
+  hyp = leg * sin(30);
+  triangle(0,0, hyp,canvas_y/2, -hyp,canvas_y/2);
+  pop();
+
   linear_spread = floor(random([0, 5]));
-  arcing(canvas_x*.75, linear_spread);
+  arcing(canvas_x*.5, linear_spread, 0);
 }
 //***************************************************
 //custom funcs
-function arcing(width, linear_spread){
+function arcing(width, linear_spread, rotation){
   push();
   noFill();
   translate(canvas_x/2, canvas_y/2);
-  for(let i=10; i<width; i++){
-    translate(random(0,linear_spread), random(0, linear_spread));
-    
+  pac_angle = rotate(120);
+
+  for(let i=100; i<width; i++){
     radius = i * random(0.2, 2);
     stroke(random(palette));
     strokeWeight(random(1, 10)*up_scale)
-    arc(0, 0, radius, radius, 0, random(45,300));
-    rotate(random(0,360));
+
+    arc(0, 0, radius, radius, 0, random(150,330));
+    
+    rotate(random(0,rotation));
   }
   pop();
+  // clean up pyramid
+  push();
+  noStroke();
+  fill(pyramid);
+  translate(canvas_x/2, canvas_y/2);
+  dist = 10*up_scale;
+  beginShape();
+  vertex(0,0);
+  vertex(0,dist);
+  vertex(-hyp+dist,canvas_y/2);
+  vertex(-hyp,canvas_y/2);
+  endShape();
+  pop();
+
 }
 
 
