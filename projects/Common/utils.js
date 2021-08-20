@@ -2,6 +2,9 @@ let global_palette = palettes[0];
 
 function reset_drawing(seed){
   //call draw after this if manually refreshing canvas
+  
+  // gives change for square or rounded edges, this can be overriden within the draw function
+  strokeCap(random([PROJECT,ROUND]));
 
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)){
@@ -88,6 +91,7 @@ function common_setup(){
   reset_values();
   reset_drawing(seed);
   angleMode(DEGREES);
+  
   noLoop();
 }
 

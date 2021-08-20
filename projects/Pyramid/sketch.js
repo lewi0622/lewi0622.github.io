@@ -51,10 +51,12 @@ function arcing(width, linear_spread, rotation){
   noFill();
   translate(canvas_x/2, canvas_y/2);
   pac_angle = rotate(120);
-
+  cap = random([SQUARE, ROUND]);
+  strokeCap(cap);
   for(let i=100; i<width; i++){
     radius = i * random(0.2, 2);
     stroke(random(palette));
+
     strokeWeight(random(1, 10)*up_scale)
 
     arc(0, 0, radius, radius, 0, random(150,330));
@@ -63,18 +65,22 @@ function arcing(width, linear_spread, rotation){
   }
   pop();
   // clean up pyramid
-  push();
-  noStroke();
-  fill(pyramid);
-  translate(canvas_x/2, canvas_y/2);
-  dist = 10*up_scale;
-  beginShape();
-  vertex(0,0);
-  vertex(0,dist);
-  vertex(-hyp+dist,canvas_y/2);
-  vertex(-hyp,canvas_y/2);
-  endShape();
-  pop();
+  if(cap == ROUND){
+    console.log(cap);
+    push();
+    noStroke();
+    fill(pyramid);
+    translate(canvas_x/2, canvas_y/2);
+    pyr_dist = 10*up_scale;
+    beginShape();
+    vertex(0,0);
+    vertex(0,pyr_dist);
+    vertex(-hyp+pyr_dist,canvas_y/2);
+    vertex(-hyp,canvas_y/2);
+    endShape();
+    pop();
+  }
+
 
 }
 

@@ -43,6 +43,7 @@ function arcing(width, linear_spread, rotation){
   for(let i=10; i<width; i++){
     radius = i * random(0.2, 2);
     stroke(random(palette));
+    strokeCap(SQUARE);
     strokeWeight(random(1, 10)*up_scale)
 
     arc(0, 0, radius, radius, 0, random(45,300));
