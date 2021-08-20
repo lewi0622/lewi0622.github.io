@@ -49,11 +49,6 @@ function arcing(width, linear_spread, rotation){
     
     rotate(random(0,rotation));
   }
-
-  // clean up starting line
-  stroke(bg);
-  strokeWeight(10);
-  line(0, 0, width, 0);
   pop();
 
 }
