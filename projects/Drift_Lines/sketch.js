@@ -18,7 +18,6 @@ let x_offset_min, x_offset_max, y_offset_min, y_offset_max;
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
-  palette = JSON.parse(JSON.stringify(global_palette));
 
   i_offset = 0;
   j_offset = 0;

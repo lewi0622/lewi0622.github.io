@@ -9,7 +9,7 @@ let hidden_controls = false;
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
-  palette = JSON.parse(JSON.stringify(global_palette));
+
 }
 
 //***************************************************
@@ -42,7 +42,7 @@ function draw() {
     //set color
     stroke(c);
     //set location
-    translate(random(150*up_scale,250*up_scale), random(150*up_scale, 250*up_scale));
+    translate(random(150*up_scale,275*up_scale), random(100*up_scale, 275*up_scale));
 
     //correct placement if rotated
     rotate(random([0, 90]));

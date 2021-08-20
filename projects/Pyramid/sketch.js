@@ -15,7 +15,7 @@ let palette, bg, pyramid;
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
-  palette = JSON.parse(JSON.stringify(global_palette));
+
 }
 
 //***************************************************

@@ -5,6 +5,7 @@ function reset_drawing(seed){
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
+  palette = JSON.parse(JSON.stringify(global_palette));
 
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)){
