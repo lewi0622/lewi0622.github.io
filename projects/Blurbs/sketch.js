@@ -40,6 +40,7 @@ function draw() {
     x_offset_min=0, x_offset_max=0,
     y_offset_min=0, y_offset_max=0);
   
+  save_drawing();
 }
 //***************************************************
 //custom funcs

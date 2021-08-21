@@ -84,6 +84,7 @@ function common_setup(){
   colors = getParamValue('colors');
   seed = getParamValue('seed');
   img_scale = getParamValue('scale');
+  img_save = getParamValue('save');
 
   if(colors != undefined){
     global_palette=palettes[colors];
@@ -91,6 +92,9 @@ function common_setup(){
   if(img_scale != undefined){
     global_scale = img_scale;
   };
+  if(img_save != undefined){
+    save = true;
+  }
 
   seed_scale_button();
   reset_drawing(seed);
@@ -104,8 +108,7 @@ function common_setup(){
   noLoop();
 }
 
-function getParamValue(paramName)
-{
+function getParamValue(paramName){
     var url = window.location.search.substring(1); //get rid of "?" in querystring
     var qArray = url.split('&'); //get key-value pairs
     for (var i = 0; i < qArray.length; i++) 
@@ -114,4 +117,12 @@ function getParamValue(paramName)
         if (pArr[0] == paramName) 
             return pArr[1]; //return value
     }
+}
+
+function save_drawing(){
+  if(save==true){
+    color_index = palettes.indexOf(global_palette)
+    filename = 'seed_'.concat(str(input.value())).concat('_color_').concat(str(color_index)).concat('_scale_').concat(str(global_scale));
+    saveCanvas(filename, 'png');
+  }
 }

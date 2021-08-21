@@ -48,6 +48,7 @@ function draw() {
   }
   endShape();
   
+  save_drawing();
 }
 //***************************************************
 //custom funcs

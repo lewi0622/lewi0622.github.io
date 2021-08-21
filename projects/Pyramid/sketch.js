@@ -2,6 +2,7 @@
 let input, button, randomize;
 
 let hidden_controls = false;
+let save = false;
 
 // project globals
 let palette, bg, pyramid, canvas_x, canvas_y;
@@ -38,6 +39,8 @@ function draw() {
   pop();
 
   arcing(canvas_x*.5, 0, 0);
+
+  save_drawing();
 }
 //***************************************************
 //custom funcs

@@ -24,7 +24,6 @@ function setColor(palette){
 
         addr_req = base_prefix.concat(element).concat(base_suffix).concat("?colors=").concat(palette).concat("&seed=").concat(seed).concat("&scale=").concat(img_scale);
         iframe.setAttribute('src', addr_req);
-
     });
 }
 
@@ -34,6 +33,7 @@ function init(){
     arts.forEach(element => {
         var ifrm = document.createElement("iframe");
         document.getElementById("iframe_parent").appendChild(ifrm);
+        // console.log(document.getElementById('defaultCanvas0'))
 
         ifrm.setAttribute("src", base_prefix.concat(element).concat(base_suffix));
         ifrm.setAttribute("id", element);

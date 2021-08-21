@@ -27,6 +27,8 @@ function draw() {
 
   linear_spread = floor(random([0, 5]));
   arcing(canvas_x*.75, linear_spread);
+  
+  save_drawing();
 }
 //***************************************************
 //custom funcs

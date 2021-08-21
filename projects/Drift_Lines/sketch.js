@@ -78,6 +78,7 @@ function draw() {
     x_offset_min=x_offset_min, x_offset_max=x_offset_max,
     y_offset_min=y_offset_min, y_offset_max=y_offset_max);
   
+  save_drawing();
 }
 //***************************************************
 //custom funcs

@@ -50,8 +50,9 @@ function draw() {
     last_color = c;
     pop();     
   }
+  save_drawing();
 }
-
+//***************************************************
 //custom funcs
 function equals(lines, length, thickness){
 
