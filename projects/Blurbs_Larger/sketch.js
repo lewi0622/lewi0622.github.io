@@ -7,14 +7,14 @@ let hidden_controls = false;
 let i_offset = 0;
 let j_offset = 0;
 let palette, canvas_x, canvas_y, line_length, tile_width, tile_height, up_scale;
+let base_x = 400;
+let base_y = 400;
 
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
   up_scale = global_scale/2;
 
-  canvas_x = 800*up_scale;
-  canvas_y = 800*up_scale;
   line_length = 60*up_scale;
   tile_width = canvas_x / line_length;
   tile_height = canvas_y / line_length;

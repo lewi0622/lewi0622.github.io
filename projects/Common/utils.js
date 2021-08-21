@@ -3,6 +3,8 @@ let global_scale = 1;
 
 function reset_drawing(seed){
   //call draw after this if manually refreshing canvas
+  canvas_x = base_x*global_scale;
+  canvas_y = base_y*global_scale;
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
@@ -91,8 +93,8 @@ function common_setup(){
   };
 
   seed_scale_button();
-  reset_values();
   reset_drawing(seed);
+  reset_values();
   angleMode(DEGREES);
 
   //handles all common setup code

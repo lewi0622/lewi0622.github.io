@@ -5,12 +5,12 @@ let hidden_controls = false;
 
 // project globals
 let palette, bg, pyramid, canvas_x, canvas_y, line_length, tile_width, tile_height;
+let base_x = 400;
+let base_y = 400;
 
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
-  canvas_x = 400*global_scale;
-  canvas_y = 400*global_scale;
 
   line_length = 60*global_scale;
   tile_width = canvas_x / line_length;
