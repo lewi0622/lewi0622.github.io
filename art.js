@@ -20,8 +20,9 @@ function setColor(palette){
     arts.forEach(element => {
         iframe = document.getElementById(element);
         seed = iframe.contentDocument.getElementById('Seed')['value'];
+        img_scale = 1;
 
-        addr_req = base_prefix.concat(element).concat(base_suffix).concat("?colors=").concat(palette).concat("&seed=").concat(seed);
+        addr_req = base_prefix.concat(element).concat(base_suffix).concat("?colors=").concat(palette).concat("&seed=").concat(seed).concat("&scale=").concat(img_scale);
         iframe.setAttribute('src', addr_req);
 
     });

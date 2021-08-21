@@ -1,21 +1,20 @@
 //template globals
 let input, button, randomize;
 
-let up_scale = 1;
-let canvas_x = 400*up_scale;
-let canvas_y = 400*up_scale;
 let hidden_controls = false;
 
 // project globals
-let line_length = 60*up_scale;
-let tile_width = canvas_x / line_length;
-let tile_height = canvas_y / line_length;
-let palette, bg, pyramid;
+let palette, bg, pyramid, canvas_x, canvas_y, line_length, tile_width, tile_height;
 
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
+  canvas_x = 400*global_scale;
+  canvas_y = 400*global_scale;
 
+  line_length = 60*global_scale;
+  tile_width = canvas_x / line_length;
+  tile_height = canvas_y / line_length;
 }
 
 //***************************************************
@@ -53,11 +52,11 @@ function arcing(width, linear_spread, rotation){
   pac_angle = rotate(120);
   cap = random([SQUARE, ROUND]);
   strokeCap(cap);
-  for(let i=100; i<width; i++){
+  for(let i=100*global_scale; i<width; i++){
     radius = i * random(0.2, 2);
     stroke(random(palette));
 
-    strokeWeight(random(1, 10)*up_scale)
+    strokeWeight(random(1, 10)*global_scale)
 
     arc(0, 0, radius, radius, 0, random(150,330));
     
@@ -66,12 +65,11 @@ function arcing(width, linear_spread, rotation){
   pop();
   // clean up pyramid
   if(cap == ROUND){
-    console.log(cap);
     push();
     noStroke();
     fill(pyramid);
     translate(canvas_x/2, canvas_y/2);
-    pyr_dist = 10*up_scale;
+    pyr_dist = 10*global_scale;
     beginShape();
     vertex(0,0);
     vertex(0,pyr_dist);

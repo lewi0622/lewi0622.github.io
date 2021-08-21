@@ -1,23 +1,23 @@
 //template globals
 let input, button, randomize;
 
-let up_scale = 1;
-let canvas_x = 400*up_scale;
-let canvas_y = 400*up_scale;
 let hidden_controls = false;
 
 // project globals
 let i_offset = 0;
 let j_offset = 0;
-let line_length = 60*up_scale;
-let tile_width = canvas_x / line_length;
-let tile_height = canvas_y / line_length;
-let palette;
+
+let palette, canvas_x, canvas_y, line_length, tile_width, tile_height;
 
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
+  canvas_x = 400*global_scale;
+  canvas_y = 400*global_scale;
 
+  line_length = 60*global_scale;
+  tile_width = canvas_x / line_length;
+  tile_height = canvas_y / line_length;
 }
 
 //***************************************************
@@ -27,7 +27,7 @@ function setup() {
 //***************************************************
 function draw() {
   //line width
-  strokeWeight(10*up_scale);
+  strokeWeight(10*global_scale);
   
   //set background, and remove that color from the palette
   bg = random(palette)

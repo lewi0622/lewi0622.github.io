@@ -1,15 +1,14 @@
 //template globals
 let input, button, randomize;
 
-let up_scale = 1;
-let canvas_x = 400*up_scale;
-let canvas_y = 400*up_scale;
 let hidden_controls = false;
+let palette, canvas_x, canvas_y;
 
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
-
+  canvas_x = 400*global_scale;
+  canvas_y = 400*global_scale;
 }
 
 //***************************************************
@@ -26,8 +25,8 @@ function draw() {
   let last_color = palette[0];
   let c = last_color;
 
-  let thickness = 25*up_scale;
-  let length = 100*up_scale;
+  let thickness = 25*global_scale;
+  let length = 100*global_scale;
   let lines = 3;
   let bars = 3;
 
@@ -42,7 +41,7 @@ function draw() {
     //set color
     stroke(c);
     //set location
-    translate(random(150*up_scale,275*up_scale), random(100*up_scale, 275*up_scale));
+    translate(random(150*global_scale,275*global_scale), random(100*global_scale, 275*global_scale));
 
     //correct placement if rotated
     rotate(random([0, 90]));

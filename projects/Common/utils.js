@@ -1,4 +1,5 @@
 let global_palette = palettes[0];
+let global_scale = 1;
 
 function reset_drawing(seed){
   //call draw after this if manually refreshing canvas
@@ -77,21 +78,26 @@ function show_hide_controls(){
 }
 
 function common_setup(){
-  //handles all common setup code
-  cnv = createCanvas(canvas_x, canvas_y);
-  cnv.mouseClicked(show_hide_controls);
   //check for colors or seed values in url
   colors = getParamValue('colors');
   seed = getParamValue('seed');
+  img_scale = getParamValue('scale');
 
   if(colors != undefined){
     global_palette=palettes[colors];
   }
+  if(img_scale != undefined){
+    global_scale = img_scale;
+  };
 
   seed_scale_button();
   reset_values();
   reset_drawing(seed);
   angleMode(DEGREES);
+
+  //handles all common setup code
+  cnv = createCanvas(canvas_x, canvas_y);
+  cnv.mouseClicked(show_hide_controls);
   
   noLoop();
 }

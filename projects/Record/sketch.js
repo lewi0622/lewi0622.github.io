@@ -1,21 +1,19 @@
 //template globals
 let input, button, randomize;
 
-let up_scale = 1;
-let canvas_x = 400*up_scale;
-let canvas_y = 400*up_scale;
 let hidden_controls = false;
 
 // project globals
-let line_length = 60*up_scale;
-let tile_width = canvas_x / line_length;
-let tile_height = canvas_y / line_length;
-let palette, bg;
+let palette, bg, canvas_x, canvas_y, line_length, tile_width, tile_height;
 
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
-
+  canvas_x = 400*global_scale;
+  canvas_y = 400*global_scale;
+  line_length = 60*global_scale;
+  tile_width = canvas_x / line_length;
+  tile_height = canvas_y / line_length;
 }
 
 //***************************************************
@@ -44,7 +42,7 @@ function arcing(width, linear_spread, rotation){
     radius = i * random(0.2, 2);
     stroke(random(palette));
     strokeCap(SQUARE);
-    strokeWeight(random(1, 10)*up_scale)
+    strokeWeight(random(1, 10)*global_scale)
 
     arc(0, 0, radius, radius, 0, random(45,300));
     
