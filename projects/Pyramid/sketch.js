@@ -4,17 +4,14 @@ let input, button, randomize;
 let hidden_controls = false;
 
 // project globals
-let palette, bg, pyramid, canvas_x, canvas_y, line_length, tile_width, tile_height;
-let base_x = 400;
-let base_y = 400;
+let palette, bg, pyramid, canvas_x, canvas_y;
+let base_x = 450;
+let base_y = 600;
 
 //global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
 
-  line_length = 60*global_scale;
-  tile_width = canvas_x / line_length;
-  tile_height = canvas_y / line_length;
 }
 
 //***************************************************
@@ -40,8 +37,7 @@ function draw() {
   triangle(0,0, hyp,canvas_y/2, -hyp,canvas_y/2);
   pop();
 
-  linear_spread = floor(random([0, 5]));
-  arcing(canvas_x*.5, linear_spread, 0);
+  arcing(canvas_x*.5, 0, 0);
 }
 //***************************************************
 //custom funcs
@@ -49,10 +45,10 @@ function arcing(width, linear_spread, rotation){
   push();
   noFill();
   translate(canvas_x/2, canvas_y/2);
-  pac_angle = rotate(120);
-  cap = random([SQUARE, ROUND]);
+  rotate(120);
+  cap = random([ ROUND]);
   strokeCap(cap);
-  for(let i=100*global_scale; i<width; i++){
+  for(let i=100*global_scale; i<width; i=i+(1*global_scale)){
     radius = i * random(0.2, 2);
     stroke(random(palette));
 
