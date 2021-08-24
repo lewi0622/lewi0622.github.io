@@ -34,7 +34,7 @@ function col_idx(){
 
 function randomize_action(){
   //called by clicking the Randomize button
-  window.location.replace("index.html?controls=True&colors=".concat(col_idx()));
+  window.location.replace("index.html?controls=True&colors=".concat(col_idx()).concat('&scale=').concat(global_scale));
 }
 
 function set_seed(){
@@ -45,7 +45,7 @@ function set_seed(){
     return ;
   }
 
-  window.location.replace("index.html?colors=".concat(col_idx()).concat("&controls=true&seed=").concat(input.value()));
+  window.location.replace("index.html?colors=".concat(col_idx()).concat("&controls=true&seed=").concat(input.value()).concat('&scale=').concat(global_scale));
 }
 
 function keyTyped() {
@@ -60,19 +60,19 @@ function keyTyped() {
 function seed_scale_button(){
   //creates controls below canvas for displaying/setting seed
   input = createInput("seed");
-  input.size(100);
-  input.position(0,400);
+  input.size(100*global_scale);
+  input.position(0,400*global_scale);
   input.id('Seed');
   input.elt.onfocus = function(){focused = true};
   input.elt.onblur = function(){focused = false};
   
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
-  button.position(100, 400);
+  button.position(100*global_scale, 400*global_scale);
   
   randomize = createButton("Randomize");
   randomize.mouseClicked(randomize_action)
-  randomize.position(400-randomize.size().width, 400);
+  randomize.position(400*global_scale-randomize.size().width, 400*global_scale);
   
   show_hide_controls();
 }
