@@ -1,38 +1,60 @@
 let global_palette = palettes[0];
 let global_scale = 1;
 
+function reset_values(){
+  //override this function in the sketch.js to re-initialize project specific values
+}
+
 function reset_drawing(seed){
   //call draw after this if manually refreshing canvas
   canvas_x = base_x*global_scale;
   canvas_y = base_y*global_scale;
-  
-  // gives change for square or rounded edges, this can be overriden within the draw function
-  strokeCap(random([PROJECT,ROUND]));
-  palette = JSON.parse(JSON.stringify(global_palette));
 
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)){
     seed = Math.round(random()*1000000);
   }
+  else{
+    seed = int(seed);
+  }
   randomSeed(seed);
   input.value(str(seed));
+
+  // gives change for square or rounded edges, this can be overriden within the draw function
+  strokeCap(random([PROJECT,ROUND]));
+  palette = JSON.parse(JSON.stringify(global_palette));
+
   return seed;
 }
 
+function col_idx(){
+  // grab id of current color palette
+  return palettes.indexOf(global_palette);
+};
+
 function randomize_action(){
   //called by clicking the Randomize button
-  //reinitializes the drawing
-  reset_values();
-  seed = reset_drawing();
-  draw();
+  window.location.replace("index.html?controls=True&colors=".concat(col_idx()));
 }
 
 function set_seed(){
-  //called by clicking the go button
   //reinitializes the drawing with a specific seed
-  reset_values();
-  seed = reset_drawing(int(input.value()));
-  draw();
+
+  //check if requested seed is the same as existing seed
+  if(input.value()==getParamValue('seed')){
+    return ;
+  }
+
+  window.location.replace("index.html?colors=".concat(col_idx()).concat("&controls=true&seed=").concat(input.value()));
+}
+
+function keyTyped() {
+  // if text box is focused, and user presses enter, it sends Custom seed
+  if (focused) {
+    if(keyCode === ENTER){
+      set_seed();
+    }
+  }
 }
 
 function seed_scale_button(){
@@ -41,6 +63,8 @@ function seed_scale_button(){
   input.size(100);
   input.position(0,400);
   input.id('Seed');
+  input.elt.onfocus = function(){focused = true};
+  input.elt.onblur = function(){focused = false};
   
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
@@ -80,8 +104,20 @@ function show_hide_controls(){
 }
 
 function common_setup(){
+  //init globals
+  hidden_controls = false;
+  save_my_canvas = false;
+  //be default, we're making 400px X 400px art
+  if (typeof base_x == 'undefined') {
+    base_x = 400;
+}
+  if (typeof base_y == 'undefined'){
+    base_y = 400;
+  }
+
   //check for colors or seed values in url
   colors = getParamValue('colors');
+  controls = getParamValue('controls');
   seed = getParamValue('seed');
   img_scale = getParamValue('scale');
   img_save = getParamValue('save');
@@ -93,7 +129,11 @@ function common_setup(){
     global_scale = img_scale;
   };
   if(img_save != undefined){
-    save = true;
+    save_my_canvas = true;
+  }
+
+  if(controls != undefined){
+    hidden_controls = true;
   }
 
   seed_scale_button();
@@ -120,8 +160,8 @@ function getParamValue(paramName){
 }
 
 function save_drawing(){
-  if(save==true){
-    color_index = palettes.indexOf(global_palette)
+  if(save_my_canvas==true){
+    color_index = col_idx();
     filename = 'seed_'.concat(str(input.value())).concat('_color_').concat(str(color_index)).concat('_scale_').concat(str(global_scale));
     saveCanvas(filename, 'png');
   }

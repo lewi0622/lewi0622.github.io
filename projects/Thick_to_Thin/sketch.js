@@ -1,9 +1,6 @@
 function reset_values(){
   //reset project values here for redrawing 
-
-  line_length = 60*global_scale;
-  tile_width = canvas_x / line_length;
-  tile_height = canvas_y / line_length;
+  line_length = 40*global_scale;
 }
 
 //***************************************************
@@ -11,22 +8,31 @@ function setup() {
   common_setup();
 }
 //***************************************************
-function draw() {
-  //line width
-  strokeWeight(10*global_scale);
-  
+function draw() {  
   //set background, and remove that color from the palette
   bg = random(palette)
   background(bg);
   reduce_array(palette, bg);
   
-  //tile lines
-  tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 
-    colors=palette, iterations=Math.round(random(3,10)), 
-    x_offset_min=0, x_offset_max=0,
-    y_offset_min=0, y_offset_max=0);
-
+  translate(line_length/2, line_length/2);
+  for(let i=0; i<canvas_x; i=i+line_length){
+    for(let j=0; j<canvas_y; j=j+line_length){
+      push();
+      noStroke();
+      fill(random(palette));
+      translate(i, j);
+      radius = 1.25*line_length-(i/line_length+j/line_length)*2.3*global_scale;
+      console.log(i,j)
+      circle(0, 0, radius)
+      pop();
+    }
+  }
+  
   save_drawing();
 }
 //***************************************************
 //custom funcs
+
+
+
+

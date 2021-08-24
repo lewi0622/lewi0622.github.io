@@ -1,14 +1,3 @@
-//template globals
-let input, button, randomize;
-
-let hidden_controls = false;
-
-// project globals
-let palette, bg, canvas_x, canvas_y, line_length, tile_width, tile_height;
-let base_x = 400;
-let base_y = 400;
-
-//global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
   line_length = 60*global_scale;

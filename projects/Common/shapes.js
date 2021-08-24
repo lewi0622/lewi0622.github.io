@@ -23,8 +23,12 @@ function draw_diag(len){
   }
   
   function tile(x_tiles, y_tiles, length, funcs, colors=['#000000'], iterations=1, x_offset_min=0, x_offset_max=0, y_offset_min=0, y_offset_max=0){
+    let i_offset = 0;
+    let j_offset = 0;
     //loops through and calls given funcs across entire canvas
     for (loop_num = 0; loop_num < iterations; loop_num++){
+      i_offset += random(x_offset_min, x_offset_max);
+      j_offset += random(y_offset_min, y_offset_max);
       for (i = 0; i < x_tiles; i++){
         for (j = 0; j < y_tiles; j++){
           push();
@@ -35,7 +39,5 @@ function draw_diag(len){
           pop();
         }
       }
-      i_offset += random(x_offset_min, x_offset_max);
-      j_offset += random(y_offset_min, y_offset_max);
     }
   }

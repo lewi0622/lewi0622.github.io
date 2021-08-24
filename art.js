@@ -29,7 +29,7 @@ function setColor(palette){
 
 function init(){
     //create iframe element for each project in arts
-    arts = shuffle(arts);
+    // arts = shuffle(arts);
     arts.forEach(element => {
         var ifrm = document.createElement("iframe");
         document.getElementById("iframe_parent").appendChild(ifrm);

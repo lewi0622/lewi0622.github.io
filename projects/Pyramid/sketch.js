@@ -1,21 +1,3 @@
-//template globals
-let input, button, randomize;
-
-let hidden_controls = false;
-let save = false;
-
-// project globals
-let palette, bg, pyramid, canvas_x, canvas_y;
-let base_x = 450;
-let base_y = 600;
-
-//global func, can be blank
-function reset_values(){
-  //reset project values here for redrawing 
-
-}
-
-//***************************************************
 function setup() {
   common_setup();
 }

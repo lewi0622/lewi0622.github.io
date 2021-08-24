@@ -1,19 +1,7 @@
-//template globals
-let input, button, randomize;
-
-let hidden_controls = false;
-
-// project globals
-let palette, xPos, yPos, canvas_x, canvas_y;
-let base_x = 400;
-let base_y = 400;
-
-//global func, can be blank
 function reset_values(){
   //reset project values here for redrawing 
-
-  xPos = canvas_x/2;
-  yPos = canvas_y/2;
+  xPos = 0;
+  yPos = 0;
 }
 
 //***************************************************
