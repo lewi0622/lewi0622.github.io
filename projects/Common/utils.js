@@ -18,6 +18,7 @@ function reset_drawing(seed){
     seed = int(seed);
   }
   randomSeed(seed);
+  noiseSeed(seed);
   input.value(str(seed));
 
   // gives change for square or rounded edges, this can be overriden within the draw function

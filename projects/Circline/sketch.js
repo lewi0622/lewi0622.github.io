@@ -12,9 +12,6 @@ function draw() {
   //set background, and remove that color from the palette
   bg = random(palette)
   background(bg);
-  // reduce_array(palette, bg);
-  // bg_top_bottom();
-  //get random bg function
   random(bgs)();
   
   translate(line_length/2, line_length/2);

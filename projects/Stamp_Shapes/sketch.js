@@ -3,10 +3,17 @@ function setup() {
 }
 
 function draw() {
-  //set background, and remove that color from the palette
-  bg = random(palette)
-  background(bg);
-  reduce_array(palette, bg);
+  //concentric backgrounds, remove last color from stamp shapes
+  push();
+  noStroke();
+  fill(random(palette));
+  rect(0, 0, canvas_x, canvas_y);
+
+  bg = random(palette);
+  fill(bg);
+  rect(canvas_x/20, canvas_y/20, canvas_x - canvas_x/10, canvas_y - canvas_y/10);
+  reduce_array(palette, bg); 
+  pop();
   
   let last_color = palette[0];
   let c = last_color;
