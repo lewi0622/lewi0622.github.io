@@ -280,3 +280,44 @@ function force_num(pos, force){
   }
   return pos;
 }
+
+
+//background functions
+function bg_top_bottom(){
+  push();
+  noStroke();
+  fill(random(palette));
+  rect(0, 0, canvas_x, canvas_y/2);
+  fill(random(palette));
+  rect(0, canvas_y/2, canvas_x, canvas_y);
+  pop();
+}
+function bg_left_right(){
+  push();
+  noStroke();
+  fill(random(palette));
+  rect(0, 0, canvas_x/2, canvas_y);
+  fill(random(palette));
+  rect(canvas_x/2, 0, canvas_x, canvas_y);
+  pop();
+}
+function bg_vertical_thirds(){
+  push();
+  noStroke();
+  fill(random(palette));
+  rect(0, 0, floor(canvas_x/3), canvas_y);
+  fill(random(palette));
+  rect(floor(canvas_x/3), 0, floor(canvas_x*2/3), canvas_y);
+  fill(random(palette));
+  rect(floor(canvas_x*2/3), 0, canvas_x, canvas_y);
+  pop();
+}
+function bg_center_ellipse(){
+  push();
+  noStroke();
+  fill(random(palette));
+  ellipse(canvas_x/2, canvas_y/2, canvas_x, canvas_y);
+  pop();
+}
+
+let bgs = [bg_top_bottom, bg_left_right, bg_vertical_thirds, bg_center_ellipse];

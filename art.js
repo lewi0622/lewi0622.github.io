@@ -10,7 +10,8 @@ let arts = [
     "Arcs",
     "Pyramid",
     "Circline",
-    "Barbed_Wire"
+    "Barbed_Wire",
+    "Chunky_Arcs"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

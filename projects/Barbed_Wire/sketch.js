@@ -10,13 +10,14 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  //set background, and remove that color from the palette
   bg = random(palette);
   background(bg);
-  reduce_array(palette, bg);
-  strokeCap(SQUARE)
 
-  strokeWeight(20*global_scale)
+  //get random bg function
+  random(bgs)();
+
+  strokeCap(SQUARE);
+  strokeWeight(30*global_scale)
   noFill();
   shape_type=TRIANGLES
   beginShape(shape_type);
