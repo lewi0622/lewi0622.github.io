@@ -8,8 +8,9 @@ let arts = [
     "Crossy_Blurbs",
     "Drift_Lines",
     "Arcs",
-    "Record",
-    "Pyramid"
+    "Pyramid",
+    "Circline",
+    "Barbed_Wire"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

@@ -1,6 +1,6 @@
 function reset_values(){
   //reset project values here for redrawing 
-  line_length = 40*global_scale;
+  line_length = 10*global_scale;
 }
 
 //***************************************************
@@ -21,9 +21,7 @@ function draw() {
       noStroke();
       fill(random(palette));
       translate(i, j);
-      radius = 1.25*line_length-(i/line_length+j/line_length)*2.3*global_scale;
-      console.log(i,j)
-      circle(0, 0, radius)
+      circle(0, 0, random(line_length*.5, line_length));
       pop();
     }
   }

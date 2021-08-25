@@ -166,3 +166,117 @@ function save_drawing(){
     saveCanvas(filename, 'png');
   }
 }
+
+function wrap(force_x, force_y){
+  //-x, -y
+  if(xPos < 0 && yPos < 0){
+    vertex(xPos, yPos);
+    endShape();
+
+    xPos = canvas_x;
+    yPos = canvas_y;
+    xPos = force_num(xPos, force_x);
+    yPos = force_num(yPos, force_y);
+
+    
+    beginShape(shape_type);
+    return;
+  }
+
+  //-x, +y
+  if(xPos < 0 && yPos > canvas_y){
+    vertex(xPos, yPos);
+    endShape();
+    
+    xPos = canvas_x;
+    yPos = 0;
+    xPos = force_num(xPos, force_x);
+    yPos = force_num(yPos, force_y);
+    
+    beginShape(shape_type);
+    return;
+  }
+
+  //+x, +y
+  if(xPos > canvas_x && yPos > canvas_y){
+    vertex(xPos, yPos);
+    endShape();
+    
+    xPos = 0;
+    yPos = 0;
+    xPos = force_num(xPos, force_x);
+    yPos = force_num(yPos, force_y);
+    
+    beginShape(shape_type);
+    return;
+  }
+
+  //+x, -y
+  if(xPos > canvas_x && yPos < 0){
+    vertex(xPos, yPos);
+    endShape();
+    
+    xPos = 0;
+    yPos = canvas_y;
+    xPos = force_num(xPos, force_x);
+    yPos = force_num(yPos, force_y);
+    
+    beginShape(shape_type);
+    return;
+  }
+
+  //-x
+  if(xPos < 0){
+    vertex(xPos, yPos);
+    endShape();
+
+    xPos = canvas_x;
+    yPos = force_num(yPos, force_y);
+
+    beginShape(shape_type);
+    return;
+  }
+  
+  //+x
+  if(xPos > canvas_x){
+    vertex(xPos, yPos);
+    endShape();
+
+    xPos = 0;
+    yPos = force_num(yPos, force_y);
+
+    beginShape(shape_type);
+    return;
+  }
+
+  //-y
+  if(yPos < 0){
+    vertex(xPos, yPos);
+    endShape();
+
+    yPos = canvas_y;
+    xPos = force_num(xPos, force_x);
+
+    beginShape(shape_type);
+    return;
+  }
+  
+  //+y
+  if(yPos > canvas_y){
+    vertex(xPos, yPos);
+    endShape();
+
+    yPos = 0;
+    xPos = force_num(xPos, force_x);
+
+    beginShape(shape_type);
+    return;
+  }
+}
+
+function force_num(pos, force){
+  if(force !== undefined){
+    return force;
+  }
+  return pos;
+}
