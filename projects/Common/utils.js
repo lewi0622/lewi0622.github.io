@@ -1,5 +1,6 @@
 let global_palette = palettes[0];
 let global_scale = 1;
+let global_bleed = 0.25; //quarter inch bleed
 
 function reset_values(){
   //override this function in the sketch.js to re-initialize project specific values
@@ -61,18 +62,24 @@ function keyTyped() {
 function seed_scale_button(){
   //creates controls below canvas for displaying/setting seed
   input = createInput("seed");
-  input.size(100*global_scale);
+  input.style('font-size', str(10*global_scale).concat('px'))
+  input.size(AUTO, 14*global_scale);
   input.position(0,400*global_scale);
   input.id('Seed');
+  
   input.elt.onfocus = function(){focused = true};
   input.elt.onblur = function(){focused = false};
   
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
+  button.style('font-size', str(10*global_scale).concat('px'))
+  button.size(90*global_scale, 20*global_scale)
   button.position(100*global_scale, 400*global_scale);
   
   randomize = createButton("Randomize");
   randomize.mouseClicked(randomize_action)
+  randomize.style('font-size', str(10*global_scale).concat('px'))
+  randomize.size(70*global_scale, AUTO)
   randomize.position(400*global_scale-randomize.size().width, 400*global_scale);
   
   show_hide_controls();
@@ -108,6 +115,10 @@ function common_setup(){
   //init globals
   hidden_controls = false;
   save_my_canvas = false;
+  bleed = false;
+  dpi = 300;
+  size = {};
+
   //be default, we're making 400px X 400px art
   if (typeof base_x == 'undefined') {
     base_x = 400;
@@ -116,27 +127,7 @@ function common_setup(){
     base_y = 400;
   }
 
-  //check for colors or seed values in url
-  colors = getParamValue('colors');
-  controls = getParamValue('controls');
-  seed = getParamValue('seed');
-  img_scale = getParamValue('scale');
-  img_save = getParamValue('save');
-
-  if(colors != undefined){
-    global_palette=palettes[colors];
-  }
-  if(img_scale != undefined){
-    global_scale = img_scale;
-  };
-  if(img_save != undefined){
-    save_my_canvas = true;
-  }
-
-  if(controls != undefined){
-    hidden_controls = true;
-  }
-
+  setParams();
   seed_scale_button();
   reset_drawing(seed);
   reset_values();
@@ -147,6 +138,44 @@ function common_setup(){
   cnv.mouseClicked(show_hide_controls);
   
   noLoop();
+}
+
+function setParams(){
+  //get all params if they exist
+  colors = getParamValue('colors');
+  controls = getParamValue('controls');
+  seed = getParamValue('seed');
+  img_scale = getParamValue('scale');
+  img_save = getParamValue('save');
+  add_bleed = getParamValue('bleed');
+  set_dpi = getParamValue('dpi');
+  sizeX = getParamValue('sizeX');
+  sizeY = getParamValue('sizeY');
+
+  if(colors != undefined){
+    global_palette=palettes[colors];
+  };
+  if(img_scale != undefined){
+    global_scale = img_scale;
+  };
+  if(img_save != undefined){
+    save_my_canvas = true;
+  };
+  if(controls != undefined){
+    hidden_controls = true;
+  };
+  if(add_bleed != undefined){
+    bleed = true;
+  };
+  if(set_dpi != undefined){
+    dpi = set_dpi;
+  };
+  if(sizeX != undefined){
+    size.x = int(sizeX);
+  };
+  if(sizeY != undefined){
+    size.y = int(sizeY);
+  };
 }
 
 function getParamValue(paramName){
@@ -284,36 +313,55 @@ function force_num(pos, force){
 
 
 //background functions
+function bg(remove){
+  bg = random(palette);
+  background(bg);
+  if(remove == true){
+    reduce_array(palette, bg);
+  };
+};
+function bg_vertical_strips(strips){
+  push();
+  noStroke();
+  translate(-canvas_x/2, -canvas_y/2)
+  for(let i=0; i<strips; i++){
+    fill(random(palette));
+    rect(0, 0, canvas_x*2, canvas_y*2);
+    if(i==0){
+      translate(canvas_x/2,0);
+    }
+    translate(floor(canvas_x/strips), 0);
+  }
+  pop();
+}
+
+function bg_horizontal_strips(strips){
+  push();
+  noStroke();
+  translate(-canvas_x/2, -canvas_y/2)
+  for(let i=0; i<strips; i++){
+    fill(random(palette));
+    rect(0, 0, canvas_x*2, canvas_y*2);
+    if(i==0){
+      translate(0,canvas_y/2);
+    }
+    translate(0, floor(canvas_y/strips));
+  }
+  pop();
+}
+
 function bg_top_bottom(){
   push();
   noStroke();
   fill(random(palette));
-  rect(0, 0, canvas_x, canvas_y/2);
+  rect(-canvas_x/2, -canvas_y/2, canvas_x*2, canvas_y);
   fill(random(palette));
-  rect(0, canvas_y/2, canvas_x, canvas_y);
+  rect(-canvas_x/2, canvas_y/2, canvas_x*2, canvas_y);
   pop();
 }
-function bg_left_right(){
-  push();
-  noStroke();
-  fill(random(palette));
-  rect(0, 0, canvas_x/2, canvas_y);
-  fill(random(palette));
-  rect(canvas_x/2, 0, canvas_x, canvas_y);
-  pop();
-}
-function bg_vertical_thirds(){
-  push();
-  noStroke();
-  fill(random(palette));
-  rect(0, 0, floor(canvas_x/3), canvas_y);
-  fill(random(palette));
-  rect(floor(canvas_x/3), 0, floor(canvas_x*2/3), canvas_y);
-  fill(random(palette));
-  rect(floor(canvas_x*2/3), 0, canvas_x, canvas_y);
-  pop();
-}
+
 function bg_center_ellipse(){
+  bg();
   push();
   noStroke();
   fill(random(palette));
@@ -321,4 +369,70 @@ function bg_center_ellipse(){
   pop();
 }
 
-let bgs = [bg_top_bottom, bg_left_right, bg_vertical_thirds, bg_center_ellipse];
+//bleed and cutline related functions
+function apply_bleed(){
+  // at vital print, bleed should be 0.25"
+  //if bleed, resize based on size and dpi params, translate
+  if(bleed&&dpi){
+    bleed_border = dpi*global_bleed;
+    
+    total_canvas_x = canvas_x + bleed_border*2;
+    total_canvas_y = canvas_y + bleed_border*2;
+    resizeCanvas(total_canvas_x, total_canvas_y);
+
+    //move origin to within bleed lines
+    translate((total_canvas_x-canvas_x)/2, (total_canvas_y-canvas_y)/2);
+
+    return bleed_border;
+  }
+}
+
+function get_invert_stroke(x, y){
+  // gets color at pixel x,y. Aboslue coordinates because the get function is some shit
+  c = get(x, y)
+
+  //transparent case
+  if(c[3]==0){
+    c=[0, 0, 0, 255];
+  }
+  else{
+    // inverts a given RGB value
+    c[0] = 255 - c[0]; //R
+    c[1] = 255 - c[1]; //G
+    c[2] = 255 - c[2]; //B
+    c[3] = 255; //alpha
+  }
+
+  stroke(c);
+}
+
+function apply_cutlines(){
+  //draw cutlines
+  if(bleed_border != undefined){
+    push();
+    //move coords back to upper left because get function uses absolute coords
+    translate(-bleed_border, -bleed_border)
+    //upper left going clockwise.
+    get_invert_stroke(0, bleed_border);
+    line(0, bleed_border, bleed_border/2, bleed_border);
+    get_invert_stroke(bleed_border, 0);
+    line(bleed_border, 0, bleed_border, bleed_border/2);
+    //upper right
+    get_invert_stroke(width-bleed_border, 0);
+    line(width-bleed_border, 0, width-bleed_border, bleed_border/2);
+    get_invert_stroke(width-1, bleed_border);
+    line(width-1, bleed_border, width-bleed_border/2, bleed_border);
+    //lower right
+    get_invert_stroke(width-1, height- bleed_border);
+    line(width-1, height- bleed_border, width-bleed_border/2, height-bleed_border);
+    get_invert_stroke(width-bleed_border, height-1);
+    line(width-bleed_border, height-1, width-bleed_border, height-bleed_border/2);
+    //lower left
+    get_invert_stroke(bleed_border, height-1);
+    line(bleed_border, height-1, bleed_border, height-bleed_border/2);
+    get_invert_stroke(0, height-bleed_border);
+    line(0, height-bleed_border, bleed_border/2, height-bleed_border);
+
+    pop();
+  }
+}
