@@ -3,11 +3,16 @@ function setup() {
 }
 //***************************************************
 function draw() {  
-  //set background, and remove that color from the palette
-  bg = random(palette)
-  background(bg);
-  reduce_array(palette, bg);
+  //bleed
+  bleed_border = apply_bleed();
 
+  // background
+  bg(true);
+
+  //cutlines
+  apply_cutlines();
+  
+  //actual drawing stuff
   pyramid = random(palette)
   reduce_array(palette, pyramid);
 

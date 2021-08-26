@@ -9,10 +9,16 @@ function setup() {
 }
 //***************************************************
 function draw() {  
-  //set background, and remove that color from the palette
-  bg = random(palette)
-  background(bg);
-  random(bgs)();
+  //bleed
+  bleed_border = apply_bleed();
+
+  //apply background
+  random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
+
+  //cutlines
+  apply_cutlines();
+
+  //actual drawing stuff
   
   translate(line_length/2, line_length/2);
   for(let i=0; i<canvas_x; i=i+line_length){

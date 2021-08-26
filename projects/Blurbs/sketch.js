@@ -11,14 +11,19 @@ function setup() {
 }
 //***************************************************
 function draw() {
+  //bleed
+  bleed_border = apply_bleed();
+
+  //apply background
+  bg(true);
+
+  //cutlines
+  apply_cutlines();
+
+  //actual drawing stuff
   //line width
   strokeWeight(10*global_scale);
   strokeCap(random([PROJECT,ROUND]));
-  
-  //set background, and remove that color from the palette
-  bg = random(palette)
-  background(bg);
-  reduce_array(palette, bg);
 
   //tile lines
   tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 

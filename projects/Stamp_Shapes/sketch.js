@@ -3,17 +3,26 @@ function setup() {
 }
 
 function draw() {
-  //concentric backgrounds, remove last color from stamp shapes
+  //bleed
+  bleed_border = apply_bleed();
+
+  //apply background
+  bg();
+
+  //concentric backgrounds, remove last color from palette
   push();
   noStroke();
-  fill(random(palette));
-  rect(0, 0, canvas_x, canvas_y);
-
-  bg = random(palette);
-  fill(bg);
+  border = random(palette);
+  push();
+  fill(border);
   rect(canvas_x/20, canvas_y/20, canvas_x - canvas_x/10, canvas_y - canvas_y/10);
-  reduce_array(palette, bg); 
+  reduce_array(palette, border); 
   pop();
+
+  //cutlines
+  apply_cutlines();
+
+  //actual drawing stuff
   
   let last_color = palette[0];
   let c = last_color;

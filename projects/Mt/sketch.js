@@ -3,8 +3,16 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  bg_top_bottom();
+  //bleed
+  bleed_border = apply_bleed();
 
+  //apply background
+  bg_horizontal_strips(2);
+
+  //cutlines
+  apply_cutlines();
+
+  //actual drawing stuff
   noFill();
   base_size = 20;
   size = palette.length*base_size*global_scale;

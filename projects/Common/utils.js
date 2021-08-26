@@ -350,16 +350,6 @@ function bg_horizontal_strips(strips){
   pop();
 }
 
-function bg_top_bottom(){
-  push();
-  noStroke();
-  fill(random(palette));
-  rect(-canvas_x/2, -canvas_y/2, canvas_x*2, canvas_y);
-  fill(random(palette));
-  rect(-canvas_x/2, canvas_y/2, canvas_x*2, canvas_y);
-  pop();
-}
-
 function bg_center_ellipse(){
   bg();
   push();

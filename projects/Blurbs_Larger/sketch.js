@@ -13,9 +13,17 @@ function setup() {
 }
 //***************************************************
 function draw() {
+  //bleed
+  bleed_border = apply_bleed();
+
+  //apply background
+  bg();
+
+  //cutlines
+  apply_cutlines();
+
+  //actual drawing stuff
   strokeWeight(75*up_scale);
-  bg = random(palette)
-  background(bg);
 
   tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 
     colors=palette, iterations=1, 

@@ -10,11 +10,16 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  bg = random(palette);
-  background(bg);
+  //bleed
+  bleed_border = apply_bleed();
 
-  //get random bg function
-  random(bgs)();
+  //apply background
+  random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
+
+  //cutlines
+  apply_cutlines();
+
+  //actual drawing stuff
 
   strokeCap(SQUARE);
   strokeWeight(30*global_scale)
