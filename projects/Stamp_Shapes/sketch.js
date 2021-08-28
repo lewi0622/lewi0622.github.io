@@ -39,30 +39,40 @@ function draw() {
     c[3] = floor(random(200, 240));
     //set color
     stroke(c);
+    last_color = c;
     //set location
     translate(random(150*global_scale,275*global_scale), random(100*global_scale, 275*global_scale));
 
     //correct placement if rotated
     rotate(random([0, 90]));
-    equals(lines, length, thickness);
+
+
+    strokeWeight(thickness);
+
+    x_dir = random([-2,2])*global_scale;
+    y_dir = random([-2,2])*global_scale;
+    for(let j=0; j<3; j++){
+      //create multiple overlay of same stamp
+      push();
+      for (let i = 0; i < lines; i++){
+        line(-length/2,0, length/2, 0);
+        translate(0,thickness*1.5);
+      }
+      pop();
+      while(c == last_color){
+        c = random(palette)
+      };
+      // c[3] = floor(random(200, 240));
+      stroke(random(palette));
+      translate(x_dir, y_dir);
+    }
     
-    last_color = c;
     pop();     
   }
 
-  //cutlines
+  //cleanup
   apply_cutlines();
-  
   save_drawing();
 }
 //***************************************************
 //custom funcs
-function equals(lines, length, thickness){
-
-  strokeWeight(thickness);
-
-  for (let i = 0; i < lines; i++){
-    line(-length/2,0, length/2, 0);
-    translate(0,thickness*1.5);
-  }
-}

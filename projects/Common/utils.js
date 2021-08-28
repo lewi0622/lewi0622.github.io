@@ -377,6 +377,13 @@ function bg_center_ellipse(){
   pop();
 }
 
+function drants(x_divs, y_divs){
+  // create divisions of canvas in x_divs, y_divs with various colors
+  return;
+}
+//
+
+
 //bleed and cutline related functions
 function apply_bleed(){
   // at vital print, bleed should be 0.25"
