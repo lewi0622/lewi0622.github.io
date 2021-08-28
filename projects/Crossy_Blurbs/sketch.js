@@ -18,9 +18,6 @@ function draw() {
   //apply background
   bg(true);
 
-  //cutlines
-  apply_cutlines();
-
   //actual drawing stuff
 
   //line width
@@ -32,6 +29,9 @@ function draw() {
     x_offset_min=0, x_offset_max=0,
     y_offset_min=0, y_offset_max=0);
 
+  //cutlines
+  apply_cutlines();
+  
   save_drawing();
 }
 //***************************************************

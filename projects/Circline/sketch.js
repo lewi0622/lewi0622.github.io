@@ -15,11 +15,8 @@ function draw() {
   //apply background
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
 
-  //cutlines
-  apply_cutlines();
-
   //actual drawing stuff
-  
+  push();
   translate(line_length/2, line_length/2);
   for(let i=0; i<canvas_x; i=i+line_length){
     for(let j=0; j<canvas_y; j=j+line_length){
@@ -31,6 +28,9 @@ function draw() {
       pop();
     }
   }
+  pop();
+  //cutlines
+  apply_cutlines();
   
   save_drawing();
 }

@@ -9,14 +9,14 @@ function draw() {
   //apply background
   bg(true);
 
-  //cutlines
-  apply_cutlines();
-
   //actual drawing stuff
 
   linear_spread = floor(random([0, 5]));
   arcing(canvas_x*.75, linear_spread);
   
+  //cutlines
+  apply_cutlines();
+
   save_drawing();
 }
 //***************************************************

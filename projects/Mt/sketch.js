@@ -9,10 +9,8 @@ function draw() {
   //apply background
   bg_horizontal_strips(2);
 
-  //cutlines
-  apply_cutlines();
-
   //actual drawing stuff
+  push();
   noFill();
   base_size = 20;
   size = palette.length*base_size*global_scale;
@@ -29,7 +27,10 @@ function draw() {
     size -= base_size*global_scale;
     pop();
   }
-
+  pop();
+  //cutlines
+  apply_cutlines();
+    
   save_drawing();
 }
 //***************************************************

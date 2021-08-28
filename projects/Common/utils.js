@@ -36,7 +36,8 @@ function col_idx(){
 
 function randomize_action(){
   //called by clicking the Randomize button
-  window.location.replace("index.html?controls=True&colors=".concat(col_idx()).concat('&scale=').concat(global_scale));
+  params = 
+  window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + global_scale + '&bleed=' + bleed + '&cut=' + cut);
 }
 
 function set_seed(){
@@ -47,7 +48,7 @@ function set_seed(){
     return ;
   }
 
-  window.location.replace("index.html?colors=".concat(col_idx()).concat("&controls=true&seed=").concat(input.value()).concat('&scale=').concat(global_scale));
+  window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + '&scale=' + global_scale + '&bleed=' + bleed + '&cut=' + cut);
 }
 
 function keyTyped() {
@@ -116,6 +117,7 @@ function common_setup(){
   hidden_controls = false;
   save_my_canvas = false;
   bleed = false;
+  cut = false;
   dpi = 300;
   size = {};
 
@@ -148,6 +150,7 @@ function setParams(){
   img_scale = getParamValue('scale');
   img_save = getParamValue('save');
   add_bleed = getParamValue('bleed');
+  add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
   sizeX = getParamValue('sizeX');
   sizeY = getParamValue('sizeY');
@@ -165,7 +168,14 @@ function setParams(){
     hidden_controls = true;
   };
   if(add_bleed != undefined){
-    bleed = true;
+    if(add_bleed != 'false'){
+      bleed = true;
+    }
+  };
+  if(add_cut != undefined){
+    if(add_cut != 'false'){
+      cut = true;
+    }
   };
   if(set_dpi != undefined){
     dpi = set_dpi;
@@ -397,9 +407,10 @@ function get_invert_stroke(x, y){
 }
 
 function apply_cutlines(){
-  //draw cutlines
-  if(bleed_border != undefined){
+  //draw cutlines, pop before this is called
+  if(bleed_border != undefined && cut == true){
     push();
+    strokeWeight(1);
     //move coords back to upper left because get function uses absolute coords
     translate(-bleed_border, -bleed_border)
     //upper left going clockwise.

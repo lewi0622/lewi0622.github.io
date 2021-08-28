@@ -56,9 +56,6 @@ function draw() {
   //apply background
   bg(true);
 
-  //cutlines
-  apply_cutlines();
-
   //actual drawing stuff
 
   //line width
@@ -69,7 +66,10 @@ function draw() {
     colors=palette, iterations=50, 
     x_offset_min=x_offset_min*global_scale, x_offset_max=x_offset_max*global_scale,
     y_offset_min=y_offset_min*global_scale, y_offset_max=y_offset_max*global_scale);
-  
+
+  //cutlines
+  apply_cutlines();
+      
   save_drawing();
 }
 //***************************************************

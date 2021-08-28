@@ -8,9 +8,6 @@ function draw() {
 
   // background
   bg(true);
-
-  //cutlines
-  apply_cutlines();
   
   //actual drawing stuff
   pyramid = random(palette)
@@ -27,6 +24,9 @@ function draw() {
 
   arcing(canvas_x*.5, 0, 0);
 
+  //cutlines
+  apply_cutlines();
+    
   save_drawing();
 }
 //***************************************************

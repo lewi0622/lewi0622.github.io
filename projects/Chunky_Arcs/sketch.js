@@ -9,12 +9,12 @@ function draw() {
   //apply background
   bg(true);
 
-  //cutlines
-  apply_cutlines();
-
   //actual drawing stuff
 
   arcing(canvas_x);
+  
+  //cutlines
+  apply_cutlines();
   
   save_drawing();
 }

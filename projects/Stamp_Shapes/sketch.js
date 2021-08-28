@@ -19,9 +19,6 @@ function draw() {
   reduce_array(palette, border); 
   pop();
 
-  //cutlines
-  apply_cutlines();
-
   //actual drawing stuff
   
   let last_color = palette[0];
@@ -52,6 +49,10 @@ function draw() {
     last_color = c;
     pop();     
   }
+
+  //cutlines
+  apply_cutlines();
+  
   save_drawing();
 }
 //***************************************************

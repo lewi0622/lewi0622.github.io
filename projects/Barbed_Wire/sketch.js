@@ -16,9 +16,6 @@ function draw() {
   //apply background
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
 
-  //cutlines
-  apply_cutlines();
-
   //actual drawing stuff
 
   strokeCap(SQUARE);
@@ -41,6 +38,10 @@ function draw() {
   //don't stroke last line to avoid one that ends in the middle of the page
   noStroke();
   endShape();
+  
+
+  //cutlines
+  apply_cutlines();
   
   save_drawing();
 }
