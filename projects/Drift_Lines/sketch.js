@@ -8,35 +8,25 @@ function reset_values(){
   tile_height = canvas_y / line_length;
 
   //set drift direction
-  switch(floor(random(0,3))){
+  switch(floor(random(0,2))){
     case 0:
-      //no x direction
-      x_offset_min = 0;
-      x_offset_max = 0;
-      break;
-    case 1:
       //+x direction
       x_offset_min = 0;
       x_offset_max = 20;
       break;
-    case 2:
+    case 1:
       //-x direction
       x_offset_min = -20;
       x_offset_max = 0;
       break;
   }
-  switch(floor(random(0,3))){
+  switch(floor(random(0,2))){
     case 0:
-      //no x direction
-      y_offset_min = 0;
-      y_offset_max = 0;
-      break;
-    case 1:
       //+x direction
       y_offset_min = 0;
       y_offset_max = 20;
       break;
-    case 2:
+    case 1:
       //-x direction
       y_offset_min = -20;
       y_offset_max = 0;
