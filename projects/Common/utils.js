@@ -22,8 +22,6 @@ function reset_drawing(seed){
   noiseSeed(seed);
   input.value(str(seed));
 
-  // gives change for square or rounded edges, this can be overriden within the draw function
-  strokeCap(random([PROJECT,ROUND]));
   palette = JSON.parse(JSON.stringify(global_palette));
 
   return seed;
@@ -134,10 +132,12 @@ function common_setup(){
   reset_values();
   angleMode(DEGREES);
 
-  //handles all common setup code
   cnv = createCanvas(canvas_x, canvas_y);
   cnv.mouseClicked(show_hide_controls);
   
+  // gives change for square or rounded edges, this can be overriden within the draw function
+  strokeCap(random([PROJECT,ROUND]));
+
   noLoop();
 }
 

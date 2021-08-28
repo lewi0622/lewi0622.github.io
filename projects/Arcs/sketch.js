@@ -1,5 +1,6 @@
 function setup() {
   common_setup();
+  
 }
 //***************************************************
 function draw() {
@@ -10,27 +11,25 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
-
-  linear_spread = floor(random([0, 5]));
+  linear_spread = floor(random([0, 2]))*global_scale;
   arcing(canvas_x*.75, linear_spread);
   
-  //cutlines
+  //cleanup
   apply_cutlines();
-
   save_drawing();
 }
 //***************************************************
 //custom funcs
-function arcing(width, linear_spread){
+function arcing(limit, linear_spread){
   push();
   noFill();
   translate(canvas_x/2, canvas_y/2);
-  for(let i=10; i<width; i++){
+  for(let i=10*global_scale; i<limit; i+=1*global_scale){
     translate(random(0,linear_spread), random(0, linear_spread));
     
-    radius = i * random(0.2, 2);
+    radius = i * random(0.2, 3);
     stroke(random(palette));
-    strokeWeight(random(1, 10)*global_scale)
+    strokeWeight(random(1, 10)*global_scale);
     arc(0, 0, radius, radius, 0, random(45,300));
     rotate(random(0,360));
   }
