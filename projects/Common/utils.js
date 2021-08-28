@@ -36,7 +36,6 @@ function col_idx(){
 
 function randomize_action(){
   //called by clicking the Randomize button
-  params = 
   window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + global_scale + '&bleed=' + bleed + '&cut=' + cut);
 }
 
@@ -201,8 +200,17 @@ function getParamValue(paramName){
 
 function save_drawing(){
   if(save_my_canvas==true){
-    color_index = col_idx();
-    filename = 'seed_' + str(input.value()) + '_color_' + str(color_index) + '_scale_' + str(global_scale);
+    //get project name
+    var project_name = window.location.pathname.split('/')[2];
+    var cut_name = '';
+    var bleed_name = '';
+    if(bleed != false){
+      bleed_name = 'bleed';
+      if(cut != false){
+        cut_name = 'cut';
+      }
+    };
+    filename = str(project_name) + '_seed_' + str(input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
     saveCanvas(filename, 'png');
   }
 }

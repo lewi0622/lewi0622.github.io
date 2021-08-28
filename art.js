@@ -3,7 +3,7 @@ let base_suffix = "/index.html"
 
 let arts = [
     "Blurbs",
-    "Blurbs_Larger",
+    "Crowd",
     "Stamp_Shapes",
     "Crossy_Blurbs",
     "Drift_Lines",
