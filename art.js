@@ -25,7 +25,7 @@ function setColor(palette){
         seed = iframe.contentDocument.getElementById('Seed')['value'];
         img_scale = 1;
 
-        addr_req = base_prefix.concat(element).concat(base_suffix).concat("?colors=").concat(palette).concat("&seed=").concat(seed).concat("&scale=").concat(img_scale);
+        addr_req = base_prefix + element + base_suffix + "?colors=" + palette + "&seed=" + seed + "&scale=" + img_scale;
         iframe.setAttribute('src', addr_req);
     });
 }
@@ -38,7 +38,7 @@ function init(){
         document.getElementById("iframe_parent").appendChild(ifrm);
         // console.log(document.getElementById('defaultCanvas0'))
 
-        ifrm.setAttribute("src", base_prefix.concat(element).concat(base_suffix));
+        ifrm.setAttribute("src", base_prefix + element + base_suffix);
         ifrm.setAttribute("id", element);
         ifrm.style.width = "400px";
         ifrm.style.height = "420px";
