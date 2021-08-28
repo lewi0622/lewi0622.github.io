@@ -29,6 +29,7 @@ function draw() {
     }
   }
   pop();
+  
   //cutlines
   apply_cutlines();
   

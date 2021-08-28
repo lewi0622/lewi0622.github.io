@@ -202,7 +202,7 @@ function getParamValue(paramName){
 function save_drawing(){
   if(save_my_canvas==true){
     color_index = col_idx();
-    filename = 'seed_'.concat(str(input.value())).concat('_color_').concat(str(color_index)).concat('_scale_').concat(str(global_scale));
+    filename = 'seed_' + str(input.value()) + '_color_' + str(color_index) + '_scale_' + str(global_scale);
     saveCanvas(filename, 'png');
   }
 }
