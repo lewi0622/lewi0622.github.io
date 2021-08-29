@@ -151,8 +151,8 @@ function setParams(){
   add_bleed = getParamValue('bleed');
   add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
-  sizeX = getParamValue('sizeX');
-  sizeY = getParamValue('sizeY');
+  // sizeX = getParamValue('sizeX');
+  // sizeY = getParamValue('sizeY');
 
   if(colors != undefined){
     global_palette=palettes[colors];
@@ -167,24 +167,24 @@ function setParams(){
     hidden_controls = true;
   };
   if(add_bleed != undefined){
-    if(add_bleed != 'false'){
+    if(add_bleed.toLowerCase() != 'false'){
       bleed = true;
     }
   };
   if(add_cut != undefined){
-    if(add_cut != 'false'){
+    if(add_cut.toLowerCase() != 'false'){
       cut = true;
     }
   };
   if(set_dpi != undefined){
     dpi = set_dpi;
   };
-  if(sizeX != undefined){
-    size.x = int(sizeX);
-  };
-  if(sizeY != undefined){
-    size.y = int(sizeY);
-  };
+  // if(sizeX != undefined){
+  //   size.x = int(sizeX);
+  // };
+  // if(sizeY != undefined){
+  //   size.y = int(sizeY);
+  // };
 }
 
 function getParamValue(paramName){
@@ -377,7 +377,7 @@ function bg_center_ellipse(){
   pop();
 }
 
-function drants(x_divs, y_divs){
+function bg_drants(x_divs, y_divs){
   // create divisions of canvas in x_divs, y_divs with various colors
   return;
 }
