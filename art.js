@@ -14,7 +14,8 @@ let arts = [
     "Chunky_Arcs",
     "Mt",
     "Scribbles",
-    "Suns"
+    "Suns",
+    "Sun"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes
