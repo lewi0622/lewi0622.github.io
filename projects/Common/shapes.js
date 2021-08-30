@@ -35,11 +35,7 @@ function draw_diag(len){
           push();
           stroke(random(colors));
 
-          //test code
-          translate(canvas_x/2, canvas_y/2);
-          rotate(canvas_rotation);
-          translate(-canvas_x/2, -canvas_y/2);
-          //
+          center_rotate(canvas_rotation)
 
           translate(i*length + i_offset, j*length + j_offset);
           random(funcs)(length);
@@ -48,4 +44,12 @@ function draw_diag(len){
         }
       }
     }
+  }
+
+
+  function center_rotate(deg){
+    // rotate component before drawing by the center of the canvas
+    translate(canvas_x/2, canvas_y/2);
+    rotate(deg);
+    translate(-canvas_x/2, -canvas_y/2);
   }
