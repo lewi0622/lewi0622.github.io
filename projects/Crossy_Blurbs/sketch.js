@@ -25,7 +25,7 @@ function draw() {
   
   //tile lines
   tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 
-    colors=palette, iterations=Math.round(random(3,10)), 
+    colors=palette, iterations=random([2,3]), 
     x_offset_min=0, x_offset_max=0,
     y_offset_min=0, y_offset_max=0);
 
