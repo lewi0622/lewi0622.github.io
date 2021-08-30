@@ -20,7 +20,6 @@ function draw() {
   //actual drawing stuff
   //line width
   strokeWeight(10*global_scale);
-  strokeCap(random([PROJECT,ROUND]));
 
   //tile lines
   tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 

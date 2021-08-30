@@ -15,7 +15,8 @@ let arts = [
     "Mt",
     "Scribbles",
     "Suns",
-    "Sun"
+    "Sun",
+    "Triangle_Stripes"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes
@@ -35,7 +36,7 @@ function setColor(palette){
 
 function init(){
     //create iframe element for each project in arts
-    arts = shuffle(arts);
+    // arts = shuffle(arts);
     arts.forEach(element => {
         var ifrm = document.createElement("iframe");
         document.getElementById("iframe_parent").appendChild(ifrm);
