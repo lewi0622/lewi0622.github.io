@@ -4,7 +4,7 @@ let base_suffix = "/index.html"
 let arts = [
     "Blurbs",
     "Crowd",
-    "Stamp_Shapes",
+    // "Stamp_Shapes",
     "Crossy_Blurbs",
     "Drift_Lines",
     "Arcs",
@@ -12,7 +12,8 @@ let arts = [
     "Circline",
     "Barbed_Wire",
     "Chunky_Arcs",
-    "Mt"
+    "Mt",
+    "Scribbles"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

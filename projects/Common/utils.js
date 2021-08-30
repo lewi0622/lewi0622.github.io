@@ -379,6 +379,7 @@ function bg_center_ellipse(){
 
 function bg_drants(x_divs, y_divs){
   // create divisions of canvas in x_divs, y_divs with various colors
+  
   return;
 }
 //

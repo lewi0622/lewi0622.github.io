@@ -36,7 +36,7 @@ function arcing(width, linear_spread, rotation){
   noFill();
   translate(canvas_x/2, canvas_y/2);
   rotate(120);
-  cap = random([ ROUND]);
+  cap = random([ROUND]);
   strokeCap(cap);
   for(let i=100*global_scale; i<width; i=i+(1*global_scale)){
     radius = i * random(0.2, 2);
