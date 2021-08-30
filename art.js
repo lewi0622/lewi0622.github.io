@@ -4,7 +4,6 @@ let base_suffix = "/index.html"
 let arts = [
     "Blurbs",
     "Crowd",
-    // "Stamp_Shapes",
     "Crossy_Blurbs",
     "Drift_Lines",
     "Arcs",
@@ -36,7 +35,7 @@ function setColor(palette){
 
 function init(){
     //create iframe element for each project in arts
-    // arts = shuffle(arts);
+    arts = shuffle(arts);
     arts.forEach(element => {
         var ifrm = document.createElement("iframe");
         document.getElementById("iframe_parent").appendChild(ifrm);
