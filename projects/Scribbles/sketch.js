@@ -55,7 +55,6 @@ function noise_curve(){
     else{
       amp -= 0.15*global_scale;
     }
-    console.log(amp)
   }
   endShape();
 }

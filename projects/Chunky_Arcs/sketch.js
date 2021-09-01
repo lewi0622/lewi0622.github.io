@@ -33,7 +33,6 @@ function arcing(width){
   rotate(random(0,360));
   while(radius < canvas_x-50*global_scale){
     radius = old_radius+old_SW*2+random(5,6)*global_scale;
-    console.log(radius)
     sw = radius - old_radius - old_SW -5*global_scale;
 
     stroke(random(palette));

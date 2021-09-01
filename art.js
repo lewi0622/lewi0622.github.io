@@ -40,7 +40,6 @@ function init(){
     arts.forEach(element => {
         var ifrm = document.createElement("iframe");
         document.getElementById("iframe_parent").appendChild(ifrm);
-        // console.log(document.getElementById('defaultCanvas0'))
 
         ifrm.setAttribute("src", base_prefix + element + base_suffix);
         ifrm.setAttribute("id", element);

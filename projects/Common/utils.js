@@ -1,4 +1,4 @@
-let global_palette = palettes[0];
+let global_palette = palettes[5];
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
 
