@@ -332,11 +332,12 @@ function force_num(pos, force){
 
 //background functions
 function bg(remove){
-  bg = random(palette);
-  background(bg);
+  c = random(palette);
+  background(c);
   if(remove == true){
-    reduce_array(palette, bg);
+    reduce_array(palette, c);
   };
+  return c;
 };
 function bg_vertical_strips(strips){
   push();
