@@ -168,7 +168,8 @@ function setParams(){
   };
   if(add_bleed != undefined){
     if(add_bleed.toLowerCase() != 'false'){
-      bleed = true;
+      bleed = float(add_bleed);
+      global_bleed = bleed;
     }
   };
   if(add_cut != undefined){

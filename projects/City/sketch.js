@@ -1,0 +1,278 @@
+function setup() {
+  common_setup();
+  
+}
+//***************************************************
+function draw() {
+  //bleed
+  bleed_border = apply_bleed();
+
+  //apply background
+  bg_c = bg(true);
+
+  //actual drawing stuff
+  num_buildings = 10;
+  size_buildings = 40*global_scale;
+
+  var build_heights = new Array(num_buildings);
+
+  //set global building array
+  for(let i=0; i<num_buildings; i++){
+    build_heights[i] = floor(constrain(noise(i)*15, 1, 10));
+  }
+
+  translate(0, canvas_y-size_buildings);
+  noStroke();
+  for(let i=1; i<num_buildings; i++){
+    push();
+    translate(i*size_buildings, 0);
+    building_block(build_heights[i]);
+    pop();
+  }
+  
+  //cleanup
+  apply_cutlines();
+  save_drawing();
+}
+//***************************************************
+//custom funcs
+//helper functions based on building 
+function center(){
+  translate(0,size_buildings/2);
+}
+function low_left(){
+  translate(-size_buildings/2, size_buildings);
+}
+function low_right(){
+  translate(size_buildings/2, size_buildings);
+}
+function high_left(){
+  translate(-size_buildings/2, 0);
+}
+function high_right(){
+  translate(size_buildings/2, 0);
+}
+
+
+function building_block(h){
+  //builds vertically
+  push();
+  for(let i=0; i<h; i++){
+    fill(random(palette));
+    if(i+1 >= h){
+      random([buildCap])();
+    }
+    else if(i+2 >= h){
+      //no column followed by cap, looks stupid
+      random([buildWhole, buildWindow])();
+    }
+    else{
+      func = random([buildWhole, buildColumns, buildDias, buildWindow, buildArch, buildTinyWindows, buildStairs, buildBrickwork]);
+      // func = buildBrickwork;
+      if(func == buildColumns){
+        func(random([2,3]));
+      }
+      else{
+        func();
+      }
+    }
+    translate(0,-size_buildings);
+  }
+  pop();
+}
+
+function buildColumns(num_cols){
+  if(num_cols == undefined){
+    num_cols = 2;
+  };
+  push();
+  low_left();
+  for(let i=0; i<num_cols; i++){
+    buildColumn(size_buildings/num_cols);
+    translate(size_buildings/num_cols,0);
+  }
+  pop();
+}
+
+function buildColumn(col_width){
+  //TODO convert to use bezier vertex
+  if(col_width == undefined){
+    col_width = size_buildings;
+  };
+  push();
+  curveTightness(1);
+  beginShape();
+  //ll
+  curveVertex(0,0);
+  curveVertex(0,0);
+  curveVertex(col_width/4, -col_width/4);
+  curveVertex(col_width/4, -size_buildings+col_width/4);
+  //ul
+  curveVertex(0,-size_buildings);
+  //ur
+  curveVertex(col_width,-size_buildings);
+  curveVertex(col_width*3/4, -size_buildings+col_width/4);
+  curveVertex(col_width*3/4, -col_width/4);
+  curveVertex(col_width, 0);
+
+  endShape(CLOSE);
+  pop();
+}
+
+function buildDias(){
+  push();
+  rect(-size_buildings/8, 0, size_buildings/4, size_buildings);
+  arc(0,0, size_buildings*3/4, -size_buildings/4, 0, 180);
+  translate(0,size_buildings);
+  rotate(180);
+  arc(0,0, size_buildings*3/4, -size_buildings/4, 0, 180);
+  pop();
+}
+
+function buildWhole(){
+  push();
+  high_left();
+  rect(0, 0,size_buildings,size_buildings);
+  pop();
+}
+
+function buildArch(){
+  buildWhole();
+  buildWindow(2);
+}
+
+function buildTinyWindows(){
+  buildWhole();
+  push();
+  //center
+  buildWindow(8);
+  //left
+  translate(-size_buildings/4,0);
+  buildWindow(8);
+  //right
+  translate(size_buildings/2,0);
+  buildWindow(8);
+  pop();
+}
+
+function buildWindow(window_scale){
+  if(window_scale == undefined){
+    window_scale = 4;
+    buildWhole();
+  }
+  window_width = size_buildings/window_scale;
+  push();
+  fill(bg_c)
+  center();
+  rect(-window_width/2, 0, window_width, window_width);
+  circle(0,0,window_width);
+  pop();
+}
+
+function buildBrickwork(){
+  //brickwork, mortar is bg_c
+  buildWhole();
+  
+  push();
+  strokeCap(SQUARE);
+  stroke(bg_c);
+  strokeWeight(1*global_scale);
+  high_left();
+  //offset first row
+  
+  for(let j=1; j<9; j++){
+    //vertical lines
+    push();
+    if(j%2 == 0){
+      translate(size_buildings/8, (j-1)*size_buildings/8);
+      bricks = 4;
+    }
+    else{
+      translate(size_buildings/4, (j-1)*size_buildings/8);
+      bricks = 3;
+    }
+    for(let i=0; i<bricks; i++){
+      line(0,0, 0, size_buildings/8);
+      translate(size_buildings/4,0);
+    }
+    pop();
+    //horizontal lines
+    push();
+    if(j!=8){
+      translate(0, j*size_buildings/8);
+      line(0,0, size_buildings,0);
+    }
+    pop();
+  }
+
+  pop();
+}
+
+function buildCap(){
+  arc(0,size_buildings, -size_buildings, size_buildings, 180, 0)
+  if(random([0,1]) == 0){
+    circle(0,size_buildings/2,25*global_scale);
+    if(random([0,1]) == 0){
+      circle(0, size_buildings/4, 12*global_scale);
+    }
+  }
+  //spire/flagpole
+  if(random([0,1,1]) == 0){
+    push();
+    center();
+    rect(-global_scale, 0, 2*global_scale, -size_buildings/2);
+    circle(0, -size_buildings/2, 2*global_scale);
+    pop();
+  }
+}
+
+function buildOnionDome(){
+
+}
+
+function buildStairs(){
+  push();
+  whole_c = random(palette);
+  stair_color = whole_c;
+  fill(whole_c);
+  buildWhole();
+
+  dir = random([-1,1]);
+  if(dir == 1){
+    low_left();
+  }
+  else{
+    low_right();
+  }
+  while(stair_color == whole_c){
+    stair_color = random(palette);
+  }
+
+  fill(stair_color);
+  beginShape();
+  for(let i=0; i<8; i++){
+    vertex(size_buildings*(1+i)/8*dir, -size_buildings*i/8);
+
+    if(i != 7){
+      vertex(size_buildings*(1+i)/8*dir,-size_buildings*(1+i)/8);
+    }
+  }
+  vertex(size_buildings*dir,0);
+  endShape(CLOSE);
+  pop();
+}
+
+
+
+//building ideas
+//convex edges
+//large tower top if no other buildings to left/right
+//columns
+//rooftop patio across two equal height
+//patio if only height 1
+//lights, laundry, banners strung across valley, between equal heights
+//tree with brickwork base
+//fountain with brickbase
+//awnings?
+//belltower
+//make windows work with brick??
