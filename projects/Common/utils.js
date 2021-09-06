@@ -62,7 +62,7 @@ function seed_scale_button(){
   input = createInput("seed");
   input.style('font-size', str(10*global_scale) + 'px');
   input.size(AUTO, 14*global_scale);
-  input.position(0,400*global_scale);
+  input.position(0,base_y*global_scale);
   input.id('Seed');
   
   input.elt.onfocus = function(){focused = true};
@@ -72,13 +72,13 @@ function seed_scale_button(){
   button.mouseClicked(set_seed);
   button.style('font-size', str(10*global_scale) + 'px');
   button.size(90*global_scale, 20*global_scale)
-  button.position(100*global_scale, 400*global_scale);
+  button.position(100*global_scale, base_y*global_scale);
   
   randomize = createButton("Randomize");
   randomize.mouseClicked(randomize_action)
   randomize.style('font-size', str(10*global_scale) + 'px');
   randomize.size(70*global_scale, AUTO)
-  randomize.position(400*global_scale-randomize.size().width, 400*global_scale);
+  randomize.position(base_x*global_scale-randomize.size().width, base_y*global_scale);
   
   show_hide_controls();
 }

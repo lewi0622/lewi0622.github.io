@@ -1,4 +1,6 @@
 function setup() {
+  base_x=400;
+  base_y=400;
   common_setup();
   
 }
@@ -9,16 +11,15 @@ function draw() {
 
   //apply background
   bg_c = bg(true);
-
   //actual drawing stuff
-  num_buildings = 10;
-  size_buildings = 40*global_scale;
+  size_buildings = random([20, 80])*global_scale;
+  num_buildings = floor(canvas_x/size_buildings);
 
   var build_heights = new Array(num_buildings);
 
   //set global building array
   for(let i=0; i<num_buildings; i++){
-    build_heights[i] = floor(constrain(noise(i)*15, 1, 10));
+    build_heights[i] = floor(constrain(noise(i)*(canvas_y/size_buildings)*1.5, 0, canvas_y/size_buildings));
   }
 
   translate(0, canvas_y-size_buildings);
@@ -26,8 +27,10 @@ function draw() {
   for(let i=1; i<num_buildings; i++){
     push();
     translate(i*size_buildings, 0);
-    building_block(build_heights[i]);
-    pop();
+    if(build_heights[i]!=1){
+      building_block(build_heights[i]);
+    }
+      pop();
   }
   
   //cleanup
@@ -58,17 +61,17 @@ function building_block(h){
   //builds vertically
   push();
   for(let i=0; i<h; i++){
-    fill(random(palette));
+    build_c = random(palette);
+    fill(build_c);
     if(i+1 >= h){
       random([buildCap])();
     }
     else if(i+2 >= h){
-      //no column followed by cap, looks stupid
-      random([buildWhole, buildWindow])();
+      //no dias followed by cap, looks stupid
+      random([buildColumns, buildWindow, buildArch, buildTinyWindows, buildStairs, buildBrickwork])();
     }
     else{
-      func = random([buildWhole, buildColumns, buildDias, buildWindow, buildArch, buildTinyWindows, buildStairs, buildBrickwork]);
-      // func = buildBrickwork;
+      func = random([buildColumns, buildDias, buildWindow, buildArch, buildTinyWindows, buildStairs, buildBrickwork]);
       if(func == buildColumns){
         func(random([2,3]));
       }
@@ -211,23 +214,40 @@ function buildBrickwork(){
 function buildCap(){
   arc(0,size_buildings, -size_buildings, size_buildings, 180, 0)
   if(random([0,1]) == 0){
-    circle(0,size_buildings/2,25*global_scale);
+    circle(0,size_buildings/2,size_buildings/2);
     if(random([0,1]) == 0){
-      circle(0, size_buildings/4, 12*global_scale);
+      circle(0, size_buildings/4, size_buildings/4);
     }
   }
   //spire/flagpole
   if(random([0,1,1]) == 0){
     push();
     center();
-    rect(-global_scale, 0, 2*global_scale, -size_buildings/2);
-    circle(0, -size_buildings/2, 2*global_scale);
+    rect(-size_buildings/20, size_buildings/2, size_buildings/10, -size_buildings);
+    circle(0, -size_buildings/2, size_buildings/10);
     pop();
   }
 }
 
-function buildOnionDome(){
+function buildHalfArch(){
+  //TODO FINISH ARCH CURVE
+  push();
+  dir = random([-1,1]);
+  if(dir == 1){
+    low_left();
+  }
+  else{
+    low_right();
+  }
 
+  beginShape();
+  vertex(0,0);
+  vertex(0,-size_buildings);
+  vertex(size_buildings*dir,-size_buildings);
+  vertex(size_buildings*dir, -size_buildings*3/4);
+  bezierVertex(size_buildings/4*dir,-size_buildings*3/4, size_buildings/4*dir,-size_buildings*3/4, size_buildings/4*dir,0);
+  endShape();
+  pop();
 }
 
 function buildStairs(){
