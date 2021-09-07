@@ -1,8 +1,5 @@
 function setup() {
-  base_x=400;
-  base_y=400;
   common_setup();
-  
 }
 //***************************************************
 function draw() {
