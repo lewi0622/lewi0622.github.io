@@ -17,7 +17,8 @@ let arts = [
     "Sun",
     "Triangle_Stripes",
     "Birds",
-    "City"
+    "City",
+    "Flower"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

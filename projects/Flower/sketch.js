@@ -11,17 +11,19 @@ function draw() {
 
   //actual drawing stuff
   push();
-  petal_size = 40*global_scale;
+  petal_size = random(35,45)*global_scale;
 
   translate(canvas_x/2, canvas_y/2);
   // noStroke();
 
-  distance = canvas_y/4;
-  for(let i=0; i<5; i++){
+  distance = canvas_y/random(3,5);
+  for(let i=0; i<random(8,12); i++){
+    rotate(random(0,360));
     fill(random(palette));
-    petalLayer(26-i*2, distance);
+    petalLayer(26, distance);
 
-    distance -= canvas_y/20;
+    petal_size *= random(0.6, 0.9);
+    distance *= random(0.7, 0.8);
   }
   stroke(random(palette));
   strokeWeight(10*global_scale);
