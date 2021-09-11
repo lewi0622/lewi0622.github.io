@@ -128,12 +128,12 @@ function common_setup(){
 
   setParams();
   seed_scale_button();
-  reset_drawing(seed);
+  seed = reset_drawing(seed);
   reset_values();
   angleMode(DEGREES);
 
   cnv = createCanvas(canvas_x, canvas_y);
-  cnv.mouseClicked(show_hide_controls);
+  cnv.mouseClicked(pass_parent);
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
@@ -454,4 +454,10 @@ function apply_cutlines(){
 
     pop();
   }
+}
+
+//pass window message
+function pass_parent(){
+  show_hide_controls();
+  window.parent.postMessage(window.location.pathname+"?controls=True&seed="+seed, window.parent.location.href);
 }
