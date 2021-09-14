@@ -459,5 +459,5 @@ function apply_cutlines(){
 //pass window message
 function pass_parent(){
   show_hide_controls();
-  window.parent.postMessage(window.location.pathname+"?controls=True&seed="+seed, window.parent.location.href);
+  // window.parent.postMessage(window.location.pathname+"?controls=True&seed="+seed, window.parent.location.href);
 }

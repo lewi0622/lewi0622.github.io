@@ -26,38 +26,6 @@ let arts = [
 // wait for DOM to be fully loaded before accessing nodes
 window.onload = init;
 
-//selector event listener
-window.addEventListener('message', handleMessage, false);
-function handleMessage(event) {
-    //suppress relaunching modal if already visible
-    if($('#exampleModal').is(':visible')){return;}
-
-    //update iframe src to event data
-    $('#modal_iframe').attr('src', event.data);
-    $('#exampleModal').modal('show');
-
-    //get modal size after show
-    var modal_width = $('#exampleModal').width();
-    var modal_height = $('#exampleModal').height();
-    if(modal_height>modal_width){
-        limiter = modal_width;
-    }
-    else{
-        limiter = modal_height;
-    };
-    scale = Math.floor(limiter/400);
-    if(scale==0){scale=1;};
-
-    ifrm = document.getElementById("modal_iframe");
-    ifrm.style.width = String(scale*400)+"px";
-    ifrm.style.height = String(scale*(420))+"px";
-    ifrm.style.overflow = "hidden";
-    ifrm.setAttribute("scrolling", "no");
-
-    ifrm.setAttribute("src", event.data+"&scale="+scale);
-    console.log(ifrm);
-}
-
 function setColor(palette){
     //changes color palette, keeps seeds the same
     arts.forEach(element => {
@@ -91,7 +59,7 @@ function init(){
         ifrm.setAttribute("src", base_prefix + element + base_suffix);
         ifrm.setAttribute("id", element);
         ifrm.style.width = "400px";
-        ifrm.style.height = "400px";
+        ifrm.style.height = "420px";
         ifrm.style.overflow = "hidden";
         ifrm.setAttribute("scrolling", "no");
     });
