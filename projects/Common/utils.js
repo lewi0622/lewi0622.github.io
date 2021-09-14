@@ -77,9 +77,9 @@ function seed_scale_button(){
   randomize = createButton("Randomize");
   randomize.mouseClicked(randomize_action)
   randomize.style('font-size', str(10*global_scale) + 'px');
-  randomize.size(70*global_scale, AUTO)
-  randomize.position(base_x*global_scale-randomize.size().width, base_y*global_scale);
-  
+  randomize.size(70*global_scale, AUTO);
+  randomize.position(base_x*global_scale-70*global_scale, base_y*global_scale);
+
   show_hide_controls();
 }
 
