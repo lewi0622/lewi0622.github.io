@@ -14,12 +14,16 @@ function draw() {
   petal_size = random(35,45)*global_scale;
 
   translate(canvas_x/2, canvas_y/2);
-  // noStroke();
+  if(random([0,1])==0){
+    noStroke();
+  };
 
   distance = canvas_y/random(3,5);
   for(let i=0; i<random(8,12); i++){
     rotate(random(0,360));
-    fill(random(palette));
+    petal_c = random(palette);
+    fill(petal_c);
+
     petalLayer(26, distance);
 
     petal_size *= random(0.6, 0.9);

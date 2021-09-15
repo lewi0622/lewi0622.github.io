@@ -158,7 +158,7 @@ function setParams(){
     global_palette=palettes[colors];
   };
   if(img_scale != undefined){
-    global_scale = img_scale;
+    global_scale = int(img_scale);
   };
   if(img_save != undefined){
     save_my_canvas = true;
@@ -460,4 +460,61 @@ function apply_cutlines(){
 function pass_parent(){
   show_hide_controls();
   // window.parent.postMessage(window.location.pathname+"?controls=True&seed="+seed, window.parent.location.href);
+}
+
+function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, pow, seed, shape){
+  //creates a matrix of noise going from more likely to less. Use rotate to swap i/j. Use reverse to change noise density sides
+  if(rotate==true){
+    [rect_width, rect_height] = [rect_height, rect_width];
+  }
+  if(rotate==undefined){
+    rotate=false;
+  }
+  if(reverse==undefined){
+    reverse=false;
+  }
+  if(min==undefined){
+    min=0;
+  }
+  if(max==undefined){
+    max=1;
+  }
+  if(pow==undefined){
+    pow=1;
+  }
+  if(seed==undefined){
+    seed=0;
+  }
+  if(shape==undefined){
+    shape=random(['square', 'circle'])
+  }
+
+  for(let i=0; i<rect_width; i+=step){
+    chance = constrain(Math.pow(i/rect_width, pow), min, max);
+    if(reverse==true){
+      chance = 1-chance;
+    }
+    
+    for(let j=0; j<rect_height; j+=step){
+      push();
+      pixel_c = random(palette);
+      fill(pixel_c);
+
+      if(rotate == true){
+        translate(j, i);
+      }
+      else{
+        translate(i, j);
+      }
+      if(noise((i+1)*(j+1)+seed)>chance){
+        if(shape=='square'){
+          square(0,0,random(step/2, step*2));
+        }
+        else if(shape=='circle'){
+          circle(step/2, step/2 ,random(step/2, step*2));
+        }
+      }
+      pop();
+    }
+  }
 }
