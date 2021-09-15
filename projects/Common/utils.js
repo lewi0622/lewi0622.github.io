@@ -518,3 +518,4 @@ function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, 
     }
   }
 }
+
