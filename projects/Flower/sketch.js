@@ -18,7 +18,10 @@ function draw() {
   translate(canvas_x/2, canvas_y/2);
   if(random([0,1])==0){
     noStroke();
-  };
+  }
+  else{  
+    stroke('black');
+    strokeWeight(0.5*global_scale);}
   distance = canvas_y/random(3,5);
   for(let i=0; i<random(8,12); i++){
     rotate(random(0,360));
@@ -33,8 +36,7 @@ function draw() {
     petal_size *= random(0.6, 0.9);
     distance *= random(0.7, 0.8);
   }
-  stroke(random(palette));
-  strokeWeight(3*global_scale);
+
 
   pop();
   //cleanup
