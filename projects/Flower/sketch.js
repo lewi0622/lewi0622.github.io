@@ -26,7 +26,7 @@ function draw() {
     fill(petal_c);
       // Shadow
     ctx.shadowColor = color(petal_c);
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = 10*global_scale;
 
     petalLayer(26, distance);
 
@@ -34,7 +34,7 @@ function draw() {
     distance *= random(0.7, 0.8);
   }
   stroke(random(palette));
-  strokeWeight(10*global_scale);
+  strokeWeight(3*global_scale);
 
   pop();
   //cleanup
