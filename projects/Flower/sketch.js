@@ -10,6 +10,8 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
+  const ctx = canvas.getContext('2d');
+
   push();
   petal_size = random(35,45)*global_scale;
 
@@ -17,12 +19,14 @@ function draw() {
   if(random([0,1])==0){
     noStroke();
   };
-
   distance = canvas_y/random(3,5);
   for(let i=0; i<random(8,12); i++){
     rotate(random(0,360));
     petal_c = random(palette);
     fill(petal_c);
+      // Shadow
+    ctx.shadowColor = color(petal_c);
+    ctx.shadowBlur = 10;
 
     petalLayer(26, distance);
 
