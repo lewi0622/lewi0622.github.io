@@ -17,6 +17,8 @@ function draw() {
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
 
   //actual drawing stuff
+  push();
+  center_rotate(random([0, 180]));
 
   strokeCap(SQUARE);
   strokeWeight(30*global_scale)
@@ -39,7 +41,7 @@ function draw() {
   noStroke();
   endShape();
   
-
+  pop();
   //cutlines
   apply_cutlines();
   

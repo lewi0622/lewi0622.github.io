@@ -11,14 +11,10 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
+  push();
   eye_white = [255, 255, 255, 255];
   eye_black = [0, 0, 0, 255];
 
-  // head_color = random(palette);
-  // reduce_array(palette, head_color);
-
-  // beak_color = random(palette);
-  // reduce_array(palette, beak_color);
   noStroke();
   push();
   //head and eye
@@ -36,6 +32,8 @@ function draw() {
   // beak
   translate(-canvas_x/4, 0);
   beak(true);
+  pop();
+
   pop();
   //cleanup
   apply_cutlines();

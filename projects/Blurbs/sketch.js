@@ -18,6 +18,9 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
+  push();
+  center_rotate(random([0,90,180,270]));
+
   //line width
   strokeWeight(10*global_scale);
 
@@ -27,6 +30,7 @@ function draw() {
     x_offset_min=0, x_offset_max=0,
     y_offset_min=0, y_offset_max=0);
   
+  pop();
   //cutlines
   apply_cutlines();
   

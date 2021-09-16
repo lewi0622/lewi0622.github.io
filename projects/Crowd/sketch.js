@@ -20,6 +20,9 @@ function draw() {
   bg();
 
   //actual drawing stuff
+  push();
+  center_rotate(random([0,90,180,270]));
+
   strokeWeight(75*up_scale);
 
   tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 
@@ -27,6 +30,7 @@ function draw() {
     x_offset_min=0, x_offset_max=0,
     y_offset_min=0, y_offset_max=0);
 
+  pop();
   //cutlines
   apply_cutlines();
 

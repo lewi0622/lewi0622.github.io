@@ -10,10 +10,13 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
+  push();
+
+  center_rotate(random([0,90,180,270]));
+
   tile_x = canvas_x/100;
   tile_y = canvas_y/10;
 
-  push();
   strokeWeight(5*global_scale);
 
   for(let j=0; j<5; j++){

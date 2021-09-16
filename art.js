@@ -21,7 +21,8 @@ let arts = [
     "Flower",
     "Escaping_Gasses",
     "Gas_Spiral",
-    "Glitter_Stacks"
+    "Glitter_Stacks",
+    "Scrambled_Matrix"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

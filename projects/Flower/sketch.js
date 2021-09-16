@@ -10,9 +10,8 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
-  const ctx = canvas.getContext('2d');
-
   push();
+  const ctx = canvas.getContext('2d');
   petal_size = random(35,45)*global_scale;
 
   translate(canvas_x/2, canvas_y/2);
@@ -36,7 +35,6 @@ function draw() {
     petal_size *= random(0.6, 0.9);
     distance *= random(0.7, 0.8);
   }
-
 
   pop();
   //cleanup

@@ -47,7 +47,6 @@ function draw() {
     }
   }
  
-
   pop();
   //cleanup
   apply_cutlines();

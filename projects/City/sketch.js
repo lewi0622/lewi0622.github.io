@@ -9,6 +9,7 @@ function draw() {
   //apply background
   bg_c = bg(true);
   //actual drawing stuff
+  push();
   size_buildings = random([20, 80])*global_scale;
   num_buildings = floor(canvas_x/size_buildings);
 
@@ -29,7 +30,7 @@ function draw() {
     }
       pop();
   }
-  
+  pop();
   //cleanup
   apply_cutlines();
   save_drawing();

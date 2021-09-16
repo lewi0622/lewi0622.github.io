@@ -11,6 +11,8 @@ function draw() {
 
   //actual drawing stuff
   push();
+  center_rotate(random([0,90]));
+
   translate(canvas_x/2, canvas_y/2);
   for(let i=0; i<40; i++){
     //confine start vector to circle

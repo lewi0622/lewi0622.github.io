@@ -10,10 +10,8 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
-  strokeCap(ROUND);
-
   push();
-  // chance for rotation
+  strokeCap(ROUND);
 
   start = createVector(0,canvas_y,0);
   end = createVector(canvas_x,0,0);
@@ -21,7 +19,7 @@ function draw() {
   radius = 65*global_scale;
   strokeWeight(4*global_scale)
 
-  center_rotate(random([0,90]));
+  center_rotate(random([0,90,180,270]));
   suns = random([2,4])
 
   for(let j=0;j<suns;j++){

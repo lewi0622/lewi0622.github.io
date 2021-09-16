@@ -10,9 +10,9 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
-
+  push();
   arcing(canvas_x);
-  
+  pop();
   //cutlines
   apply_cutlines();
   

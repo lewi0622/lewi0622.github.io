@@ -25,7 +25,6 @@ function draw_diag(len){
   function tile(x_tiles, y_tiles, length, funcs, colors=['#000000'], iterations=1, x_offset_min=0, x_offset_max=0, y_offset_min=0, y_offset_max=0){
     let i_offset = 0;
     let j_offset = 0;
-    canvas_rotation = random([0, 90, 180, 270]);
     //loops through and calls given funcs across entire canvas
     for (loop_num = 0; loop_num < iterations; loop_num++){
       i_offset += random(x_offset_min, x_offset_max);
@@ -34,8 +33,6 @@ function draw_diag(len){
         for (j = 0; j < y_tiles; j++){
           push();
           stroke(random(colors));
-
-          center_rotate(canvas_rotation)
 
           translate(i*length + i_offset, j*length + j_offset);
           random(funcs)(length);

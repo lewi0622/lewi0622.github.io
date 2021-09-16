@@ -10,12 +10,12 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
+  push();
   width = random([2,3])*global_scale;
 
   angle_step = random([18,24]);
   radius = random(175,200)*global_scale;
 
-  push();
   //center
   translate(canvas_x/2, canvas_y/2);
 

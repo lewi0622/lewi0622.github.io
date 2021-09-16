@@ -11,9 +11,10 @@ function draw() {
   bg(true);
 
   //actual drawing stuff
+  push();
   linear_spread = floor(random([0, 2]))*global_scale;
   arcing(canvas_x*.75, linear_spread);
-  
+  pop();
   //cleanup
   apply_cutlines();
   save_drawing();

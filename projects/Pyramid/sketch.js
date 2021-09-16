@@ -10,10 +10,10 @@ function draw() {
   bg(true);
   
   //actual drawing stuff
+  push();
   pyramid = random(palette)
   reduce_array(palette, pyramid);
 
-  push();
   noStroke();
   fill(pyramid);
   translate(canvas_x/2, canvas_y/2);
@@ -24,6 +24,7 @@ function draw() {
 
   arcing(canvas_x*.5, 0, 0);
 
+  pop();
   //cutlines
   apply_cutlines();
     

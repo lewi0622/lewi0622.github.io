@@ -12,6 +12,8 @@ function draw() {
   //actual drawing stuff
   push();
 
+  center_rotate(random([0, 180]));
+
   noStroke();
   rect_width = canvas_x/4;
   rect_height = canvas_y*0.75;
