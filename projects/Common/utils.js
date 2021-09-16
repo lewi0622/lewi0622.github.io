@@ -34,24 +34,25 @@ function col_idx(){
 
 function randomize_action(){
   //called by clicking the Randomize button
-  window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + global_scale + '&bleed=' + bleed + '&cut=' + cut);
+  window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
 }
 
 function set_seed(){
   //reinitializes the drawing with a specific seed
 
   //check if requested seed is the same as existing seed
-  if(input.value()==getParamValue('seed')){
+  if(input.value()==getParamValue('seed') && scaler.value()==getParamValue('scale')){
     return ;
   }
 
-  window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + '&scale=' + global_scale + '&bleed=' + bleed + '&cut=' + cut);
+  window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
 }
 
 function keyTyped() {
   // if text box is focused, and user presses enter, it sends Custom seed
   if (focused) {
     if(keyCode === ENTER){
+      updateValue()
       set_seed();
     }
   }
@@ -65,9 +66,6 @@ function seed_scale_button(){
   input.position(0,base_y*global_scale);
   input.id('Seed');
   
-  input.elt.onfocus = function(){focused = true};
-  input.elt.onblur = function(){focused = false};
-  
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
   button.style('font-size', str(10*global_scale) + 'px');
@@ -77,10 +75,30 @@ function seed_scale_button(){
   randomize = createButton("Randomize");
   randomize.mouseClicked(randomize_action)
   randomize.style('font-size', str(10*global_scale) + 'px');
-  randomize.size(70*global_scale, AUTO);
+  randomize.size(70*global_scale, 20*global_scale);
   randomize.position(base_x*global_scale-70*global_scale, base_y*global_scale);
 
+  //scale slider is taken as scale value when randomize/custom seed are clicked
+  scaler = createSlider(1, 12, global_scale, 1);
+  scaler.position(0, base_y*global_scale+20*global_scale);
+  scaler.size(100*global_scale, AUTO);
+  scaler.input(sliderChange);
+
+  scale_box = createInput('');
+  scale_box.style('font-size', str(10*global_scale) + 'px');
+  scale_box.position(100*global_scale, base_y*global_scale+20*global_scale)
+  scale_box.size(30*global_scale, 20*global_scale);
+  scale_box.value(scaler.value());
+
   show_hide_controls();
+}
+function updateValue(){
+  //if the textbox is updated, update the slider
+  scaler.value(scale_box.value())
+}
+function sliderChange(){
+  //if the slider is changed, update the textbox
+  scale_box.value(scaler.value());
 }
 
 function reduce_array(arr, remove){
@@ -97,6 +115,8 @@ function show_hide_controls(){
     input.show();
     button.show();
     randomize.show();
+    scaler.show();
+    scale_box.show();
 
     hidden_controls = false;
   }
@@ -104,7 +124,9 @@ function show_hide_controls(){
     input.hide();
     button.hide();
     randomize.hide();
-    
+    scaler.hide();
+    scale_box.hide();
+
     hidden_controls = true;
   }
 }
