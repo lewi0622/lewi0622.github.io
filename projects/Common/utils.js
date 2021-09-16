@@ -81,7 +81,7 @@ function seed_scale_button(){
   //scale slider is taken as scale value when randomize/custom seed are clicked
   scaler = createSlider(1, 12, global_scale, 1);
   scaler.position(0, base_y*global_scale+20*global_scale);
-  scaler.size(100*global_scale, AUTO);
+  scaler.size(100*global_scale, 10*global_scale);
   scaler.input(sliderChange);
 
   scale_box = createInput('');
@@ -193,7 +193,7 @@ function setParams(){
   if(img_scale != undefined){
     global_scale = int(img_scale);
   };
-  if(img_save != undefined){
+  if(img_save != undefined && str(img_save).toLowerCase() != 'false'){
     save_my_canvas = true;
   };
   if(controls != undefined){
