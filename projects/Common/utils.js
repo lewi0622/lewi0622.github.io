@@ -113,7 +113,7 @@ function seed_scale_button(){
   btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+20*global_scale);
 
   //list of all ctrls for easy show/hide
-  ctrls = [input, button, randomize, scaler, scale_box, btSave];
+  ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight];
   show_hide_controls();
 }
 function decSeed(){
