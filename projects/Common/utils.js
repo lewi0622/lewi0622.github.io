@@ -66,12 +66,26 @@ function seed_scale_button(){
   input.position(0,base_y*global_scale);
   input.id('Seed');
   
+  //custom seed button
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
   button.style('font-size', str(10*global_scale) + 'px');
   button.size(90*global_scale, 20*global_scale)
   button.position(100*global_scale, base_y*global_scale);
+
+  //left/right buttons for easy seed nav
+  btLeft = createButton('<')
+  btLeft.style('font-size', str(10*global_scale) + 'px');
+  btLeft.size(20*global_scale, 20*global_scale);
+  btLeft.position(200*global_scale, base_y*global_scale);
+  btLeft.mouseClicked(decSeed);
+  btRight = createButton('>')
+  btRight.style('font-size', str(10*global_scale) + 'px');
+  btRight.size(20*global_scale, 20*global_scale);
+  btRight.position(220*global_scale, base_y*global_scale);
+  btRight.mouseClicked(incSeed);
   
+  //randomize button
   randomize = createButton("Randomize");
   randomize.mouseClicked(randomize_action)
   randomize.style('font-size', str(10*global_scale) + 'px');
@@ -84,19 +98,31 @@ function seed_scale_button(){
   scaler.size(100*global_scale, 10*global_scale);
   scaler.input(sliderChange);
 
+  //scale text box
   scale_box = createInput('');
   scale_box.style('font-size', str(10*global_scale) + 'px');
   scale_box.position(100*global_scale, base_y*global_scale+20*global_scale)
   scale_box.size(30*global_scale, 20*global_scale);
   scale_box.value(scaler.value());
 
+  //save button
   btSave = createButton("Save");
   btSave.mouseClicked(saveClicked)
   btSave.style('font-size', str(10*global_scale) + 'px');
   btSave.size(70*global_scale, 20*global_scale);
   btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+20*global_scale);
 
+  //list of all ctrls for easy show/hide
+  ctrls = [input, button, randomize, scaler, scale_box, btSave];
   show_hide_controls();
+}
+function decSeed(){
+  input.value(int(input.value())-1);
+  set_seed();
+}
+function incSeed(){
+  input.value(int(input.value())+1);
+  set_seed();
 }
 function updateValue(){
   //if the textbox is updated, update the slider
@@ -123,20 +149,16 @@ function reduce_array(arr, remove){
 function show_hide_controls(){
   //hides or shows buttons when canvas is clicked
   if(hidden_controls == true){
-    input.show();
-    button.show();
-    randomize.show();
-    scaler.show();
-    scale_box.show();
+    for(const ctrl of ctrls){
+      ctrl.show();
+    }
 
     hidden_controls = false;
   }
   else{
-    input.hide();
-    button.hide();
-    randomize.hide();
-    scaler.hide();
-    scale_box.hide();
+    for(const ctrl of ctrls){
+      ctrl.hide();
+    }
 
     hidden_controls = true;
   }
