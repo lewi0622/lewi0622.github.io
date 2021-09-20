@@ -11,7 +11,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  center_rotate(random([0,90,180,270]));
+  // center_rotate(random([0,90,180,270]));
   const ctx = canvas.getContext('2d');
 
   step=10*global_scale;
@@ -24,10 +24,8 @@ function draw() {
     push();
     c = random(palette);
     stroke(c);
-    if(i/(canvas_x*0.75)>0.4){
-      vert_offset = i/(canvas_x*0.75) * canvas_y/4;
-      translate(0, random(-vert_offset, vert_offset));
-    }
+    vert_offset = i/(canvas_x*0.75) * canvas_y/4;
+    translate(0, random(-vert_offset, vert_offset));
 
     // Shadow
     ctx.shadowColor = color(c);
