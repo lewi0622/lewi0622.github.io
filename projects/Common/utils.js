@@ -439,6 +439,15 @@ function bg_drants(x_divs, y_divs){
   
   return;
 }
+
+//cutout features
+function cutoutCircle(r){
+  //pop before calling cutout
+  //good from canvas_y/2 to canvas_y/...anything
+  offset = canvas_y/r - 1;
+  strokeWeight(offset*r);
+  arc(canvas_x/2, canvas_y/2, canvas_y+(offset-1)*r, canvas_y+(offset-1)*r, 0, 360);
+}
 //
 
 
