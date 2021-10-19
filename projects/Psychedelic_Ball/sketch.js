@@ -14,13 +14,18 @@ function draw() {
   center_rotate(random(0,360));
 
   noStroke();
+  [h,w] = random([[20,70], [10,10], [40,100]]);
 
-  ribbon_h = 20*global_scale;
-  ribbon_w = -70*global_scale;
-  for(let i=0; i<canvas_x+Math.abs(ribbon_w); i+=6*global_scale){
+  ribbon_h = h*global_scale;
+  ribbon_w = -w*global_scale;
+  alt = random([0,1])==0;
+
+  for(let i=0; i<canvas_x+Math.abs(ribbon_w); i+=random([2,4,6,8])*global_scale){
     for(let j=0; j<canvas_y; j+=ribbon_h){
-      if(i%2==0){
-        ribbon_w = ribbon_w*-1;
+      if(alt){
+        if(i%2==0){
+          ribbon_w = ribbon_w*-1;
+        }
       }
       push();
       translate(i,j);
