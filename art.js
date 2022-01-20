@@ -23,7 +23,8 @@ let arts = [
     "Gas_Spiral",
     "Glitter_Stacks",
     "Scrambled_Matrix",
-    "Psychedelic_Ball"
+    "Psychedelic_Ball",
+    "BrushStrokes"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes
