@@ -17,7 +17,7 @@ function draw() {
   strokeWeight(1*global_scale);
   steps = random(200,300);
   noFill();
-  center_rotate(random([0,90,180,270]));
+  center_rotate(random(360));
 
   for(let z=0; z<2; z++){
     push();
