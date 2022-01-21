@@ -9,9 +9,11 @@ function draw() {
 
   //apply background
   bg(true);
-
   //actual drawing stuff
   push();
+
+  noiseDetail(random(4));
+
   strokeWeight(1*global_scale);
   steps = random(200,300);
   noFill();
@@ -42,7 +44,12 @@ function draw() {
     center_rotate(random([0,90,180,270]));
 
   }
+
   pop();
+  erase();
+  noFill();
+  cutoutCircle(canvas_y/64);
+
   //cleanup
   apply_cutlines();
   save_drawing();
