@@ -73,6 +73,13 @@ function draw() {
   pop();
 
   pop();
+
+  if(random([0,1])){
+    erase();
+    noFill();
+    cutoutCircle(canvas_y/64);
+  }
+  
   //cutlines
   apply_cutlines();
     

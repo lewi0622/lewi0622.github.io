@@ -34,12 +34,16 @@ function draw() {
       pop();
     }
   }
-
-  stroke(bg_c);
-
+  pop();
+  if(random([true, false])){
+    stroke(bg_c);
+  }
+  else{
+    erase();
+  }
+ 
   noFill();
   cutoutCircle(canvas_y/8);
-  pop();
   //cutlines
   apply_cutlines();
   
