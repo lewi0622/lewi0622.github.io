@@ -266,7 +266,7 @@ function save_drawing(){
     var cut_name = '';
     var bleed_name = '';
     if(bleed != false){
-      bleed_name = 'bleed';
+      bleed_name = '_bleed_' + str(global_bleed);
       if(cut != false){
         cut_name = 'cut';
       }
