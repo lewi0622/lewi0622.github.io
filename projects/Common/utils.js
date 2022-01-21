@@ -164,7 +164,7 @@ function show_hide_controls(){
   }
 }
 
-function common_setup(){
+function common_setup(gif){
   //init globals
   hidden_controls = false;
   save_my_canvas = false;
@@ -180,6 +180,9 @@ function common_setup(){
   if (typeof base_y == 'undefined'){
     base_y = 400;
   }
+  if (typeof gif == 'undefined'){
+    gif = false;
+  }
 
   setParams();
   seed_scale_button();
@@ -193,7 +196,9 @@ function common_setup(){
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
 
-  noLoop();
+  if(!gif){
+    noLoop();
+  }
 }
 
 function setParams(){
