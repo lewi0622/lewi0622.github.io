@@ -19,29 +19,48 @@
   <body>
 
     <body>
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-          Select Color Palette
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-          <li><a class="dropdown-item" href="#" onclick="setColor(0)">Sage and Citrus</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(1)">Beach Day</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(2)">Cotton Candy</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(3)">Bumblebee</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(4)">Minty</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(5)">Game Day</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(6)">Birds of Paradise</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(7)">Deathloop</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(8)">Unnamed</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(9)">Southwest</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(10)">Muted Earth</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(11)">Muted Signs</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(12)">60s</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(13)">Oasis</a></li>
-          <li><a class="dropdown-item" href="#" onclick="setColor(14)">Supperware</a></li>
-        </ul>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                  Select Color Palette
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                  <li><a class="dropdown-item" href="#" onclick="setColor(0)">Sage and Citrus</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(1)">Beach Day</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(2)">Cotton Candy</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(3)">Bumblebee</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(4)">Minty</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(5)">Game Day</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(6)">Birds of Paradise</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(7)">Deathloop</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(8)">Unnamed</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(9)">Southwest</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(10)">Muted Earth</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(11)">Muted Signs</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(12)">60s</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(13)">Oasis</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="setColor(14)">Supperware</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="jumbotron">
+        <div class="container">
+          <h1 class="display-3 text-light">Welcome!</h1>
+          <p class="h5 text-light">Click on a design for more options or select a color palette from the dropdown above!<p>
+        </div>
       </div>
-      
       <div class="container" >
         <div class="row" id="iframe_parent">
         </div>
