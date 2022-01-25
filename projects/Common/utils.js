@@ -453,7 +453,7 @@ function cutoutCircle(r){
   strokeWeight(offset*r);
   arc(canvas_x/2, canvas_y/2, canvas_y+(offset-1)*r, canvas_y+(offset-1)*r, 0, 360);
 }
-//
+
 
 
 //bleed and cutline related functions
