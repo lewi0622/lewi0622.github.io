@@ -199,6 +199,8 @@ function common_setup(gif){
   if(!gif){
     noLoop();
   }
+  //checking if this helps mobile performance
+  pixelDensity(1)
 }
 
 function setParams(){
