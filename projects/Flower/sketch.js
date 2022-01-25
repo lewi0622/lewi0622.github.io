@@ -29,7 +29,8 @@ function draw() {
     drawingContext.shadowColor = color(petal_c);
     drawingContext.shadowBlur = 10*global_scale;
 
-    petalLayer(26, distance);
+    //at 30 or higher, the last half petal applies tends to overwrite lines
+    petalLayer(floor(random(12,26)), distance);
 
     petal_size *= random(0.6, 0.9);
     distance *= random(0.7, 0.8);
@@ -42,7 +43,7 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function petal(start_y){
+function petal(start_y, close){
   push();
   translate(0, start_y);
   beginShape();
@@ -51,13 +52,18 @@ function petal(start_y){
   curveVertex(petal_size/2, petal_size/2);
   curveVertex(0, petal_size);
   curveVertex(-petal_size/2, petal_size/2);
-  endShape(CLOSE);
+  if(close){
+    endShape(CLOSE);
+  }
+  else{
+    endShape()
+  }
   pop();
 }
 
 function petalLayer(num_petal, distance){
-  for(let i=0; i<num_petal; i++){
+  for(let i=0; i<=num_petal; i++){
     rotate(360/num_petal);
-    petal(distance);
+    petal(distance, i!=num_petal);
   }
 }
