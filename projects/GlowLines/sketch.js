@@ -11,8 +11,7 @@ function setup() {
   frameRate(fr);
   //apply background
   bg_c = bg(true);
-  shuffle(palette)
-  palette_reset = JSON.parse(JSON.stringify(palette));
+  palette_reset = JSON.parse(JSON.stringify(shuffle(palette)));
   // createLoop({duration:1.5, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
