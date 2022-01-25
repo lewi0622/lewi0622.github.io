@@ -14,6 +14,7 @@ function setup() {
   //apply background
   bg_c = bg(true);
   palette_reset = JSON.parse(JSON.stringify(shuffle(palette)));
+  theta_offset = random(180);
   // createLoop({duration:12, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
@@ -39,7 +40,7 @@ function draw() {
 
   beginShape();
   for(i=-canvas_x/2; i<canvas_x; i++){
-    curveVertex(i, (sin(i)/map(noise(i+xoff),0,1,1,4) + map(noise(i+xoff), 0, 1, -1, 1))*global_scale*8000);
+    curveVertex(i, (sin(i+theta_offset+theta)/map(noise(i+xoff),0,1,1,4) + map(noise(i+xoff), 0, 1, -1, 1))*global_scale*8000);
   }
   endShape();
 
