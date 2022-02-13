@@ -26,7 +26,9 @@ let arts = [
     "Psychedelic_Ball",
     "BrushStrokes",
     "GlowLines",
-    "Barcode"
+    "Barcode",
+    "Text",
+    "Horizontal_Blurbs"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

@@ -394,8 +394,13 @@ function force_num(pos, force){
 
 
 //background functions
-function bg(remove){
-  c = random(palette);
+function bg(remove, force){
+  if(force !== undefined){
+    c = force;
+  }
+  else{
+    c = random(palette);
+  }
   background(c);
   if(remove == true){
     reduce_array(palette, c);
