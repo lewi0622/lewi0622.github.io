@@ -24,11 +24,7 @@ let arts = [
     "Glitter_Stacks",
     "Scrambled_Matrix",
     "Psychedelic_Ball",
-    "BrushStrokes",
-    "GlowLines",
-    "Barcode",
-    "Text",
-    "Horizontal_Blurbs"
+    "BrushStrokes"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

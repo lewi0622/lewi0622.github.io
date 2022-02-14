@@ -49,9 +49,6 @@ function draw() {
   margin = 100*global_scale;
   noFill();
 
-  console.log(group_text);
-  console.log(arr_text);
-
   //set max font size based on the number of lines and canvas size
   max_fontSize = (canvas_y-margin*2)/group_text.length;  
   max_width = 0;
@@ -84,8 +81,6 @@ function draw() {
     }
   });
 
-  console.log(widths)
-  console.log(heights);
   step = 10;
 
   total_height = heights.slice(1,heights.length).reduce((partialSum, a) => partialSum + a, 0);
