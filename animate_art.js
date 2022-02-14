@@ -5,7 +5,8 @@ let arts = [
     "GlowLines",
     "Barcode",
     "Text",
-    "Horizontal_Blurbs"
+    "Horizontal_Blurbs",
+    "Endless_Symmetry"
 ];
 
 let current_id = 0;
