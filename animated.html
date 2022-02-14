@@ -65,20 +65,36 @@
         </div>
       </div>
 
-      <div id="myCarousel" class="carousel slide" data-interval="false" pause="true" ride="false">
-        <div class="carousel-inner" id="iframe_parent">
+      <div class="container text-center">
+        <div class="row justify-content-sm-center">
+          <div class="col-">
+            <div id="myCarousel" class="carousel slide" data-interval="false" pause="true" ride="false">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <div class="row justify-content-sm-center">
+                    <div class="col-auto">
+                      <iframe class="embed-responsive-item" src="" id="iframe" scrolling="no" style="width: 400px; height: 420px; overflow: hidden;"></iframe>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> 
+
         </div>
-        <a class="carousel-control-prev" href="#myCarousel" data-slide="prev" onclick="change_animation(-1)">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#myCarousel" data-slide="next" onclick="change_animation(1)">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="sr-only">Next</span>
-        </a>
+        <div class="row justify-content-sm-center">
+          <div class="col-">
+            <a href="#myCarousel" data-slide="prev" onclick="change_animation(-1)">
+              <img class="img-responsive center-block carousel-control-prev-icon" aria-hidden="true"></span>
+            </a>
+            <a href="#myCarousel" data-slide="next" onclick="change_animation(1)">
+              <img class="img-responsive center-block carousel-control-next-icon" aria-hidden="true"></span>
+            </a>
+          </div>  
+        </div>
       </div>
 
-      </div>
+
     </body>
   </body>
 

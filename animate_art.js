@@ -32,32 +32,11 @@ function init(){
     arts = shuffle(arts);
 
     element = arts[current_id]
-    var ifrm = document.createElement("iframe");
-    var carousel_item = document.createElement("div");
-    var col = document.createElement("div");
-    var row = document.createElement("div");
-    var div = document.createElement("div");
 
-    carousel_item.appendChild(row);
-    row.appendChild(col)
-    col.appendChild(div);
-    div.appendChild(ifrm);
-    document.getElementById("iframe_parent").appendChild(carousel_item);
+    var ifrm = document.getElementById("iframe")
 
-    carousel_item.setAttribute("class", "carousel-item active");
-    col.setAttribute("class", "col-sm-auto");
-    row.setAttribute("class", "row justify-content-md-center")
-
-    div.setAttribute("class", "embed-responsive embed-responsive-1by1");
-    div.style.width = "400px";
-
-    ifrm.setAttribute("class", "embed-responsive-item");
     ifrm.setAttribute("src", base_prefix + element + base_suffix);
     ifrm.setAttribute("id", element);
-    ifrm.style.width = "400px";
-    ifrm.style.height = "420px";
-    ifrm.style.overflow = "hidden";
-    ifrm.setAttribute("scrolling", "no");
 }
 
 function shuffle(array) {
