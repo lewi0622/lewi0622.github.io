@@ -15,17 +15,7 @@ function setup() {
   background("BLACK");
   drawingContext.shadowBlur=3*global_scale;
 
-  if(random()*100>70){
-    //set static damp factor
-    dampening = random(10,75);
-    damp = "static";
-    len = 8*fr*16/sym_angs;
-    line_segs = 5;
-  }
-  else{
-    damp = "variable";
-    len = 4*fr*8/sym_angs*10/line_segs;
-  }
+  len = 4*fr*8/sym_angs*10/line_segs;
 
   line_color = color(255, 227, 92, 75);
   drawingContext.shadowColor = color(line_color)
@@ -45,9 +35,7 @@ function draw() {
       strokeWeight(1*global_scale);
       beginShape();
       for(let j=0; j<line_segs; j++){
-        if(damp == "variable"){
-          dampening = map(noise(j), 0, 1, 10, 100);
-        }
+        dampening = map(noise(j), 0, 1, 10, 100);
         x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
         y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));
         if(j == 0){
