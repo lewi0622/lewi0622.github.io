@@ -24,7 +24,7 @@ function setup() {
   }
   else{
     damp = "variable";
-    len = 4*fr*8/sym_angs;
+    len = 4*fr*8/sym_angs*10/line_segs;
   }
 
   line_color = color(255, 227, 92, 75);
@@ -46,7 +46,7 @@ function draw() {
       beginShape();
       for(let j=0; j<line_segs; j++){
         if(damp == "variable"){
-          dampening = map(noise(j), 0, 1, .1, 100);
+          dampening = map(noise(j), 0, 1, 10, 100);
         }
         x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
         y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));

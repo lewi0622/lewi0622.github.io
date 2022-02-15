@@ -13,14 +13,16 @@ function setup() {
   sym_angs = random([4,6,8,10,12,14,16]);
   line_segs = floor(random(5,20));
   background("BLACK");
-  drawingContext.shadowBlur=3*global_scale;
-
   line_color = color(255, 227, 92);
+  //shadow/glow
+  drawingContext.shadowBlur=3*global_scale;
   drawingContext.shadowColor = color(line_color)
   stroke(line_color);
+  // createLoop({duration:8, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
+  //to be ran at 2x scale or higher for proper display
   background("BLACK");
   //bleed
   bleed_border = apply_bleed();
@@ -32,6 +34,7 @@ function draw() {
       translate(canvas_x/2, canvas_y/2);
       noFill();
       strokeWeight(1*global_scale);
+      curveTightness(map(noise(xoff/100), 0, 1, -5, 5));
       beginShape();
       for(let j=0; j<line_segs; j++){
         dampening = map(noise(j), 0, 1, .1, 100);
@@ -54,9 +57,3 @@ function draw() {
   apply_cutlines();
   
 }
-//***************************************************
-//custom funcs
-
-
-
-

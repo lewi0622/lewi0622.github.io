@@ -48,8 +48,7 @@ function draw() {
   noErase();
   //cutlines
   apply_cutlines();
-  
-  save_drawing();
+
 }
 //***************************************************
 //custom funcs
