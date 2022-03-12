@@ -6,7 +6,7 @@ function reset_values(){
   //override this function in the sketch.js to re-initialize project specific values
 }
 
-function reset_drawing(seed){
+function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
   canvas_x = base_x*global_scale;
   canvas_y = base_y*global_scale;
@@ -58,7 +58,7 @@ function keyTyped() {
   }
 }
 
-function seed_scale_button(){
+function seed_scale_button(base_x, base_y){
   //creates controls below canvas for displaying/setting seed
   input = createInput("seed");
   input.style('font-size', str(10*global_scale) + 'px');
@@ -164,7 +164,7 @@ function show_hide_controls(){
   }
 }
 
-function common_setup(gif){
+function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //init globals
   hidden_controls = false;
   save_my_canvas = false;
@@ -173,24 +173,13 @@ function common_setup(gif){
   dpi = 300;
   size = {};
 
-  //be default, we're making 400px X 400px art
-  if (typeof base_x == 'undefined') {
-    base_x = 400;
-}
-  if (typeof base_y == 'undefined'){
-    base_y = 400;
-  }
-  if (typeof gif == 'undefined'){
-    gif = false;
-  }
-
   setParams();
-  seed_scale_button();
-  seed = reset_drawing(seed);
+  seed_scale_button(base_x, base_y);
+  seed = reset_drawing(seed, base_x, base_y);
   reset_values();
   angleMode(DEGREES);
 
-  cnv = createCanvas(canvas_x, canvas_y);
+  cnv = createCanvas(canvas_x, canvas_y, renderer);
   cnv.mouseClicked(pass_parent);
   
   // gives change for square or rounded edges, this can be overriden within the draw function
@@ -213,8 +202,6 @@ function setParams(){
   add_bleed = getParamValue('bleed');
   add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
-  // sizeX = getParamValue('sizeX');
-  // sizeY = getParamValue('sizeY');
 
   if(colors != undefined){
     global_palette=palettes[colors];
@@ -242,12 +229,6 @@ function setParams(){
   if(set_dpi != undefined){
     dpi = set_dpi;
   };
-  // if(sizeX != undefined){
-  //   size.x = int(sizeX);
-  // };
-  // if(sizeY != undefined){
-  //   size.y = int(sizeY);
-  // };
 }
 
 function getParamValue(paramName){
@@ -261,7 +242,7 @@ function getParamValue(paramName){
     }
 }
 
-function save_drawing(){
+function save_drawing(type='png'){
   if(save_my_canvas==true){
     //get project name
     var project_name = window.location.pathname.split('/')[2];
@@ -274,10 +255,14 @@ function save_drawing(){
       }
     };
     filename = str(project_name) + '_seed_' + str(input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
-    saveCanvas(filename, 'png');
+    if(type == 'svg'){
+      save(filename)
+    }
+    else{
+      saveCanvas(filename, type);
+    }
   }
 }
-
 function wrap(force_x, force_y){
   //-x, -y
   if(xPos < 0 && yPos < 0){

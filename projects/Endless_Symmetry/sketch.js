@@ -12,7 +12,6 @@ function setup() {
   //apply background
   sym_angs = random([4,6,8,10,12,14,16]);
   line_segs = floor(random(5,20));
-  background("BLACK");
   line_color = color(255, 227, 92);
   //shadow/glow
   drawingContext.shadowBlur=3*global_scale;
