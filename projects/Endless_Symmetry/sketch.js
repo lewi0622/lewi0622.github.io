@@ -12,10 +12,11 @@ function setup() {
   //apply background
   sym_angs = random([4,6,8,10,12,14,16]);
   line_segs = floor(random(5,20));
-  line_color = color(255, 227, 92);
+  line_color = color(random(palette));
+  // line_color = color(255, 227, 92);
   //shadow/glow
   drawingContext.shadowBlur=3*global_scale;
-  drawingContext.shadowColor = color(line_color)
+  drawingContext.shadowColor = line_color;
   stroke(line_color);
   // createLoop({duration:8, gif:{fileName:"instanceMode.gif"}})
 }

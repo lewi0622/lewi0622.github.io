@@ -13,12 +13,13 @@ function setup() {
   sym_angs = random([4,6,8,10,12,14,16]);
   line_segs = floor(random(5,15));
   background("BLACK");
-  drawingContext.shadowBlur=3*global_scale;
+  drawingContext.shadowBlur=1*global_scale;
 
   len = 4*fr*8/sym_angs*10/line_segs;
 
-  line_color = color(255, 227, 92, 75);
-  drawingContext.shadowColor = color(line_color)
+  // line_color = color(255, 227, 92, 75);
+  line_color = color(random(palette));
+  drawingContext.shadowColor = line_color
   stroke(line_color);
 }
 //***************************************************
