@@ -1,12 +1,13 @@
 let base_prefix = "projects/"
 let base_suffix = "/index.html"
+let img_scale = 2;
 
 let arts = [
+    "Endless_Symmetry",
     "GlowLines",
     "Barcode",
     "Text",
-    "Horizontal_Blurbs",
-    "Endless_Symmetry"
+    "Horizontal_Blurbs"
 ];
 
 let current_id = 0;
@@ -14,7 +15,7 @@ let seeds = Array.apply(null, Array(arts.length));
 let global_color = 10;
 
 // wait for DOM to be fully loaded before accessing nodes
-window.onload = init;
+window.onload = init_func;
 
 function setColor(palette){
     global_color=palette;
@@ -22,21 +23,19 @@ function setColor(palette){
     element = arts[current_id]
     iframe = document.getElementById(element);
     seed = iframe.contentDocument.getElementById('Seed')['value'];
-    img_scale = 1;
 
     addr_req = base_prefix + element + base_suffix + "?colors=" + palette + "&seed=" + seed + "&scale=" + img_scale;
     iframe.setAttribute('src', addr_req);
 }
 
-function init(){
+function init_func(){
     //create iframe element for each project in arts
-    arts = shuffle(arts);
+    // arts = shuffle(arts);
 
     element = arts[current_id]
 
     var ifrm = document.getElementById("iframe")
-
-    ifrm.setAttribute("src", base_prefix + element + base_suffix);
+    ifrm.setAttribute("src", base_prefix + element + base_suffix  + "?scale=" + img_scale);
     ifrm.setAttribute("id", element);
 }
 
@@ -77,10 +76,10 @@ function change_animation(dir){
     ifrm.id = arts[current_id];
 
     if(seeds[current_id] != undefined){
-        address = base_prefix + arts[current_id] + base_suffix + "?seed=" + seeds[current_id] + "&colors=" + global_color;
+        address = base_prefix + arts[current_id] + base_suffix + "?seed=" + seeds[current_id] + "&colors=" + global_color  + "&scale=" + img_scale;
     }
     else{
-        address = base_prefix + arts[current_id] + base_suffix + "?colors=" + global_color;
+        address = base_prefix + arts[current_id] + base_suffix + "?colors=" + global_color  + "&scale=" + img_scale;
     }
     ifrm.src = address;
 }

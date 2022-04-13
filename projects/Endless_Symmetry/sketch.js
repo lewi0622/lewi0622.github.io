@@ -37,7 +37,7 @@ function draw() {
       curveTightness(map(noise(xoff/100), 0, 1, -5, 5));
       beginShape();
       for(let j=0; j<line_segs; j++){
-        dampening = map(noise(j), 0, 1, .1, 100);
+        dampening = map(noise(j), 0, 1, 10, 100);
         x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
         y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));
         if(j == 0){
