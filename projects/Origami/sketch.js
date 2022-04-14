@@ -12,7 +12,7 @@ function setup() {
   //create series of points
   pt_size = 20*global_scale;
   pts = [];
-  for(let i=0; i<20; i++){
+  for(let i=0; i<floor(random(10,30)); i++){
     new_pt = gen_pt(pts, pt_size*2);
     pts.push(new_pt);
   }
@@ -25,7 +25,7 @@ function setup() {
 
   furthest_pts(pts);
 
-  // createLoop({duration:5, gif:{fileName:"instanceMode.gif"}})
+  // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
