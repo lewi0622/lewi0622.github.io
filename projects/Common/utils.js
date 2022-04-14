@@ -1,7 +1,7 @@
 let global_palette = palettes[10];
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
-let save_my_canvas = false;
+let type='png';
 
 function reset_values(){
   //override this function in the sketch.js to re-initialize project specific values
@@ -42,19 +42,19 @@ function set_seed(){
   //reinitializes the drawing with a specific seed
 
   //check if requested seed is the same as existing seed
-  if(input.value()==getParamValue('seed') && scaler.value()==getParamValue('scale') && save_my_canvas==false){
+  if(input.value()==getParamValue('seed') && scaler.value()==getParamValue('scale')){
     return ;
   }
 
-  window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut + '&save=' + save_my_canvas);
+  window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
 }
 
 function keyTyped() {
   // if text box is focused, and user presses enter, it sends Custom seed
   if (focused) {
     if(keyCode === ENTER){
-      updateValue();
-      set_seed(false);
+      scaler.value(scale_box.value())
+      set_seed();
     }
   }
 }
@@ -69,10 +69,7 @@ function seed_scale_button(base_x, base_y){
   
   //custom seed button
   button = createButton("Custom Seed");
-  button.mouseClicked(function() {  
-    save_my_canvas = false;
-    set_seed();
-  });
+  button.mouseClicked(set_seed);
   button.style('font-size', str(10*global_scale) + 'px');
   button.size(90*global_scale, 20*global_scale)
   button.position(100*global_scale, base_y*global_scale);
@@ -83,7 +80,6 @@ function seed_scale_button(base_x, base_y){
   btLeft.size(20*global_scale, 20*global_scale);
   btLeft.position(200*global_scale, base_y*global_scale);
   btLeft.mouseClicked(function() {
-    save_my_canvas = false;
     input.value(int(input.value())-1);
     set_seed();
   });
@@ -92,7 +88,6 @@ function seed_scale_button(base_x, base_y){
   btRight.size(20*global_scale, 20*global_scale);
   btRight.position(220*global_scale, base_y*global_scale);
   btRight.mouseClicked(function() {
-    save_my_canvas = false;
     input.value(int(input.value())+1);
     set_seed();
   });
@@ -109,7 +104,6 @@ function seed_scale_button(base_x, base_y){
   scaler.position(0, base_y*global_scale+20*global_scale);
   scaler.size(100*global_scale, 10*global_scale);
   scaler.input(function() {
-    save_my_canvas = false;
     scale_box.value(scaler.value());
   });
 
@@ -122,11 +116,7 @@ function seed_scale_button(base_x, base_y){
 
   //save button
   btSave = createButton("Save");
-  btSave.mouseClicked(function(){
-    updateValue();
-    save_my_canvas = true;
-    set_seed();
-  })
+  btSave.mouseClicked(save_drawing);
   btSave.style('font-size', str(10*global_scale) + 'px');
   btSave.size(70*global_scale, 20*global_scale);
   btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+20*global_scale);
@@ -134,12 +124,6 @@ function seed_scale_button(base_x, base_y){
   //list of all ctrls for easy show/hide
   ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight];
   show_hide_controls();
-}
-
-function updateValue(){
-  save_my_canvas = false;
-  //if the textbox is updated, update the slider
-  scaler.value(scale_box.value())
 }
 
 function reduce_array(arr, remove){
@@ -171,7 +155,6 @@ function show_hide_controls(){
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //init globals
   hidden_controls = false;
-  save_my_canvas = false;
   bleed = false;
   cut = false;
   dpi = 300;
@@ -202,7 +185,6 @@ function setParams(){
   controls = getParamValue('controls');
   seed = getParamValue('seed');
   img_scale = getParamValue('scale');
-  img_save = getParamValue('save');
   add_bleed = getParamValue('bleed');
   add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
@@ -212,9 +194,6 @@ function setParams(){
   };
   if(img_scale != undefined){
     global_scale = int(img_scale);
-  };
-  if(img_save != undefined && str(img_save).toLowerCase() != 'false'){
-    save_my_canvas = true;
   };
   if(controls != undefined){
     hidden_controls = true;
@@ -246,26 +225,23 @@ function getParamValue(paramName){
     }
 }
 
-function save_drawing(type='png'){
-  if(save_my_canvas==true){
-    noLoop();
-    //get project name
-    var project_name = window.location.pathname.split('/')[2];
-    var cut_name = '';
-    var bleed_name = '';
-    if(bleed != false){
-      bleed_name = '_bleed_' + str(global_bleed);
-      if(cut != false){
-        cut_name = 'cut';
-      }
-    };
-    filename = str(project_name) + '_seed_' + str(input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
-    if(type == 'svg'){
-      save(filename)
+function save_drawing(){
+  //get project name
+  var project_name = window.location.pathname.split('/')[2];
+  var cut_name = '';
+  var bleed_name = '';
+  if(bleed != false){
+    bleed_name = '_bleed_' + str(global_bleed);
+    if(cut != false){
+      cut_name = 'cut';
     }
-    else{
-      saveCanvas(filename, type);
-    }
+  };
+  filename = str(project_name) + '_seed_' + str(input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
+  if(type == 'svg'){
+    save(filename)
+  }
+  else{
+    saveCanvas(filename, type);
   }
 }
 function wrap(force_x, force_y){

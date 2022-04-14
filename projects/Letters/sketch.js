@@ -16,7 +16,7 @@ function setup() {
   spacing = size/2;
   keep_frames = 0;
 
-  phrase = Array.from("DAD");
+  phrase = Array.from("THESE WORDS ARE EVIL");
 
   letters = []
   phrase.forEach((l,idx) => {
@@ -26,7 +26,7 @@ function setup() {
     });
     letters.push(points); 
   });
-  textFont(font)
+  textFont(font);
   textSize(size);
 }
 //***************************************************
