@@ -3,6 +3,7 @@ let base_suffix = "/index.html"
 let img_scale = 2;
 
 let arts = [
+    "Origami",
     "Endless_Symmetry",
     "GlowLines",
     "Barcode",
