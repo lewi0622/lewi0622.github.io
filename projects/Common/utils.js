@@ -1,6 +1,7 @@
 let global_palette = palettes[10];
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
+let save_my_canvas = false;
 
 function reset_values(){
   //override this function in the sketch.js to re-initialize project specific values
@@ -53,7 +54,7 @@ function keyTyped() {
   if (focused) {
     if(keyCode === ENTER){
       updateValue();
-      set_seed();
+      set_seed(false);
     }
   }
 }
@@ -68,7 +69,10 @@ function seed_scale_button(base_x, base_y){
   
   //custom seed button
   button = createButton("Custom Seed");
-  button.mouseClicked(set_seed);
+  button.mouseClicked(function() {  
+    save_my_canvas = false;
+    set_seed();
+  });
   button.style('font-size', str(10*global_scale) + 'px');
   button.size(90*global_scale, 20*global_scale)
   button.position(100*global_scale, base_y*global_scale);
@@ -78,12 +82,20 @@ function seed_scale_button(base_x, base_y){
   btLeft.style('font-size', str(10*global_scale) + 'px');
   btLeft.size(20*global_scale, 20*global_scale);
   btLeft.position(200*global_scale, base_y*global_scale);
-  btLeft.mouseClicked(decSeed);
+  btLeft.mouseClicked(function() {
+    save_my_canvas = false;
+    input.value(int(input.value())-1);
+    set_seed();
+  });
   btRight = createButton('>')
   btRight.style('font-size', str(10*global_scale) + 'px');
   btRight.size(20*global_scale, 20*global_scale);
   btRight.position(220*global_scale, base_y*global_scale);
-  btRight.mouseClicked(incSeed);
+  btRight.mouseClicked(function() {
+    save_my_canvas = false;
+    input.value(int(input.value())+1);
+    set_seed();
+  });
   
   //randomize button
   randomize = createButton("Randomize");
@@ -96,7 +108,10 @@ function seed_scale_button(base_x, base_y){
   scaler = createSlider(1, 12, global_scale, 1);
   scaler.position(0, base_y*global_scale+20*global_scale);
   scaler.size(100*global_scale, 10*global_scale);
-  scaler.input(sliderChange);
+  scaler.input(function() {
+    save_my_canvas = false;
+    scale_box.value(scaler.value());
+  });
 
   //scale text box
   scale_box = createInput('');
@@ -107,7 +122,11 @@ function seed_scale_button(base_x, base_y){
 
   //save button
   btSave = createButton("Save");
-  btSave.mouseClicked(saveClicked)
+  btSave.mouseClicked(function(){
+    updateValue();
+    save_my_canvas = true;
+    set_seed();
+  })
   btSave.style('font-size', str(10*global_scale) + 'px');
   btSave.size(70*global_scale, 20*global_scale);
   btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+20*global_scale);
@@ -116,26 +135,11 @@ function seed_scale_button(base_x, base_y){
   ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight];
   show_hide_controls();
 }
-function decSeed(){
-  input.value(int(input.value())-1);
-  set_seed();
-}
-function incSeed(){
-  input.value(int(input.value())+1);
-  set_seed();
-}
+
 function updateValue(){
+  save_my_canvas = false;
   //if the textbox is updated, update the slider
   scaler.value(scale_box.value())
-}
-function sliderChange(){
-  //if the slider is changed, update the textbox
-  scale_box.value(scaler.value());
-}
-function saveClicked(){
-  save_my_canvas = true;
-  updateValue();
-  set_seed();
 }
 
 function reduce_array(arr, remove){
@@ -244,6 +248,7 @@ function getParamValue(paramName){
 
 function save_drawing(type='png'){
   if(save_my_canvas==true){
+    noLoop();
     //get project name
     var project_name = window.location.pathname.split('/')[2];
     var cut_name = '';
