@@ -54,6 +54,11 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  //stop drawing
+  if(frameCount>len){
+    noLoop();
+  }
 }
 //***************************************************
 //custom funcs
