@@ -1,3 +1,7 @@
+let palette_names = [
+  "Sage and Citrus", "Beach Day", "Cotton Candy", "Bumblebee", "Minty",
+  "Game Day", "Birds of Paradise", "Deathloop", "Unnamed", "Southwest", "Muted Earth",
+  "Muted Signs", "60s", "Oasis", "Supperware", "Jazz Cup"];
 let default_palette = 10;
 let global_palette = palettes[default_palette];
 let global_scale = 1;
@@ -24,7 +28,7 @@ function reset_drawing(seed, base_x, base_y){
   noiseSeed(seed);
   input.value(str(seed));
 
-  palette = JSON.parse(JSON.stringify(global_palette));
+  palette = [...global_palette];
 
   return seed;
 }
@@ -35,7 +39,6 @@ function col_idx(){
 
 function set_seed(){
   //reinitializes the drawing with a specific seed
-
 
   //check if requested seed is the same as existing seed
   if(input.value()==getParamValue('seed') && scaler.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
@@ -58,7 +61,6 @@ function keyTyped() {
 function seed_scale_button(base_x, base_y){
   //creates controls below canvas for displaying/setting seed
   input = createInput("seed");
-  input.style('font-size', str(10*global_scale) + 'px');
   input.size(AUTO, 14*global_scale);
   input.position(0,base_y*global_scale);
   input.id('Seed');
@@ -66,13 +68,11 @@ function seed_scale_button(base_x, base_y){
   //custom seed button
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
-  button.style('font-size', str(10*global_scale) + 'px');
   button.size(90*global_scale, 20*global_scale)
   button.position(100*global_scale, base_y*global_scale);
 
   //left/right buttons for easy seed nav
   btLeft = createButton('<')
-  btLeft.style('font-size', str(10*global_scale) + 'px');
   btLeft.size(20*global_scale, 20*global_scale);
   btLeft.position(200*global_scale, base_y*global_scale);
   btLeft.mouseClicked(function() {
@@ -80,7 +80,6 @@ function seed_scale_button(base_x, base_y){
     set_seed();
   });
   btRight = createButton('>')
-  btRight.style('font-size', str(10*global_scale) + 'px');
   btRight.size(20*global_scale, 20*global_scale);
   btRight.position(220*global_scale, base_y*global_scale);
   btRight.mouseClicked(function() {
@@ -93,7 +92,6 @@ function seed_scale_button(base_x, base_y){
   randomize.mouseClicked(function (){
     window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
   })
-  randomize.style('font-size', str(10*global_scale) + 'px');
   randomize.size(70*global_scale, 20*global_scale);
   randomize.position(base_x*global_scale-70*global_scale, base_y*global_scale);
 
@@ -107,7 +105,6 @@ function seed_scale_button(base_x, base_y){
 
   //scale text box
   scale_box = createInput('');
-  scale_box.style('font-size', str(10*global_scale) + 'px');
   scale_box.position(100*global_scale, base_y*global_scale+20*global_scale)
   scale_box.size(30*global_scale, 17*global_scale);
   scale_box.value(scaler.value());
@@ -118,17 +115,11 @@ function seed_scale_button(base_x, base_y){
   //save button
   btSave = createButton("Save");
   btSave.mouseClicked(save_drawing);
-  btSave.style('font-size', str(10*global_scale) + 'px');
   btSave.size(70*global_scale, 20*global_scale);
   btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+20*global_scale);
 
   //color palette select
-  palette_names = [
-    "Sage and Citrus", "Beach Day", "Cotton Candy", "Bumblebee", "Minty",
-    "Game Day", "Birds of Paradise", "Deathloop", "Unnamed", "Southwest", "Muted Earth",
-    "Muted Signs", "60s", "Oasis", "Supperware", "Jazz Cup"];
   color_sel = createSelect();
-  color_sel.style('font-size', str(10*global_scale) + 'px');
   color_sel.position((130+10)*global_scale, base_y*global_scale+20*global_scale);
   color_sel.size(100*global_scale, 20*global_scale);
   palette_names.forEach(name => {
@@ -143,8 +134,11 @@ function seed_scale_button(base_x, base_y){
   color_sel.changed(set_seed)
 
 
-  //list of all ctrls for easy show/hide
+  //list of all ctrls for easy show/hide and global formatting
   ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight, color_sel];
+  ctrls.forEach(ctrl => {
+    ctrl.style('font-size', str(10*global_scale) + 'px');
+  });
   show_hide_controls();
 }
 
@@ -180,7 +174,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   bleed = false;
   cut = false;
   dpi = 300;
-  size = {};
+  // size = {};
 
   setParams();
   seed_scale_button(base_x, base_y);
@@ -189,7 +183,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   angleMode(DEGREES);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
-  cnv.mouseClicked(pass_parent);
+  cnv.mouseClicked(show_hide_controls);
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
@@ -197,7 +191,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   if(!gif){
     noLoop();
   }
-  //checking if this helps mobile performance
+  //Assists with loading on phones and other pixel dense screens
   pixelDensity(1)
 }
 
@@ -434,11 +428,6 @@ function bg_center_ellipse(){
   pop();
 }
 
-function bg_drants(x_divs, y_divs){
-  // create divisions of canvas in x_divs, y_divs with various colors
-  
-  return;
-}
 
 //cutout features
 function cutoutCircle(r){
@@ -448,7 +437,6 @@ function cutoutCircle(r){
   strokeWeight(offset*r);
   arc(canvas_x/2, canvas_y/2, canvas_y+(offset-1)*r, canvas_y+(offset-1)*r, 0, 360);
 }
-
 
 
 //bleed and cutline related functions
@@ -470,7 +458,7 @@ function apply_bleed(){
 }
 
 function get_invert_stroke(x, y){
-  // gets color at pixel x,y. Aboslue coordinates because the get function is some shit
+  // gets color at pixel x,y. Aboslute coordinates because the get function is some shit
   c = get(x, y)
 
   //transparent case
@@ -520,11 +508,6 @@ function apply_cutlines(){
   }
 }
 
-//pass window message
-function pass_parent(){
-  show_hide_controls();
-  // window.parent.postMessage(window.location.pathname+"?controls=True&seed="+seed, window.parent.location.href);
-}
 
 function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, pow, seed, shape){
   //creates a matrix of noise going from more likely to less. Use rotate to swap i/j. Use reverse to change noise density sides
@@ -582,4 +565,3 @@ function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, 
     }
   }
 }
-
