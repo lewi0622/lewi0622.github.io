@@ -16,7 +16,7 @@ function setup() {
   //color index
   c_idx = 0;
   bg_c = color(random(palette));
-  lerp_step = 0.3;
+  lerp_step = 0.2;
   frame_switch = fr;
 
   furthest_pts(pts);
