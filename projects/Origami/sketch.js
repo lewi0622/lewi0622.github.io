@@ -1,10 +1,6 @@
 gif = true;
 fr = 30;
 
-xoff = 0;
-noise_off = 20;
-inc = 0.5*60/fr;
-
 function setup() {
   common_setup(gif);
   frameRate(fr);
@@ -24,7 +20,7 @@ function setup() {
   frame_switch = fr;
 
   furthest_pts(pts);
-
+  noStroke();
   // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
@@ -56,7 +52,6 @@ function draw() {
   })
 
   //frame cleanup
-  xoff+=inc;
   c_idx = 0;
 
   pop();
@@ -129,11 +124,10 @@ function indexOfMax(arr) {
 }
 
 function draw_indices(pts, pt){
-  //draw triangel between pt and two furthest points
+  //draw triangle between pt and two furthest points
   c = palette[c_idx%palette.length]
   c_idx++
   c[3] = 100;
   fill(c);
-  noStroke();
   triangle(pts[pt.idxs[0]].x, pts[pt.idxs[0]].y, pts[pt.idxs[1]].x, pts[pt.idxs[1]].y, pt.x, pt.y);
 }
