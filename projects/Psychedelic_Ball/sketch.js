@@ -46,8 +46,6 @@ function draw() {
   cutoutCircle(canvas_y/8);
   //cutlines
   apply_cutlines();
-  
-  save_drawing();
 }
 //***************************************************
 //custom funcs

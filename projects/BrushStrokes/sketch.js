@@ -52,7 +52,6 @@ function draw() {
 
   //cleanup
   apply_cutlines();
-  save_drawing();
 }
 //***************************************************
 //custom funcs

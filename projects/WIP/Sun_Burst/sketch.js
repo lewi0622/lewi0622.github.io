@@ -65,8 +65,6 @@ function draw() {
   
   //cutlines
   apply_cutlines();
-  
-  save_drawing();
 }
 //***************************************************
 //custom funcs

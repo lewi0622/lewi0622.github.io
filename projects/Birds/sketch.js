@@ -37,7 +37,6 @@ function draw() {
   pop();
   //cleanup
   apply_cutlines();
-  save_drawing();
 }
 //***************************************************
 //custom funcs
