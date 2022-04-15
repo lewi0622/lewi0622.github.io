@@ -8,10 +8,6 @@ let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
 let type='png';
 
-function reset_values(){
-  //override this function in the sketch.js to re-initialize project specific values
-}
-
 function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
   canvas_x = base_x*global_scale;
@@ -179,7 +175,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   setParams();
   seed_scale_button(base_x, base_y);
   seed = reset_drawing(seed, base_x, base_y);
-  reset_values();
   angleMode(DEGREES);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);

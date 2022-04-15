@@ -1,5 +1,5 @@
-function reset_values(){
-  //reset project values here for redrawing 
+function setup() {
+  common_setup();
   i_offset = 0;
   j_offset = 0;
 
@@ -11,12 +11,6 @@ function reset_values(){
   x_offset_max = 20;
   y_offset_min = 0;
   y_offset_max = 20;
-
-}
-
-//***************************************************
-function setup() {
-  common_setup();
 }
 //***************************************************
 function draw() {

@@ -1,15 +1,10 @@
-function reset_values(){
-  //reset project values here for redrawing 
+function setup() {
+  common_setup();
   up_scale = global_scale/2;
 
   line_length = 60*up_scale;
   tile_width = canvas_x / line_length;
   tile_height = canvas_y / line_length;
-}
-
-//***************************************************
-function setup() {
-  common_setup();
 }
 //***************************************************
 function draw() {

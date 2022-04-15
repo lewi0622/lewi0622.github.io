@@ -1,12 +1,7 @@
-function reset_values(){
-  //reset project values here for redrawing 
-  xPos = 0;
-  yPos = canvas_y/2;
-}
-
-//***************************************************
 function setup() {
   common_setup();
+  xPos = 0;
+  yPos = canvas_y/2;
 }
 //***************************************************
 function draw() {

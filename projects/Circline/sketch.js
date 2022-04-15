@@ -1,11 +1,6 @@
-function reset_values(){
-  //reset project values here for redrawing 
-  line_length = random([25, 40])*global_scale;
-}
-
-//***************************************************
 function setup() {
   common_setup();
+  line_length = random([25, 40])*global_scale;
 }
 //***************************************************
 function draw() {  
