@@ -1,6 +1,6 @@
 gif = true;
 fr = 30;
-init = false;
+initialized = false;
 
 xoff = 0;
 inc = 0.01*60/fr;
@@ -27,7 +27,7 @@ function draw() {
     spacing = 2*padding;
   }
 
-  if(!init){
+  if(!initialized){
     //create arrays of static lines
     for(let i=0; i<=(canvas_y-padding*2)/spacing; i++){
       cols = [];
@@ -43,7 +43,7 @@ function draw() {
       }
       rows.push(cols)
     }
-    init = true;
+    initialized = true;
   }
 
   //bleed

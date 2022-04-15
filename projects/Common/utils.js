@@ -1,4 +1,5 @@
-let global_palette = palettes[10];
+let default_palette = 10;
+let global_palette = palettes[default_palette];
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
 let type='png';
@@ -29,20 +30,15 @@ function reset_drawing(seed, base_x, base_y){
 }
 
 function col_idx(){
-  // grab id of current color palette
-  return palettes.indexOf(global_palette);
-};
-
-function randomize_action(){
-  //called by clicking the Randomize button
-  window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
+  return palette_names.indexOf(color_sel.value())
 }
 
 function set_seed(){
   //reinitializes the drawing with a specific seed
 
+
   //check if requested seed is the same as existing seed
-  if(input.value()==getParamValue('seed') && scaler.value()==getParamValue('scale')){
+  if(input.value()==getParamValue('seed') && scaler.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
     return ;
   }
 
@@ -94,7 +90,9 @@ function seed_scale_button(base_x, base_y){
   
   //randomize button
   randomize = createButton("Randomize");
-  randomize.mouseClicked(randomize_action)
+  randomize.mouseClicked(function (){
+    window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
+  })
   randomize.style('font-size', str(10*global_scale) + 'px');
   randomize.size(70*global_scale, 20*global_scale);
   randomize.position(base_x*global_scale-70*global_scale, base_y*global_scale);
@@ -111,8 +109,11 @@ function seed_scale_button(base_x, base_y){
   scale_box = createInput('');
   scale_box.style('font-size', str(10*global_scale) + 'px');
   scale_box.position(100*global_scale, base_y*global_scale+20*global_scale)
-  scale_box.size(30*global_scale, 20*global_scale);
+  scale_box.size(30*global_scale, 17*global_scale);
   scale_box.value(scaler.value());
+  scale_box.input(function() {
+    scaler.value(scale_box.value());
+  });
 
   //save button
   btSave = createButton("Save");
@@ -121,8 +122,29 @@ function seed_scale_button(base_x, base_y){
   btSave.size(70*global_scale, 20*global_scale);
   btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+20*global_scale);
 
+  //color palette select
+  palette_names = [
+    "Sage and Citrus", "Beach Day", "Cotton Candy", "Bumblebee", "Minty",
+    "Game Day", "Birds of Paradise", "Deathloop", "Unnamed", "Southwest", "Muted Earth",
+    "Muted Signs", "60s", "Oasis", "Supperware", "Jazz Cup"];
+  color_sel = createSelect();
+  color_sel.style('font-size', str(10*global_scale) + 'px');
+  color_sel.position((130+10)*global_scale, base_y*global_scale+20*global_scale);
+  color_sel.size(100*global_scale, 20*global_scale);
+  palette_names.forEach(name => {
+    color_sel.option(name);
+  });
+  if(colors != undefined){
+    color_sel.selected(palette_names[colors]);
+  }
+  else{
+    color_sel.selected(palette_names[default_palette]);
+  }
+  color_sel.changed(set_seed)
+
+
   //list of all ctrls for easy show/hide
-  ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight];
+  ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight, color_sel];
   show_hide_controls();
 }
 
