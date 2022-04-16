@@ -37,12 +37,6 @@ function draw() {
     if(size_inc > 0){
       sq.radius = lerp(sq.radius, sq.size, 0.001*size_inc);
     }
-    else{
-      sq.radius = lerp(sq.radius, 0, 0.1*Math.abs(size_inc));
-    }
-    if(sq.radius<0){
-      sq.radius = 0;
-    }
     square(sq.x-sq.size/2, sq.y-sq.size/2, sq.size, sq.radius, sq.radius, sq.radius, sq.radius);
     sq.size += size_inc;
   });
