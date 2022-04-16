@@ -1,6 +1,6 @@
 let base_prefix = "projects/"
 let base_suffix = "/index.html"
-let img_scale = 2;
+let img_scale = 1;
 
 let arts = [
     "Origami",

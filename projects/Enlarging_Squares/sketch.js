@@ -14,7 +14,9 @@ function setup() {
   square_rate = 5; //10 frames
   square_inc = 3*global_scale;
   symmetries = floor(random(5,11));
-  // createLoop({duration:5, gif:{fileName:"instanceMode.gif"}})
+  rot_offset = 0;
+  rot_inc = random([-3,0,3]);
+  // createLoop({duration:15, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
@@ -35,6 +37,8 @@ function draw() {
   }
   
   squares.forEach(sq => {
+    push();
+    center_rotate(sq.rot);
     fill(sq.color);
     square_inc = map(noise(xoff), 0,1, 2,12)*global_scale;
     size_inc = map(noise(xoff), 0,1, 0,square_inc);
@@ -44,6 +48,7 @@ function draw() {
       square(sq.x-sq.size/2, sq.y-sq.size/2, sq.size, sq.radius, sq.radius, sq.radius, sq.radius);
     }
     sq.size += size_inc;
+    pop();
   });
 
   cullSquares(squares);
@@ -57,14 +62,16 @@ function draw() {
 //custom funcs
 function newSquares(arr){
   c = color(random(palette))
-  c.setAlpha(100);
+  c.setAlpha(200);
   arr.push({
     x:canvas_x/4,
     y:canvas_y/4,
     size:1*global_scale,
     radius: 0,
-    color: c
+    color: c,
+    rot: rot_offset
   })
+  rot_offset += rot_inc;
 }
 
 function cullSquares(arr){
