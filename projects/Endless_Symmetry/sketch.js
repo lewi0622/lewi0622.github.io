@@ -33,7 +33,7 @@ function draw() {
     push();
       translate(canvas_x/2, canvas_y/2);
       noFill();
-      strokeWeight(1*global_scale);
+      strokeWeight(1.5*global_scale);
       curveTightness(map(noise(xoff/100), 0, 1, -5, 5));
       beginShape();
       for(let j=0; j<line_segs; j++){

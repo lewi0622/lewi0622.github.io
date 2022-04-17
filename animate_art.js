@@ -3,12 +3,13 @@ let base_suffix = "/index.html"
 let img_scale = 1;
 
 let arts = [
+    "Enlarging_Squares",
     "Origami",
     "Endless_Symmetry",
-    "GlowLines",
-    "Barcode",
-    "Text",
-    "Horizontal_Blurbs"
+    "GlowLines"
+    // "Barcode",
+    // "Text",
+    // "Horizontal_Blurbs"
 ];
 
 let current_id = 0;
