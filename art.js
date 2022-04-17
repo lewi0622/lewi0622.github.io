@@ -1,5 +1,11 @@
 let base_prefix = "projects/"
 let base_suffix = "/index.html"
+let img_scale = 1;
+//matches default palette in common/utils
+let current_palette = 10;
+
+let art_id = 0;
+let art_timeout = 5000;
 
 let arts = [
     "Blurbs",
@@ -29,21 +35,21 @@ let arts = [
 ];
 
 // wait for DOM to be fully loaded before accessing nodes
-window.onload = init;
+window.onload = init_page;
 
 function setColor(palette){
     //changes color palette, keeps seeds the same
+    current_palette = palette;
     arts.forEach(element => {
         iframe = document.getElementById(element);
         seed = iframe.contentDocument.getElementById('Seed')['value'];
-        img_scale = 1;
 
         addr_req = base_prefix + element + base_suffix + "?colors=" + palette + "&seed=" + seed + "&scale=" + img_scale;
         iframe.setAttribute('src', addr_req);
     });
 }
 
-function init(){
+function init_page(){
     //create iframe element for each project in arts
     arts = shuffle(arts);
     arts.forEach(element => {
@@ -67,7 +73,10 @@ function init(){
         ifrm.style.height = "420px";
         ifrm.style.overflow = "hidden";
         ifrm.setAttribute("scrolling", "no");
-    });
+    });    
+    
+    //initial 5 second timeout
+    window.setTimeout(randomize_art, art_timeout);
 }
 
 function shuffle(array) {
@@ -86,4 +95,17 @@ function shuffle(array) {
     }
   
     return array;
+}
+
+function randomize_art(){
+    //auto-randomize every second
+    if(document.getElementById('flexCheckChecked').checked){
+        current_art = document.getElementById(arts[art_id%arts.length]);
+        addr_req = base_prefix + current_art.id + base_suffix + "?colors=" + current_palette + "&scale=" + img_scale;
+        current_art.setAttribute('src', addr_req);
+        art_id++
+    }
+    //change to every second timeout
+    art_timeout = 1000;
+    window.setTimeout(randomize_art, art_timeout);
 }

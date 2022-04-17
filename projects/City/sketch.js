@@ -37,7 +37,7 @@ function draw() {
 //***************************************************
 //custom funcs
 //helper functions based on building 
-function center(){
+function middle(){
   translate(0,size_buildings/2);
 }
 function low_left(){
@@ -144,7 +144,7 @@ function buildArch(){
 function buildTinyWindows(){
   buildWhole();
   push();
-  //center
+  //middle
   buildWindow(8);
   //left
   translate(-size_buildings/4,0);
@@ -163,7 +163,7 @@ function buildWindow(window_scale){
   window_width = size_buildings/window_scale;
   push();
   fill(bg_c)
-  center();
+  middle();
   rect(-window_width/2, 0, window_width, window_width);
   circle(0,0,window_width);
   pop();
@@ -219,7 +219,7 @@ function buildCap(){
   //spire/flagpole
   if(random([0,1,1]) == 0){
     push();
-    center();
+    middle();
     rect(-size_buildings/20, size_buildings/2, size_buildings/10, -size_buildings);
     circle(0, -size_buildings/2, size_buildings/10);
     pop();

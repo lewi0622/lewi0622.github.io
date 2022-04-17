@@ -24,7 +24,6 @@ function draw() {
 
   arcing(canvas_x*.5, 0, 0);
 
-  pop();
   //cutlines
   apply_cutlines();
 }
