@@ -16,7 +16,6 @@ function setup() {
   symmetries = floor(random(5,11));
   rot_offset = 0;
   rot_inc = random([-3,0,3]);
-  shape = random(['circle', 'square'])
   // createLoop({duration:15, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
@@ -46,18 +45,8 @@ function draw() {
     sq.radius = lerp(sq.radius, sq.size, 0.001*size_inc);
     for(let i=0; i<symmetries; i++){
       center_rotate(360/symmetries);
-      //placement needs to be workshopped
-      // triangle((sq.x)*sq.size,(sq.y)*sq.size, sq.x-sq.size/2,sq.y-sq.size/2, sq.x-sq.size/2,sq.y+sq.size/2)
-      switch(shape){
-        case 'circle':
-          circle(sq.x, sq.y, sq.size);
-          break;
-        case 'square':
-          square(sq.x-sq.size/2, sq.y-sq.size/2, sq.size, sq.radius, sq.radius, sq.radius, sq.radius);
-          break;
-        default: 
-        break;
-      }
+
+      triangle((sq.x)*sq.size,(sq.y)*sq.size, sq.x-sq.size/2,sq.y-sq.size/2, sq.x-sq.size/2,sq.y+sq.size/2)
     }
     sq.size += size_inc;
     pop();
