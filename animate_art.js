@@ -4,6 +4,7 @@ let img_scale = 1;
 
 let arts = [
     "Enlarging_Squares",
+    "Bacterium",
     "Starburst",
     "Origami",
     "Endless_Symmetry",
