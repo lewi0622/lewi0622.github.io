@@ -13,9 +13,10 @@ function setup() {
   noStroke();
   square_rate = 5; //10 frames
   square_inc = 3*global_scale;
-  symmetries = floor(random(5,11));
+  symmetries = floor(random(2,11));
   rot_offset = 0;
   rot_inc = random([-3,0,3]);
+  console.log(seed, symmetries, rot_inc)
   // createLoop({duration:15, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
