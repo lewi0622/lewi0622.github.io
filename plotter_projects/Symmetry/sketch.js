@@ -1,3 +1,5 @@
+type = 'svg';
+
 gif = true;
 fr = 30;
 
@@ -9,18 +11,12 @@ inc = 0.3*60/fr;
 function setup() {
   common_setup(gif, SVG);
   frameRate(fr);
-  //apply background
+
   sym_angs = random([4,6,8,10,12,14,16]);
   line_segs = floor(random(5,15));
-  background("BLACK");
-  drawingContext.shadowBlur=1*global_scale;
 
   len = 800/(line_segs*constrain(sym_angs, 4,8));
 
-  // line_color = color(255, 227, 92, 75);
-  line_color = color(random(palette));
-  drawingContext.shadowColor = line_color
-  stroke(line_color);
   noFill();
   strokeWeight(1*global_scale);
 }
