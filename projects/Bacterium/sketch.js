@@ -21,6 +21,8 @@ function setup() {
 
   lines = floor(random(40, 100));
   sub_lines = ceil(random(2, palette.length));
+
+  // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
