@@ -10,62 +10,67 @@ phase_inc = 1.5;
 function setup() {
   common_setup(gif);
   frameRate(fr);
-  //apply background
+  //styling
   palette = shuffle(palette);
   bg_c = bg(true);
   weight = 2*global_scale;
   strokeWeight(weight);
   strokeCap(ROUND);
-  // lines = floor(random(40, 100));
-  lines =100;
+  noFill();
+  c_id = 0;
+
+  lines = floor(random(40, 100));
   sub_lines = ceil(random(2, palette.length));
 }
 //***************************************************
 function draw() {
   clear();
-  c_id = 0;
+  //reset loop variables
+  min_len = (sin(phase)*4+40)*global_scale;
+  background(bg_c);
+
   //bleed
   bleed_border = apply_bleed();
   //actual drawing stuff
   push();
 
-  background(bg_c);
   translate(canvas_x/2, canvas_y/2);
+  stroke(palette[c_id])
+  circle(0,0,min_len*2);
 
   for(let i=0; i<360; i+=360/lines){
-    push();
-    min_len = 40*global_scale;
-
     xoff = map(cos(i+phase), -1,1, 0, noiseMax);
     yoff = map(sin(i+phase+phase_off), -1,1, 0, noiseMax);
     len = map(noise(xoff, yoff), 0,1, 100,250)*global_scale;
 
+    //subline precalc
     sub_len = (len-min_len)*0.15;
+    sub_min_len = min_len;
+    cos_i = cos(i);
+    sin_i = sin(i);
     for(let j=0; j<sub_lines; j++){
-      // calc pct of overall len to allocate to subline
-      stroke(palette[c_id%palette.length])
+      stroke(palette[c_id])
 
-      start_x = min_len*cos(i);
-      start_y = min_len*sin(i);
+      start_x = sub_min_len*cos_i;
+      start_y = sub_min_len*sin_i;
   
-      x = (sub_len+min_len)*cos(i);
-      y = (sub_len+min_len)*sin(i);
+      x = (sub_len+sub_min_len)*cos_i;
+      y = (sub_len+sub_min_len)*sin_i;
 
       line(start_x, start_y, x,y);
+
       //loop cleanup
-      min_len += sub_len + weight*2;
+      sub_min_len += sub_len + weight*2;
       c_id++;
-      sub_len = (len-min_len)/sub_lines;
+      sub_len = (len-sub_min_len)/sub_lines;
     }
     //loop cleanup
     c_id =0;
-    pop();
   }
 
   phase+=phase_inc
 
   pop();
-  noFill();
   
   //cutlines
   apply_cutlines();
@@ -73,7 +78,3 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-
-
-
-
