@@ -7,7 +7,7 @@ inc = 0.3*60/fr;
 
 //***************************************************
 function setup() {
-  common_setup(gif);
+  common_setup(gif, SVG);
   frameRate(fr);
   //apply background
   sym_angs = random([4,6,8,10,12,14,16]);
