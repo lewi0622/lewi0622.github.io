@@ -165,6 +165,8 @@ function show_hide_controls(){
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
+  set_title_folder();
+
   //init globals
   hidden_controls = false;
   bleed = false;
@@ -597,4 +599,11 @@ function generate_color(){
   b = random(255)
   a = 255
   return(color(r,g,b,a))
+}
+
+function set_title_folder(){
+  var loc = window.location.pathname;
+  var dir = loc.substring(0, loc.lastIndexOf('/'));
+  var name = dir.split('/')
+  document.title = name[name.length-1];
 }
