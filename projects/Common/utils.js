@@ -560,3 +560,41 @@ function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, 
     }
   }
 }
+
+function gen_n_colors(n){
+  colors = [];
+  while(colors.length < n){
+    c = compare_colors(colors);
+    colors.push(c);
+  }
+  return colors;
+}
+
+function compare_colors(arr){
+  //compares new color to arr of colors to generate a random color for an arbitrary number of layers for saxi
+  if(arr.length == 0){
+    return generate_color();
+  }
+  color_match=true;
+  while(color_match){
+    c = generate_color();
+    arr.forEach(element => {
+      if(element == c){
+        color_match = true;
+      }
+      else{
+        color_match = false;
+      }
+    });
+  }
+  return c;
+}
+
+function generate_color(){
+  //generates random color with full alpha value
+  r = random(255)
+  g = random(255)
+  b = random(255)
+  a = 255
+  return(color(r,g,b,a))
+}

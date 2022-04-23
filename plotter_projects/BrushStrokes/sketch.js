@@ -1,18 +1,14 @@
 type = 'svg';
 
-
 function setup() {
   common_setup(false, SVG);
-  
+  layers = 2;
+  colors = gen_n_colors(layers);
 }
 //***************************************************
 function draw() {
   //bleed
   bleed_border = apply_bleed();
-
-  //apply background
-  // bg(true);
-  //actual drawing stuff
   push();
 
   noiseDetail(random(4));
@@ -22,15 +18,13 @@ function draw() {
   noFill();
   center_rotate(random(360));
 
-  for(let z=0; z<1; z++){
+  for(let z=0; z<layers; z++){
     push();
     translate(0, random(canvas_y*.25, canvas_y*.5));
     dir = random([-1,1])
     noise_start = random(100);
     lines = random(150, 200);
-    c = random(palette);
-    reduce_array(palette, c);
-    stroke(c);
+    stroke(colors[z]);
     for(let j=0; j<lines; j++){
       push();
       translate(0, random(canvas_y*.35));
@@ -45,7 +39,6 @@ function draw() {
     }
     pop();
     center_rotate(random([0,90,180,270]));
-
   }
 
   pop();
@@ -55,7 +48,6 @@ function draw() {
 
   //cleanup
   apply_cutlines();
-  save_drawing('svg');
 }
 //***************************************************
 //custom funcs
