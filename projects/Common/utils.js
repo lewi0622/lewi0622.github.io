@@ -611,4 +611,6 @@ function set_title_folder(){
 function temp_img(){
   const dataURL = cnv.elt.toDataURL();
   document.querySelector('meta[property="og:image"]').setAttribute("content", dataURL);
+  document.querySelector('meta[property="og:image:height"]').setAttribute("content", canvas_y);
+  document.querySelector('meta[property="og:image:width"]').setAttribute("content", canvas_x);
 }
