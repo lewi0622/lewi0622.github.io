@@ -607,3 +607,8 @@ function set_title_folder(){
   var name = dir.split('/')
   document.title = name[name.length-1];
 }
+
+function temp_img(){
+  const dataURL = cnv.elt.toDataURL();
+  document.querySelector('meta[property="og:image"]').setAttribute("content", dataURL);
+}
