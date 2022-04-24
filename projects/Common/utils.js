@@ -55,29 +55,31 @@ function keyTyped() {
 }
 
 function seed_scale_button(base_x, base_y){
+  control_height = 20*global_scale;
+
   //creates controls below canvas for displaying/setting seed
   input = createInput("seed");
-  input.size(AUTO, 14*global_scale);
-  input.position(0,base_y*global_scale);
+  input.size(80*global_scale, control_height - 7*global_scale);
+  input.position(0,base_y*global_scale+global_scale);
   input.id('Seed');
   
   //custom seed button
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
-  button.size(90*global_scale, 20*global_scale)
-  button.position(100*global_scale, base_y*global_scale);
+  button.size(90*global_scale, control_height)
+  button.position(85*global_scale, base_y*global_scale);
 
   //left/right buttons for easy seed nav
   btLeft = createButton('<')
-  btLeft.size(20*global_scale, 20*global_scale);
-  btLeft.position(200*global_scale, base_y*global_scale);
+  btLeft.size(20*global_scale, control_height);
+  btLeft.position(135*global_scale, base_y*global_scale + control_height);
   btLeft.mouseClicked(function() {
     input.value(int(input.value())-1);
     set_seed();
   });
   btRight = createButton('>')
-  btRight.size(20*global_scale, 20*global_scale);
-  btRight.position(220*global_scale, base_y*global_scale);
+  btRight.size(20*global_scale, control_height);
+  btRight.position(155*global_scale, base_y*global_scale + control_height);
   btRight.mouseClicked(function() {
     input.value(int(input.value())+1);
     set_seed();
@@ -88,12 +90,12 @@ function seed_scale_button(base_x, base_y){
   randomize.mouseClicked(function (){
     window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
   })
-  randomize.size(70*global_scale, 20*global_scale);
-  randomize.position(base_x*global_scale-70*global_scale, base_y*global_scale);
+  randomize.size(80*global_scale, control_height);
+  randomize.position(base_x*global_scale-80*global_scale, base_y*global_scale);
 
   //scale slider is taken as scale value when randomize/custom seed are clicked
   scaler = createSlider(1, 12, global_scale, 1);
-  scaler.position(0, base_y*global_scale+20*global_scale);
+  scaler.position(0, base_y*global_scale+control_height);
   scaler.size(100*global_scale, 10*global_scale);
   scaler.input(function() {
     scale_box.value(scaler.value());
@@ -101,7 +103,7 @@ function seed_scale_button(base_x, base_y){
 
   //scale text box
   scale_box = createInput('');
-  scale_box.position(100*global_scale, base_y*global_scale+20*global_scale)
+  scale_box.position(100*global_scale, base_y*global_scale+control_height)
   scale_box.size(30*global_scale, 17*global_scale);
   scale_box.value(scaler.value());
   scale_box.input(function() {
@@ -111,13 +113,13 @@ function seed_scale_button(base_x, base_y){
   //save button
   btSave = createButton("Save");
   btSave.mouseClicked(save_drawing);
-  btSave.size(70*global_scale, 20*global_scale);
-  btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+20*global_scale);
+  btSave.size(70*global_scale, control_height);
+  btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+control_height);
 
   //color palette select
   color_sel = createSelect();
-  color_sel.position((130+10)*global_scale, base_y*global_scale+20*global_scale);
-  color_sel.size(100*global_scale, 20*global_scale);
+  color_sel.position(180*global_scale, base_y*global_scale);
+  color_sel.size(135*global_scale, control_height);
   palette_names.forEach(name => {
     color_sel.option(name);
   });
@@ -129,11 +131,10 @@ function seed_scale_button(base_x, base_y){
   }
   color_sel.changed(set_seed)
 
-
   //list of all ctrls for easy show/hide and global formatting
   ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight, color_sel];
   ctrls.forEach(ctrl => {
-    ctrl.style('font-size', str(10*global_scale) + 'px');
+    ctrl.style('font-size', str(12*global_scale) + 'px');
   });
   show_hide_controls();
 }
@@ -190,8 +191,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   }
   //Assists with loading on phones and other pixel dense screens
   pixelDensity(1)
-
-  styleMe();
 }
 
 function setParams(){
@@ -615,34 +614,4 @@ function temp_img(){
   document.querySelector('meta[property="og:image"]').setAttribute("content", dataURL);
   document.querySelector('meta[property="og:image:height"]').setAttribute("content", canvas_y);
   document.querySelector('meta[property="og:image:width"]').setAttribute("content", canvas_x);
-}
-
-function styleMe() {
-  if(window.top && window.top.location.href != document.location.href) {
-  // I'm small but I'm not alone
- 
-    // all parent's <link>s
-    var linkrels = window.top.document.getElementsByTagName('link');
-    // my head
-    var small_head = document.getElementsByTagName('head').item(0);
-    // loop through parent's links
-    for (var i = 0, max = linkrels.length; i < max; i++) {
-      // are they stylesheets
-      if (linkrels[i].rel && linkrels[i].rel == 'stylesheet') {
-         // create new element and copy all attributes
-        var thestyle = document.createElement('link');
-        var attrib = linkrels[i].attributes;
-        for (var j = 0, attribmax = attrib.length; j < attribmax; j++) {
-          thestyle.setAttribute(attrib[j].nodeName, attrib[j].nodeValue);
-        }
-
-         // add the newly created element to the head
-        small_head.appendChild(thestyle);
- 
-      }
-    }
- 
-    // maybe, only maybe, here we should remove the kid's own styles...
- 
-  } 
 }
