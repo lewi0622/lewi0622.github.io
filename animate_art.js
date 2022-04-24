@@ -9,9 +9,6 @@ let arts = [
     "Origami",
     "Endless_Symmetry",
     "GlowLines"
-    // "Barcode",
-    // "Text",
-    // "Horizontal_Blurbs"
 ];
 
 let current_id = 0;
