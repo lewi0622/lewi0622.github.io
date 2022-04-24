@@ -1,24 +1,36 @@
+gif = false;
+fr = 1;
+
 function setup() {
-  common_setup();
-  i_offset = 0;
-  j_offset = 0;
+  common_setup(gif);
+  frameRate(fr);
 
   line_length = 60*global_scale;
   tile_width = canvas_x / line_length;
   tile_height = canvas_y / line_length;
 
+  // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
+}
+//***************************************************
+function draw() {
+  i_offset = 0;
+  j_offset = 0;
+
   x_offset_min = 0;
   x_offset_max = 20;
   y_offset_min = 0;
   y_offset_max = 20;
-}
-//***************************************************
-function draw() {
+
   //bleed
   bleed_border = apply_bleed();
 
+  working_palette = [...palette];
+  strokeCap(random([PROJECT,ROUND]))
+
   //apply background
-  bg(true);
+  bg_c = random(working_palette)
+  background(bg_c)
+  reduce_array(working_palette, bg_c)
 
   //actual drawing stuff
   push();
@@ -28,7 +40,7 @@ function draw() {
   
   //tile lines
   tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 
-    colors=palette, iterations=50, 
+    colors=working_palette, iterations=50, 
     x_offset_min=x_offset_min*global_scale, x_offset_max=x_offset_max*global_scale,
     y_offset_min=y_offset_min*global_scale, y_offset_max=y_offset_max*global_scale);
 

@@ -1,10 +1,16 @@
+gif = false;
+fr = 1;
+
 function setup() {
-  common_setup();
+  common_setup(gif);
+  frameRate(fr);
   up_scale = global_scale/2;
 
   line_length = 60*up_scale;
   tile_width = canvas_x / line_length;
   tile_height = canvas_y / line_length;
+  
+  // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
@@ -13,6 +19,7 @@ function draw() {
 
   //apply background
   bg();
+  strokeCap(random([PROJECT,ROUND]));
 
   //actual drawing stuff
   push();
