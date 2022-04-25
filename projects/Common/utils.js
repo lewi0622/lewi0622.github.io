@@ -258,6 +258,25 @@ function save_drawing(){
     saveCanvas(filename, type);
   }
 }
+
+
+function capture_start(capture){
+  //called from top of Draw to start capturing, requires CCapture
+  if(capture && frameCount==1) capturer.start();
+}
+
+function capture_frame(capture, num_frames){
+  if (capture){
+    capturer.capture(document.getElementById("defaultCanvas0"));
+    if(frameCount-1 == num_frames){
+      capturer.stop();
+      capturer.save();
+      noLoop();
+    } 
+  }
+}
+
+
 function wrap(force_x, force_y){
   //-x, -y
   if(xPos < 0 && yPos < 0){
