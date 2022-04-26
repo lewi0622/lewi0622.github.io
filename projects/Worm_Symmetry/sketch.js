@@ -5,11 +5,17 @@ noise_off = 20;
 xoff = 0;
 inc = 0.1*60/fr;
 
+capture = false;
+capture_time = 7.5
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:"ccapture_download", framerate:30});
+
 //***************************************************
 function setup() {
   common_setup(gif);
-  frameRate(fr);
-  //apply background
+  if(!capture){
+    frameRate(fr);
+  }
   sym_angs = floor(random(6,49));
   line_segs = floor(random(20,51));
   line_color = color(random(palette));
@@ -20,7 +26,8 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  //to be ran at 2x scale or higher for proper display
+  capture_start(capture);
+
   background("BLACK");
   //bleed
   bleed_border = apply_bleed();
@@ -53,5 +60,5 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
-  
+  capture_frame(capture, num_frames);
 }
