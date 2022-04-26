@@ -5,7 +5,7 @@ noise_off = 50;
 xoff = 0;
 inc = 0.01*60/fr;
 
-capture = true;
+capture = false;
 capture_time = 9
 num_frames = capture_time*fr;
 capturer = new CCapture({format:'png', name:"ccapture_download", framerate:30});

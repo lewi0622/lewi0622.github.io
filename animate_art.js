@@ -3,11 +3,13 @@ let base_suffix = "/index.html"
 let img_scale = 1;
 
 let arts = [
+    "Desert_Drive",
     "Enlarging_Squares",
     "Bacterium",
     "Starburst",
     "Origami",
     "Endless_Symmetry",
+    "Worm_Symmetry",
     "GlowLines"
 ];
 

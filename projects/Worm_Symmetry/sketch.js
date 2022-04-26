@@ -17,7 +17,6 @@ function setup() {
   drawingContext.shadowBlur=3*global_scale;
   drawingContext.shadowColor = line_color;
   stroke(line_color);
-  // createLoop({duration:8, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
