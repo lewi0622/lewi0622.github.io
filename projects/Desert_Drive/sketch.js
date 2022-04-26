@@ -54,7 +54,6 @@ function draw() {
     if (blur<1.3){
       blur=1.3;
     }
-    console.log(blur)
     drawingContext.filter = 'blur('+blur+'px)';
     weight += (j/(waves*2))*global_scale;
     strokeWeight(weight)
