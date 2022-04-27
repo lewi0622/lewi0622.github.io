@@ -1,28 +1,34 @@
-gif = true;
+gif = false;
 fr = 30;
 
 xoff = 0;
 inc = 0.005*60/fr;
 offset = 50
 
-//***************************************************
+capture = false;
+capture_time = 3
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  frameRate(fr);
-  //apply background
-  bg_c = bg(true);
-  palette_reset = JSON.parse(JSON.stringify(shuffle(palette)));
-  // createLoop({duration:1.5, gif:{fileName:"instanceMode.gif"}})
+  if(!capture){
+    frameRate(fr);
+  }
+
+  bg_c = random(palette)
 }
 //***************************************************
 function draw() {
-  if(gif){
-    clear();
-    background(bg_c);
-    palette = palette_reset;
-  }
+  capture_start(capture);
+
   //bleed
   bleed_border = apply_bleed();
+
+  working_palette = [...palette];
+
+  //apply background
+  background(bg_c)
+  reduce_array(working_palette, bg_c)
   //actual drawing stuff
   push();
 
@@ -33,7 +39,7 @@ function draw() {
   drawingContext.shadowBlur = noise(xoff)*global_scale*10;
 
   for(let i=0; i<map(noise(xoff), 0, 1, 10, 110); i++){
-    c = color(palette[i%Math.min(3, palette.length)])
+    c = color(working_palette[i%Math.min(3, working_palette.length)])
     drawingContext.shadowColor = c;
     stroke(c)
     circle(0,0, map(noise(xoff+offset*i), 0, 1, -100, 600)*global_scale);
@@ -43,12 +49,14 @@ function draw() {
   pop();
   noFill();
   
-  erase();
+  // erase();
+  stroke('#eeede9')
   cutoutCircle(canvas_y/128);
   noErase();
   //cutlines
   apply_cutlines();
 
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs
