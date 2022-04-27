@@ -181,7 +181,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   angleMode(DEGREES);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
-  cnv.mouseClicked(show_hide_controls);
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
