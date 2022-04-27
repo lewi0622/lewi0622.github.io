@@ -1,10 +1,28 @@
+gif = false;
+fr = 1;
+
+capture = false;
+capture_time = 10
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  common_setup();
+  common_setup(gif);
+  if(!capture){
+    frameRate(fr);
+  }
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   //bleed
   bleed_border = apply_bleed();
+
+  working_palette = [...palette];
+  if(gif){
+    //randomize noise seed
+    noiseSeed(random(10000))
+  }
 
   //apply background
   bg_horizontal_strips(2);
@@ -13,23 +31,25 @@ function draw() {
   push();
   noFill();
   base_size = 20;
-  size = palette.length*base_size*global_scale;
+  size = working_palette.length*base_size*global_scale;
   translate(0, canvas_y/2)
-  for(let i=0; i<palette.length; i){
+  for(let i=0; i<working_palette.length; i){
     push();
     strokeWeight(size);
-    col = random(palette);
+    col = random(working_palette);
     stroke(col);
 
     noise_curve();
 
-    reduce_array(palette, col);
+    reduce_array(working_palette, col);
     size -= base_size*global_scale;
     pop();
   }
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

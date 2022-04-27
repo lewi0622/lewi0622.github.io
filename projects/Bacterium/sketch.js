@@ -1,4 +1,4 @@
-gif = true;
+gif = false;
 fr = 30;
 
 noiseMax = 1;
@@ -6,10 +6,15 @@ phase = 0;
 phase_off = 20;
 phase_inc = 1.5;
 
-//***************************************************
+capture = false;
+capture_time = 5
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  frameRate(fr);
+  if(!capture){
+    frameRate(fr);
+  }
   //styling
   palette = shuffle(palette);
   bg_c = bg(true);
@@ -21,11 +26,11 @@ function setup() {
 
   lines = floor(random(40, 100));
   sub_lines = ceil(random(2, palette.length));
-
-  // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   clear();
   //reset loop variables
   min_len = (sin(phase)*4+40)*global_scale;
@@ -77,6 +82,7 @@ function draw() {
   //cutlines
   apply_cutlines();
 
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

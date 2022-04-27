@@ -1,14 +1,29 @@
+gif = false;
+fr = 1;
+
+capture = false;
+capture_time = 10
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  common_setup();
-  
+  common_setup(gif);
+  if(!capture){
+    frameRate(fr);
+  }
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   //bleed
   bleed_border = apply_bleed();
 
-  //apply background
-  bg(true);
+  working_palette = [...palette];
+  if(gif){
+    //randomize noise seed
+    noiseSeed(random(10000))
+  }
+
   //actual drawing stuff
   push();
 
@@ -25,8 +40,8 @@ function draw() {
     dir = random([-1,1])
     noise_start = random(100);
     lines = random(150, 200);
-    c = random(palette);
-    reduce_array(palette, c);
+    c = random(working_palette);
+    reduce_array(working_palette, c);
     stroke(c);
     for(let j=0; j<lines; j++){
       push();
@@ -52,6 +67,8 @@ function draw() {
 
   //cleanup
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

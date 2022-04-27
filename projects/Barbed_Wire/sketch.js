@@ -1,12 +1,26 @@
+gif = false;
+fr = 1;
+
+capture = false;
+capture_time = 10
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  common_setup();
-  xPos = 0;
-  yPos = canvas_y/2;
+  common_setup(gif);
+  if(!capture){
+    frameRate(fr);
+  }
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
+
+  xPos = 0;
+  yPos = canvas_y/2;
+
+  working_palette = [...palette];
 
   //apply background
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
@@ -21,7 +35,7 @@ function draw() {
   shape_type=TRIANGLES
   beginShape(shape_type);
   for(let i=0; i<1000*global_scale; i++){
-    stroke(random(palette));
+    stroke(random(working_palette));
     //vertex
     vertex(xPos, yPos);
 
@@ -39,6 +53,8 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs
