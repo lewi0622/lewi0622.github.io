@@ -1,9 +1,6 @@
 type = 'svg';
 
-let font;
-function preload() {
-  font = loadFont('..\\..\\fonts\\SquarePeg-Regular.ttf');
-}
+function preload() {  font = loadFont('..\\..\\fonts\\SquarePeg-Regular.ttf');  }
 
 function setup() {
   common_setup(false, SVG, 100, 80);
