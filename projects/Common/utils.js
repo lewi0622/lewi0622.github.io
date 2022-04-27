@@ -1,7 +1,8 @@
 let palette_names = [
   "Sage and Citrus", "Beach Day", "Cotton Candy", "Bumblebee", "Minty",
-  "Game Day", "Birds of Paradise", "Deathloop", "Unnamed", "Southwest", "Muted Earth",
-  "Muted Signs", "60s", "Oasis", "Supperware", "Jazz Cup"];
+  "Game Day", "Birds of Paradise", "Deathloop", "Summertime", "Southwest", "Muted Earth",
+  "Nursery", "60s", "Oasis", "Supperware", "Jazz Cup"];
+let exclude_palette = ["Minty", "Deathloop"]
 let default_palette = 10;
 let global_palette = palettes[default_palette];
 let global_scale = 1;
@@ -121,7 +122,9 @@ function seed_scale_button(base_x, base_y){
   color_sel.position(180*global_scale, base_y*global_scale);
   color_sel.size(135*global_scale, control_height);
   palette_names.forEach(name => {
-    color_sel.option(name);
+    if(!exclude_palette.includes(name)){
+      color_sel.option(name);
+    }
   });
   if(colors != undefined){
     color_sel.selected(palette_names[colors]);
