@@ -1,18 +1,35 @@
+gif = false;
+fr = 1;
+
+capture = false;
+capture_time = 10
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  common_setup();
+  common_setup(gif);
+  if(!capture){
+    frameRate(fr);
+  }
 }
 //***************************************************
 function draw() {  
+  capture_start(capture);
+
   //bleed
   bleed_border = apply_bleed();
 
-  // background
-  bg(true);
+  working_palette = [...palette];
+  strokeCap(ROUND)
+
+  //apply background
+  bg_c = random(working_palette)
+  background(bg_c)
+  reduce_array(working_palette, bg_c)
   
   //actual drawing stuff
   push();
-  pyramid = random(palette)
-  reduce_array(palette, pyramid);
+  pyramid = random(working_palette)
+  reduce_array(working_palette, pyramid);
 
   noStroke();
   fill(pyramid);
@@ -26,6 +43,8 @@ function draw() {
 
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs
@@ -34,11 +53,10 @@ function arcing(width, linear_spread, rotation){
   noFill();
   translate(canvas_x/2, canvas_y/2);
   rotate(120);
-  cap = random([ROUND]);
-  strokeCap(cap);
+
   for(let i=100*global_scale; i<width; i=i+(1*global_scale)){
     radius = i * random(0.2, 2);
-    stroke(random(palette));
+    stroke(random(working_palette));
 
     strokeWeight(random(1, 10)*global_scale)
 
@@ -48,20 +66,18 @@ function arcing(width, linear_spread, rotation){
   }
   pop();
   // clean up pyramid
-  if(cap == ROUND){
-    push();
-    noStroke();
-    fill(pyramid);
-    translate(canvas_x/2, canvas_y/2);
-    pyr_dist = 10*global_scale;
-    beginShape();
-    vertex(0,0);
-    vertex(0,pyr_dist);
-    vertex(-hyp+pyr_dist,canvas_y/2);
-    vertex(-hyp,canvas_y/2);
-    endShape();
-    pop();
-  }
+  push();
+  noStroke();
+  fill(pyramid);
+  translate(canvas_x/2, canvas_y/2);
+  pyr_dist = 10*global_scale;
+  beginShape();
+  vertex(0,0);
+  vertex(0,pyr_dist);
+  vertex(-hyp+pyr_dist,canvas_y/2);
+  vertex(-hyp,canvas_y/2);
+  endShape();
+  pop();
 
 
 }

@@ -1,13 +1,30 @@
+gif = false;
+fr = 1;
+
+capture = false;
+capture_time = 10
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  common_setup();
+  common_setup(gif);
+  if(!capture){
+    frameRate(fr);
+  }
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   //bleed
   bleed_border = apply_bleed();
 
+  working_palette = [...palette];
+  strokeCap(random([PROJECT,ROUND]))
+
   //apply background
-  bg(true);
+  bg_c = random(working_palette)
+  background(bg_c)
+  reduce_array(working_palette, bg_c)
 
   //actual drawing stuff
   push();
@@ -15,6 +32,8 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs
@@ -33,7 +52,7 @@ function arcing(width){
     radius = old_radius+old_SW*2+random(5,6)*global_scale;
     sw = radius - old_radius - old_SW -5*global_scale;
 
-    stroke(random(palette));
+    stroke(random(working_palette));
     strokeWeight(sw);
 
     arc(0, 0, radius, radius, 0, angles);

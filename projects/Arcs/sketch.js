@@ -1,14 +1,30 @@
+gif = false;
+fr = 1;
+
+capture = false;
+capture_time = 10
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  common_setup();
-  
+  common_setup(gif);
+  if(!capture){
+    frameRate(fr);
+  }
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   //bleed
   bleed_border = apply_bleed();
 
+  working_palette = [...palette];
+  strokeCap(random([PROJECT,ROUND]))
+
   //apply background
-  bg(true);
+  bg_c = random(working_palette)
+  background(bg_c)
+  reduce_array(working_palette, bg_c)
 
   //actual drawing stuff
   push();
@@ -17,6 +33,8 @@ function draw() {
   pop();
   //cleanup
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs
