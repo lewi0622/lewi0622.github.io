@@ -1,9 +1,15 @@
 gif = true;
 fr = 30;
 
+capture = false;
+capture_time = 5
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  frameRate(fr);
+  if(!capture){
+    frameRate(fr);
+  }
 
   //create series of points
   pt_size = 20*global_scale;
@@ -21,10 +27,11 @@ function setup() {
 
   furthest_pts(pts);
   noStroke();
-  // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   clear();
   //bleed
   bleed_border = apply_bleed();
@@ -57,6 +64,8 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

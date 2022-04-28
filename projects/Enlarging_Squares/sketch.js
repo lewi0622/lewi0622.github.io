@@ -4,9 +4,15 @@ fr = 30;
 xoff = 0;
 inc = 0.01*60/fr;
 
+capture = false;
+capture_time = 5
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  frameRate(fr);
+  if(!capture){
+    frameRate(fr);
+  }
   squares = [];
   palette = shuffle(palette);
   bg_c = color(random(palette));
@@ -17,10 +23,11 @@ function setup() {
   rot_offset = 0;
   rot_inc = random([-3,0,3]);
   shape = random(['circle', 'square'])
-  // createLoop({duration:15, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   clear();
   //bleed
   bleed_border = apply_bleed();
@@ -67,6 +74,8 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs
