@@ -1,13 +1,31 @@
+gif = false;
+fr = 1;
+
+capture = false;
+capture_time = 10
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  common_setup();
+  common_setup(gif);
+  if(!capture){
+    frameRate(fr);
+  }
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   //bleed
   bleed_border = apply_bleed();
 
+  working_palette = [...palette];
+  strokeCap(random([PROJECT,ROUND]))
+
   //apply background
-  bg_c = bg(true);
+  bg_c = random(working_palette)
+  background(bg_c)
+  reduce_array(working_palette, bg_c)
+
   //actual drawing stuff
   push();
   size_buildings = random([20, 80])*global_scale;
@@ -33,6 +51,8 @@ function draw() {
   pop();
   //cleanup
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs
@@ -58,7 +78,7 @@ function building_block(h){
   //builds vertically
   push();
   for(let i=0; i<h; i++){
-    build_c = random(palette);
+    build_c = random(working_palette);
     fill(build_c);
     if(i+1 >= h){
       random([buildCap])();
@@ -249,7 +269,7 @@ function buildHalfArch(){
 
 function buildStairs(){
   push();
-  whole_c = random(palette);
+  whole_c = random(working_palette);
   stair_color = whole_c;
   fill(whole_c);
   buildWhole();
@@ -262,7 +282,7 @@ function buildStairs(){
     low_right();
   }
   while(stair_color == whole_c){
-    stair_color = random(palette);
+    stair_color = random(working_palette);
   }
 
   fill(stair_color);
