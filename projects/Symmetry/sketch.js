@@ -5,19 +5,23 @@ noise_off = 20;
 xoff = 0;
 inc = 0.3*60/fr;
 
+capture = false;
+//use len for frames to capture
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 //***************************************************
 function setup() {
   common_setup(gif);
-  frameRate(fr);
+  if(!capture){
+    frameRate(fr);
+  }
   //apply background
-  sym_angs = random([4,6,8,10,12,14,16]);
+  sym_angs = floor(random(4,17));
   line_segs = floor(random(5,15));
   background("BLACK");
   drawingContext.shadowBlur=1*global_scale;
 
-  len = 800/(line_segs*constrain(sym_angs, 4,8));
+  len = round(800/(line_segs*constrain(sym_angs, 4,8)));
 
-  // line_color = color(255, 227, 92, 75);
   line_color = color(random(palette));
   drawingContext.shadowColor = line_color
   stroke(line_color);
@@ -26,6 +30,8 @@ function setup() {
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
+
   //bleed
   bleed_border = apply_bleed();
 
@@ -59,10 +65,7 @@ function draw() {
   if(frameCount>len){
     noLoop();
   }
+  capture_frame(capture, len);
 }
 //***************************************************
 //custom funcs
-
-
-
-

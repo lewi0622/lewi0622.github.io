@@ -6,7 +6,7 @@ xoff = 0;
 inc = 0.1*60/fr;
 
 capture = false;
-capture_time = 7.5
+capture_time = 15
 num_frames = capture_time*fr;
 capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 

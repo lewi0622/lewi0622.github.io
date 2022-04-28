@@ -5,24 +5,29 @@ noise_off = 20;
 xoff = 0;
 inc = 0.1*60/fr;
 
+capture = false;
+capture_time = 5
+num_frames = capture_time*fr;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 //***************************************************
 function setup() {
   common_setup(gif);
-  frameRate(fr);
+  if(!capture){
+    frameRate(fr);
+  }
   //apply background
   sym_angs = random([4,6,8,10,12,14,16]);
   line_segs = floor(random(5,20));
   line_color = color(random(palette));
-  // line_color = color(255, 227, 92);
-  //shadow/glow
+  // line_color = color(255, 227, 92);  //shadow/glow
   drawingContext.shadowBlur=3*global_scale;
   drawingContext.shadowColor = line_color;
   stroke(line_color);
-  // createLoop({duration:8, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
-  //to be ran at 2x scale or higher for proper display
+  capture_start(capture);
+
   background("BLACK");
   //bleed
   bleed_border = apply_bleed();
@@ -48,6 +53,7 @@ function draw() {
       endShape();
     pop();
     center_rotate(360/sym_angs);
+
   }
 
   xoff+= inc;
@@ -55,5 +61,6 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
-  
+
+  capture_frame(capture, num_frames);
 }
