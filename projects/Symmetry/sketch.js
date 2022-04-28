@@ -26,7 +26,7 @@ function setup() {
   drawingContext.shadowColor = line_color
   stroke(line_color);
   noFill();
-  strokeWeight(1*global_scale);
+  strokeWeight(1.5*global_scale);
 }
 //***************************************************
 function draw() {
