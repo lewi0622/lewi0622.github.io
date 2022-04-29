@@ -176,7 +176,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   bleed = false;
   cut = false;
   dpi = 300;
-  // size = {};
 
   setParams();
   seed_scale_button(base_x, base_y);
@@ -205,6 +204,10 @@ function setParams(){
   add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
 
+  if(seed != undefined){
+    //strips out whitespace %20 characters from seed
+    seed = seed.replace(/%20/g, "")
+  }
   if(colors != undefined){
     global_palette=palettes[colors];
   };
