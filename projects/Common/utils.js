@@ -7,7 +7,7 @@ let default_palette = 10;
 let global_palette = palettes[default_palette];
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
-let global_debug = true;
+let global_debug = false;
 let type='png';
 
 function reset_drawing(seed, base_x, base_y){
