@@ -221,6 +221,7 @@ function setParams(){
     global_scale = int(img_scale);
   }
   else if(global_debug){
+    console.log(global_debug)
     global_scale = 3;
   }
   if(controls != undefined || global_debug){
