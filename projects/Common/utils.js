@@ -170,7 +170,7 @@ function show_hide_controls(){
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
-  set_title_folder();
+  // set_title_folder();
 
   //init globals
   hidden_controls = false;
@@ -634,16 +634,16 @@ function generate_color(){
   return(color(r,g,b,a))
 }
 
-function set_title_folder(){
-  var loc = window.location.pathname;
-  var dir = loc.substring(0, loc.lastIndexOf('/'));
-  var name = dir.split('/')
-  document.title = name[name.length-1];
-}
+// function set_title_folder(){
+//   var loc = window.location.pathname;
+//   var dir = loc.substring(0, loc.lastIndexOf('/'));
+//   var name = dir.split('/')
+//   document.title = name[name.length-1];
+// }
 
-function temp_img(){
-  const dataURL = cnv.elt.toDataURL();
-  document.querySelector('meta[property="og:image"]').setAttribute("content", dataURL);
-  document.querySelector('meta[property="og:image:height"]').setAttribute("content", canvas_y);
-  document.querySelector('meta[property="og:image:width"]').setAttribute("content", canvas_x);
-}
+// function temp_img(){
+//   const dataURL = cnv.elt.toDataURL();
+//   document.querySelector('meta[property="og:image"]').setAttribute("content", dataURL);
+//   document.querySelector('meta[property="og:image:height"]').setAttribute("content", canvas_y);
+//   document.querySelector('meta[property="og:image:width"]').setAttribute("content", canvas_x);
+// }

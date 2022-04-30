@@ -48,8 +48,6 @@ function draw() {
     }
     rotate(360/sym_angs);
   }
-
-  temp_img();
 }
 //***************************************************
 //custom funcs
