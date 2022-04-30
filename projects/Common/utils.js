@@ -207,6 +207,7 @@ function setParams(){
 
   if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
     global_debug=true;
+    console.log(location.hostname)
   }
 
   if(seed != undefined){
