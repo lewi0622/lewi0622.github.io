@@ -7,6 +7,7 @@ let default_palette = 10;
 let global_palette = palettes[default_palette];
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
+let global_debug = true;
 let type='png';
 
 function reset_drawing(seed, base_x, base_y){
@@ -204,6 +205,10 @@ function setParams(){
   add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
 
+  if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+    global_debug=true;
+  }
+
   if(seed != undefined){
     //strips out whitespace %20 characters from seed
     seed = seed.replace(/%20/g, "")
@@ -213,10 +218,13 @@ function setParams(){
   };
   if(img_scale != undefined){
     global_scale = int(img_scale);
-  };
-  if(controls != undefined){
+  }
+  else if(global_debug){
+    global_scale = 3;
+  }
+  if(controls != undefined || global_debug){
     hidden_controls = true;
-  };
+  }
   if(add_bleed != undefined){
     if(add_bleed.toLowerCase() != 'false'){
       bleed = float(add_bleed);
