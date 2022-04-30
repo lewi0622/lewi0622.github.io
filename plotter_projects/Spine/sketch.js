@@ -6,7 +6,7 @@ function setup() {
 
   noFill();
   strokeCap(SQUARE);
-  colors = gen_n_colors(3);
+  colors = gen_n_colors(2);
   strokeWeight(0.5*global_scale)
 }
 //***************************************************
@@ -84,7 +84,7 @@ function draw() {
     line(pt1.x, pt1.y+canvas_y/2, pts2[id].x, pts2[id].y+canvas_y*3/4);
   });
 
-  stroke(colors[colors.length-1]);
+  stroke(random(colors));
   translate(0, canvas_y/2);
   beginShape();
   curveVertex(pts1[0].x, pts1[0].y);
