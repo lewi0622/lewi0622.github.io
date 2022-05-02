@@ -2,6 +2,8 @@ gif = false;
 fr = 1;
 
 function setup() {
+  //default palette for this sketch only
+  default_palette = random([5, 6, 13]);
   common_setup(gif);
   frameRate(fr);
   line_length = 60*global_scale;

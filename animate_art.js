@@ -15,7 +15,7 @@ let arts = [
 
 let current_id = 0;
 let seeds = Array.apply(null, Array(arts.length));
-let global_color = 10;
+let global_color;
 
 // wait for DOM to be fully loaded before accessing nodes
 window.onload = init_func;
@@ -78,11 +78,22 @@ function change_animation(dir){
     //assign new id and src
     ifrm.id = arts[current_id];
 
-    if(seeds[current_id] != undefined){
-        address = base_prefix + arts[current_id] + base_suffix + "?seed=" + seeds[current_id] + "&colors=" + global_color  + "&scale=" + img_scale;
+    if(global_color != undefined){
+        if(seeds[current_id] != undefined){
+            address = base_prefix + arts[current_id] + base_suffix + "?seed=" + seeds[current_id] + "&colors=" + global_color  + "&scale=" + img_scale;
+        }
+        else{
+            address = base_prefix + arts[current_id] + base_suffix + "?scale=" + img_scale + "&colors=" + global_color;
+        }
     }
     else{
-        address = base_prefix + arts[current_id] + base_suffix + "?colors=" + global_color  + "&scale=" + img_scale;
+        if(seeds[current_id] != undefined){
+            address = base_prefix + arts[current_id] + base_suffix + "?seed=" + seeds[current_id] + "&scale=" + img_scale;
+        }
+        else{
+            address = base_prefix + arts[current_id] + base_suffix + "?scale=" + img_scale;
+        }
     }
+
     ifrm.src = address;
 }

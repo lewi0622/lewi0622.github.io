@@ -6,6 +6,8 @@ capture_time = 10
 num_frames = capture_time*fr;
 capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
+  //default palette for this sketch only
+  default_palette = random([6, 10, 13]);
   common_setup(gif);
   if(!capture){
     frameRate(fr);

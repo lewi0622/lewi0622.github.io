@@ -2,6 +2,8 @@ gif = false;
 fr = 1;
 
 function setup() {
+  //default palette for this sketch only
+  default_palette = random([1, 2, 9]);
   common_setup(gif);
   frameRate(fr);
   up_scale = global_scale/2;
