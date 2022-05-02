@@ -59,7 +59,7 @@ function draw() {
   pop();
   //cleanup
   apply_cutlines();
-
+  
   capture_frame(capture, num_frames);
 }
 //***************************************************

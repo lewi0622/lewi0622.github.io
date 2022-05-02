@@ -1,9 +1,19 @@
 type = 'svg';
 
-gif = false;
+gif = true;
+noiseMax = 2;
+phase = 0;
+phase_off = 20;
+phase_inc = 0.01;
+fr = 30;
 function setup() {
   common_setup(gif, SVG);
-
+  frameRate(fr)
+  noFill();
+  strokeWeight(1.5)
+  angleMode(DEGREES)
+  // i_mult = random([12, 20, 30])
+  i_mult = 100
 }
 //***************************************************
 function draw() {
@@ -14,14 +24,9 @@ function draw() {
   //actual drawing stuff
   push();
 
-  //fill hatch testing
-  fill("BLACK");
-  translate(canvas_x/2, canvas_y/2);
-  circle(0,0,50);
-  fill("GREEN")
-  stroke("GREEN")
-  circle(50,50, 100);
-
+  //create grid of tiles
+  //add squares to random tiles
+  //for each square, check if next to other square add lines
 
   pop();
   //cleanup
