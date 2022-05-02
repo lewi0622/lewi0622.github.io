@@ -98,7 +98,7 @@ function branch(branch_num, start_x, start_y, start_weight){
 
     branch_x = random(-3,10)*dir*global_scale + prev_branch_x;
     if(weight<branch_weight){
-      branch_y = prev_branch_y - random(-2,10)*global_scale;
+      branch_y = prev_branch_y - random(0,10)*global_scale;
     }
     else{
       branch_y = prev_branch_y - random(7,10)*global_scale;
@@ -115,10 +115,10 @@ function leaves(x,y){
   push();
   noStroke();
 
-  [c_leaf_primary, c_leaf_secondary].forEach(c => {
+  [c_leaf_primary].forEach(c => {
     fill(c);
     for(let i=0; i<4; i++){
-      circle(x+random(-1,1)*global_scale, y+random(-1,1)*global_scale, 5*global_scale)
+      circle(x+random(-2,2)*global_scale, y+random(-2,2)*global_scale, 5*global_scale)
     }
   });
   pop();
