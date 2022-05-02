@@ -8,7 +8,8 @@ capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   default_palette = 6;
   global_palette = palettes[default_palette]
-  common_setup(gif, P2D, 400);
+  //looks good in 300x400
+  common_setup(gif, P2D, 300);
   if(!capture){
     frameRate(fr);
   }
@@ -46,7 +47,7 @@ function draw() {
   trunk_max=40;
   for(let z=0; z<3; z++){
     c_leaf_primary = random(working_palette);
-    if(working_palette.length<1){
+    if(working_palette.length>1){
       reduce_array(working_palette, c_leaf_primary);
     }
     //trunk

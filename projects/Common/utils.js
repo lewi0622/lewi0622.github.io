@@ -58,6 +58,7 @@ function keyTyped() {
 
 function seed_scale_button(base_x, base_y){
   control_height = 20*global_scale;
+  control_spacing = 5*global_scale;
 
   //creates controls below canvas for displaying/setting seed
   input = createInput("seed");
@@ -69,58 +70,11 @@ function seed_scale_button(base_x, base_y){
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
   button.size(90*global_scale, control_height)
-  button.position(85*global_scale, base_y*global_scale);
-
-  //left/right buttons for easy seed nav
-  btLeft = createButton('<')
-  btLeft.size(20*global_scale, control_height);
-  btLeft.position(135*global_scale, base_y*global_scale + control_height);
-  btLeft.mouseClicked(function() {
-    input.value(int(input.value())-1);
-    set_seed();
-  });
-  btRight = createButton('>')
-  btRight.size(20*global_scale, control_height);
-  btRight.position(155*global_scale, base_y*global_scale + control_height);
-  btRight.mouseClicked(function() {
-    input.value(int(input.value())+1);
-    set_seed();
-  });
-  
-  //randomize button
-  randomize = createButton("Randomize");
-  randomize.mouseClicked(function (){
-    window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
-  })
-  randomize.size(80*global_scale, control_height);
-  randomize.position(base_x*global_scale-80*global_scale, base_y*global_scale);
-
-  //scale slider is taken as scale value when randomize/custom seed are clicked
-  scaler = createSlider(1, 12, global_scale, 1);
-  scaler.position(0, base_y*global_scale+control_height);
-  scaler.size(100*global_scale, 10*global_scale);
-  scaler.input(function() {
-    scale_box.value(scaler.value());
-  });
-
-  //scale text box
-  scale_box = createInput('');
-  scale_box.position(100*global_scale, base_y*global_scale+control_height)
-  scale_box.size(30*global_scale, 17*global_scale);
-  scale_box.value(scaler.value());
-  scale_box.input(function() {
-    scaler.value(scale_box.value());
-  });
-
-  //save button
-  btSave = createButton("Save");
-  btSave.mouseClicked(save_drawing);
-  btSave.size(70*global_scale, control_height);
-  btSave.position(base_x*global_scale-70*global_scale, base_y*global_scale+control_height);
+  button.position(input.size().width + control_spacing, base_y*global_scale);
 
   //color palette select
   color_sel = createSelect();
-  color_sel.position(180*global_scale, base_y*global_scale);
+  color_sel.position(button.position().x + button.size().width + control_spacing, base_y*global_scale);
   color_sel.size(135*global_scale, control_height);
   palette_names.forEach(name => {
     if(!exclude_palette.includes(name)){
@@ -134,6 +88,53 @@ function seed_scale_button(base_x, base_y){
     color_sel.selected(palette_names[default_palette]);
   }
   color_sel.changed(set_seed)
+
+  //randomize button
+  randomize = createButton("Randomize");
+  randomize.mouseClicked(function (){
+    window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
+  })
+  randomize.size(400*global_scale - (color_sel.position().x + color_sel.size().width + control_spacing), control_height);
+  randomize.position(color_sel.position().x + color_sel.size().width + control_spacing, base_y*global_scale);
+
+  //scale slider is taken as scale value when randomize/custom seed are clicked
+  scaler = createSlider(1, 12, global_scale, 1);
+  scaler.position(0, base_y*global_scale+control_height);
+  scaler.size(100*global_scale, 10*global_scale);
+  scaler.input(function() {
+    scale_box.value(scaler.value());
+  });
+
+  //scale text box
+  scale_box = createInput('');
+  scale_box.position(scaler.size().width+control_spacing, base_y*global_scale+control_height)
+  scale_box.size(30*global_scale, 17*global_scale);
+  scale_box.value(scaler.value());
+  scale_box.input(function() {
+    scaler.value(scale_box.value());
+  });
+
+  //left/right buttons for easy seed nav
+  btLeft = createButton('<')
+  btLeft.size(20*global_scale, control_height);
+  btLeft.position(scale_box.size().width + scale_box.position().x +control_spacing, base_y*global_scale + control_height);
+  btLeft.mouseClicked(function() {
+    input.value(int(input.value())-1);
+    set_seed();
+  });
+  btRight = createButton('>')
+  btRight.size(20*global_scale, control_height);
+  btRight.position(btLeft.size().width + btLeft.position().x, base_y*global_scale + control_height);
+  btRight.mouseClicked(function() {
+    input.value(int(input.value())+1);
+    set_seed();
+  });
+
+  //save button
+  btSave = createButton("Save");
+  btSave.mouseClicked(save_drawing);
+  btSave.size(70*global_scale, control_height);
+  btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height);
 
   //list of all ctrls for easy show/hide and global formatting
   ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight, color_sel];
