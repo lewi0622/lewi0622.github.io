@@ -4,7 +4,7 @@ let palette_names = [
   "Nursery", "60s", "Oasis", "Supperware", "Jazz Cup"];
 let exclude_palette = ["Minty", "Deathloop"]
 let default_palette = 10;
-let global_palette = palettes[default_palette];
+let global_palette;
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
 let global_debug = false;
@@ -171,7 +171,7 @@ function show_hide_controls(){
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
-  // set_title_folder();
+  global_palette = palettes[default_palette];
 
   //init globals
   hidden_controls = false;

@@ -68,7 +68,7 @@ function init_page(){
         div.style.width = "400px";
 
         ifrm.setAttribute("class", "embed-responsive-item");
-        ifrm.setAttribute("src", base_prefix + element + base_suffix);
+        ifrm.setAttribute("src", base_prefix + element + base_suffix +"?scale="+img_scale);
         ifrm.setAttribute("id", element);
         ifrm.style.width = "400px";
         ifrm.style.height = "420px";

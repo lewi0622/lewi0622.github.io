@@ -6,8 +6,9 @@ capture_time = 20
 num_frames = capture_time*fr;
 capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
+  //default palette for this sketch only
   default_palette = 6;
-  global_palette = palettes[default_palette]
+
   //looks good in 300x400
   common_setup(gif, P2D, 300);
   if(!capture){
