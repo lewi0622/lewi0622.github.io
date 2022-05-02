@@ -56,7 +56,7 @@ function keyTyped() {
   }
 }
 
-function seed_scale_button(base_x, base_y){
+function seed_scale_button(base_y){
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
 
@@ -180,11 +180,14 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   dpi = 300;
 
   setParams();
-  seed_scale_button(base_x, base_y);
+  seed_scale_button(400);
   seed = reset_drawing(seed, base_x, base_y);
   angleMode(DEGREES);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
+  
+  //shift position to center canvas if base is different than 400
+  cnv.position((400*global_scale-canvas_x)/2, (400*global_scale-canvas_y)/2);
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
