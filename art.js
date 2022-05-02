@@ -31,7 +31,8 @@ let arts = [
     "Scrambled_Matrix",
     "Psychedelic_Ball",
     "BrushStrokes",
-    "Symmetry"
+    "Symmetry",
+    "Tree"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

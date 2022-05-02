@@ -6,8 +6,9 @@ capture_time = 20
 num_frames = capture_time*fr;
 capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  global_palette = palettes[6]
-  common_setup(gif, P2D, 300);
+  default_palette = 6;
+  global_palette = palettes[default_palette]
+  common_setup(gif, P2D, 400);
   if(!capture){
     frameRate(fr);
   }
@@ -19,8 +20,13 @@ function draw() {
   //bleed
   bleed_border = apply_bleed();
 
-  working_palette = [...palette];
-  branch_color = working_palette[0];
+  working_palette = JSON.parse(JSON.stringify(palette));
+  if(arrayEquals(working_palette[0], [87, 61, 38, 255])){
+    branch_color = working_palette[0];
+  }
+  else{
+    branch_color = random(working_palette)
+  }
   reduce_array(working_palette, branch_color)
   stroke(branch_color);
 
@@ -40,7 +46,9 @@ function draw() {
   trunk_max=40;
   for(let z=0; z<3; z++){
     c_leaf_primary = random(working_palette);
-    reduce_array(working_palette, c_leaf_primary);
+    if(working_palette.length<1){
+      reduce_array(working_palette, c_leaf_primary);
+    }
     //trunk
     strokeCap(ROUND);
     trunk_weight = 3*global_scale;
@@ -141,11 +149,9 @@ function leaves(x,y){
   push();
   noStroke();
 
-  [c_leaf_primary].forEach(c => {
-    fill(c);
-    for(let i=0; i<6; i++){
-      circle(x+random(-2,2)*global_scale, y+random(-2,2)*global_scale, 5*global_scale)
-    }
-  });
+  fill(c_leaf_primary);
+  for(let i=0; i<6; i++){
+    circle(x+random(-2,2)*global_scale, y+random(-2,2)*global_scale, 5*global_scale)
+  }
   pop();
 }

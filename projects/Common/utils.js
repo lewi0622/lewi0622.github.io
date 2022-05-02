@@ -647,3 +647,10 @@ function generate_color(){
 //   document.querySelector('meta[property="og:image:height"]').setAttribute("content", canvas_y);
 //   document.querySelector('meta[property="og:image:width"]').setAttribute("content", canvas_x);
 // }
+
+function arrayEquals(a, b) {
+  return Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index]);
+}
