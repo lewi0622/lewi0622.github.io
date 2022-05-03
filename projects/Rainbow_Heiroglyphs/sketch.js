@@ -17,29 +17,14 @@ function draw() {
   bleed_border = apply_bleed();
   stroke(frameCount%360, 100, 100);
 
-
-  // if(frameCount%(5*fr)==0){
-  //   if(draw_line){
-  //     erase();
-  //     draw_line=false;
-  //   }
-  //   else{
-  //     noErase();
-  //     stroke('BLACK')
-  //     draw_line=true;
-  //   }
-  // }
-
   //actual drawing stuff
   push();
 
   strokeWeight(1*global_scale);
 
-
-
-  pts = 10;
-  shape_rad = 40*global_scale;
-  spacing = shape_rad * 2;
+  pts = 4;
+  shape_rad = 150*global_scale;
+  spacing = shape_rad;
   zoff = 0;
   zinc = 0.01;
   for(let i=spacing; i<canvas_x; i+=spacing){
@@ -62,6 +47,10 @@ function draw() {
 
   //cleanup
   apply_cutlines();
+
+  // if(frameCount ==359){
+  //   noLoop();
+  // }
 
 }
 //***************************************************
