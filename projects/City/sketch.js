@@ -31,25 +31,25 @@ function draw() {
   push();
   size = random([20, 80])
   if(size==20){
-    num_buildings = 18;
+    num_buildings = 19;
   }
   else{
-    num_buildings = 5;
+    num_buildings = 4;
   }
   size_buildings = floor(size*global_scale);
   //for scaling, round to nearest evennumber
   size_buildings = 2 * round(size_buildings/2);
 
-  translate(size_buildings/2, floor(canvas_y-size_buildings));
+  translate(size_buildings, floor(canvas_y-size_buildings));
   noStroke();
-  for(let i=1; i<num_buildings; i++){
+  for(let i=0; i<num_buildings; i++){
     push();
     translate(i*size_buildings, 0);
     building_height = floor(map(noise(i*2), 0,1, 1,num_buildings+2));
     if(building_height!=1){
       building_block(building_height);
     }
-      pop();
+    pop();
   }
   pop();
   //cleanup
