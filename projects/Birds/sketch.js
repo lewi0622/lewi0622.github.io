@@ -28,25 +28,26 @@ function draw() {
 
   //actual drawing stuff
   push();
-  eye_white = [255, 255, 255, 255];
-  eye_black = [0, 0, 0, 255];
+  //correction for scaling
+  x_fourth = ceil(canvas_x/4);
+  y_fourth = ceil(canvas_y/4);
 
   noStroke();
   push();
   //head and eye
-  translate(canvas_x/4, canvas_y/4);
+  translate(x_fourth, y_fourth);
   head();
   // beak
-  translate(canvas_x/4, 0);
+  translate(x_fourth, 0);
   beak();
   pop();
 
   push();
   //head and eye
-  translate(canvas_x*3/4, canvas_y*3/4);
+  translate(x_fourth*3, y_fourth*3);
   head();
   // beak
-  translate(-canvas_x/4, 0);
+  translate(-x_fourth, 0);
   beak(true);
   pop();
 
@@ -60,13 +61,13 @@ function draw() {
 //custom funcs
 function head(){
   fill(random(working_palette));
-  square(-canvas_x/4, -canvas_x/4, 200*global_scale);
-  fill(eye_white);
+  square(-x_fourth, -x_fourth, x_fourth*2);
+  fill('#FFFFFF');
   eye_size = random(75,125);
   circle(0,0, eye_size*global_scale);
   fill(random(palette))
   circle(0,0,eye_size*3/4*global_scale);
-  fill(eye_black);
+  fill('#000000');
   circle(0,0,eye_size*1/2*global_scale);
 }
 function beak(reverse){
@@ -77,7 +78,7 @@ function beak(reverse){
     rev = 1;
   }
   fill(random(working_palette));
-  triangle(0,0, 0,-canvas_y/4, canvas_x/2*rev,0);
+  triangle(0,0, 0,floor(-y_fourth), floor(x_fourth*2*rev),0);
   fill(random(working_palette));
-  triangle(0,0, 0,canvas_y/4, canvas_x/2*rev,0);
+  triangle(0,0, 0,y_fourth, x_fourth*2*rev,0);
 }
