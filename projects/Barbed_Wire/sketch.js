@@ -11,6 +11,7 @@ function setup() {
   if(!capture){
     frameRate(fr);
   }
+  num_pts = 1000;
 }
 //***************************************************
 function draw() {
@@ -35,7 +36,8 @@ function draw() {
   noFill();
   shape_type=TRIANGLES
   beginShape(shape_type);
-  for(let i=0; i<1000*global_scale; i++){
+
+  for(let i=0; i<num_pts; i++){
     stroke(random(working_palette));
     //vertex
     vertex(xPos, yPos);
