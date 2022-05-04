@@ -32,6 +32,7 @@ function draw() {
 
   strokeWeight(1*global_scale);
   steps = random(200,300);
+  pts = 275;
   noFill();
   center_rotate(random(360));
 
@@ -48,7 +49,7 @@ function draw() {
       push();
       translate(0, random(canvas_y*.35));
       beginShape();
-      for(let i=0; i<steps + 10*global_scale; i++){
+      for(let i=0; i<pts; i++){
         push();
         vertex(canvas_x/steps*i, noise(noise_start + i/75)*global_scale*100*dir);
         pop();
@@ -65,6 +66,7 @@ function draw() {
   erase();
   noFill();
   cutoutCircle(canvas_y/64);
+  noErase();
 
   //cleanup
   apply_cutlines();

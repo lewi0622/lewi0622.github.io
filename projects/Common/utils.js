@@ -696,7 +696,8 @@ function find_cnv_mult(){
   let base_x = 400;
   let base_y = 420;
   if(full_controls){
-    base_y += 20;
+    //space for second row of controls, the extra 1 is make sure no scrollbar
+    base_y += 21;
   }
   //finds smallest multipler
   x_mult = Math.round((windowWidth/base_x)*1000)/1000;
