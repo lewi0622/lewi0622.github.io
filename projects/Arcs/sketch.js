@@ -43,11 +43,14 @@ function draw() {
 function arcing(limit, linear_spread){
   push();
   noFill();
+  debug=0
   translate(canvas_x/2, canvas_y/2);
-  for(let i=10*global_scale; i<limit; i+=1*global_scale){
+  for(let i=0; i<291; i++){
+    offset = 10*global_scale;
+    step_size = global_scale;
     translate(random(0,linear_spread), random(0, linear_spread));
     
-    radius = i * random(0.2, 3);
+    radius = (offset + step_size * i) * random(0.2, 3);
     stroke(random(palette));
     strokeWeight(random(1, 10)*global_scale);
     arc(0, 0, radius, radius, 0, random(45,300));
