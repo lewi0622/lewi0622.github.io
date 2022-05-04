@@ -23,17 +23,20 @@ function draw() {
 
   //apply background
   line_length = random([25, 40])*global_scale;
+  circle_x = canvas_x/line_length;
+  circle_y = canvas_y/line_length;
+  console.log(canvas_x/line_length);
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
 
   //actual drawing stuff
   push();
   translate(line_length/2, line_length/2);
-  for(let i=0; i<canvas_x; i=i+line_length){
-    for(let j=0; j<canvas_y; j=j+line_length){
+  for(let i=0; i<circle_x; i++){
+    for(let j=0; j<circle_y; j++){
       push();
       noStroke();
       fill(random(palette));
-      translate(i, j);
+      translate(i*line_length, j*line_length);
       circle(0, 0, random(line_length*.3, line_length));
       pop();
     }
