@@ -1,6 +1,5 @@
 let base_prefix = "projects/"
 let base_suffix = "/index.html"
-let img_scale = 1;
 //matches default palette in common/utils
 let current_palette = 10;
 
@@ -45,7 +44,7 @@ function setColor(palette){
         iframe = document.getElementById(element);
         seed = iframe.contentDocument.getElementById('Seed')['value'];
 
-        addr_req = base_prefix + element + base_suffix + "?colors=" + palette + "&seed=" + seed + "&scale=" + img_scale;
+        addr_req = base_prefix + element + base_suffix + "?colors=" + palette + "&seed=" + seed  + "&controls=true";
         iframe.setAttribute('src', addr_req);
     });
 }
@@ -68,7 +67,7 @@ function init_page(){
         div.style.width = "400px";
 
         ifrm.setAttribute("class", "embed-responsive-item");
-        ifrm.setAttribute("src", base_prefix + element + base_suffix +"?scale="+img_scale);
+        ifrm.setAttribute("src", base_prefix + element + base_suffix);
         ifrm.setAttribute("id", element);
         ifrm.style.width = "400px";
         ifrm.style.height = "420px";
@@ -102,7 +101,7 @@ function randomize_art(){
     //auto-randomize every second
     if(document.getElementById('flexCheckChecked').checked){
         current_art = document.getElementById(arts[art_id%arts.length]);
-        addr_req = base_prefix + current_art.id + base_suffix + "?colors=" + current_palette + "&scale=" + img_scale;
+        addr_req = base_prefix + current_art.id + base_suffix + "?colors=" + current_palette + "&controls=true";
         current_art.setAttribute('src', addr_req);
         art_id++
     }
@@ -110,3 +109,4 @@ function randomize_art(){
     art_timeout = 1000;
     window.setTimeout(randomize_art, art_timeout);
 }
+

@@ -12,8 +12,8 @@ let type='png';
 
 function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
-  canvas_x = base_x*global_scale;
-  canvas_y = base_y*global_scale;
+  canvas_x = floor(base_x*global_scale);
+  canvas_y = floor(base_y*global_scale);
 
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)){
@@ -26,8 +26,6 @@ function reset_drawing(seed, base_x, base_y){
   noiseSeed(seed);
   input.value(str(seed));
 
-  palette = [...global_palette];
-
   return seed;
 }
 
@@ -39,24 +37,38 @@ function set_seed(){
   //reinitializes the drawing with a specific seed
 
   //check if requested seed is the same as existing seed
-  if(input.value()==getParamValue('seed') && scaler.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
+  if(input.value()==getParamValue('seed') && scale_box.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
     return ;
   }
 
-  window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
+  //check if no scale in url, and if no change in scale
+  if(getParamValue('scale') == undefined && find_cnv_mult() == float(scale_box.value())){
+    window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + '&bleed=' + bleed + '&cut=' + cut);
+  }
+  else{
+    window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + "&scale=" + scale_box.value() + '&bleed=' + bleed + '&cut=' + cut);
+  }
+
 }
 
 function keyTyped() {
   // if text box is focused, and user presses enter, it sends Custom seed
   if (focused) {
     if(keyCode === ENTER){
-      scaler.value(scale_box.value())
       set_seed();
     }
   }
 }
 
 function seed_scale_button(base_y){
+  ids = ["Seed", "Custom Seed", "Color Select", "Randomize", "Auto Scale", "Scale Box", "Bt Left", "Bt Right", "Save"]
+  ids.forEach(id => {
+    elem = document.getElementById(id)
+    if(elem){
+      elem.remove();
+    }
+  });
+
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
 
@@ -71,6 +83,7 @@ function seed_scale_button(base_y){
   button.mouseClicked(set_seed);
   button.size(90*global_scale, control_height)
   button.position(input.size().width + control_spacing, base_y*global_scale);
+  button.id('Custom Seed')
 
   //color palette select
   color_sel = createSelect();
@@ -84,35 +97,39 @@ function seed_scale_button(base_y){
   if(colors != undefined){
     color_sel.selected(palette_names[colors]);
   }
-  else{
-    color_sel.selected(palette_names[default_palette]);
-  }
-  color_sel.changed(set_seed)
+
+  color_sel.changed(set_seed);
+  color_sel.id('Color Select')
 
   //randomize button
   randomize = createButton("Randomize");
   randomize.mouseClicked(function (){
-    window.location.replace("index.html?controls=True&colors=" + col_idx() + '&scale=' + scaler.value() + '&bleed=' + bleed + '&cut=' + cut);
+    input.value(Math.round(random()*1000000));
+    set_seed();
   })
   randomize.size(400*global_scale - (color_sel.position().x + color_sel.size().width + control_spacing), control_height);
   randomize.position(color_sel.position().x + color_sel.size().width + control_spacing, base_y*global_scale);
+  randomize.id('Randomize')
 
-  //scale slider is taken as scale value when randomize/custom seed are clicked
-  scaler = createSlider(1, 12, global_scale, 1);
-  scaler.position(0, base_y*global_scale+control_height);
-  scaler.size(100*global_scale, 10*global_scale);
-  scaler.input(function() {
-    scale_box.value(scaler.value());
-  });
+  //autoscale button calls url minus any scaler
+  auto_scale = createButton('Autoscale');
+  auto_scale.mouseClicked(function (){
+    window.location.replace("index.html?controls=True&colors=" + col_idx() + '&bleed=' + bleed + '&cut=' + cut + "&seed=" + getParamValue("seed"));
+  })
+  auto_scale.position(0, base_y*global_scale + control_height);
+  auto_scale.size(70*global_scale, control_height)
+  auto_scale.id("Auto Scale")
+
 
   //scale text box
   scale_box = createInput('');
-  scale_box.position(scaler.size().width+control_spacing, base_y*global_scale+control_height)
+  scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height)
   scale_box.size(30*global_scale, 17*global_scale);
-  scale_box.value(scaler.value());
-  scale_box.input(function() {
-    scaler.value(scale_box.value());
-  });
+  scale_box.value(global_scale);
+  scale_box.id("Scale Box")
+  // scale_box.input(function() {
+  //   scaler.value(scale_box.value());
+  // });
 
   //left/right buttons for easy seed nav
   btLeft = createButton('<')
@@ -122,6 +139,7 @@ function seed_scale_button(base_y){
     input.value(int(input.value())-1);
     set_seed();
   });
+  btLeft.id('Bt Left')
   btRight = createButton('>')
   btRight.size(20*global_scale, control_height);
   btRight.position(btLeft.size().width + btLeft.position().x, base_y*global_scale + control_height);
@@ -129,15 +147,17 @@ function seed_scale_button(base_y){
     input.value(int(input.value())+1);
     set_seed();
   });
+  btRight.id('Bt Right')
 
   //save button
   btSave = createButton("Save");
   btSave.mouseClicked(save_drawing);
   btSave.size(70*global_scale, control_height);
   btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height);
+  btSave.id("Save")
 
   //list of all ctrls for easy show/hide and global formatting
-  ctrls = [input, button, randomize, scaler, scale_box, btSave, btLeft, btRight, color_sel];
+  ctrls = [input, button, randomize, auto_scale, scale_box, btSave, btLeft, btRight, color_sel];
   ctrls.forEach(ctrl => {
     ctrl.style('font-size', str(12*global_scale) + 'px');
   });
@@ -171,7 +191,7 @@ function show_hide_controls(){
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
-  global_palette = palettes[default_palette];
+  global_scale = find_cnv_mult();
 
   //init globals
   hidden_controls = false;
@@ -183,6 +203,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   seed_scale_button(400);
   seed = reset_drawing(seed, base_x, base_y);
   angleMode(DEGREES);
+  change_default_palette(default_palette);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
   
@@ -194,6 +215,9 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
 
   if(!gif){
     noLoop();
+  }
+  else{
+    loop();
   }
   //Assists with loading on phones and other pixel dense screens
   pixelDensity(1)
@@ -213,19 +237,20 @@ function setParams(){
     global_debug=true;
   }
 
-  if(seed != undefined){
+  if(seed != undefined && seed != "undefined"){
     //strips out whitespace %20 characters from seed
     seed = seed.replace(/%20/g, "")
+  }
+  else if(document.getElementById("Seed")){
+    seed = document.getElementById("Seed").value;
   }
   if(colors != undefined){
     global_palette=palettes[colors];
   };
   if(img_scale != undefined){
-    global_scale = int(img_scale);
+    global_scale = float(img_scale);
   }
-  else if(global_debug){
-    global_scale = 3;
-  }
+
   if(controls != undefined || global_debug){
     hidden_controls = true;
   }
@@ -638,23 +663,45 @@ function generate_color(){
   return(color(r,g,b,a))
 }
 
-// function set_title_folder(){
-//   var loc = window.location.pathname;
-//   var dir = loc.substring(0, loc.lastIndexOf('/'));
-//   var name = dir.split('/')
-//   document.title = name[name.length-1];
-// }
-
-// function temp_img(){
-//   const dataURL = cnv.elt.toDataURL();
-//   document.querySelector('meta[property="og:image"]').setAttribute("content", dataURL);
-//   document.querySelector('meta[property="og:image:height"]').setAttribute("content", canvas_y);
-//   document.querySelector('meta[property="og:image:width"]').setAttribute("content", canvas_x);
-// }
-
 function arrayEquals(a, b) {
   return Array.isArray(a) &&
     Array.isArray(b) &&
     a.length === b.length &&
     a.every((val, index) => val === b[index]);
+}
+
+function windowResized() {
+  if(getParamValue('scale') == undefined && find_cnv_mult() != global_scale){
+    setup();
+    frameCount=0;
+    draw();
+  }
+}
+
+function change_default_palette(palette_id){
+  if(getParamValue('colors') != undefined){
+    palette_id = int(getParamValue('colors'));
+  }
+  default_palette = palette_id;
+  global_palette = palettes[palette_id];
+  palette = [...global_palette];
+  color_sel.selected(palette_names[default_palette]);
+}
+
+function find_cnv_mult(){
+  let base_x = 400;
+  let base_y = 420;
+  if(global_debug){
+    base_y += 20;
+  }
+  //finds smallest multipler
+  x_mult = Math.round((windowWidth/base_x)*10)/10;
+  y_mult = Math.round((windowHeight/base_y)*10)/10;
+  if(x_mult<y_mult){
+    return constrain(x_mult, 1, 12);
+  }
+  else{
+    return constrain(y_mult, 1, 12);
+  }
+
 }

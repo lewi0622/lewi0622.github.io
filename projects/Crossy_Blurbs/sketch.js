@@ -2,15 +2,12 @@ gif = false;
 fr = 1;
 
 function setup() {
-  //default palette for this sketch only
-  default_palette = random([5, 6, 13]);
   common_setup(gif);
+  change_default_palette(random([5, 6, 13]));
   frameRate(fr);
   line_length = 60*global_scale;
   tile_width = canvas_x / line_length;
   tile_height = canvas_y / line_length;
-
-  // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {

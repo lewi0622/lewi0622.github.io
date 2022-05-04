@@ -6,9 +6,8 @@ capture_time = 10
 num_frames = capture_time*fr;
 capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
-  //default palette for this sketch only
-  default_palette = random([1, 2, 11]);
   common_setup(gif);
+  change_default_palette(random([1, 2, 11]));
   if(!capture){
     frameRate(fr);
   }
@@ -30,7 +29,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  size_buildings = random([20, 80])*global_scale;
+  size_buildings = floor(random([20, 80])*global_scale);
   num_buildings = floor(canvas_x/size_buildings);
 
   var build_heights = new Array(num_buildings);
@@ -40,7 +39,7 @@ function draw() {
     build_heights[i] = floor(constrain(noise(i)*(canvas_y/size_buildings)*1.5, 0, canvas_y/size_buildings));
   }
 
-  translate(0, canvas_y-size_buildings);
+  translate(0, floor(canvas_y-size_buildings));
   noStroke();
   for(let i=1; i<num_buildings; i++){
     push();
