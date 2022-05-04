@@ -7,7 +7,7 @@ let default_palette = 10;
 let global_palette;
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
-let global_debug = false;
+let full_controls = false;
 let type='png';
 
 function reset_drawing(seed, base_x, base_y){
@@ -59,14 +59,21 @@ function keyTyped() {
   }
 }
 
-function seed_scale_button(base_y){
-  ids = ["Seed", "Custom Seed", "Color Select", "Randomize", "Auto Scale", "Scale Box", "Bt Left", "Bt Right", "Save"]
-  ids.forEach(id => {
-    elem = document.getElementById(id)
+function remove_controls(arr){
+  arr.forEach(ctrl => {
+    elem = document.getElementById(ctrl)
     if(elem){
       elem.remove();
     }
   });
+}
+
+
+function seed_scale_button(base_y){
+  ids = ["Seed", "Custom Seed", "Color Select", "Randomize"]
+  full_ids = ["Auto Scale", "Scale Box", "Bt Left", "Bt Right", "Save"]
+  remove_controls(ids);
+  remove_controls(full_ids);
 
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
@@ -110,6 +117,7 @@ function seed_scale_button(base_y){
   randomize.position(color_sel.position().x + color_sel.size().width + control_spacing, base_y*global_scale);
   randomize.id('Randomize')
 
+  //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
   //autoscale button calls url minus any scaler
   auto_scale = createButton('Autoscale');
   auto_scale.mouseClicked(function (){
@@ -126,9 +134,6 @@ function seed_scale_button(base_y){
   scale_box.size(30*global_scale, 17*global_scale);
   scale_box.value(global_scale);
   scale_box.id("Scale Box")
-  // scale_box.input(function() {
-  //   scaler.value(scale_box.value());
-  // });
 
   //left/right buttons for easy seed nav
   btLeft = createButton('<')
@@ -155,12 +160,16 @@ function seed_scale_button(base_y){
   btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height);
   btSave.id("Save")
 
-  //list of all ctrls for easy show/hide and global formatting
-  ctrls = [input, button, randomize, auto_scale, scale_box, btSave, btLeft, btRight, color_sel];
-  ctrls.forEach(ctrl => {
-    ctrl.style('font-size', str(12*global_scale) + 'px');
+  //style all ctrls
+  ids.concat(full_ids).forEach(id => {
+    elem = document.getElementById(id)
+    if(elem){
+      elem.style.fontSize = str(12*global_scale) + 'px';
+    }
   });
-  show_hide_controls();
+
+  show_hide_controls(ids, hidden_controls);
+  show_hide_controls(full_ids, !full_controls);
 }
 
 function reduce_array(arr, remove){
@@ -171,32 +180,28 @@ function reduce_array(arr, remove){
   }
 }
 
-function show_hide_controls(){
-  //hides or shows buttons when canvas is clicked
-  if(hidden_controls == true){
-    for(const ctrl of ctrls){
-      ctrl.show();
+function show_hide_controls(arr, hide){
+  arr.forEach(ctrl => {
+    elem = document.getElementById(ctrl)
+    if(elem){
+      if(hide){
+        elem.style.visibility = "hidden"
+      }
+      else{
+        elem.style.visibility = "visible"
+      }
     }
-
-    hidden_controls = false;
-  }
-  else{
-    for(const ctrl of ctrls){
-      ctrl.hide();
-    }
-
-    hidden_controls = true;
-  }
+  });
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
-    global_debug=true;
+    full_controls=true;
   }
   global_scale = find_cnv_mult();
 
   //init globals
-  hidden_controls = false;
+  hidden_controls = true;
   bleed = false;
   cut = false;
   dpi = 300;
@@ -229,6 +234,7 @@ function setParams(){
   //get all params if they exist
   colors = getParamValue('colors');
   controls = getParamValue('controls');
+  full_controls = controls == "full" || full_controls;
   seed = getParamValue('seed');
   img_scale = getParamValue('scale');
   add_bleed = getParamValue('bleed');
@@ -249,8 +255,8 @@ function setParams(){
     global_scale = float(img_scale);
   }
 
-  if(controls != undefined || global_debug){
-    hidden_controls = true;
+  if(controls != undefined || full_controls){
+    hidden_controls = false;
   }
   if(add_bleed != undefined){
     if(add_bleed.toLowerCase() != 'false'){
@@ -689,7 +695,7 @@ function change_default_palette(palette_id){
 function find_cnv_mult(){
   let base_x = 400;
   let base_y = 420;
-  if(global_debug){
+  if(full_controls){
     base_y += 20;
   }
   //finds smallest multipler
