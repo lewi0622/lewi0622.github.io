@@ -677,7 +677,6 @@ function arrayEquals(a, b) {
 function windowResized() {
   if(getParamValue('scale') == undefined && find_cnv_mult() != global_scale){
     setup();
-    frameCount=0;
     draw();
   }
 }
