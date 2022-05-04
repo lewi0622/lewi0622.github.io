@@ -14,7 +14,6 @@ function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
   canvas_x = base_x*global_scale;
   canvas_y = base_y*global_scale;
-  console.log("Canvas_x:",canvas_x, "  Canvas_y:", canvas_y)
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)){
     seed = Math.round(random()*1000000);
@@ -191,6 +190,9 @@ function show_hide_controls(){
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
+  if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+    global_debug=true;
+  }
   global_scale = find_cnv_mult();
 
   //init globals
@@ -206,7 +208,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   change_default_palette(default_palette);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
-  console.log("canvas width:", cnv.width, "  canvas height:", cnv.height)
   
   //shift position to center canvas if base is different than 400
   cnv.position((400*global_scale-canvas_x)/2, (400*global_scale-canvas_y)/2);
@@ -233,10 +234,6 @@ function setParams(){
   add_bleed = getParamValue('bleed');
   add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
-
-  if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
-    global_debug=true;
-  }
 
   if(seed != undefined && seed != "undefined"){
     //strips out whitespace %20 characters from seed
@@ -695,10 +692,9 @@ function find_cnv_mult(){
   if(global_debug){
     base_y += 20;
   }
-  console.log("windowWidth:", windowWidth, "   windowHeight:", windowHeight);
   //finds smallest multipler
-  x_mult = Math.round((windowWidth/base_x)*100)/100;
-  y_mult = Math.round((windowHeight/base_y)*100)/100;
+  x_mult = Math.round((windowWidth/base_x)*1000)/1000;
+  y_mult = Math.round((windowHeight/base_y)*1000)/1000;
   if(x_mult<y_mult){
     return constrain(x_mult, 1, 12);
   }
