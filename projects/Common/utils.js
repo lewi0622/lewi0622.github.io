@@ -42,10 +42,10 @@ function set_seed(){
 
   //check if no scale in url, and if no change in scale
   if(getParamValue('scale') == undefined && find_cnv_mult() == float(scale_box.value())){
-    window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + '&bleed=' + bleed + '&cut=' + cut);
+    window.location.replace("index.html?colors=" + col_idx() + "&controls=" + getParamValue("controls") + "&seed=" + input.value() + '&bleed=' + bleed + '&cut=' + cut);
   }
   else{
-    window.location.replace("index.html?colors=" + col_idx() + "&controls=true&seed=" + input.value() + "&scale=" + scale_box.value() + '&bleed=' + bleed + '&cut=' + cut);
+    window.location.replace("index.html?colors=" + col_idx() + "&controls=" + getParamValue("controls") + "&seed=" + input.value() + "&scale=" + scale_box.value() + '&bleed=' + bleed + '&cut=' + cut);
   }
 
 }
