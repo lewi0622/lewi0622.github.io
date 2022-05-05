@@ -5,9 +5,13 @@ xoff = 0;
 xinc = 0.001*60/fr;
 offset = 50;
 
+capture = false;
+capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  frameRate(fr);
+  if(!capture){
+    frameRate(fr);
+  }
   noFill();
   steps = floor(random(3,8));
   steps = 3;
@@ -16,11 +20,11 @@ function setup() {
   bg_c = "WHITE"
   background(bg_c)
 
-  num_frames = 359;
-  console.log(num_frames)
+  num_frames = 340;
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
   stroke(frameCount%360, 100, 100);
@@ -70,7 +74,9 @@ function draw() {
 
   if(frameCount ==num_frames){
     noLoop();
+    capture_frame(capture, num_frames-1);
   }
+  capture_frame(capture, num_frames-1);
 
 }
 //***************************************************
