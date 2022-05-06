@@ -1,8 +1,6 @@
-type = 'svg';
-
 function setup() {
   common_setup(false, SVG);
-  
+  console.log(type)
 }
 //***************************************************
 function draw() {

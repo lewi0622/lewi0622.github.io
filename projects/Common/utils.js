@@ -8,7 +8,7 @@ let global_palette;
 let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
 let full_controls = false;
-let type='png';
+let type;
 
 function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
@@ -201,6 +201,12 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   global_scale = find_cnv_mult();
 
   //init globals
+  if(renderer == P2D){
+    type="png";
+  }
+  else if(renderer == SVG){
+    type="svg";
+  }
   hidden_controls = true;
   bleed = false;
   cut = false;
