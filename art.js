@@ -31,7 +31,8 @@ let arts = [
     "Psychedelic_Ball",
     "BrushStrokes",
     "Symmetry",
-    "Tree"
+    "Tree",
+    "Kaleidoscope"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes

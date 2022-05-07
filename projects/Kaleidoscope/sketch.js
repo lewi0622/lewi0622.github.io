@@ -112,8 +112,7 @@ function draw_indices(pts, pt){
   //draw triangle between pt and two furthest points
   c = palette[c_idx%palette.length]
   c_idx++
-  c[3] = floor(random(100,200));
-  // c[3] = 200
+  c[3] = floor(random(100,220));
   fill(c);
   triangle(pts[pt.idxs[0]].x, pts[pt.idxs[0]].y, pts[pt.idxs[1]].x, pts[pt.idxs[1]].y, pt.x, pt.y);
 }
