@@ -6,6 +6,13 @@ capture_time = 10
 function setup() {
   common_setup(gif);
   change_default_palette(random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]));
+  //post messgae for squarespce consumption
+  message = JSON.stringify({
+    design: "Kaleidoscope",
+    seed: seed,
+    palette: palette_names[default_palette]
+  })
+  window.parent.postMessage(message, '*')
 
   bg_c = color(random(palette));
 
@@ -28,10 +35,8 @@ function draw() {
 
   //create series of points
   pt_size = floor(random(10,30))*global_scale;
-  console.log("pt_size ", pt_size);
   pts = [];
   num_pts = floor(random(4,80));
-  console.log("num_pts", num_pts);
   for(let i=0; i<num_pts; i++){
     new_pt = gen_pt(pts, pt_size*2);
     pts.push(new_pt);
