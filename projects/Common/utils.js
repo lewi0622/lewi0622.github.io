@@ -1,8 +1,4 @@
-let palette_names = [
-  "Sage and Citrus", "Beach Day", "Cotton Candy", "Bumblebee", "Minty",
-  "Game Day", "Birds of Paradise", "Deathloop", "Summertime", "Southwest", "Muted Earth",
-  "Nursery", "60s", "Oasis", "Supperware", "Jazz Cup"];
-let exclude_palette = ["Minty", "Deathloop"]
+
 let default_palette = 10;
 let global_palette;
 let global_scale = 1;

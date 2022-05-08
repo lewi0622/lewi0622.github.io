@@ -3,7 +3,7 @@ fr = 1;
 
 function setup() {
   common_setup(gif);
-  change_default_palette(random([1, 2, 9]));
+  change_default_palette(random([BUMBLEBEE, SIXTIES, SUPPERWARE]));
   frameRate(fr);
 
   line_length = 60*global_scale;
