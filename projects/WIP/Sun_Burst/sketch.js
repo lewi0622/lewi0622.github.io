@@ -4,9 +4,10 @@ fr = 30;
 x_rot = 0;
 x_inc = 1;
 
+capture = false;
+capture_time = 10;
 function setup() {
   common_setup(gif);
-  frameRate(fr);
   line_length = random([25, 40])*global_scale;
   rot = random(0, 360);
   rad = 50*global_scale;
@@ -17,6 +18,7 @@ function setup() {
 }
 //***************************************************
 function draw() {  
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
 
@@ -80,6 +82,8 @@ function draw() {
 
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

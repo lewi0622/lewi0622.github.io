@@ -1,7 +1,10 @@
-type = 'svg';
+gif = false;
+fr = 1;
 
+capture = false;
+capture_time = 8;
 function setup() {
-  common_setup(false, SVG);
+  common_setup(gif, SVG);
   layers = 3;  
   brush_width = canvas_y/layers;
 
@@ -12,6 +15,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
   push();
@@ -92,6 +96,8 @@ function draw() {
   circle(canvas_x/2, canvas_y/2, brush_rad*2+weight);
   //cleanup
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

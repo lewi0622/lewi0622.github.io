@@ -1,6 +1,7 @@
-type = 'svg';
-
 gif = false;
+fr = 1;
+capture = false;
+capture_time = 10;
 function setup() {
   common_setup(gif, SVG);
 
@@ -11,6 +12,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   clear();
   pts0 = [];
   pts1 = [];
@@ -96,6 +98,8 @@ function draw() {
 
   //cleanup
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

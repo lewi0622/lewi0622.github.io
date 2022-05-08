@@ -1,8 +1,14 @@
+gif = false;
+fr = 1;
+
+capture = false;
+capture_time = 10;
 function setup() {
-  common_setup();
+  common_setup(gif);
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
 
@@ -42,6 +48,8 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

@@ -1,4 +1,3 @@
-
 let default_palette = 10;
 let global_palette;
 let global_scale = 1;
@@ -191,10 +190,21 @@ function show_hide_controls(arr, hide){
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
+  //check for debug
   if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
     full_controls=true;
   }
+  //get scale based on window size
   global_scale = find_cnv_mult();
+
+  //set up CCapture, override num_frames in setup/draw if necessary
+  num_frames = capture_time*fr;
+  capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
+
+  //set framerate
+  if(!capture){
+    frameRate(fr);
+  }
 
   //init globals
   if(renderer == P2D){

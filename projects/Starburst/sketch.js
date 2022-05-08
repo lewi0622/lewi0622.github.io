@@ -5,15 +5,11 @@ xoff = 0;
 inc = 0.01*60/fr;
 
 capture = false;
-capture_time = 5
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
+capture_time = 5;
 function setup() {
   common_setup(gif);
-  change_default_palette(random([2, 9, 12]));
-  if(!capture){
-    frameRate(fr);
-  }
+  change_default_palette(random([COTTONCANDY, SOUTHWEST, SIXTIES]));
+
   squares = [];
   palette = shuffle(palette);
   bg_c = color(random(palette));

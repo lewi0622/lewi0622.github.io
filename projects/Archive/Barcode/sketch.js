@@ -7,18 +7,19 @@ offset = 50;
 theta = 90;
 theta_inc = 0.5*60/fr;
 
-//***************************************************
+capture = false;
+capture_time = 8;
 function setup() {
   common_setup(gif);
-  frameRate(fr);
+
   //apply background
   bg_c = bg(true);
   palette_reset = JSON.parse(JSON.stringify(shuffle(palette)));
   theta_offset = random(180);
-  // createLoop({duration:12, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   if(gif){
     clear();
     background(bg_c);
@@ -50,7 +51,8 @@ function draw() {
 
   //cutlines
   apply_cutlines();
-  
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

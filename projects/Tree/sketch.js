@@ -3,15 +3,10 @@ fr = 1;
 
 capture = false;
 capture_time = 20
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   //looks good in 300x400
   common_setup(gif, P2D, 300);
-  change_default_palette(6);
-  if(!capture){
-    frameRate(fr);
-  }
+  change_default_palette(BIRDSOFPARADISE);
 }
 //***************************************************
 function draw() {

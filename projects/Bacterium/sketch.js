@@ -8,14 +8,10 @@ phase_inc = 1.5;
 
 capture = false;
 capture_time = 5
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  change_default_palette(random([1, 9, 14]));
-  if(!capture){
-    frameRate(fr);
-  }
+  change_default_palette(random([BEACHDAY, SOUTHWEST, SUPPERWARE]));
+
   //styling
   palette = shuffle(palette);
   bg_c = bg(true);

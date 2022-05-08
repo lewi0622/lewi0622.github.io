@@ -1,5 +1,3 @@
-type = 'svg';
-
 gif = true;
 noiseMax = 2;
 phase_off = 20;
@@ -7,12 +5,9 @@ fr = 30;
 
 capture = false;
 capture_time = 8
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   if(!capture){
     common_setup(gif, SVG);
-    frameRate(fr);
   }
   else{
     common_setup(gif);

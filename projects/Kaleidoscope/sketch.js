@@ -2,15 +2,29 @@ gif = false;
 fr = 1;
 
 capture = false;
-capture_time = 5
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
+capture_time = 10
 function setup() {
   common_setup(gif);
-  change_default_palette(random([0, 2, 14]));
-  if(!capture){
-    frameRate(fr);
-  }
+  change_default_palette(random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]));
+
+  bg_c = color(random(palette));
+
+  noStroke();
+}
+//***************************************************
+function draw() {
+  capture_start(capture);
+
+  clear();
+  
+  //bleed
+  bleed_border = apply_bleed();
+
+  //apply background
+  background(bg_c);
+
+  //actual drawing stuff
+  push();
 
   //create series of points
   pt_size = floor(random(10,30))*global_scale;
@@ -23,28 +37,7 @@ function setup() {
     pts.push(new_pt);
   }
 
-  //color index
-  c_idx = 0;
-  bg_c = color(random(palette));
-  lerp_step = 0.2;
-  frame_switch = fr;
-
   furthest_pts(pts);
-  noStroke();
-}
-//***************************************************
-function draw() {
-  capture_start(capture);
-
-  clear();
-  //bleed
-  bleed_border = apply_bleed();
-
-  //apply background
-  background(bg_c);
-
-  //actual drawing stuff
-  push();
 
   pts.forEach(pt => {
     draw_indices(pts, pt);
@@ -110,8 +103,7 @@ function furthest_pts(arr){
 
 function draw_indices(pts, pt){
   //draw triangle between pt and two furthest points
-  c = palette[c_idx%palette.length]
-  c_idx++
+  c = random(palette)
   c[3] = floor(random(100,220));
   fill(c);
   triangle(pts[pt.idxs[0]].x, pts[pt.idxs[0]].y, pts[pt.idxs[1]].x, pts[pt.idxs[1]].y, pt.x, pt.y);

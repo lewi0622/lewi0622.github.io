@@ -1,17 +1,18 @@
-type = 'svg';
-
-
 let font;
 function preload() {
   font = loadFont('..\\..\\fonts\\SquarePeg-Regular.ttf');
 }
 
+gif = false;
+fr = 1;
+capture = false;
+capture_time = 10;
 function setup() {
-  common_setup(false, SVG);
-  
+  common_setup(gif, SVG);
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
 
@@ -71,7 +72,8 @@ function draw() {
 
   //cleanup
   apply_cutlines();
-  save_drawing('svg');
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

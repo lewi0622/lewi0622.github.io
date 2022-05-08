@@ -8,16 +8,18 @@ inc = 0.01*60/fr;
 rows = [];
 cols = [];
 
-//***************************************************
+capture = false;
+capture_time = 8;
 function setup() {
   common_setup(gif);
-  frameRate(fr);
+
   palette = JSON.parse(JSON.stringify(shuffle(palette))).slice(0,5);
   bg_c = bg(true);
   palette_reset = JSON.parse(JSON.stringify(shuffle(palette)));
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   if(gif){
     clear();
     background(bg_c);
@@ -81,6 +83,7 @@ function draw() {
   //cutlines
   apply_cutlines();
   
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

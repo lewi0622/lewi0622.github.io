@@ -3,14 +3,9 @@ fr = 1;
 
 capture = false;
 capture_time = 10
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  change_default_palette(random([1, 2, 11]));
-  if(!capture){
-    frameRate(fr);
-  }
+  change_default_palette(random([BEACHDAY, COTTONCANDY, NURSERY]));
 }
 //***************************************************
 function draw() {

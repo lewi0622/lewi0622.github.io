@@ -1,16 +1,18 @@
 gif = false;
 fr = 1;
 
+capture = false;
+capture_time = 10;
 function setup() {
   common_setup(gif);
-  change_default_palette(random([5, 6, 13]));
-  frameRate(fr);
+  change_default_palette(random([GAMEDAY, BIRDSOFPARADISE, OASIS]));
   line_length = 60*global_scale;
   tile_width = canvas_x / line_length;
   tile_height = canvas_y / line_length;
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
 
@@ -38,6 +40,8 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

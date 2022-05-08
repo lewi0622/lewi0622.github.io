@@ -1,12 +1,11 @@
-type = 'svg';
-
 gif = false;
 fr = 30;
 
 noise_off = 20;
 inc = 0.3*60/fr;
 
-//***************************************************
+capture = false;
+capture_time = 10;
 function setup() {
   common_setup(gif, SVG);
 
@@ -17,6 +16,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
   translate(canvas_x/2, canvas_y/2);
@@ -53,6 +53,7 @@ function draw() {
 
     // circle(new_pt.x, new_pt.y, 20);
   }
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

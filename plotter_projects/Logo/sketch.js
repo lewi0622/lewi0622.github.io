@@ -1,15 +1,19 @@
-type = 'svg';
-
 function preload() {  font = loadFont('..\\..\\fonts\\SquarePeg-Regular.ttf');  }
 
+
+gif = false;
+fr = 1;
+capture = false;
+capture_time = 10;
 function setup() {
-  common_setup(false, SVG, 100, 80);
+  common_setup(gif, SVG, 100, 80);
 
   textFont(font);
   textSize(32*global_scale);
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
   push();
@@ -21,6 +25,8 @@ function draw() {
   pop();
   //cleanup
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

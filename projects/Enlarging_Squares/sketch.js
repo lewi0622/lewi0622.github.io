@@ -9,14 +9,10 @@ rot_offset = 0;
 
 capture = false;
 capture_time = 5
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  change_default_palette(random([2, 12, 14]));
-  if(!capture){
-    frameRate(fr);
-  }
+  change_default_palette(random([COTTONCANDY, SIXTIES, SUPPERWARE]));
+
   palette = shuffle(palette);
   bg_c = color(random(palette));
   noStroke();

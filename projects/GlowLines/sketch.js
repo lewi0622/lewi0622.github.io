@@ -7,14 +7,9 @@ offset = 50
 
 capture = false;
 capture_time = 3
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 function setup() {
   common_setup(gif);
-  change_default_palette(random([8, 9, 15]));
-  if(!capture){
-    frameRate(fr);
-  }
+  change_default_palette(random([SUMMERTIME, SOUTHWEST, JAZZCUP]));
 
   bg_c = random(palette)
 }

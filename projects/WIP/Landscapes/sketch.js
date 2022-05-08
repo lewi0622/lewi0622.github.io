@@ -4,14 +4,16 @@ fr = 60;
 xoff = 0;
 xinc = 5;
 
+capture = false;
+capture_time = 10;
 function setup() {
   common_setup(gif);
-  frameRate(fr);
   c = color(random(palette));
   background(c);
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
 
@@ -38,6 +40,8 @@ function draw() {
 
   //cleanup
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

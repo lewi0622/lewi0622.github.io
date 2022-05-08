@@ -2,15 +2,10 @@ gif = true;
 fr = 30;
 
 capture = false;
-capture_time = 5
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
+capture_time = 5;
 function setup() {
   common_setup(gif);
-  change_default_palette(random([1, 2, 11]));
-  if(!capture){
-    frameRate(fr);
-  }
+  change_default_palette(random([BEACHDAY, COTTONCANDY, NURSERY]));
 
   //create series of points
   pt_size = 20*global_scale;

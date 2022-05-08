@@ -1,19 +1,19 @@
 gif = false;
 fr = 1;
 
+capture = false;
+capture_time = 10;
 function setup() {
   common_setup(gif);
   change_default_palette(random([BUMBLEBEE, SIXTIES, SUPPERWARE]));
-  frameRate(fr);
 
   line_length = 60*global_scale;
   tile_width = canvas_x / line_length;
   tile_height = canvas_y / line_length;
-
-  // createLoop({duration:10, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   i_offset = 0;
   j_offset = 0;
 
@@ -48,6 +48,8 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

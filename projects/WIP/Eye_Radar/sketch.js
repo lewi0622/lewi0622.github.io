@@ -4,9 +4,10 @@ fr = 30;
 xoff = 0;
 inc = 0.01*60/fr;
 
+capture = false;
+capture_time = 10;
 function setup() {
   common_setup(gif);
-  frameRate(fr);
 
   palette = shuffle(palette);
   bg_c = random(palette)
@@ -27,10 +28,10 @@ function setup() {
   create_line(0, 0, 0, 0);
   //Dont' know why this is necessary, but round/project gives weird nodes at line connection points
   strokeCap(SQUARE)
-  // createLoop({duration:5, gif:{fileName:"instanceMode.gif"}})
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   clear();
   //bleed
   bleed_border = apply_bleed();
@@ -93,6 +94,8 @@ function draw() {
   pop();
   //cutlines
   apply_cutlines();
+
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs

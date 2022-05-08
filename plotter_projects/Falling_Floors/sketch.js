@@ -1,14 +1,15 @@
-type = 'svg';
-
 gif = true;
 noiseMax = 2;
 phase = 0;
 phase_off = 20;
 phase_inc = 0.01;
 fr = 30;
+
+capture = false;
+capture_time = 8;
 function setup() {
   common_setup(gif, SVG);
-  frameRate(fr)
+
   noFill();
   strokeWeight(1.5)
   angleMode(DEGREES)

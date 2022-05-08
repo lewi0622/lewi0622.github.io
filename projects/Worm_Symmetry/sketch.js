@@ -6,16 +6,10 @@ xoff = 0;
 inc = 0.1*60/fr;
 
 capture = false;
-capture_time = 15
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
-
-//***************************************************
+capture_time = 15;
 function setup() {
   common_setup(gif);
-  if(!capture){
-    frameRate(fr);
-  }
+  
   sym_angs = floor(random(6,49));
   line_segs = floor(random(20,51));
   line_color = color(random(palette));

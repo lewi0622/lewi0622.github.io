@@ -7,14 +7,9 @@ inc = 0.1*60/fr;
 
 capture = false;
 capture_time = 5
-num_frames = capture_time*fr;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
-//***************************************************
 function setup() {
   common_setup(gif);
-  if(!capture){
-    frameRate(fr);
-  }
+
   //apply background
   sym_angs = random([4,6,8,10,12,14,16]);
   line_segs = floor(random(5,20));

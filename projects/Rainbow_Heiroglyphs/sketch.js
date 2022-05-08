@@ -6,12 +6,10 @@ xinc = 0.001*60/fr;
 offset = 50;
 
 capture = false;
-capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
+capture_time = 340/fr;
 function setup() {
   common_setup(gif);
-  if(!capture){
-    frameRate(fr);
-  }
+
   noFill();
   steps = floor(random(3,8));
   steps = 3;
@@ -19,8 +17,6 @@ function setup() {
   colorMode(HSB);
   bg_c = "WHITE"
   background(bg_c)
-
-  num_frames = 340;
 }
 //***************************************************
 function draw() {

@@ -3,13 +3,14 @@ fr = 5;
 c_id = 0;
 last_c_id = c_id;
 
-//***************************************************
+capture = false;
+capture_time = 10;
 function setup() {
   common_setup(gif);
-  frameRate(fr);
 }
 //***************************************************
 function draw() {
+  capture_start(capture);
   //bleed
   bleed_border = apply_bleed();
 
@@ -109,6 +110,7 @@ function draw() {
   //cutlines
   apply_cutlines();
 
+  capture_frame(capture, num_frames);
 }
 //***************************************************
 //custom funcs
