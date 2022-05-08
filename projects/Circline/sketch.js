@@ -20,7 +20,6 @@ function draw() {
   line_length = random([25, 40])*global_scale;
   circle_x = canvas_x/line_length;
   circle_y = canvas_y/line_length;
-  console.log(canvas_x/line_length);
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
 
   //actual drawing stuff
