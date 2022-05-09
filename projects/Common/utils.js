@@ -755,3 +755,15 @@ function indexOfMax(arr) {
   }
   return maxIndex;
 }
+
+function message_details(){
+  //post messgae for squarespce consumption
+  var loc = window.location.pathname.split('/');
+  var dir = loc[loc.length-2];
+  message = JSON.stringify({
+    design: dir,
+    seed: seed,
+    palette: palette_names[default_palette]
+  })
+  window.parent.postMessage(message, '*')
+}

@@ -6,13 +6,7 @@ capture_time = 10
 function setup() {
   common_setup(gif);
   change_default_palette(random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]));
-  //post messgae for squarespce consumption
-  message = JSON.stringify({
-    design: "Kaleidoscope",
-    seed: seed,
-    palette: palette_names[default_palette]
-  })
-  window.parent.postMessage(message, '*')
+  message_details();
 
   bg_c = color(random(palette));
 
