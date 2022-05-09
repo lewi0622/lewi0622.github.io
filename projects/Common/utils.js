@@ -222,7 +222,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   seed_scale_button(400);
   seed = reset_drawing(seed, base_x, base_y);
   angleMode(DEGREES);
-  change_default_palette(default_palette);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
   
@@ -241,6 +240,9 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
 
   if (typeof suggested_palette !== 'undefined') {
     change_default_palette(suggested_palette);
+  }
+  else{
+    change_default_palette(default_palette);
   }
 
   //post details
@@ -261,14 +263,22 @@ function setParams(){
   add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
 
-  if(seed != undefined && seed != "undefined"){
-    //strips out whitespace %20 characters from seed
-    seed = seed.replace(/%20/g, "")
-  }
-  else if(document.getElementById("Seed")){
-    seed = document.getElementById("Seed").value;
-  }
+  // if(seed != undefined && seed != "undefined"){
+  //   //strips out whitespace %20 characters from seed
+  //   seed = seed.replace(/%20/g, "")
+  // }
+  // else if(document.getElementById("Seed")){
+  //   console.log(seed);
+  //   seed = document.getElementById("Seed").value;
+  // }
   if(colors != undefined){
+    if(!isPositiveInteger(colors)){
+      //parse palette name
+      colors = palette_names.indexOf(colors,0);
+      if(colors == -1){
+        colors = default_palette;
+      }
+    }
     global_palette=palettes[colors];
   };
   if(img_scale != undefined){
@@ -301,7 +311,7 @@ function getParamValue(paramName){
     {
         var pArr = qArray[i].split('='); //split key and value
         if (pArr[0] == paramName) 
-            return pArr[1]; //return value
+            return pArr[1].replace(/%20/g, " "); //return value
     }
 }
 
@@ -702,8 +712,8 @@ function windowResized() {
 }
 
 function change_default_palette(palette_id){
-  if(getParamValue('colors') != undefined){
-    palette_id = int(getParamValue('colors'));
+  if(colors != undefined){
+    palette_id = colors;
   }
   default_palette = palette_id;
   global_palette = palettes[palette_id];
@@ -774,4 +784,18 @@ function message_details(){
     palette: palette_names[default_palette]
   })
   window.parent.postMessage(message, '*')
+}
+
+function isPositiveInteger(str) {
+  if (typeof str !== 'string') {
+    return false;
+  }
+
+  const num = Number(str);
+
+  if (Number.isInteger(num) && num > 0) {
+    return true;
+  }
+
+  return false;
 }
