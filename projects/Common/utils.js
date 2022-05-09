@@ -791,16 +791,12 @@ function message_details(){
 
 function catch_save_message(){
   window.addEventListener("message", (event) =>{
-    console.log(event);
-    console.log(event.data);
     if(event.data == "Save"){
       //save canvas as data url locally
       var loc = window.location.pathname;
       var dir = loc.substring(0, loc.lastIndexOf('/'));
       var palette = palette_names[default_palette];
-      localStorage.setItem([dir,seed,palette].join("_"), cnv.toDataURL());
-      console.log("saving");
-      console.log(cnv.toDataURL());
+      localStorage.setItem([dir,seed,palette].join("_"), cnv.elt.toDataURL());
     }
   })
 }
