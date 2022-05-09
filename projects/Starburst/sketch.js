@@ -7,8 +7,8 @@ inc = 0.01*60/fr;
 capture = false;
 capture_time = 5;
 function setup() {
+  suggested_palette = random([COTTONCANDY, SOUTHWEST, SIXTIES]);
   common_setup(gif);
-  change_default_palette(random([COTTONCANDY, SOUTHWEST, SIXTIES]));
 
   squares = [];
   palette = shuffle(palette);

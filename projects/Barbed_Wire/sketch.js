@@ -4,8 +4,8 @@ fr = 1;
 capture = false;
 capture_time = 10
 function setup() {
+  suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, MUTEDEARTH]);
   common_setup(gif);
-  change_default_palette(random([SAGEANDCITRUS, COTTONCANDY, MUTEDEARTH]));
 
   num_pts = 1000;
 }

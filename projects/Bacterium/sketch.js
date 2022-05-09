@@ -9,8 +9,8 @@ phase_inc = 1.5;
 capture = false;
 capture_time = 5
 function setup() {
+  suggested_palette = random([BEACHDAY, SOUTHWEST, SUPPERWARE]);
   common_setup(gif);
-  change_default_palette(random([BEACHDAY, SOUTHWEST, SUPPERWARE]));
 
   //styling
   palette = shuffle(palette);

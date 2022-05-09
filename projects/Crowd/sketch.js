@@ -4,8 +4,8 @@ fr = 1;
 capture = false;
 capture_time = 10;
 function setup() {
+  suggested_palette = random([BEACHDAY, COTTONCANDY, SOUTHWEST]);
   common_setup(gif);
-  change_default_palette(random([BEACHDAY, COTTONCANDY, SOUTHWEST]));
   up_scale = global_scale/2;
 
   line_length = 60*up_scale;

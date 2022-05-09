@@ -4,9 +4,8 @@ fr = 1;
 capture = false;
 capture_time = 10
 function setup() {
-  //default palette for this sketch only
+  suggested_palette = random([SAGEANDCITRUS, SOUTHWEST, NURSERY]);
   common_setup(gif);
-  change_default_palette(random([SAGEANDCITRUS, SOUTHWEST, NURSERY]));
 }
 //***************************************************
 function draw() {

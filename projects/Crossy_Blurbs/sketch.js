@@ -4,8 +4,8 @@ fr = 1;
 capture = false;
 capture_time = 10;
 function setup() {
+  suggested_palette = random([GAMEDAY, BIRDSOFPARADISE, OASIS]);
   common_setup(gif);
-  change_default_palette(random([GAMEDAY, BIRDSOFPARADISE, OASIS]));
   line_length = 60*global_scale;
   tile_width = canvas_x / line_length;
   tile_height = canvas_y / line_length;

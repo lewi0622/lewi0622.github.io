@@ -8,8 +8,8 @@ offset = 50
 capture = false;
 capture_time = 3
 function setup() {
+  suggested_palette = random([SUMMERTIME, SOUTHWEST, JAZZCUP]);
   common_setup(gif);
-  change_default_palette(random([SUMMERTIME, SOUTHWEST, JAZZCUP]));
 
   bg_c = random(palette)
 }

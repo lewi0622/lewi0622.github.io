@@ -4,8 +4,8 @@ fr = 1;
 capture = false;
 capture_time = 10
 function setup() {
+  suggested_palette = random([BEACHDAY, SOUTHWEST, SUPPERWARE]);
   common_setup(gif);
-  change_default_palette(random([BEACHDAY, SOUTHWEST, SUPPERWARE]));
 }
 //***************************************************
 function draw() {

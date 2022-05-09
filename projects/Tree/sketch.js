@@ -4,9 +4,9 @@ fr = 1;
 capture = false;
 capture_time = 20
 function setup() {
+  suggested_palette = BIRDSOFPARADISE;
   //looks good in 300x400
   common_setup(gif, P2D, 300);
-  change_default_palette(BIRDSOFPARADISE);
 }
 //***************************************************
 function draw() {
