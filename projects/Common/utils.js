@@ -792,11 +792,15 @@ function message_details(){
 function catch_save_message(){
   window.addEventListener("message", (event) =>{
     if(event.data == "Save"){
-      //save canvas as data url locally
       var loc = window.location.pathname;
       var dir = loc.substring(0, loc.lastIndexOf('/'));
       var palette = palette_names[default_palette];
-      localStorage.setItem([dir,seed,palette].join("_"), cnv.elt.toDataURL());
+
+      //send message back to parent with data URL and name
+      window.parent.postMessage(JSON.stringify({
+        key:[dir,seed,palette].join("_"),
+        imgURL: cnv.elt.toDataURL()
+      }), '*');
     }
   })
 }
