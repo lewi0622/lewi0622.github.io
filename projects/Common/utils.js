@@ -238,6 +238,14 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   else{
     loop();
   }
+
+  if (typeof suggested_palette !== 'undefined') {
+    change_default_palette(suggested_palette);
+  }
+
+  //post details
+  message_details();
+
   //Assists with loading on phones and other pixel dense screens
   pixelDensity(1)
 }
