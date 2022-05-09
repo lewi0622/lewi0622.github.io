@@ -791,6 +791,8 @@ function message_details(){
 
 function catch_save_message(){
   window.addEventListener("message", (event) =>{
+    console.log(event);
+    console.log(event.data);
     if(event.data == "Save"){
       //save canvas as data url locally
       var loc = window.location.pathname;
