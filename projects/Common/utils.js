@@ -248,6 +248,9 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //post details
   message_details();
 
+  //add listener for save messgae
+  catch_save_message();
+
   //Assists with loading on phones and other pixel dense screens
   pixelDensity(1)
 }
@@ -778,13 +781,26 @@ function message_details(){
   //post messgae for squarespce consumption
   var loc = window.location.pathname;
   var dir = loc.substring(0, loc.lastIndexOf('/'));
-  console.log(dir);
   message = JSON.stringify({
     design: dir,
     seed: seed,
     palette: palette_names[default_palette]
   })
   window.parent.postMessage(message, '*')
+}
+
+function catch_save_message(){
+  window.addEventListener("message", (event) =>{
+    if(event.data == "Save"){
+      //save canvas as data url locally
+      var loc = window.location.pathname;
+      var dir = loc.substring(0, loc.lastIndexOf('/'));
+      var palette = palette_names[default_palette];
+      localStorage.setItem([dir,seed,palette].join("_"), cnv.toDataURL());
+      console.log("saving");
+      console.log(cnv.toDataURL());
+    }
+  })
 }
 
 function isPositiveInteger(str) {
