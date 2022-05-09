@@ -776,8 +776,9 @@ function indexOfMax(arr) {
 
 function message_details(){
   //post messgae for squarespce consumption
-  var loc = window.location.pathname.split('/');
-  var dir = loc[loc.length-2];
+  var loc = window.location.pathname;
+  var dir = loc.substring(0, loc.lastIndexOf('/'));
+  console.log(dir);
   message = JSON.stringify({
     design: dir,
     seed: seed,
