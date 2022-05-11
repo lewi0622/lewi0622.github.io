@@ -4,6 +4,7 @@ let global_scale = 1;
 let global_bleed = 0.25; //quarter inch bleed
 let full_controls = false;
 let type;
+let redraw = false;
 
 function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
@@ -236,7 +237,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
 
   if(!gif){ noLoop(); }
 
-  if (typeof suggested_palette !== 'undefined') {
+  if (typeof suggested_palette !== 'undefined' && !redraw) {
     change_default_palette(suggested_palette);
   }
   else{
@@ -707,6 +708,7 @@ function arrayEquals(a, b) {
 
 function windowResized() {
   if(getParamValue('scale') == undefined && find_cnv_mult() != global_scale){
+    redraw = true;
     setup();
     draw();
   }
