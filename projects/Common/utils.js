@@ -246,11 +246,13 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
     change_default_palette(default_palette);
   }
 
-  //post details
-  message_details();
+  if(!redraw){
+    //post details
+    message_details();
 
-  //add listener for save messgae
-  catch_save_message();
+    //add listener for save messgae
+    catch_save_message();
+  }
 
   //Assists with loading on phones and other pixel dense screens
   pixelDensity(1)
@@ -269,7 +271,6 @@ function setParams(){
 
   //If seed isn't specified, but one exists in the box, resize w/same seed
   if(seed == undefined && document.getElementById("Seed")){
-    console.log(seed);
     seed = document.getElementById("Seed").value;
   }
   if(colors != undefined){
@@ -791,7 +792,6 @@ function message_details(){
 function catch_save_message(){
   window.addEventListener("message", (event) =>{
     if(event.data == "Save"){
-      console.log('received save message')
       var loc = window.location.pathname;
       var dir = loc.substring(0, loc.lastIndexOf('/'));
       var palette = palette_names[default_palette];
