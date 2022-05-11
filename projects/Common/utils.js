@@ -190,10 +190,6 @@ function show_hide_controls(arr, hide){
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
-  //check for debug
-  if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
-    full_controls=true;
-  }
   //get scale based on window size
   global_scale = find_cnv_mult();
 
@@ -221,6 +217,13 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   setParams();
   seed_scale_button(400);
   seed = reset_drawing(seed, base_x, base_y);
+  // disable right clicks 
+  if(!full_controls){
+    document.oncontextmenu = function() { 
+      return false; 
+    };
+  }
+
   angleMode(DEGREES);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
@@ -231,12 +234,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
 
-  if(!gif){
-    noLoop();
-  }
-  else{
-    loop();
-  }
+  if(!gif){ noLoop(); }
 
   if (typeof suggested_palette !== 'undefined') {
     change_default_palette(suggested_palette);
@@ -259,7 +257,7 @@ function setParams(){
   //get all params if they exist
   colors = getParamValue('colors');
   controls = getParamValue('controls');
-  full_controls = controls == "full" || full_controls;
+  full_controls = controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
   seed = getParamValue('seed');
   img_scale = getParamValue('scale');
   add_bleed = getParamValue('bleed');
