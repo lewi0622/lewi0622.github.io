@@ -86,8 +86,8 @@ function seed_scale_button(base_y){
 
   //creates controls below canvas for displaying/setting seed
   input = createInput("seed");
-  input.size(55*global_scale, control_height - 7*global_scale);
-  input.position(btLeft.size().width,base_y*global_scale+global_scale);
+  input.size(55*global_scale, control_height-6);
+  input.position(btLeft.size().width,base_y*global_scale);
   input.style("text-align", "right");
   input.id('Seed');
 
