@@ -66,31 +66,52 @@ function remove_controls(arr){
 
 
 function seed_scale_button(base_y){
-  ids = ["Seed", "Custom Seed", "Color Select", "Randomize"]
-  full_ids = ["Auto Scale", "Scale Box", "Bt Left", "Bt Right", "Save"]
+  ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize"]
+  full_ids = ["Auto Scale", "Scale Box", "Save"]
   remove_controls(ids);
   remove_controls(full_ids);
 
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
 
+  //left/right buttons for easy seed nav
+  btLeft = createButton('<')
+  btLeft.size(20*global_scale, control_height);
+  btLeft.position(0, base_y*global_scale);
+  btLeft.mouseClicked(function() {
+    input.value(int(input.value())-1);
+    set_seed();
+  });
+  btLeft.id('Bt Left')
+
   //creates controls below canvas for displaying/setting seed
   input = createInput("seed");
-  input.size(80*global_scale, control_height - 7*global_scale);
-  input.position(0,base_y*global_scale+global_scale);
+  input.size(55*global_scale, control_height - 7*global_scale);
+  input.position(btLeft.size().width,base_y*global_scale+global_scale);
+  input.style("text-align", "right");
   input.id('Seed');
+
+  //left/right buttons for easy seed nav
+  btRight = createButton('>')
+  btRight.size(20*global_scale, control_height);
+  btRight.position(input.size().width + input.position().x, base_y*global_scale);
+  btRight.mouseClicked(function() {
+    input.value(int(input.value())+1);
+    set_seed();
+  });
+  btRight.id('Bt Right')
   
   //custom seed button
   button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
   button.size(90*global_scale, control_height)
-  button.position(input.size().width + control_spacing, base_y*global_scale);
+  button.position(btRight.size().width + btRight.position().x + control_spacing, base_y*global_scale);
   button.id('Custom Seed')
 
   //color palette select
   color_sel = createSelect();
   color_sel.position(button.position().x + button.size().width + control_spacing, base_y*global_scale);
-  color_sel.size(135*global_scale, control_height);
+  color_sel.size(120*global_scale, control_height);
   palette_names.forEach(name => {
     if(!exclude_palette.includes(name)){
       color_sel.option(name);
@@ -123,31 +144,12 @@ function seed_scale_button(base_y){
   auto_scale.size(70*global_scale, control_height)
   auto_scale.id("Auto Scale")
 
-
   //scale text box
   scale_box = createInput('');
   scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height)
   scale_box.size(30*global_scale, 17*global_scale);
   scale_box.value(global_scale);
   scale_box.id("Scale Box")
-
-  //left/right buttons for easy seed nav
-  btLeft = createButton('<')
-  btLeft.size(20*global_scale, control_height);
-  btLeft.position(scale_box.size().width + scale_box.position().x +control_spacing, base_y*global_scale + control_height);
-  btLeft.mouseClicked(function() {
-    input.value(int(input.value())-1);
-    set_seed();
-  });
-  btLeft.id('Bt Left')
-  btRight = createButton('>')
-  btRight.size(20*global_scale, control_height);
-  btRight.position(btLeft.size().width + btLeft.position().x, base_y*global_scale + control_height);
-  btRight.mouseClicked(function() {
-    input.value(int(input.value())+1);
-    set_seed();
-  });
-  btRight.id('Bt Right')
 
   //save button
   btSave = createButton("Save");
@@ -274,7 +276,7 @@ function setParams(){
   //   seed = document.getElementById("Seed").value;
   // }
   if(colors != undefined){
-    if(!isPositiveInteger(colors)){
+    if(!isPositiveIntegerOrZero(colors)){
       //parse palette name
       colors = palette_names.indexOf(colors,0);
       if(colors == -1){
@@ -805,14 +807,14 @@ function catch_save_message(){
   })
 }
 
-function isPositiveInteger(str) {
+function isPositiveIntegerOrZero(str) {
   if (typeof str !== 'string') {
     return false;
   }
 
   const num = Number(str);
 
-  if (Number.isInteger(num) && num > 0) {
+  if (Number.isInteger(num) && num >= 0) {
     return true;
   }
 
