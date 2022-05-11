@@ -267,14 +267,11 @@ function setParams(){
   add_cut = getParamValue('cut');
   set_dpi = getParamValue('dpi');
 
-  // if(seed != undefined && seed != "undefined"){
-  //   //strips out whitespace %20 characters from seed
-  //   seed = seed.replace(/%20/g, "")
-  // }
-  // else if(document.getElementById("Seed")){
-  //   console.log(seed);
-  //   seed = document.getElementById("Seed").value;
-  // }
+  //If seed isn't specified, but one exists in the box, resize w/same seed
+  if(seed == undefined && document.getElementById("Seed")){
+    console.log(seed);
+    seed = document.getElementById("Seed").value;
+  }
   if(colors != undefined){
     if(!isPositiveIntegerOrZero(colors)){
       //parse palette name
@@ -794,6 +791,7 @@ function message_details(){
 function catch_save_message(){
   window.addEventListener("message", (event) =>{
     if(event.data == "Save"){
+      console.log('received save message')
       var loc = window.location.pathname;
       var dir = loc.substring(0, loc.lastIndexOf('/'));
       var palette = palette_names[default_palette];
