@@ -27,8 +27,8 @@ function draw() {
   center_rotate(random([0, 180]));
 
   noStroke();
-  rect_width = canvas_x/4;
-  rect_height = canvas_y*0.75;
+  rect_width = floor(canvas_x/4);
+  rect_height = floor(canvas_y*0.75);
   shape=random(['square', 'circle']);
   //best if even
   step = 2*global_scale;
@@ -52,3 +52,37 @@ function draw() {
 }
 //***************************************************
 //custom funcs
+function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, pow, seed, shape){
+  //creates a matrix of noise going from more likely to less. Use rotate to swap i/j. Use reverse to change noise density sides
+  if(rotate==true){
+    [rect_width, rect_height] = [rect_height, rect_width];
+  }
+  for(let i=0; i<150; i++){
+    chance = constrain(Math.pow(i/150, pow), min, max);
+    if(reverse==true){
+      chance = 1-chance;
+    }
+    
+    for(let j=0; j<50; j++){
+      push();
+      pixel_c = random(palette);
+      fill(pixel_c);
+
+      if(rotate == true){
+        translate(j*step, i*step);
+      }
+      else{
+        translate(i*step, j*step);
+      }
+      if(noise((i+1)*(j+1)+seed)>chance){
+        if(shape=='square'){
+          square(0,0,random(step/2, step*2));
+        }
+        else if(shape=='circle'){
+          circle(step/2, step/2 ,random(step/2, step*2));
+        }
+      }
+      pop();
+    }
+  }
+}
