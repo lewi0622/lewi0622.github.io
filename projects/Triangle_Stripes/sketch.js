@@ -14,7 +14,7 @@ function draw() {
   //bleed
   bleed_border = apply_bleed();
 
-  palette = shuffle(palette);
+  palette = shuffle(palette, true);
   //apply background
   random([bg_horizontal_strips,bg_vertical_strips])(2);
 
@@ -25,7 +25,7 @@ function draw() {
   size = palette.length*base_size*global_scale;
 
   //reorder palette
-  shuffle(palette);
+  palette = shuffle(palette, true);
 
   for(let i=0; i<palette.length; i++){
     push();

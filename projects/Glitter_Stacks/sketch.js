@@ -15,7 +15,6 @@ function draw() {
   bleed_border = apply_bleed();
 
   working_palette = [...palette];
-  strokeCap(random([PROJECT,ROUND]))
 
   //apply background
   bg_c = random(working_palette)

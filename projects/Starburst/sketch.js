@@ -11,7 +11,7 @@ function setup() {
   common_setup(gif);
 
   squares = [];
-  palette = shuffle(palette);
+  palette = shuffle(palette, true);
   bg_c = color(random(palette));
   noStroke();
   square_rate = 5; //10 frames

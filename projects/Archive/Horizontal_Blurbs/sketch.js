@@ -13,9 +13,9 @@ capture_time = 8;
 function setup() {
   common_setup(gif);
 
-  palette = JSON.parse(JSON.stringify(shuffle(palette))).slice(0,5);
+  palette = JSON.parse(JSON.stringify(shuffle(palette, true))).slice(0,5);
   bg_c = bg(true);
-  palette_reset = JSON.parse(JSON.stringify(shuffle(palette)));
+  palette_reset = JSON.parse(JSON.stringify(shuffle(palette, true)));
 }
 //***************************************************
 function draw() {

@@ -13,7 +13,7 @@ function setup() {
   common_setup(gif);
 
   //styling
-  palette = shuffle(palette);
+  palette = shuffle(palette, true);
   bg_c = bg(true);
   weight = 2*global_scale;
   strokeWeight(weight);

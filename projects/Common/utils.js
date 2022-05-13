@@ -195,6 +195,8 @@ function show_hide_controls(arr, hide){
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //get scale based on window size
   global_scale = find_cnv_mult();
+  //override shuffle with func that uses Math.random instead of p5.js random
+  over_ride_shuffle();
 
   //set up CCapture, override num_frames in setup/draw if necessary
   num_frames = capture_time*fr;
@@ -817,4 +819,20 @@ function isPositiveIntegerOrZero(str) {
   }
 
   return false;
+}
+
+function over_ride_shuffle(){
+  var origShuffle = shuffle;
+  shuffle = function(array, standardize=false, len=50) {
+    //override p5js shuffle
+    if(standardize){
+      while(array.length<len){
+        array.push([""]);
+      }
+    }
+    //call original shuffle function
+    array = origShuffle(array);
+
+    return array.filter(a => !arrayEquals(a, [""]));
+  }
 }

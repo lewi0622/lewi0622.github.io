@@ -9,11 +9,12 @@ rot_offset = 0;
 
 capture = false;
 capture_time = 5
+
 function setup() {
   suggested_palette = random([COTTONCANDY, SIXTIES, SUPPERWARE]);
   common_setup(gif);
 
-  palette = shuffle(palette);
+  palette = shuffle(palette, true);
   bg_c = color(random(palette));
   noStroke();
   square_rate = 5; //10 frames

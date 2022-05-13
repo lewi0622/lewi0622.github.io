@@ -9,7 +9,7 @@ capture_time = 10;
 function setup() {
   common_setup(gif);
 
-  palette = shuffle(palette);
+  palette = shuffle(palette, true);
   bg_c = random(palette)
   reduce_array(palette, bg_c)
   bg_c = color(bg_c);

@@ -38,7 +38,7 @@ function draw() {
     };
   });
 
-  palette = shuffle(palette);
+  palette = shuffle(palette, true);
 
   pipes.forEach(pipe => {
     //set color
