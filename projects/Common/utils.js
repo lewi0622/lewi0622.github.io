@@ -218,8 +218,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   dpi = 300;
 
   setParams();
-  //get scale based on window size
-  global_scale = find_cnv_mult();
   seed_scale_button(400);
   seed = reset_drawing(seed, base_x, base_y);
   // disable right clicks 
@@ -286,6 +284,10 @@ function setParams(){
   };
   if(img_scale != undefined){
     global_scale = float(img_scale);
+  }
+  else{
+    //get scale based on window size
+    global_scale = find_cnv_mult();
   }
 
   if(controls != undefined || full_controls){
