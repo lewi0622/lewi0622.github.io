@@ -193,8 +193,6 @@ function show_hide_controls(arr, hide){
 }
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
-  //get scale based on window size
-  global_scale = find_cnv_mult();
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
 
@@ -220,6 +218,8 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   dpi = 300;
 
   setParams();
+  //get scale based on window size
+  global_scale = find_cnv_mult();
   seed_scale_button(400);
   seed = reset_drawing(seed, base_x, base_y);
   // disable right clicks 
@@ -228,7 +228,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
       return false; 
     };
   }
-
   angleMode(DEGREES);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
@@ -605,64 +604,6 @@ function apply_cutlines(){
   }
 }
 
-
-function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, pow, seed, shape){
-  //creates a matrix of noise going from more likely to less. Use rotate to swap i/j. Use reverse to change noise density sides
-  if(rotate==true){
-    [rect_width, rect_height] = [rect_height, rect_width];
-  }
-  if(rotate==undefined){
-    rotate=false;
-  }
-  if(reverse==undefined){
-    reverse=false;
-  }
-  if(min==undefined){
-    min=0;
-  }
-  if(max==undefined){
-    max=1;
-  }
-  if(pow==undefined){
-    pow=1;
-  }
-  if(seed==undefined){
-    seed=0;
-  }
-  if(shape==undefined){
-    shape=random(['square', 'circle'])
-  }
-
-  for(let i=0; i<rect_width; i+=step){
-    chance = constrain(Math.pow(i/rect_width, pow), min, max);
-    if(reverse==true){
-      chance = 1-chance;
-    }
-    
-    for(let j=0; j<rect_height; j+=step){
-      push();
-      pixel_c = random(palette);
-      fill(pixel_c);
-
-      if(rotate == true){
-        translate(j, i);
-      }
-      else{
-        translate(i, j);
-      }
-      if(noise((i+1)*(j+1)+seed)>chance){
-        if(shape=='square'){
-          square(0,0,random(step/2, step*2));
-        }
-        else if(shape=='circle'){
-          circle(step/2, step/2 ,random(step/2, step*2));
-        }
-      }
-      pop();
-    }
-  }
-}
-
 function gen_n_colors(n){
   colors = [];
   while(colors.length < n){
@@ -729,13 +670,16 @@ function change_default_palette(palette_id){
 function find_cnv_mult(){
   let base_x = 400;
   let base_y = 420;
+  console.log(full_controls)
   if(full_controls){
     //space for second row of controls, the extra 1 is make sure no scrollbar
+    console.log('here')
     base_y += 21;
   }
   //finds smallest multipler
   x_mult = Math.round((windowWidth/base_x)*1000)/1000;
   y_mult = Math.round((windowHeight/base_y)*1000)/1000;
+  console.log(x_mult, y_mult);
   if(x_mult<y_mult){
     return constrain(x_mult, 1, 12);
   }
