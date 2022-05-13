@@ -6,6 +6,8 @@ capture_time = 10;
 function setup() {
   suggested_palette = random([BEACHDAY, COTTONCANDY, SOUTHWEST]);
   common_setup(gif);
+
+  erase_or_bg = random()>0.5;
 }
 //***************************************************
 function draw() {
@@ -25,25 +27,24 @@ function draw() {
   [h,w] = random([[20,70], [10,10], [40,100]]);
 
   ribbon_h = h*global_scale;
-  ribbon_w = -w*global_scale;
-  alt = random([0,1])==0;
 
-  for(let i=0; i<canvas_x+Math.abs(ribbon_w); i+=random([2,4,6,8])*global_scale){
-    for(let j=0; j<canvas_y; j+=ribbon_h){
-      if(alt){
-        if(i%2==0){
-          ribbon_w = ribbon_w*-1;
-        }
-      }
+  ribbon_w = -w*global_scale;
+
+  j_limit = round(canvas_y/ribbon_h);
+
+  debug_counter = 0;
+  for(let i=0; i<canvas_x*1.5; i+=random([2,4,6,8])*global_scale){
+    debug_counter++
+    for(let j=0; j<j_limit; j++){
       push();
-      translate(i,j);
+      translate(i,j*ribbon_h);
       fill(random(palette));
       ribbon_curl(ribbon_h,ribbon_w);
       pop();
     }
   }
   pop();
-  if(random([true, false])){
+  if(erase_or_bg){
     stroke(bg_c);
   }
   else{
