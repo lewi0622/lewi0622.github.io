@@ -1,4 +1,4 @@
-gif = true;
+gif = false;
 fr = 30;
 
 capture = false;
@@ -17,7 +17,8 @@ function setup() {
 
   //color index
   c_idx = 0;
-  bg_c = color(random(palette));
+  working_palette = JSON.parse(JSON.stringify(palette))
+  bg_c = color(random(working_palette));
   lerp_step = 0.2;
   frame_switch = fr;
 
@@ -69,8 +70,8 @@ function draw() {
 function gen_pt(arr, min_dist){
   //checks new point to see if it's greater than the min_dist
   new_pt = {
-    x:floor(random(pt_size, canvas_x-pt_size)),
-    y:floor(random(pt_size, canvas_y-pt_size)),
+    x:random(pt_size, canvas_x-pt_size),
+    y:random(pt_size, canvas_y-pt_size),
     moving:false,
     dest_x:0,
     dest_y:0,
@@ -112,7 +113,7 @@ function furthest_pts(arr){
 
 function draw_indices(pts, pt){
   //draw triangle between pt and two furthest points
-  c = palette[c_idx%palette.length]
+  c = working_palette[c_idx%palette.length]
   c_idx++
   c[3] = 100;
   fill(c);
