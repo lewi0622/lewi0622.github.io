@@ -670,16 +670,13 @@ function change_default_palette(palette_id){
 function find_cnv_mult(){
   let base_x = 400;
   let base_y = 420;
-  console.log(full_controls)
   if(full_controls){
     //space for second row of controls, the extra 1 is make sure no scrollbar
-    console.log('here')
     base_y += 21;
   }
   //finds smallest multipler
   x_mult = Math.round((windowWidth/base_x)*1000)/1000;
   y_mult = Math.round((windowHeight/base_y)*1000)/1000;
-  console.log(x_mult, y_mult);
   if(x_mult<y_mult){
     return constrain(x_mult, 1, 12);
   }

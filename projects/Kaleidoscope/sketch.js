@@ -7,7 +7,8 @@ function setup() {
   suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
 
-  bg_c = color(random(palette));
+  working_palette = JSON.parse(JSON.stringify(palette))
+  bg_c = random(working_palette);
 
   noStroke();
 }
@@ -27,9 +28,9 @@ function draw() {
   push();
 
   //create series of points
-  pt_size = floor(random(10,30))*global_scale;
+  pt_size = floor(random(10,30)*global_scale);
   pts = [];
-  num_pts = floor(random(4,80));
+  num_pts = floor(random(6,60));
   for(let i=0; i<num_pts; i++){
     new_pt = gen_pt(pts, pt_size*2);
     pts.push(new_pt);
@@ -53,8 +54,8 @@ function draw() {
 function gen_pt(arr, min_dist){
   //checks new point to see if it's greater than the min_dist
   new_pt = {
-    x:floor(random(-canvas_x, canvas_x*2)),
-    y:floor(random(-canvas_y, canvas_y*2)),
+    x:random(-canvas_x, canvas_x*2),
+    y:random(-canvas_y, canvas_y*2),
     idxs:[]
   };
   
@@ -101,7 +102,7 @@ function furthest_pts(arr){
 
 function draw_indices(pts, pt){
   //draw triangle between pt and two furthest points
-  c = random(palette)
+  c = random(working_palette)
   c[3] = floor(random(100,220));
   fill(c);
   triangle(pts[pt.idxs[0]].x, pts[pt.idxs[0]].y, pts[pt.idxs[1]].x, pts[pt.idxs[1]].y, pt.x, pt.y);
