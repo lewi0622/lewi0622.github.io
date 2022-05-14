@@ -1,16 +1,18 @@
 gif = true;
 fr = 30;
 
-xoff = 0;
-xinc = 0.001*60/fr;
-offset = 50;
-
 capture = false;
 capture_time = 340/fr;
 function setup() {
   common_setup(gif);
 
   noFill();
+
+  xoff = 0;
+  xinc = 0.001*60/fr;
+  offset = 50;
+  frameCount = 0;
+
   steps = floor(random(3,8));
   steps = 3;
   step_size = canvas_x/2/steps;
