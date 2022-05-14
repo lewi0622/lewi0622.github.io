@@ -45,7 +45,6 @@ function draw() {
     noFill();
     curveVertex(-10*global_scale,0);
     curveVertex(-10*global_scale,0);
-    console.log(canvas_x*2/tile_x);
     for(let i = 0;  i<200; i++){
       l_r = random([-1,1,1])*tile_x*3;
       u_d = random([-1,1])*amp;
