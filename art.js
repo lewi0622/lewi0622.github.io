@@ -32,7 +32,8 @@ let arts = [
     "BrushStrokes",
     "Symmetry",
     "Tree",
-    "Kaleidoscope"
+    "Kaleidoscope",
+    "Sliding_Triangles"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes
