@@ -34,15 +34,14 @@ function draw() {
   x_off = canvas_x/8 + square_size/2;
   y_off = canvas_y/8 + square_size/2;
 
-
   isFill=false;
   noFill();
-  for(let i=0; i*step<canvas_x-x_off*2; i++){
+  for(let i=0; i<14; i++){
     push();
     c = random(working_palette);
     stroke(c);
 
-    for(let j= 0; j*step<canvas_y-y_off*2; j++){
+    for(let j= 0; j<14; j++){
       if(random([0,1,2])==0){
         fill(c);
         isFill=true;
