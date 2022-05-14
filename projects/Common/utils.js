@@ -237,6 +237,8 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   strokeCap(random([PROJECT,ROUND]));
 
   if(!gif){ noLoop(); }
+  //else necessary when redrawing timed pieces
+  else{ loop();}
 
   if (typeof suggested_palette !== 'undefined' && !redraw) {
     change_default_palette(suggested_palette);
