@@ -1,9 +1,6 @@
 gif = true;
 fr = 30;
 
-xoff = 0;
-inc = 0.01*60/fr;
-
 capture = false;
 capture_time = 5;
 function setup() {
@@ -14,6 +11,9 @@ function setup() {
   palette = shuffle(palette, true);
   bg_c = color(random(palette));
   noStroke();
+
+  xoff = 0;
+  inc = 0.01*60/fr;   
   square_rate = 5; //10 frames
   square_inc = 3*global_scale;
   symmetries = floor(random(2,11));

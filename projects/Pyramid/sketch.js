@@ -50,8 +50,11 @@ function arcing(width, linear_spread, rotation){
   translate(canvas_x/2, canvas_y/2);
   rotate(120);
 
-  for(let i=100*global_scale; i<width; i=i+(1*global_scale)){
-    radius = i * random(0.2, 2);
+  arc_offset = 100*global_scale;
+  arc_step = global_scale;
+  arc_max = 100;
+  for(let i=0; i<arc_max; i++){
+    radius = (i*arc_step + arc_offset) * random(0.2, 2);
     stroke(random(working_palette));
 
     strokeWeight(random(1, 10)*global_scale)

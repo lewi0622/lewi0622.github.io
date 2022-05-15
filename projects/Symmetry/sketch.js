@@ -2,7 +2,6 @@ gif = true;
 fr = 30;
 
 noise_off = 20;
-xoff = 0;
 inc = 0.3*60/fr;
 
 capture = false;
@@ -10,6 +9,9 @@ capture = false;
 capture_time = 1;
 function setup() {
   common_setup(gif);
+  xoff = 0;
+  frameCount = 0;
+
   //apply background
   sym_angs = floor(random(4,17));
   line_segs = floor(random(5,15));
@@ -59,6 +61,7 @@ function draw() {
 
   //stop drawing
   if(frameCount>len){
+    console.log('hi')
     noLoop();
   }
   capture_frame(capture, len);

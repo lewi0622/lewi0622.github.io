@@ -45,10 +45,10 @@ function draw() {
     noFill();
     curveVertex(-10*global_scale,0);
     curveVertex(-10*global_scale,0);
-    for(let i = 0;  i<canvas_x*2; i+=tile_x){
+    for(let i = 0;  i<200; i++){
       l_r = random([-1,1,1])*tile_x*3;
       u_d = random([-1,1])*amp;
-      curveVertex(i+noise(i+j)*l_r, noise(i+j)*u_d);
+      curveVertex(i*tile_x+noise(i+j)*l_r, noise(i+j)*u_d);
       amp +=0.5*global_scale;
     }
 

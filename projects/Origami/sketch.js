@@ -1,4 +1,4 @@
-gif = false;
+gif = true;
 fr = 30;
 
 capture = false;

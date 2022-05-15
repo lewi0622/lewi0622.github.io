@@ -92,21 +92,21 @@ function branch(branch_num, start_x, start_y, start_weight){
   let prev_branch_x = start_x;
   let prev_branch_y = start_y;
   let branch_y;
-  // let branch_x = random(5*global_scale,10*global_scale)*dir + prev_branch_x;
+
   let branch_x = prev_branch_x + map(noise(branch_num), 0,1, 5,10)*dir*global_scale
   if(weight<branch_weight){
-    // branch_y = prev_branch_y - random(-7,10)*global_scale;
     branch_y = prev_branch_y - map(noise(branch_num), 0,1, 0,10)*global_scale;
   }
   else{
-    // branch_y = prev_branch_y - random(7,10)*global_scale;
     branch_y = prev_branch_y - map(noise(branch_num), 0,1, 7,10)*global_scale;
   }
   for(let j=0; j<branch_num; j++){
     if(j+8>=branch_num){
       weight -= 0.25*global_scale;
     }
-    if(weight<=0 || j+1==branch_num){
+
+    //round here for scaling issues
+    if(round(weight*1000)/1000<global_scale || j+1==branch_num){
       leaves(prev_branch_x, prev_branch_y);
       break;
     }
@@ -122,14 +122,12 @@ function branch(branch_num, start_x, start_y, start_weight){
       branch_x = random(-3,10)*dir*global_scale + prev_branch_x;
     }
     else{
-      branch_x = prev_branch_x + map(noise(branch_x), 0,1, -3,10)*dir*global_scale;
+      branch_x = prev_branch_x + map(noise(branch_num), 0,1, -3,10)*dir*global_scale;
     }
     if(weight<branch_weight){
-      // branch_y = prev_branch_y - random(0,10)*global_scale;
       branch_y = prev_branch_y - map(noise(branch_num), 0,1, 0,10)*global_scale;
     }
     else{
-      // branch_y = prev_branch_y - random(7,10)*global_scale;
       branch_y = prev_branch_y - map(noise(branch_num), 0,1, 7,10)*global_scale;
     }
     //branch recursion

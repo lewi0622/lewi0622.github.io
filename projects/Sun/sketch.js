@@ -6,6 +6,8 @@ capture_time = 10;
 function setup() {
   suggested_palette = random([BEACHDAY, SUMMERTIME, SUPPERWARE]);
   common_setup(gif);
+  
+  cutout = random()>0.5;
 }
 //***************************************************
 function draw() {
@@ -87,7 +89,7 @@ function draw() {
 
   pop();
 
-  if(random([0,1])){
+  if(cutout){
     erase();
     noFill();
     cutoutCircle(canvas_y/64);
