@@ -4,7 +4,7 @@ fr = 1;
 capture = false;
 capture_time = 10;
 function setup() {
-  suggested_palette = random([BEACHDAY, SOUTHWEST, SUPPERWARE]);
+  suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
 
   working_palette = JSON.parse(JSON.stringify(palette))
@@ -28,7 +28,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  start_size = 600;
+  start_size = 600*global_scale;
   sym_angs = 8;
   for(let j=0; j<sym_angs; j++){
     center_rotate(360/sym_angs);
@@ -44,7 +44,7 @@ function draw() {
     c1 = color(c1);
     c2 = color(c2);
 
-    size = random(start_size/8, start_size)*global_scale;
+    size = random(start_size/8, start_size);
     start_size = size;
     steps = 40;
     pt1={x:0,y:0}
@@ -66,11 +66,6 @@ function draw() {
       pt3.x +=diffx;
       pt3.y +=diffy;
 
-      // pt2.x += random(diffx/2, diffx*2);
-      // pt2.y += random(diffy/2, diffy*2);
-  
-      // pt3.x += random(diffx/2, diffx*2);
-      // pt3.y += random(diffy/2, diffy*2);
       center_rotate(5);
     }
     pop();
