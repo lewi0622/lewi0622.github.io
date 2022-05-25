@@ -29,15 +29,17 @@ function draw_diag(len){
     for (loop_num = 0; loop_num < iterations; loop_num++){
       i_offset += random(x_offset_min, x_offset_max);
       j_offset += random(y_offset_min, y_offset_max);
+
       for (i = 0; i < x_tiles; i++){
         for (j = 0; j < y_tiles; j++){
+          if(i*length + i_offset > canvas_x + length || j*length + j_offset > canvas_y + length){
+            break;
+          }
           push();
           stroke(random(colors));
-
           translate(i*length + i_offset, j*length + j_offset);
           random(funcs)(length);
           pop();
-          // return;
         }
       }
     }
