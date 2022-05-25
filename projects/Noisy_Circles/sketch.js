@@ -16,25 +16,29 @@ function draw() {
 
   working_palette = [...palette];
 
+  // drawingContext.filter = 'grayscale(1)';
   //apply background
+  background("WHITE")
   bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
   bg_c[3] = 150;
   background(bg_c);
-  reduce_array(working_palette, bg_c);
+
 
   //actual drawing stuff
   push();
 
-  c=random(palette);
-  reduce_array(palette,c)
-  c[3]=30;
+  c=random(working_palette);
+  reduce_array(working_palette,c)
   stroke(c);
+  noFill();
   // stroke(0,0,0,30);
-  strokeWeight(global_scale);
+  strokeWeight(global_scale*0.01);
   for(let i=0; i<60000; i++){
-    point(random(canvas_x), random(canvas_y));
+    circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
   }
 
+  c=random(working_palette);
   translate(canvas_x/2, canvas_y/2);
 
   c[3]=150
