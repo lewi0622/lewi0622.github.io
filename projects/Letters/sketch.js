@@ -4,35 +4,12 @@ function preload() {
 }
 
 gif = false;
-fr = 1;
+fr = 2;
 capture = false;
 capture_time = 10;
 function setup() {
+  suggested_palette = random([COTTONCANDY, BIRDSOFPARADISE, SUPPERWARE]);
   common_setup(gif, P2D, 400, 400);
-  bg_1 = random(palette);
-  bg_2 = random(palette);
-  while(arrayEquals(bg_1, bg_2)){
-    bg_2 = random(palette);
-  }
-  col1 = random(palette);
-  col2 = random(palette);
-  col3 = random(palette);
-  col4 = random(palette);
-
-  while(arrayEquals(col1, bg_1)){
-    col1 = random(palette);
-  }
-  while(arrayEquals(col2, bg_2)){
-    col2 = random(palette);
-  }
-  while(arrayEquals(col3, bg_2)){
-    col3 = random(palette);
-  }
-  while(arrayEquals(col4, bg_1)){
-    col4 = random(palette);
-  }
-  // cols = [[col1, col2], [col3, col4]];
-  cols = [[bg_2, bg_1], [bg_1, bg_2]];
 }
 //***************************************************
 function draw() {
@@ -42,6 +19,19 @@ function draw() {
   bleed_border = apply_bleed();
 
   //apply background
+  working_palette = [...palette];
+
+  c=random(working_palette);
+  reduce_array(working_palette,c)
+
+  bg_1 = random(working_palette);
+  bg_2 = random(working_palette);
+  while(arrayEquals(bg_1, bg_2)){
+    bg_2 = random(working_palette);
+  }
+
+  cols = [[bg_2, bg_1], [bg_1, bg_2]];
+
   noStroke();
   fill(bg_1);
   square(0,0, canvas_x/2)
@@ -50,9 +40,20 @@ function draw() {
   square(canvas_x/2, 0, canvas_x/2);
   square(0, canvas_y/2, canvas_x/2);
 
+
+  //texture
+  stroke(c);
+  noFill();
+  strokeWeight(global_scale*0.005);
+  for(let i=0; i<60000; i++){
+    circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
+  }
   //actual drawing stuff
 
-  letters = Array.from("LOVE");
+  //ideas for words: LOVE, SOUL, JAZZ, CASH, DRAW, BABE, LIFE, NERD, YEAH, HEY!
+  words = ["LOVE", "SOUL", "JAZZ", "CASH", "LIFE", "YEAH", "HEY!"]
+
+  letters = Array.from(random(words));
 
   strokeWeight(0.03*global_scale);
 
