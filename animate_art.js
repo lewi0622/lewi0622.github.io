@@ -3,14 +3,15 @@ let base_suffix = "/index.html"
 let img_scale = 1;
 
 let arts = [
-    "Desert_Drive",
-    "Enlarging_Squares",
     "Bacterium",
-    "Starburst",
-    "Origami",
+    "Desert_Drive",
     "Endless_Symmetry",
-    "Worm_Symmetry",
-    "GlowLines"
+    "Enlarging_Squares",
+    "GlowLines",
+    "Origami",
+    "Rainbow_Heiroglyphs",
+    "Starburst",
+    "Worm_Symmetry"
 ];
 
 let current_id = 0;
