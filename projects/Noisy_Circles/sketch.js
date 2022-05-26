@@ -4,9 +4,8 @@ fr = 1;
 capture = false;
 capture_time = 10;
 function setup() {
-  // suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
+  suggested_palette = random([SAGEANDCITRUS, SUMMERTIME, SOUTHWEST]);
   common_setup(gif);
-  // noStroke();
 }
 //***************************************************
 function draw() {
@@ -16,7 +15,6 @@ function draw() {
 
   working_palette = [...palette];
 
-  // drawingContext.filter = 'grayscale(1)';
   //apply background
   background("WHITE")
   bg_c = random(working_palette);
@@ -32,7 +30,6 @@ function draw() {
   reduce_array(working_palette,c)
   stroke(c);
   noFill();
-  // stroke(0,0,0,30);
   strokeWeight(global_scale*0.01);
   for(let i=0; i<60000; i++){
     circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
@@ -44,9 +41,11 @@ function draw() {
   c[3]=150
   strokeWeight(global_scale);
   stroke(c);
-  c[3]=20;
+  c[3]=50;
   fill(c);
 
+
+  drawingContext.filter = 'brightness(110%)';
   sym_angs = round(random(6,32));
   rad = random(canvas_x/4, canvas_x/2);
   if(sym_angs%2==0){
