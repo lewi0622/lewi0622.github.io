@@ -19,7 +19,7 @@ function draw() {
   //params
   grid_size = round(random([2,4,6,8,10])*10*global_scale);
 
-  weight = ceil(random(5))*global_scale;
+  weight = ceil(random(5)*global_scale);
 
   max_rows = floor(canvas_y/grid_size);
   max_cols = floor(canvas_x/grid_size);
@@ -29,15 +29,15 @@ function draw() {
 
   bound = (max_rows+max_cols)/(rows + cols);
   bound = constrain(bound, 5, 50);
-  iterations = floor(random(bound, 50)) * 40*global_scale/grid_size;
+  iterations = floor(random(bound, 50) * 40*global_scale/grid_size);
 
   for(let i=0; i<cols; i++){
     tiles.push({x: i*grid_size, y: 0, dir: "down"});
-    tiles.push({x: (i+1)*grid_size, y: canvas_y-grid_size, dir: "up"});
+    tiles.push({x: (i+1)*grid_size, y: max_rows*grid_size, dir: "up"});
   }
   for(let i=0; i<rows; i++){
     tiles.push({x: 0, y: (i+1)*grid_size, dir: "right"});
-    tiles.push({x: canvas_x-grid_size, y: i*grid_size, dir: "left"});
+    tiles.push({x: max_cols*grid_size, y: i*grid_size, dir: "left"});
   }
 
   start = 0;
