@@ -26,6 +26,7 @@ let arts = [
     "Letters",
     "Mt",
     "Noisy_Circles",
+    "Pasta",
     "Psychedelic_Ball",
     "Pyramid",
     "Scrambled_Matrix",
