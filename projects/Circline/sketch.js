@@ -14,7 +14,7 @@ function draw() {
   //bleed
   bleed_border = apply_bleed();
 
-  working_palette = [...palette];
+  working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
   line_length = random([25, 40])*global_scale;

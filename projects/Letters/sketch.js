@@ -19,7 +19,7 @@ function draw() {
   bleed_border = apply_bleed();
 
   //apply background
-  working_palette = [...palette];
+  working_palette = JSON.parse(JSON.stringify(palette));
 
   c=random(working_palette);
   reduce_array(working_palette,c)

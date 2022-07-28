@@ -667,7 +667,7 @@ function change_default_palette(palette_id){
   }
   default_palette = palette_id;
   global_palette = palettes[palette_id];
-  palette = [...global_palette];
+  palette = JSON.parse(JSON.stringify(global_palette));
   color_sel.selected(palette_names[default_palette]);
 }
 

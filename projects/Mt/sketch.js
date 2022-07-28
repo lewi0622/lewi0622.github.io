@@ -14,7 +14,7 @@ function draw() {
   //bleed
   bleed_border = apply_bleed();
 
-  working_palette = [...palette];
+  working_palette = JSON.parse(JSON.stringify(palette));
   if(gif){
     //randomize noise seed
     noiseSeed(random(10000))
