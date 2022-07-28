@@ -767,6 +767,7 @@ function isPositiveIntegerOrZero(str) {
 }
 
 function over_ride_shuffle(){
+  //to correct for palette lengths altering 'random' behavior 
   var origShuffle = shuffle;
   shuffle = function(array, standardize=false, len=50) {
     //override p5js shuffle
@@ -780,4 +781,15 @@ function over_ride_shuffle(){
 
     return array.filter(a => !arrayEquals(a, [""]));
   }
+}
+
+function RGBA_to_HSBA(r,g,b,a){
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const v = Math.max(r, g, b),
+    n = v - Math.min(r, g, b);
+  const h =
+    n === 0 ? 0 : n && v === r ? (g - b) / n : v === g ? 2 + (b - r) / n : 4 + (r - g) / n;
+  return [60 * (h < 0 ? h + 6 : h), v && (n / v) * 100, v * 100, a];
 }
