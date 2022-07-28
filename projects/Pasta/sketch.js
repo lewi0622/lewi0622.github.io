@@ -19,7 +19,7 @@ function draw() {
   //params
   grid_size = round(random([2,4,6,8,10])*10*global_scale);
 
-  weight = ceil(random(5)*global_scale);
+  weight = ceil(random(1,5)*global_scale);
 
   max_rows = floor(canvas_y/grid_size);
   max_cols = floor(canvas_x/grid_size);
@@ -75,9 +75,9 @@ function draw() {
   push();
 
   for(let z=0; z<iterations; z++){
-    if(z+1>=iterations){
-      strokeCap(SQUARE)
-    }
+    // if(z+1>=iterations){
+    //   strokeCap(ROUND)
+    // }
     stroke(c_primary);
     strokeWeight(weight);
     noFill();
