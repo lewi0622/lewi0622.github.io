@@ -17,7 +17,7 @@ function draw() {
 
   tiles = [];
   //params
-  grid_size = random([2,4,6,8,10])*10*global_scale;
+  grid_size = round(random([2,4,6,8,10])*10*global_scale);
 
   weight = ceil(random(5))*global_scale;
 
@@ -52,7 +52,7 @@ function draw() {
   bleed_border = apply_bleed();
 
   working_palette = JSON.parse(JSON.stringify(palette));
-  strokeCap(SQUARE)
+  strokeCap(ROUND)
 
   bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);
@@ -75,6 +75,9 @@ function draw() {
   push();
 
   for(let z=0; z<iterations; z++){
+    if(z+1>=iterations){
+      strokeCap(SQUARE)
+    }
     stroke(c_primary);
     strokeWeight(weight);
     noFill();
