@@ -1,5 +1,5 @@
 gif = false;
-fr = 0.5;
+fr = 1;
 
 capture = false;
 capture_time = 10;
@@ -24,7 +24,7 @@ function draw() {
 
   grid_size = smaller_cnv/floor(random(4,20));
 
-  weight = random(1,5)*global_scale;
+  weight = ceil(random(0,4))*global_scale;
 
   max_rows = round(canvas_y/grid_size);
   max_cols = round(canvas_x/grid_size);

@@ -7,8 +7,7 @@ function setup() {
   suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
 
-  working_palette = JSON.parse(JSON.stringify(palette))
-  bg_c = random(working_palette);
+  bg = floor(random(palette.length));
 
   noStroke();
 
@@ -22,8 +21,10 @@ function draw() {
   //bleed
   bleed_border = apply_bleed();
 
+  working_palette = JSON.parse(JSON.stringify(palette))
+
   //apply background
-  background(bg_c);
+  background(working_palette[bg]);
 
   //actual drawing stuff
   push();
