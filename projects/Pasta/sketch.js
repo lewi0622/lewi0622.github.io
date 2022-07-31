@@ -17,12 +17,17 @@ function draw() {
 
   tiles = [];
   //params
-  grid_size = round(random([2,4,6,8,10])*10*global_scale);
+  smaller_cnv = canvas_x;
+  if(canvas_x>canvas_y){
+    smaller_cnv = canvas_y;
+  }
 
-  weight = ceil(random(1,5)*global_scale);
+  grid_size = smaller_cnv/floor(random(4,20));
 
-  max_rows = floor(canvas_y/grid_size);
-  max_cols = floor(canvas_x/grid_size);
+  weight = random(1,5)*global_scale;
+
+  max_rows = round(canvas_y/grid_size);
+  max_cols = round(canvas_x/grid_size);
 
   rows = ceil(random(max_rows));
   cols = ceil(random(max_cols));
@@ -31,15 +36,51 @@ function draw() {
   bound = constrain(bound, 5, 50);
   iterations = floor(random(bound, 50) * 40*global_scale/grid_size);
 
-  for(let i=0; i<cols; i++){
-    tiles.push({x: i*grid_size, y: 0, dir: "down"});
-    tiles.push({x: (i+1)*grid_size, y: max_rows*grid_size, dir: "up"});
-  }
-  for(let i=0; i<rows; i++){
-    tiles.push({x: 0, y: (i+1)*grid_size, dir: "right"});
-    tiles.push({x: max_cols*grid_size, y: i*grid_size, dir: "left"});
-  }
+  working_palette = JSON.parse(JSON.stringify(palette));
+  working_palette.forEach((e,idx) => {
+    working_palette[idx] = RGBA_to_HSBA(...e);
+  });
+  bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+  
+  c_primary = random(working_palette);
+  reduce_array(working_palette, c_primary);
 
+  //create tiles and starting locations
+
+  c = random(working_palette);
+  for(let i=0; i<cols; i++){
+
+    tiles.push({
+      x: i*grid_size, 
+      y: 0, 
+      dir: "down", 
+      c:c});
+    tiles.push({
+      x: (i+1)*grid_size, 
+      y: max_rows*grid_size, 
+      dir: "up", 
+      c:c});
+  }
+  c = random(working_palette);
+  for(let i=0; i<rows; i++){
+
+    tiles.push({
+      x: 0, 
+      y: (i+1)*grid_size, 
+      dir: "right", 
+      c:c});
+    tiles.push({
+      x: max_cols*grid_size, 
+      y: i*grid_size, 
+      dir: "left", 
+      c:c});
+  }
+  tiles.forEach(e => {
+    e.draw = true;
+  });
+
+  //calculate number of lines per grid space
   start = 0;
   num_arcs = 0;
   while(start<grid_size/2){
@@ -50,43 +91,37 @@ function draw() {
 
   //bleed
   bleed_border = apply_bleed();
-
-  working_palette = JSON.parse(JSON.stringify(palette));
+  
+  //round is the only way to not have weird artifacts on the last tiles placed
   strokeCap(ROUND)
 
-  bg_c = random(working_palette);
-  reduce_array(working_palette, bg_c);
-  
-  c_primary = random(working_palette);
-  reduce_array(working_palette, c_primary);
-  c_secondary = random(working_palette);
-
-  bg_c = RGBA_to_HSBA(...bg_c);
-  c_primary = RGBA_to_HSBA(...c_primary);
-  c_secondary = RGBA_to_HSBA(...c_secondary);
   //apply background  
   background(bg_c)
 
-  //highlight color
-  // tiles[floor(random(tiles.length))].h = true;
-  // c_hl = RGBA_to_HSBA(...random(working_palette));
-
   //actual drawing stuff
   push();
-
-  for(let z=0; z<iterations; z++){
-    // if(z+1>=iterations){
-    //   strokeCap(ROUND)
-    // }
+  let z = 0;
+  let draw = true;
+  while(z<iterations || draw){
     stroke(c_primary);
     strokeWeight(weight);
     noFill();
-    tiles = shuffle(tiles);
+    tiles = shuffle(tiles,true, max_cols+max_rows);
     for(let i =0; i<tiles.length; i++){
       push();
-      translate(tiles[i].x + grid_size/2, tiles[i].y + grid_size/2);
+      tile = tiles[i];
+      c_secondary = tile.c;
+
+      translate(tile.x + grid_size/2, tile.y + grid_size/2);
       dir = random(['straight', 'left', 'right']);
-      switch(tiles[i].dir){
+
+      //break after random call if no draw
+      if(!tile.draw){
+        pop();
+        break;
+      }
+
+      switch(tile.dir){
         case "up":
           if(dir=='left'){rotate(180)}
           rotate(180);
@@ -124,22 +159,22 @@ function draw() {
           pop();
         }
         
-        switch(tiles[i].dir){
+        switch(tile.dir){
           case "up":
-            if(dir == 'left'){tiles[i].dir = "left";}
-            else{tiles[i].dir = "right";}
+            if(dir == 'left'){tile.dir = "left";}
+            else{tile.dir = "right";}
             break;
           case "left":
-            if(dir == 'left'){tiles[i].dir = "down";}
-            else{tiles[i].dir = "up";}
+            if(dir == 'left'){tile.dir = "down";}
+            else{tile.dir = "up";}
             break;
           case "right":
-            if(dir == 'left'){tiles[i].dir = "up";}
-            else{tiles[i].dir = "down";}
+            if(dir == 'left'){tile.dir = "up";}
+            else{tile.dir = "down";}
             break;
           default:
-            if(dir == 'left'){tiles[i].dir = "right";}
-            else{tiles[i].dir = "left";}
+            if(dir == 'left'){tile.dir = "right";}
+            else{tile.dir = "left";}
             break;
         }
       }
@@ -162,22 +197,31 @@ function draw() {
         }
       }
 
-      switch(tiles[i].dir){
+      switch(tile.dir){
         case "up":
-          tiles[i].y -= grid_size;
+          tile.y -= grid_size;
           break;
         case "left":
-          tiles[i].x -= grid_size;
+          tile.x -= grid_size;
           break;
         case "right":
-          tiles[i].x += grid_size;
+          tile.x += grid_size;
           break;
         default:
-          tiles[i].y += grid_size;
+          tile.y += grid_size;
           break;
       }
       pop();
     }
+
+    if(z>=iterations){
+      tiles = rm_tiles_OOB(tiles);
+      //check if all are no-draw
+      draw = !tiles.every(function(e) {return !e.draw;})
+    }
+
+    //loop cleanup
+    z++;
   }
   pop();
   //cutlines
@@ -186,9 +230,16 @@ function draw() {
 }
 //***************************************************
 //custom funcs
+function rm_tiles_OOB(tiles){
+  for(let i=0; i<tiles.length; i++){
+    let x = round(tiles[i].x);
+    let y = round(tiles[i].y);
+    if(tiles[i].draw){
+      if(x<-grid_size/2 || x>canvas_x+grid_size/2 || y<-grid_size/2 || y>canvas_y+grid_size/2){
+        tiles[i].draw=false;
+      }
+    }
 
-function highlight(tile){
-  if(tile.h){
-    stroke(c_hl);
   }
+  return tiles;
 }
