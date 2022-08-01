@@ -44,7 +44,10 @@ function draw() {
   c3[3] = opacity;
   steps = radius*100;
   squish = random()*20*global_scale;
-
+  blur = random([1, 2, 24]);
+  if(blur == 24){
+    squish = 0;
+  }
   for(let i=-steps; i<steps; i++){
     push();
       y = radius * (i/steps);
@@ -61,7 +64,7 @@ function draw() {
       }
 
       stroke(c);
-      line(-len + random(-len, len)/2,random(-len, len)/24, len + random(-len, len)/24,random(-len, len)/24);
+      line(-len + random(-len, len)/blur,random(-len, len)/24, len + random(-len, len)/24,random(-len, len)/24);
     pop();
   }
 
