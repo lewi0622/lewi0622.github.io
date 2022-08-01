@@ -101,7 +101,7 @@ const palettes=[
     [143, 164, 180, 255], //blue gray
     [223, 203, 185, 255] //cappucino
     ],
-    //Muted Signs
+    //Nursery
     [[233, 227, 216, 255], //tan
     [246, 169, 185, 255], //Rose
     [228, 175, 100, 255], //Burnt orange

@@ -57,7 +57,7 @@ function keyTyped() {
 
 function remove_controls(arr){
   arr.forEach(ctrl => {
-    elem = document.getElementById(ctrl)
+    elem = document.getElementById(ctrl);
     if(elem){
       elem.remove();
     }
@@ -66,7 +66,7 @@ function remove_controls(arr){
 
 
 function seed_scale_button(base_y){
-  ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize"]
+  ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize", "Color Boxes"]
   full_ids = ["Auto Scale", "Scale Box", "Save"]
   remove_controls(ids);
   remove_controls(full_ids);
@@ -74,6 +74,7 @@ function seed_scale_button(base_y){
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
 
+  //START OF TOP ROW
   //left/right buttons for easy seed nav
   btLeft = createButton('<')
   btLeft.size(20*global_scale, control_height);
@@ -99,7 +100,7 @@ function seed_scale_button(base_y){
     input.value(int(input.value())+1);
     set_seed();
   });
-  btRight.id('Bt Right')
+  btRight.id('Bt Right');
   
   //custom seed button
   button = createButton("Custom Seed");
@@ -108,9 +109,20 @@ function seed_scale_button(base_y){
   button.position(btRight.size().width + btRight.position().x + control_spacing, base_y*global_scale);
   button.id('Custom Seed')
 
+  //randomize button
+  randomize = createButton("Randomize");
+  randomize.mouseClicked(function (){
+    input.value(Math.round(random()*1000000));
+    set_seed();
+  })
+  randomize.size(80*global_scale, control_height);
+  randomize.position(400*global_scale-randomize.size().width, base_y*global_scale);
+  randomize.id('Randomize')
+
+  //START OF SECOND ROW
   //color palette select
   color_sel = createSelect();
-  color_sel.position(button.position().x + button.size().width + control_spacing, base_y*global_scale);
+  color_sel.position(0, base_y*global_scale+control_height);
   color_sel.size(120*global_scale, control_height);
   palette_names.forEach(name => {
     if(!exclude_palette.includes(name)){
@@ -123,30 +135,38 @@ function seed_scale_button(base_y){
 
   color_sel.changed(set_seed);
   color_sel.id('Color Select')
+  //color boxes
+  color_div = document.createElement("div");
+  color_div.id = "Color Boxes";
+  start_pos = color_sel.position().x + color_sel.size().width;
+  global_palette.forEach(c => {
+    color_box = document.createElement("div");
+    color_box.style.position = "absolute";
+    color_box.style.left = start_pos+control_spacing*1.1+"px";
+    color_box.style.top = color_sel.position().y+control_height*.1+"px"
+    color_box.style.width = control_height*.9+"px";
+    color_box.style.height = control_height*.9+"px";
+    color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
 
-  //randomize button
-  randomize = createButton("Randomize");
-  randomize.mouseClicked(function (){
-    input.value(Math.round(random()*1000000));
-    set_seed();
-  })
-  randomize.size(400*global_scale - (color_sel.position().x + color_sel.size().width + control_spacing), control_height);
-  randomize.position(color_sel.position().x + color_sel.size().width + control_spacing, base_y*global_scale);
-  randomize.id('Randomize')
+    color_div.appendChild(color_box);
+    start_pos += control_height;
+  });
+  document.body.appendChild(color_div);
 
   //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
+  //START OF THIRD ROW
   //autoscale button calls url minus any scaler
   auto_scale = createButton('Autoscale');
   auto_scale.mouseClicked(function (){
     window.location.replace("index.html?controls=True&colors=" + col_idx() + '&bleed=' + bleed + '&cut=' + cut + "&seed=" + getParamValue("seed"));
   })
-  auto_scale.position(0, base_y*global_scale + control_height);
+  auto_scale.position(0, base_y*global_scale + control_height*2);
   auto_scale.size(70*global_scale, control_height)
   auto_scale.id("Auto Scale")
 
   //scale text box
   scale_box = createInput('');
-  scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height)
+  scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height*2)
   scale_box.size(30*global_scale, 17*global_scale);
   scale_box.value(global_scale);
   scale_box.id("Scale Box")
@@ -155,7 +175,7 @@ function seed_scale_button(base_y){
   btSave = createButton("Save");
   btSave.mouseClicked(save_drawing);
   btSave.size(70*global_scale, control_height);
-  btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height);
+  btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height*2);
   btSave.id("Save")
 
   //style all ctrls
