@@ -64,6 +64,21 @@ function remove_controls(arr){
   });
 }
 
+function show_palette_colors(){
+  global_palette.forEach(c => {
+    color_box = document.createElement("div");
+    color_box.style.position = "absolute";
+    color_box.style.left = start_pos+control_spacing*1.1+"px";
+    color_box.style.top = color_sel.position().y+control_height*.1+"px"
+    color_box.style.width = control_height*.9+"px";
+    color_box.style.height = control_height*.9+"px";
+    color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
+  
+    color_div.appendChild(color_box);
+    start_pos += control_height;
+  });
+}
+
 
 function seed_scale_button(base_y){
   ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize", "Color Boxes"]
@@ -136,28 +151,11 @@ function seed_scale_button(base_y){
   color_sel.changed(set_seed);
   color_sel.id('Color Select')
 
-  console.log(global_palette)
-
   //color boxes
   color_div = document.createElement("div");
   color_div.id = "Color Boxes";
-  start_pos = color_sel.position().x + color_sel.size().width;
-  if(global_palette != undefined){
-    global_palette.forEach(c => {
-      color_box = document.createElement("div");
-      color_box.style.position = "absolute";
-      color_box.style.left = start_pos+control_spacing*1.1+"px";
-      color_box.style.top = color_sel.position().y+control_height*.1+"px"
-      color_box.style.width = control_height*.9+"px";
-      color_box.style.height = control_height*.9+"px";
-      color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
-  
-      color_div.appendChild(color_box);
-      start_pos += control_height;
-    });
-  }
-
   document.body.appendChild(color_div);
+  start_pos = color_sel.position().x + color_sel.size().width;
 
   //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
   //START OF THIRD ROW
@@ -268,10 +266,14 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
 
   if (typeof suggested_palette !== 'undefined' && !redraw) {
     change_default_palette(suggested_palette);
+    
   }
   else{
     change_default_palette(default_palette);
   }
+
+  //add the palette colors here because the palette only just got defined 
+  show_palette_colors();
 
   if(!redraw){
     //post details
@@ -699,7 +701,7 @@ function change_default_palette(palette_id){
 
 function find_cnv_mult(){
   let base_x = 400;
-  let base_y = 420;
+  let base_y = 440;
   if(full_controls){
     //space for second row of controls, the extra 1 is make sure no scrollbar
     base_y += 21;
