@@ -135,22 +135,28 @@ function seed_scale_button(base_y){
 
   color_sel.changed(set_seed);
   color_sel.id('Color Select')
+
+  console.log(global_palette)
+
   //color boxes
   color_div = document.createElement("div");
   color_div.id = "Color Boxes";
   start_pos = color_sel.position().x + color_sel.size().width;
-  global_palette.forEach(c => {
-    color_box = document.createElement("div");
-    color_box.style.position = "absolute";
-    color_box.style.left = start_pos+control_spacing*1.1+"px";
-    color_box.style.top = color_sel.position().y+control_height*.1+"px"
-    color_box.style.width = control_height*.9+"px";
-    color_box.style.height = control_height*.9+"px";
-    color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
+  if(global_palette != undefined){
+    global_palette.forEach(c => {
+      color_box = document.createElement("div");
+      color_box.style.position = "absolute";
+      color_box.style.left = start_pos+control_spacing*1.1+"px";
+      color_box.style.top = color_sel.position().y+control_height*.1+"px"
+      color_box.style.width = control_height*.9+"px";
+      color_box.style.height = control_height*.9+"px";
+      color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
+  
+      color_div.appendChild(color_box);
+      start_pos += control_height;
+    });
+  }
 
-    color_div.appendChild(color_box);
-    start_pos += control_height;
-  });
   document.body.appendChild(color_div);
 
   //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
