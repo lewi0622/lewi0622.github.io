@@ -22,9 +22,9 @@ function draw() {
     smaller_cnv = canvas_y;
   }
 
-  grid_size = smaller_cnv/floor(random(4,20));
+  grid_size = smaller_cnv/floor(random(4,16));
 
-  weight = ceil(random(0,4))*global_scale;
+  weight = ceil(random(1,5))*global_scale;
 
   max_rows = round(canvas_y/grid_size);
   max_cols = round(canvas_x/grid_size);
@@ -47,7 +47,6 @@ function draw() {
   reduce_array(working_palette, c_primary);
 
   //create tiles and starting locations
-
   c = random(working_palette);
   for(let i=0; i<cols; i++){
 
@@ -62,7 +61,10 @@ function draw() {
       dir: "up", 
       c:c});
   }
-  c = random(working_palette);
+  if(random()>0.75){
+    c = random(working_palette);
+  }
+
   for(let i=0; i<rows; i++){
 
     tiles.push({
