@@ -5,6 +5,7 @@ capture = false;
 capture_time = 10;
 function setup() {
   suggested_palette = random([BEACHDAY, SUMMERTIME, NURSERY]);
+  // common_setup(gif, P2D, base_x=450, base_y=800);
   common_setup(gif);
 }
 //***************************************************
@@ -23,8 +24,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  ang = floor(random(8))*45;
-  center_rotate(ang);
+
   weight = random(0.7, 1.5)*global_scale;
 
   strokeWeight(weight);
@@ -32,14 +32,18 @@ function draw() {
 
   radius = floor(random(75,150))*global_scale;
   translate(canvas_x/2, canvas_y/2);
+
+  ang = floor(random(8))*45;
+  rotate(ang);
+
   c1 = random(working_palette);
   reduce_array(working_palette, c1);
   c2 = random(working_palette);
   c3 = random(working_palette);
 
-  blend = random()>0.5;
+  blend_lines = random()>0.5;
   opacity = random(2,8);
-
+  
   c1[3] = opacity;
   c2[3] = opacity;
   c3[3] = opacity;
@@ -57,7 +61,7 @@ function draw() {
 
       //circle
       len = sqrt(sq(radius) - sq(y)) +squish;
-      if(blend){
+      if(blend_lines){
         opacity = random(2,8);
         c1[3] = opacity;
         c2[3] = opacity;
