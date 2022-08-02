@@ -37,11 +37,13 @@ function draw() {
   c2 = random(working_palette);
   c3 = random(working_palette);
 
+  blend = random()>0.5;
   opacity = random(2,8);
 
   c1[3] = opacity;
   c2[3] = opacity;
   c3[3] = opacity;
+
   steps = radius*100;
   squish = random()*20*global_scale;
   blur = random([1, 2, 24]);
@@ -55,6 +57,12 @@ function draw() {
 
       //circle
       len = sqrt(sq(radius) - sq(y)) +squish;
+      if(blend){
+        opacity = random(2,8);
+        c1[3] = opacity;
+        c2[3] = opacity;
+        c3[3] = opacity;
+      }
 
       if(i<0){
         c = lerpColor(color(c2), color(c1), abs(i)/steps)
