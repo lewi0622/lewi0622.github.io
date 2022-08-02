@@ -7,6 +7,7 @@ let art_id = 0;
 let art_timeout = 5000;
 
 let arts = [
+    "Analog_Planet",
     "Arcs",
     "Barbed_Wire",
     "Birds",
@@ -37,7 +38,7 @@ let arts = [
     "Suns",
     "Symmetry",
     "Tree",
-    "Triangle_Stripes",
+    "Triangle_Stripes"
 ];
 
 // wait for DOM to be fully loaded before accessing nodes
