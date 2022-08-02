@@ -65,17 +65,27 @@ function remove_controls(arr){
 }
 
 function show_palette_colors(){
+  //can't be called in the seed_scale_button function because palette can be undefined at that point
   global_palette.forEach(c => {
+    box_bg = document.createElement("div");
+    box_bg.style.position = "absolute";
+    box_bg.style.left = start_pos+control_spacing+"px";
+    box_bg.style.top = color_sel.position().y+"px"
+    box_bg.style.width = control_height+"px";
+    box_bg.style.height = control_height+"px";
+    box_bg.style.backgroundColor = 'rgb(' + 0 + ',' + 0 + ',' + 0 + ')'
+
     color_box = document.createElement("div");
     color_box.style.position = "absolute";
-    color_box.style.left = start_pos+control_spacing*1.1+"px";
-    color_box.style.top = color_sel.position().y+control_height*.1+"px"
+    color_box.style.left = start_pos+control_spacing+control_height*.05+"px";
+    color_box.style.top = color_sel.position().y+control_height*.05+"px"
     color_box.style.width = control_height*.9+"px";
     color_box.style.height = control_height*.9+"px";
     color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
   
+    color_div.appendChild(box_bg);
     color_div.appendChild(color_box);
-    start_pos += control_height;
+    start_pos += control_height*1.25;
   });
 }
 
