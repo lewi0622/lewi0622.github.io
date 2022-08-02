@@ -30,7 +30,7 @@ function draw() {
   strokeWeight(weight);
   strokeCap(SQUARE);
 
-  radius = 150*global_scale;
+  radius = floor(random(75,150))*global_scale;
   translate(canvas_x/2, canvas_y/2);
   c1 = random(working_palette);
   reduce_array(working_palette, c1);
@@ -66,13 +66,6 @@ function draw() {
       stroke(c);
       line(-len + random(-len, len)/blur,random(-len, len)/24, len + random(-len, len)/24,random(-len, len)/24);
     pop();
-  }
-
-  if(frameCount == 11){
-    console.log(opacity)
-    console.log(weight)
-    console.log(c1, c2, c3)
-    noLoop();
   }
   pop();
   //cutlines
