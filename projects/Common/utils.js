@@ -230,6 +230,14 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
 
+  //check for different base size
+  if(typeof sixteen_by_nine !== "undefined"){
+    if(sixteen_by_nine){
+      base_x = 450;
+      base_y = 800;
+    }
+  }
+
   //set up CCapture, override num_frames in setup/draw if necessary
   num_frames = capture_time*fr;
   capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
