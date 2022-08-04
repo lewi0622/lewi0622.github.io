@@ -1,4 +1,5 @@
 gif = false;
+sixteen_by_nine = false;
 fr = 1;
 
 capture = false;
