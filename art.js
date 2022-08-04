@@ -33,6 +33,7 @@ let arts = [
     "Scrambled_Matrix",
     "Scribbles",
     "Sliding_Triangles",
+    "Spiral_Depths",
     "Stained_Glass",
     "Sun",
     "Suns",
