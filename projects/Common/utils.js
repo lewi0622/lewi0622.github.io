@@ -1,7 +1,17 @@
-let default_palette = 10;
+// "use strict";
+// globals
+let num_frames, capturer, hidden_controls, color_sel;
+
+const PALETTE_ID_DEFAULT = 10;
+let global_palette_id = PALETTE_ID_DEFAULT;
 let global_palette;
+
 let global_scale = 1;
-let global_bleed = 0.25; //quarter inch bleed
+let cut = false;
+let bleed = false;
+let bleed_val = 0.25; //quarter inch bleed
+const DPI_DEFAULT = 300;
+let dpi = DPI_DEFAULT;
 let full_controls = false;
 let type;
 let redraw = false;
@@ -25,7 +35,8 @@ function reset_drawing(seed, base_x, base_y){
 }
 
 function col_idx(){
-  return palette_names.indexOf(color_sel.value())
+  //returns the integer value of the current palette
+  return palette_names.indexOf(color_sel.value());
 }
 
 function set_seed(){
@@ -154,9 +165,7 @@ function seed_scale_button(base_y){
       color_sel.option(name);
     }
   });
-  if(colors != undefined){
-    color_sel.selected(palette_names[colors]);
-  }
+  color_sel.selected(palette_names[col_idx()]);
 
   color_sel.changed(set_seed);
   color_sel.id('Color Select')
@@ -172,7 +181,12 @@ function seed_scale_button(base_y){
   //autoscale button calls url minus any scaler
   auto_scale = createButton('Autoscale');
   auto_scale.mouseClicked(function (){
-    window.location.replace("index.html?controls=True&colors=" + col_idx() + '&bleed=' + bleed + '&cut=' + cut + "&seed=" + getParamValue("seed"));
+    let base_url = "index.html?controls=full&colors=" + String(col_idx());
+    base_url+= "&seed=" + getParamValue("seed");
+    if(bleed){base_url+='&bleed=' + String(bleed_val)};
+    if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
+    if(cut){base_url += '&cut=' + String(cut)};
+    window.location.replace(base_url);
   })
   auto_scale.position(0, base_y*global_scale + control_height*2);
   auto_scale.size(70*global_scale, control_height)
@@ -255,18 +269,18 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
     type="svg";
   }
   hidden_controls = true;
-  bleed = false;
-  cut = false;
-  dpi = 300;
 
   setParams();
   seed_scale_button(400);
   seed = reset_drawing(seed, base_x, base_y);
-  // disable right clicks 
+
   if(!full_controls){
+    // disable right clicks 
     document.oncontextmenu = function() { 
       return false; 
     };
+    //suppress unnecessary errors and speed up drawing time
+    p5.disableFriendlyErrors = true; // disables FES
   }
   angleMode(DEGREES);
 
@@ -285,11 +299,13 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   else{ loop();}
 
   if (typeof suggested_palette !== 'undefined' && !redraw) {
+    //if a suggested palette exists in sketch.js
     change_default_palette(suggested_palette);
     
   }
   else{
-    change_default_palette(default_palette);
+    //otherwise supply the default
+    change_default_palette(PALETTE_ID_DEFAULT);
   }
 
   //add the palette colors here because the palette only just got defined 
@@ -308,10 +324,18 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
 }
 
 function setParams(){
-  //get all params if they exist
-  colors = getParamValue('colors');
+  //get params from url and set necessary globals
+
+  const colors = getParamValue('colors');
+  if(colors != undefined){
+    if(!isPositiveIntegerOrZero(colors) || parseInt(colors)>palettes.length){
+      colors = PALETTE_ID_DEFAULT;
+    }
+    global_palette=palettes[parseInt(colors)];
+    console.log(global_palette);
+  };
+  
   controls = getParamValue('controls');
-  full_controls = controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
   seed = getParamValue('seed');
   img_scale = getParamValue('scale');
   add_bleed = getParamValue('bleed');
@@ -322,16 +346,7 @@ function setParams(){
   if(seed == undefined && document.getElementById("Seed")){
     seed = document.getElementById("Seed").value;
   }
-  if(colors != undefined){
-    if(!isPositiveIntegerOrZero(colors)){
-      //parse palette name
-      colors = palette_names.indexOf(colors,0);
-      if(colors == -1){
-        colors = default_palette;
-      }
-    }
-    global_palette=palettes[colors];
-  };
+
   if(img_scale != undefined){
     global_scale = float(img_scale);
   }
@@ -340,13 +355,16 @@ function setParams(){
     global_scale = find_cnv_mult();
   }
 
+  full_controls = controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
   if(controls != undefined || full_controls){
     hidden_controls = false;
   }
   if(add_bleed != undefined){
     if(add_bleed.toLowerCase() != 'false'){
-      bleed = float(add_bleed);
-      global_bleed = bleed;
+      bleed = true;
+      if(!isNaN(add_bleed)){
+        bleed_val = float(add_bleed);
+      }
     }
   };
   if(add_cut != undefined){
@@ -354,8 +372,8 @@ function setParams(){
       cut = true;
     }
   };
-  if(set_dpi != undefined){
-    dpi = set_dpi;
+  if(set_dpi != undefined && !isNaN(set_dpi)){
+    dpi = int(set_dpi);
   };
 }
 
@@ -375,8 +393,9 @@ function save_drawing(){
   var project_name = window.location.pathname.split('/')[2];
   var cut_name = '';
   var bleed_name = '';
+  console.log(bleed)
   if(bleed != false){
-    bleed_name = '_bleed_' + str(global_bleed);
+    bleed_name = '_bleed_' + str(bleed_val);
     if(cut != false){
       cut_name = 'cut';
     }
@@ -396,7 +415,7 @@ function capture_start(capture){
   if(capture && frameCount==1) capturer.start();
 }
 
-function capture_frame(capture, num_frames){
+function capture_frame(capture){
   if (capture){
     capturer.capture(document.getElementById("defaultCanvas0"));
     if(frameCount-1 == num_frames){
@@ -591,8 +610,8 @@ function cutoutCircle(r){
 function apply_bleed(){
   // at vital print, bleed should be 0.25"
   //if bleed, resize based on size and dpi params, translate
-  if(bleed&&dpi){
-    bleed_border = dpi*global_bleed;
+  if(bleed){
+    let bleed_border = dpi*bleed_val;
     
     total_canvas_x = canvas_x + bleed_border*2;
     total_canvas_y = canvas_y + bleed_border*2;
@@ -624,9 +643,9 @@ function get_invert_stroke(x, y){
   stroke(c);
 }
 
-function apply_cutlines(){
+function apply_cutlines(bleed_border){
   //draw cutlines, pop before this is called
-  if(bleed_border != undefined && cut == true){
+  if(bleed_border != undefined && cut){
     push();
     strokeWeight(1);
     //move coords back to upper left because get function uses absolute coords
@@ -657,9 +676,9 @@ function apply_cutlines(){
 }
 
 function gen_n_colors(n){
-  colors = [];
+  let colors = [];
   while(colors.length < n){
-    c = compare_colors(colors);
+    const c = compare_colors(colors);
     colors.push(c);
   }
   return colors;
@@ -710,13 +729,14 @@ function windowResized() {
 }
 
 function change_default_palette(palette_id){
-  if(colors != undefined){
-    palette_id = colors;
+  //if color is specified in URL, use that, otherwise use the provided palette_id
+  if(getParamValue("colors") != undefined){
+    palette_id = getParamValue("colors");
   }
-  default_palette = palette_id;
-  global_palette = palettes[palette_id];
+  global_palette_id = palette_id;
+  global_palette = palettes[global_palette_id];
   palette = JSON.parse(JSON.stringify(global_palette));
-  color_sel.selected(palette_names[default_palette]);
+  color_sel.selected(palette_names[global_palette_id]);
 }
 
 function find_cnv_mult(){
@@ -727,8 +747,8 @@ function find_cnv_mult(){
     base_y += 21;
   }
   //finds smallest multipler
-  x_mult = Math.round((windowWidth/base_x)*1000)/1000;
-  y_mult = Math.round((windowHeight/base_y)*1000)/1000;
+  const x_mult = Math.round((windowWidth/base_x)*1000)/1000;
+  const y_mult = Math.round((windowHeight/base_y)*1000)/1000;
   if(x_mult<y_mult){
     return constrain(x_mult, 1, 12);
   }
@@ -739,14 +759,15 @@ function find_cnv_mult(){
 }
 
 function indexOfMin(arr) {
+  // returns index of smallest value in a given array
   if (arr.length === 0) {
       return -1;
   }
 
-  var min = arr[0];
-  var minIndex = 0;
+  let min = arr[0];
+  let minIndex = 0;
 
-  for (var i = 1; i < arr.length; i++) {
+  for (let i = 1; i < arr.length; i++) {
       if (arr[i] < min) {
           minIndex = i;
           min = arr[i];
@@ -779,7 +800,7 @@ function message_details(){
   message = JSON.stringify({
     design: dir,
     seed: seed,
-    palette: palette_names[default_palette]
+    palette: palette_names[global_palette_id]
   })
   window.parent.postMessage(message, '*')
 }
@@ -829,6 +850,8 @@ function over_ride_shuffle(){
 
     return array.filter(a => !arrayEquals(a, [""]));
   }
+  //try to suppress warning
+
 }
 
 function RGBA_to_HSBA(r,g,b,a){
