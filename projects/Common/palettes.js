@@ -1,26 +1,26 @@
-let SAGEANDCITRUS =0;
-let BEACHDAY = 1;
-let COTTONCANDY =2;
-let BUMBLEBEE =3;
-let MINTY =4;
-let GAMEDAY =5;
-let BIRDSOFPARADISE =6;
-let DEATHLOOP =7;
-let SUMMERTIME =8;
-let SOUTHWEST =9;
-let MUTEDEARTH =10;
-let NURSERY =11;
-let SIXTIES =12;
-let OASIS =13;
-let SUPPERWARE =14;
-let JAZZCUP =15;
+const SAGEANDCITRUS =0;
+const BEACHDAY = 1;
+const COTTONCANDY =2;
+const BUMBLEBEE =3;
+const MINTY =4;
+const GAMEDAY =5;
+const BIRDSOFPARADISE =6;
+const DEATHLOOP =7;
+const SUMMERTIME =8;
+const SOUTHWEST =9;
+const MUTEDEARTH =10;
+const NURSERY =11;
+const SIXTIES =12;
+const OASIS =13;
+const SUPPERWARE =14;
+const JAZZCUP =15;
 
-let palette_names = [
+const palette_names = [
     "Sage and Citrus", "Beach Day", "Cotton Candy", "Bumblebee", "Minty",
     "Game Day", "Birds of Paradise", "Deathloop", "Summertime", "Southwest", "Muted Earth",
     "Nursery", "60s", "Oasis", "Supperware", "Jazz Cup"];
     
-let exclude_palette = ["Minty", "Deathloop"]
+const exclude_palette = ["Minty", "Deathloop"]
 
 const palettes=[
     //citrus & sage
