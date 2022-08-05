@@ -332,7 +332,6 @@ function setParams(){
       colors = PALETTE_ID_DEFAULT;
     }
     global_palette=palettes[parseInt(colors)];
-    console.log(global_palette);
   };
   
   controls = getParamValue('controls');
@@ -393,7 +392,6 @@ function save_drawing(){
   var project_name = window.location.pathname.split('/')[2];
   var cut_name = '';
   var bleed_name = '';
-  console.log(bleed)
   if(bleed != false){
     bleed_name = '_bleed_' + str(bleed_val);
     if(cut != false){
