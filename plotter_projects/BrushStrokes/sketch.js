@@ -1,50 +1,56 @@
-gif = false;
-fr = 1;
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 8
 
-capture = false;
-capture_time = 8;
 function setup() {
   common_setup(gif, SVG);
-  layers = 3;  
-  brush_width = canvas_y/layers;
 
-  colors = gen_n_colors(layers+1);
-  noFill();
-  weight = 1*global_scale;
-  strokeWeight(weight);
 }
 //***************************************************
 function draw() {
   capture_start(capture);
   //bleed
-  bleed_border = apply_bleed();
-  push();
+  const bleed_border = apply_bleed();
 
+  //actual drawing stuff
+  const layers = 3;  
+  const brush_width = canvas_y/layers;
+
+  const colors = gen_n_colors(layers+1);
+  noFill();
+  const weight = 1*global_scale;
+  strokeWeight(weight);
+
+  push();
+  
   noiseDetail(random(4));
 
   translate(canvas_x/2, canvas_y/2);
 
-  steps = floor(random(200,400));
+  const steps = floor(random(200,400));
 
-  brush_rad = canvas_y*0.95/2;
+  const brush_rad = canvas_y*0.95/2;
 
   for(let z=0; z<layers; z++){
     push();
-    start_y = -brush_width/2;
+    let start_y = -brush_width/2;
     rotate(random(360));  
-    noise_start = random(100);
+    const noise_start = random(100);
 
     stroke(colors[z]);
     while(start_y<brush_width/2){
-      start_theta = find_theta_y(start_y, brush_rad)
-      start_x = polar_to_cartesian(brush_rad, start_theta).x;
+      const start_theta = find_theta_y(start_y, brush_rad)
+      const start_x = polar_to_cartesian(brush_rad, start_theta).x;
 
-      x = start_x;
-      y = start_y;
+      let x = start_x;
+      let y = start_y;
 
-      in_circle=true;
-      i=0;
+      let in_circle=true;
+      let i=0;
       beginShape();
+      let prev_x, prev_y;
       while(in_circle){
         vertex(x,y);
         prev_x = x;
@@ -60,6 +66,7 @@ function draw() {
       }
       //final vertex on circle
       //check if more vertical or horizontal
+      let end_x, end_y, end_theta;
       if(Math.abs(x-prev_x)>Math.abs(y-prev_y)){
         end_y = (y-prev_y)/2 + prev_y;
         if(x>0){
@@ -106,14 +113,14 @@ function polar_to_cartesian(r, theta){
   return {
     x: r*cos(theta),
     y: r*sin(theta)
-  }
+  };
 }
 
 function cartesian_to_polar(x, y){
   return {
     r: Math.sqrt(Math.pow(x,2)+Math.pow(y,2)),
     theta: atan(y/x)
-  }
+  };
 }
 
 function find_theta_y(y, r){

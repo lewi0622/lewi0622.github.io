@@ -1,10 +1,12 @@
 function preload() {  font = loadFont('..\\..\\fonts\\SquarePeg-Regular.ttf');  }
 
 
-gif = false;
-fr = 1;
-capture = false;
-capture_time = 10;
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 8
+
 function setup() {
   common_setup(gif, SVG, 100, 80);
 
@@ -15,7 +17,7 @@ function setup() {
 function draw() {
   capture_start(capture);
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
   push();
   translate(0*global_scale, canvas_y/2)
   text("Lewiston", 0,0);

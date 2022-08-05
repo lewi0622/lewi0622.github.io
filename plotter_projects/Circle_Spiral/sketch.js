@@ -1,18 +1,19 @@
-gif = false;
-fr = 1;
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 8
 
-capture = false;
-capture_time = 8
 function setup() {
   common_setup(gif, SVG);
-  colors = gen_n_colors(2);
 }
 //***************************************************
 function draw() {
   capture_start(capture);
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
+  const colors = gen_n_colors(2);
   //actual drawing stuff
   push();
 
@@ -21,7 +22,7 @@ function draw() {
   noFill();
 
   translate(canvas_x/2, canvas_y/2);
-  num_circles = 25;
+  const num_circles = 25;
   stroke(colors[0]);
   for(let i=0; i<num_circles; i++){
     rotate(20);

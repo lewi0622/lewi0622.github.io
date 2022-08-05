@@ -1,32 +1,36 @@
-gif = false;
-fr = 1;
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 8
+let suggested_palette;
 
-capture = false;
-capture_time = 10;
 function setup() {
   suggested_palette = random([BUMBLEBEE, SIXTIES, SUPPERWARE]);
   common_setup(gif, SVG);
-
-  line_length = 60*global_scale;
-  tile_width = canvas_x / line_length;
-  tile_height = canvas_y / line_length;
 }
 //***************************************************
 function draw() {
   capture_start(capture);
-  i_offset = 0;
-  j_offset = 0;
 
-  x_offset_min = 0;
-  x_offset_max = 20;
-  y_offset_min = 0;
-  y_offset_max = 20;
+  //project variables
+  const line_length = 60*global_scale;
+  const tile_width = canvas_x / line_length;
+  const tile_height = canvas_y / line_length;
+
+  const i_offset = 0;
+  const j_offset = 0;
+
+  let x_offset_min = 0;
+  let x_offset_max = 20;
+  let y_offset_min = 0;
+  let y_offset_max = 20;
 
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   background("#abada0")
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
   strokeCap(random([PROJECT,ROUND]))
 
   //actual drawing stuff

@@ -1,26 +1,28 @@
-gif = false;
-fr = 30;
+//setup variables
+const gif = false;
+const fr = 30;
+const capture = false;
+const capture_time = 15;
 
-noise_off = 20;
-xoff = 0;
-inc = 0.1*60/fr;
+//project variables
+const noise_off = 20;
+let xoff = 0;
+const inc = 0.1*60/fr;
 
-capture = false;
-capture_time = 15;
 function setup() {
   common_setup(gif, SVG);
-  
-  sym_angs = floor(random(6,49));
-  line_segs = floor(random(20,51));
-
-  stroke("BLACK");
 }
 //***************************************************
 function draw() {
   capture_start(capture);
 
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
+
+  const sym_angs = floor(random(6,49));
+  const line_segs = floor(random(20,51));
+
+  stroke("BLACK");
 
   //actual drawing stuff
   push();
@@ -32,9 +34,9 @@ function draw() {
 
       beginShape();
       for(let j=0; j<line_segs; j++){
-        dampening = 50;
-        x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
-        y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));
+        let dampening = 50;
+        let x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
+        let y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));
         if(j == 0){
           curveVertex(x, y);
         }

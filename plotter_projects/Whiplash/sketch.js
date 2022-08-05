@@ -1,10 +1,13 @@
-gif = true;
-noiseMax = 2;
-phase_off = 20;
-fr = 30;
+//setup variables
+const gif = true;
+const fr = 30;
+const capture = false;
+const capture_time = 8;
 
-capture = false;
-capture_time = 8
+//project variables
+const noiseMax = 2;
+const phase_off = 20;
+let i_mult;
 function setup() {
   if(!capture){
     common_setup(gif, SVG);
@@ -29,22 +32,22 @@ function draw() {
     background("WHITE");
   }
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   //actual drawing stuff
   push();
   translate(canvas_x/2, canvas_y/2);
-  size = 300*global_scale;
-  step_size = 3;
+  const line_size = 300*global_scale;
+  const step_size = 3;
   beginShape();
   for(let i=0; i<720; i+=step_size){
-    xoff = map(cos(i*i_mult), -1,1, 0, noiseMax);
-    yoff = map(sin(i*i_mult), -1,1, 0, noiseMax);
-    x = map(noise(xoff, yoff), 0,1, -size,size)
+    let xoff = map(cos(i*i_mult), -1,1, 0, noiseMax);
+    let yoff = map(sin(i*i_mult), -1,1, 0, noiseMax);
+    const x = map(noise(xoff, yoff), 0,1, -line_size,line_size)
     
     xoff = map(cos((i+phase_off)*i_mult), -1,1, 0, noiseMax);  
     yoff = map(sin((i+phase_off)*i_mult), -1,1, 0, noiseMax);
-    y = map(noise(xoff, yoff), 0,1, -size,size)
+    const y = map(noise(xoff, yoff), 0,1, -line_size,line_size)
     curveVertex(x, y)
     
     i_mult += 0.000003

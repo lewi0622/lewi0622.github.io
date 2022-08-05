@@ -1,17 +1,17 @@
-gif = false;
-fr = 1;
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 8;
 
-capture = false;
-capture_time = 8
 function setup() {
   common_setup(gif, SVG);
-  colors = gen_n_colors(4);
 }
 //***************************************************
 function draw() {
   capture_start(capture);
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   //actual drawing stuff
   push();
@@ -19,13 +19,14 @@ function draw() {
   strokeWeight(1*global_scale);
 
   noFill();
+  const  colors = gen_n_colors(4);
   stroke(colors[0]);
-  pts = 75;
-  shape_rad = 40*global_scale;
-  spacing = shape_rad * 2;
-  zoff = 0;
-  inc = 0.01;
-  counter = 0;
+  const pts = 75;
+  const shape_rad = 40*global_scale;
+  const spacing = shape_rad * 2;
+  let zoff = 0;
+  const inc = 0.01;
+  let counter = 0;
   for(let i=spacing; i<canvas_x; i+=spacing){
     for(let j=spacing; j<canvas_y; j+=spacing){
       push();
@@ -52,14 +53,11 @@ function draw() {
       for(let z=0; z<pts; z++){
         // curveVertex(random(-shape_rad,shape_rad), random(-shape_rad,shape_rad));
         // vertex(map(noise(z+i-j+zoff), 0,1, -shape_rad, shape_rad), map(noise(z+i+j+zoff), 0,1, -shape_rad, shape_rad));
-        ang = map(noise(z + counter + i + j + zoff), 0,1, 0,1080);
+        const ang = map(noise(z + counter + i + j + zoff), 0,1, 0,1080);
         vertex(shape_rad*cos(ang), shape_rad*sin(ang));
 
       }
       endShape();
-
-
-
       zoff += inc;
       counter++;
       pop();

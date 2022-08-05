@@ -1,41 +1,43 @@
-gif = false;
-fr = 1;
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 8
 
-capture = false;
-capture_time = 10;
 function setup() {
   suggested_palette = random([BUMBLEBEE, SIXTIES, SUPPERWARE]);
   common_setup(gif, SVG);
-
-  num_grid = 16;
-  grid_size = canvas_x/num_grid;
 }
 //***************************************************
 function draw() {
   capture_start(capture);
 
+  //project variables
+  const num_grid = 16;
+  const grid_size = canvas_x/num_grid;
+
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   background("#abada0")
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
   strokeCap(SQUARE);
 
   //actual drawing stuff
   push();
   translate(grid_size/2, grid_size/2);
 
-  x = floor(random(num_grid))*grid_size;
-  y = floor(random(num_grid))*grid_size;
-  steps = 500;
+  let x = floor(random(num_grid))*grid_size;
+  let y = floor(random(num_grid))*grid_size;
+  const steps = 500;
 
   noFill();
-  dir = "vert";
+  let dir = "vert";
 
-  x_1 = x;
-  y_1 = y;
-  x_2 = x;
-  y_2 = y;
+  let x_1 = x;
+  let y_1 = y;
+  let x_2 = x;
+  let y_2 = y;
 
   for(let i=0; i<steps; i++){
     curveTightness(1);
@@ -56,14 +58,14 @@ function draw() {
 
     //pick either row, or col and keep other constant
     if(dir == "vert"){
-      new_x = x;
+      const new_x = x;
       while(new_x == x){
         x = floor(random(num_grid))*grid_size;
       }
       dir = "hori";
     }
     else{
-      new_y = y;
+      const new_y = y;
       while(new_y == y){
         y = floor(random(num_grid))*grid_size;
       }
