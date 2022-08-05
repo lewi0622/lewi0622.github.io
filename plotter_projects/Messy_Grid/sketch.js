@@ -27,15 +27,33 @@ function draw() {
 
   x = floor(random(num_grid))*grid_size;
   y = floor(random(num_grid))*grid_size;
-  steps = 100;
+  steps = 500;
 
   noFill();
   dir = "vert";
 
-  curveTightness(.9);
-  beginShape();
+  x_1 = x;
+  y_1 = y;
+  x_2 = x;
+  y_2 = y;
+
   for(let i=0; i<steps; i++){
+    curveTightness(1);
+    if(x<canvas_x/4 || x>canvas_x*3/4 || y<canvas_y/4 || y>canvas_y*3/4){
+      curveTightness(0.9);
+    } 
+    beginShape();
+
+    curveVertex(x_2, y_2);
+    curveVertex(x_1, y_1);
     curveVertex(x,y);
+    curveVertex(x,y);
+
+    x_2 = x_1;
+    y_2 = y_1;
+    x_1 = x;
+    y_1 = y;
+
     //pick either row, or col and keep other constant
     if(dir == "vert"){
       new_x = x;
@@ -51,12 +69,13 @@ function draw() {
       }
       dir = "vert";
     }
+    endShape();
   }
-  endShape();
+
 
   pop();
   //cutlines
-  apply_cutlines();
+  apply_cutlines(bleed_border);
 
   capture_frame(capture, num_frames);
 }

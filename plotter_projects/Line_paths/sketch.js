@@ -54,7 +54,7 @@ function draw() {
 
   pop();
   //cleanup
-  apply_cutlines();
+  apply_cutlines(bleed_border);
 }
 //***************************************************
 //custom funcs

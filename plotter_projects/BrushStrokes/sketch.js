@@ -95,7 +95,7 @@ function draw() {
   circle(canvas_x/2, canvas_y/2, brush_rad*2);
   circle(canvas_x/2, canvas_y/2, brush_rad*2+weight);
   //cleanup
-  apply_cutlines();
+  apply_cutlines(bleed_border);
 
   capture_frame(capture, num_frames);
 }

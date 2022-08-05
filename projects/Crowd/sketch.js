@@ -35,7 +35,7 @@ function draw() {
 
   pop();
   //cutlines
-  apply_cutlines();
+  apply_cutlines(bleed_border);
   
   capture_frame(capture, num_frames);
 }

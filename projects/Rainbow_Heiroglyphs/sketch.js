@@ -68,7 +68,7 @@ function draw() {
   pop();
 
   //cleanup
-  apply_cutlines();
+  apply_cutlines(bleed_border);
 
   if(frameCount ==num_frames){
     noLoop();

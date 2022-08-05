@@ -1,8 +1,8 @@
-gif = false;
-fr = 1;
+const gif = false;
+const fr = 1;
 
-capture = false;
-capture_time = 10;
+const capture = false;
+const capture_time = 10;
 function setup() {
   suggested_palette = random([BEACHDAY, SUMMERTIME, SUPPERWARE]);
   common_setup(gif);
@@ -14,7 +14,7 @@ function draw() {
   capture_start(capture);
 
   //bleed
-  bleed_border = apply_bleed();
+  let bleed_border = apply_bleed();
   
   working_palette = JSON.parse(JSON.stringify(palette));
   strokeCap(random([PROJECT,ROUND]))
@@ -97,9 +97,9 @@ function draw() {
   }
   
   //cutlines
-  apply_cutlines();
+  apply_cutlines(bleed_border);
 
-  capture_frame(capture, num_frames);
+  capture_frame(capture);
 }
 //***************************************************
 //custom funcs

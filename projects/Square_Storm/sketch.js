@@ -66,7 +66,7 @@ function draw() {
   ang += ang_inc;
   pop();
   //cutlines
-  apply_cutlines();
+  apply_cutlines(bleed_border);
   capture_frame(capture, num_frames);
 }
 //***************************************************

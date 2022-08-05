@@ -57,11 +57,10 @@ function draw() {
 
   pop();
   //cutlines
-  apply_cutlines();
+  apply_cutlines(bleed_border);
 
   //stop drawing
   if(frameCount>len){
-    console.log('hi')
     noLoop();
   }
   capture_frame(capture, len);

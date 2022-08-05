@@ -6,7 +6,7 @@ capture_time = 20
 function setup() {
   suggested_palette = BIRDSOFPARADISE;
   //looks good in 300x400
-  common_setup(gif, SVG, 300);
+  common_setup(gif, SVG);
   colors = gen_n_colors(6)
 }
 //***************************************************
@@ -17,14 +17,14 @@ function draw() {
   bleed_border = apply_bleed();
 
   //apply background
-  background("#abada0")
+  // background("#abada0")
 
   //actual drawing stuff
   push();
 
-  translate(canvas_x/2, canvas_y);
+  translate(0, canvas_y);
   trunk_max=40;
-  for(let z=0; z<3; z++){
+  for(let z=0; z<2; z++){
     stroke(colors[z])
     c_leaf_primary = colors[z+3];
     //trunk
@@ -34,18 +34,19 @@ function draw() {
     trunk_seg_len = -10*global_scale;
     trunk_num = floor(random(trunk_max-12, trunk_max));
     trunk_max=trunk_num;
-    prev_x = floor(random(-canvas_x/8,canvas_x/8));
+    prev_x = canvas_x/3 * (z+1);
     prev_y = 0;
     for(let i=0; i<trunk_num; i++){
       if(i+5>=trunk_num){
         trunk_weight -= 0.5*global_scale;
         branch_weight = trunk_weight-0.5*global_scale;
       }
-      strokeWeight(trunk_weight);
+      strokeWeight(1*global_scale);
 
       // new_x = prev_x + random(-5,5)*global_scale;
       new_x = prev_x + map(noise((i+z)/2), 0,1, -5,5)*global_scale;
       new_y = prev_y+trunk_seg_len;
+
       line(prev_x, prev_y, new_x, new_y);
 
       if(trunk_weight<=0 || i+1 == trunk_num){
@@ -62,7 +63,7 @@ function draw() {
   }
   pop();
   //cleanup
-  apply_cutlines();
+  apply_cutlines(bleed_border);
 
   capture_frame(capture, num_frames);
 }
@@ -93,7 +94,7 @@ function branch(branch_num, start_x, start_y, start_weight){
       leaves(prev_branch_x, prev_branch_y);
       break;
     }
-    strokeWeight(weight);
+    strokeWeight(1*global_scale);
     line(prev_branch_x, prev_branch_y, branch_x, branch_y);
     if(j/branch_num>0.5){
       leaves(prev_branch_x, prev_branch_y);
@@ -114,7 +115,7 @@ function branch(branch_num, start_x, start_y, start_weight){
       branch_y = prev_branch_y - map(noise(branch_num), 0,1, 7,10)*global_scale;
     }
     //branch recursion
-    if(random(branch_num/4)>branch_num/(j+1)){
+    if(random(branch_num/4)>branch_num){
       branch(branch_num-j, prev_branch_x, prev_branch_y, weight-random([0,0.25*global_scale]));
     }
   }

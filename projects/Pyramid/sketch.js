@@ -38,7 +38,7 @@ function draw() {
   arcing(canvas_x*.5, 0, 0);
 
   //cutlines
-  apply_cutlines();
+  apply_cutlines(bleed_border);
 
   capture_frame(capture, num_frames);
 }
