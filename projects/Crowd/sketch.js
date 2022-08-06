@@ -16,7 +16,7 @@ function setup() {
 function draw() {
   capture_start(capture);
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   //apply background
   bg();

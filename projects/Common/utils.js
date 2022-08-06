@@ -298,8 +298,9 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //else necessary when redrawing timed pieces
   else{ loop();}
 
-  if (typeof suggested_palette !== 'undefined' && !redraw) {
+  if (typeof suggested_palette !== 'undefined') {
     //if a suggested palette exists in sketch.js
+    console.log(suggested_palette);
     change_default_palette(suggested_palette);
     
   }

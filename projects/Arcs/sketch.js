@@ -1,8 +1,12 @@
-gif = false;
-fr = 1;
+// 'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, SOUTHWEST, NURSERY]);
   common_setup(gif);
@@ -12,7 +16,7 @@ function draw() {
   capture_start(capture);
 
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   working_palette = JSON.parse(JSON.stringify(palette));
   strokeCap(random([PROJECT,ROUND]))

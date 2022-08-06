@@ -13,7 +13,7 @@ function setup() {
 function draw() {
   capture_start(capture);
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   xPos = 0;
   yPos = canvas_y/2;

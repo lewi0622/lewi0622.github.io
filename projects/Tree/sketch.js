@@ -13,7 +13,7 @@ function draw() {
   capture_start(capture);
 
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   working_palette = JSON.parse(JSON.stringify(palette));
   if(arrayEquals(working_palette[0], [87, 61, 38, 255])){

@@ -24,7 +24,7 @@ function setup() {
 function draw() {
   capture_start(capture);
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
   stroke(frameCount%360, 100, 100);
 
   //actual drawing stuff

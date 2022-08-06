@@ -23,7 +23,7 @@ function draw() {
   y_offset_max = 20;
 
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   working_palette = JSON.parse(JSON.stringify(palette));
   strokeCap(random([PROJECT,ROUND]))

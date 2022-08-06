@@ -19,7 +19,7 @@ function draw() {
   clear();
   
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   //apply background
   background(bg_c);

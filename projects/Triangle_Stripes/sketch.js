@@ -12,7 +12,7 @@ function draw() {
   capture_start(capture);
 
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   palette = shuffle(palette, true);
   //apply background

@@ -92,7 +92,7 @@ function draw() {
   num_arcs -=3; 
 
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
   
   //round is the only way to not have weird artifacts on the last tiles placed
   strokeCap(ROUND)

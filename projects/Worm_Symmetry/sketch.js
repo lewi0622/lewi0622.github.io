@@ -24,7 +24,7 @@ function draw() {
 
   background("BLACK");
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
 
   //actual drawing stuff
   push();
