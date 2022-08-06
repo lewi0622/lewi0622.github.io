@@ -26,7 +26,7 @@ function draw() {
     palette = palette_reset;
   }
   //bleed
-  bleed_border = apply_bleed();
+  const bleed_border = apply_bleed();
   //actual drawing stuff
   push();
   noFill();
