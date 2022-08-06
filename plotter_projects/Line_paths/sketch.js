@@ -1,3 +1,4 @@
+'use strict';
 //setup variables
 const gif = true;
 const fr = 1;
@@ -9,6 +10,7 @@ let phase = 0;
 const phase_off = 20;
 const phase_inc = 0.01;
 let c_offset = 0;
+let weight;
 
 function setup() {
   common_setup(gif, SVG);

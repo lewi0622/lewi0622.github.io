@@ -1,3 +1,4 @@
+'use strict';
 //setup variables
 const gif = false;
 const fr = 1;
@@ -18,13 +19,12 @@ function draw() {
   const tile_width = canvas_x / line_length;
   const tile_height = canvas_y / line_length;
 
-  const i_offset = 0;
-  const j_offset = 0;
-
+  let funcs, colors, iterations;
   let x_offset_min = 0;
   let x_offset_max = 20;
   let y_offset_min = 0;
   let y_offset_max = 20;
+  
 
   //bleed
   const bleed_border = apply_bleed();

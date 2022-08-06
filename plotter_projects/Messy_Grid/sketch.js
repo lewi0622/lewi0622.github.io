@@ -1,3 +1,4 @@
+'use strict';
 //setup variables
 const gif = false;
 const fr = 1;
@@ -5,7 +6,6 @@ const capture = false;
 const capture_time = 8
 
 function setup() {
-  suggested_palette = random([BUMBLEBEE, SIXTIES, SUPPERWARE]);
   common_setup(gif, SVG);
 }
 //***************************************************

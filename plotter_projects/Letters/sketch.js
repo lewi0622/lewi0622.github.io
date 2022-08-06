@@ -1,3 +1,4 @@
+'use strict';
 let font;
 function preload() {
   font = loadFont('..\\..\\fonts\\SquarePeg-Regular.ttf');

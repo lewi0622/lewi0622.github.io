@@ -1,3 +1,4 @@
+'use strict';
 //setup variables
 const gif = true;
 const fr = 30;
