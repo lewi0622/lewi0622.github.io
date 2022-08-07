@@ -1,8 +1,15 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
+//project variables
+let working_palette, bg_c, size_buildings;
+
 function setup() {
   suggested_palette = random([BEACHDAY, COTTONCANDY, NURSERY])
   common_setup(gif);
@@ -24,14 +31,15 @@ function draw() {
 
   //actual drawing stuff
   push();
-  size = random([20, 80])
-  if(size==20){
+  const building_size = random([20, 80])
+  let num_buildings;
+  if(building_size==20){
     num_buildings = 19;
   }
   else{
     num_buildings = 4;
   }
-  size_buildings = floor(size*global_scale);
+  size_buildings = floor(building_size*global_scale);
   //for scaling, round to nearest evennumber
   size_buildings = 2 * round(size_buildings/2);
 
@@ -40,7 +48,7 @@ function draw() {
   for(let i=0; i<num_buildings; i++){
     push();
     translate(i*size_buildings, 0);
-    building_height = floor(map(noise(i*2), 0,1, 1,num_buildings+2));
+    const building_height = floor(map(noise(i*2), 0,1, 1,num_buildings+2));
     if(building_height!=1){
       building_block(building_height);
     }
@@ -77,7 +85,7 @@ function building_block(h){
   //builds vertically
   push();
   for(let i=0; i<h; i++){
-    build_c = random(working_palette);
+    let build_c = random(working_palette);
     fill(build_c);
     if(i+1 >= h){
       random([buildCap])();
@@ -87,7 +95,7 @@ function building_block(h){
       random([buildColumns, buildWindow, buildArch, buildTinyWindows, buildStairs, buildBrickwork])();
     }
     else{
-      func = random([buildColumns, buildDias, buildWindow, buildArch, buildTinyWindows, buildStairs, buildBrickwork]);
+      let func = random([buildColumns, buildDias, buildWindow, buildArch, buildTinyWindows, buildStairs, buildBrickwork]);
       if(func == buildColumns){
         func(random([2,3]));
       }
@@ -179,7 +187,7 @@ function buildWindow(window_scale){
     window_scale = 4;
     buildWhole();
   }
-  window_width = size_buildings/window_scale;
+  const window_width = size_buildings/window_scale;
   push();
   fill(bg_c)
   middle();
@@ -201,6 +209,7 @@ function buildBrickwork(){
   
   for(let j=1; j<9; j++){
     //vertical lines
+    let bricks;
     push();
     if(j%2 == 0){
       translate(size_buildings/8, (j-1)*size_buildings/8);
@@ -268,12 +277,12 @@ function buildHalfArch(){
 
 function buildStairs(){
   push();
-  whole_c = random(working_palette);
-  stair_color = whole_c;
+  let whole_c = random(working_palette);
+  let stair_color = whole_c;
   fill(whole_c);
   buildWhole();
 
-  dir = random([-1,1]);
+  const dir = random([-1,1]);
   if(dir == 1){
     low_left();
   }

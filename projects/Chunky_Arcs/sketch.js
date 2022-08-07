@@ -1,8 +1,12 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette, working_palette;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([BIRDSOFPARADISE, SUMMERTIME, SIXTIES]);
   common_setup(gif);
@@ -18,13 +22,13 @@ function draw() {
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background
-  bg_c = random(working_palette)
+  let bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
   //actual drawing stuff
   push();
-  arcing(canvas_x);
+  arcing();
   pop();
   //cutlines
   apply_cutlines(bleed_border);
@@ -33,7 +37,7 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function arcing(width){
+function arcing(){
   push();
   noFill();
 
@@ -46,7 +50,7 @@ function arcing(width){
   rotate(random(0,360));
   while(radius < canvas_x-50*global_scale){
     radius = old_radius+old_SW*2+random(5,6)*global_scale;
-    sw = radius - old_radius - old_SW -5*global_scale;
+    const sw = radius - old_radius - old_SW -5*global_scale;
 
     stroke(random(working_palette));
     strokeWeight(sw);

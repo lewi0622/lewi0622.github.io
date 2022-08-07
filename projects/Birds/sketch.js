@@ -1,8 +1,12 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette, working_palette, x_fourth, y_fourth;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([COTTONCANDY, GAMEDAY, BIRDSOFPARADISE]);
   common_setup(gif);
@@ -17,7 +21,7 @@ function draw() {
   working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
-  bg_c = random(working_palette)
+  let bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
@@ -58,7 +62,7 @@ function head(){
   fill(random(working_palette));
   square(-x_fourth, -x_fourth, x_fourth*2);
   fill('#FFFFFF');
-  eye_size = random(75,125);
+  const eye_size = random(75,125);
   circle(0,0, eye_size*global_scale);
   fill(random(palette))
   circle(0,0,eye_size*3/4*global_scale);
@@ -66,6 +70,7 @@ function head(){
   circle(0,0,eye_size*1/2*global_scale);
 }
 function beak(reverse){
+  let rev;
   if(reverse==true){
     rev = -1;
   }

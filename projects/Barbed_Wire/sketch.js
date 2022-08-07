@@ -1,4 +1,4 @@
-// 'use strict';
+'use strict';
 //setup variables
 const gif = false;
 const fr = 1;
@@ -18,8 +18,8 @@ function draw() {
   const bleed_border = apply_bleed();
 
   const num_pts = 1000;
-  xPos = 0;
-  yPos = canvas_y/2;
+  let xPos = 0;
+  let yPos = canvas_y/2;
 
   let working_palette = JSON.parse(JSON.stringify(palette));
 
@@ -33,8 +33,7 @@ function draw() {
   strokeCap(SQUARE);
   strokeWeight(30*global_scale)
   noFill();
-  shape_type=TRIANGLES
-  beginShape(shape_type);
+  beginShape(TRIANGLES);
 
   for(let i=0; i<num_pts; i++){
     stroke(random(working_palette));
@@ -46,7 +45,9 @@ function draw() {
     yPos += random(-4,4)*global_scale;
 
     //check for wrapping
-    wrap(undefined, canvas_y/2);
+    const pos = wrap(undefined, canvas_y/2, xPos, yPos);
+    xPos = pos[0];
+    yPos = pos[1];
   }
   //don't stroke last line to avoid one that ends in the middle of the page
   noStroke();
@@ -60,7 +61,7 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function wrap(force_x, force_y){
+function wrap(force_x, force_y, xPos, yPos){
   //-x, -y
   if(xPos < 0 && yPos < 0){
     vertex(xPos, yPos);
@@ -72,12 +73,11 @@ function wrap(force_x, force_y){
     yPos = force_num(yPos, force_y);
 
     
-    beginShape(shape_type);
-    return;
+    beginShape(TRIANGLES);
   }
 
   //-x, +y
-  if(xPos < 0 && yPos > canvas_y){
+  else if(xPos < 0 && yPos > canvas_y){
     vertex(xPos, yPos);
     endShape();
     
@@ -86,12 +86,11 @@ function wrap(force_x, force_y){
     xPos = force_num(xPos, force_x);
     yPos = force_num(yPos, force_y);
     
-    beginShape(shape_type);
-    return;
+    beginShape(TRIANGLES);
   }
 
   //+x, +y
-  if(xPos > canvas_x && yPos > canvas_y){
+  else if(xPos > canvas_x && yPos > canvas_y){
     vertex(xPos, yPos);
     endShape();
     
@@ -100,12 +99,11 @@ function wrap(force_x, force_y){
     xPos = force_num(xPos, force_x);
     yPos = force_num(yPos, force_y);
     
-    beginShape(shape_type);
-    return;
+    beginShape(TRIANGLES);
   }
 
   //+x, -y
-  if(xPos > canvas_x && yPos < 0){
+  else if(xPos > canvas_x && yPos < 0){
     vertex(xPos, yPos);
     endShape();
     
@@ -114,57 +112,53 @@ function wrap(force_x, force_y){
     xPos = force_num(xPos, force_x);
     yPos = force_num(yPos, force_y);
     
-    beginShape(shape_type);
-    return;
+    beginShape(TRIANGLES);
   }
 
   //-x
-  if(xPos < 0){
+  else if(xPos < 0){
     vertex(xPos, yPos);
     endShape();
 
     xPos = canvas_x;
     yPos = force_num(yPos, force_y);
 
-    beginShape(shape_type);
-    return;
+    beginShape(TRIANGLES);
   }
   
   //+x
-  if(xPos > canvas_x){
+  else if(xPos > canvas_x){
     vertex(xPos, yPos);
     endShape();
 
     xPos = 0;
     yPos = force_num(yPos, force_y);
 
-    beginShape(shape_type);
-    return;
+    beginShape(TRIANGLES);
   }
 
   //-y
-  if(yPos < 0){
+  else if(yPos < 0){
     vertex(xPos, yPos);
     endShape();
 
     yPos = canvas_y;
     xPos = force_num(xPos, force_x);
 
-    beginShape(shape_type);
-    return;
+    beginShape(TRIANGLES);
   }
   
   //+y
-  if(yPos > canvas_y){
+  else if(yPos > canvas_y){
     vertex(xPos, yPos);
     endShape();
 
     yPos = 0;
     xPos = force_num(xPos, force_x);
 
-    beginShape(shape_type);
-    return;
+    beginShape(TRIANGLES);
   }
+  return [xPos, yPos];
 }
 
 function force_num(pos, force){

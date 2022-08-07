@@ -1,8 +1,12 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([SUMMERTIME, MUTEDEARTH, SIXTIES]);
   common_setup(gif);
@@ -14,12 +18,12 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
-  line_length = random([25, 40])*global_scale;
-  circle_x = canvas_x/line_length;
-  circle_y = canvas_y/line_length;
+  const line_length = random([25, 40])*global_scale;
+  const circle_x = canvas_x/line_length;
+  const circle_y = canvas_y/line_length;
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
 
   //actual drawing stuff
@@ -29,7 +33,7 @@ function draw() {
     for(let j=0; j<circle_y; j++){
       push();
       noStroke();
-      fill(random(palette));
+      fill(random(working_palette));
       translate(i*line_length, j*line_length);
       circle(0, 0, random(line_length*.3, line_length));
       pop();

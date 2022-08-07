@@ -1,15 +1,15 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10;
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
-  line_length = 60*global_scale;
-  tile_width = canvas_x / line_length;
-  tile_height = canvas_y / line_length;
-
 }
 //***************************************************
 function draw() {
@@ -17,11 +17,17 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  //projct variables
+  const line_length = 60*global_scale;
+  const tile_width = canvas_x / line_length;
+  const tile_height = canvas_y / line_length;
+  let funcs, colors, iterations, x_offset_min, x_offset_max, y_offset_min, y_offset_max;
+
+  let working_palette = JSON.parse(JSON.stringify(palette));
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background
-  bg_c = random(working_palette)
+  let bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 

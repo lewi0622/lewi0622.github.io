@@ -1,8 +1,12 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([COTTONCANDY, NURSERY, SUPPERWARE]);
   common_setup(gif);
@@ -14,7 +18,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
   if(gif){
     //randomize noise seed
     noiseSeed(random(10000))
@@ -26,18 +30,18 @@ function draw() {
   noiseDetail(random(4));
 
   strokeWeight(1*global_scale);
-  steps = random(200,300);
-  pts = 275;
+  const steps = random(200,300);
+  const pts = 275;
   noFill();
   center_rotate(random(360));
 
   for(let z=0; z<2; z++){
     push();
     translate(0, random(canvas_y*.25, canvas_y*.5));
-    dir = random([-1,1])
-    noise_start = random(100);
-    lines = random(150, 200);
-    c = random(working_palette);
+    const dir = random([-1,1])
+    const noise_start = random(100);
+    const lines = random(150, 200);
+    const c = random(working_palette);
     reduce_array(working_palette, c);
     stroke(c);
     for(let j=0; j<lines; j++){
