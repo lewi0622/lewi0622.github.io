@@ -1,13 +1,15 @@
-gif = false;
-fr = 1;
+// 'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, MUTEDEARTH]);
   common_setup(gif);
-
-  num_pts = 1000;
 }
 //***************************************************
 function draw() {
@@ -15,10 +17,11 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
+  const num_pts = 1000;
   xPos = 0;
   yPos = canvas_y/2;
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
@@ -57,3 +60,116 @@ function draw() {
 }
 //***************************************************
 //custom funcs
+function wrap(force_x, force_y){
+  //-x, -y
+  if(xPos < 0 && yPos < 0){
+    vertex(xPos, yPos);
+    endShape();
+
+    xPos = canvas_x;
+    yPos = canvas_y;
+    xPos = force_num(xPos, force_x);
+    yPos = force_num(yPos, force_y);
+
+    
+    beginShape(shape_type);
+    return;
+  }
+
+  //-x, +y
+  if(xPos < 0 && yPos > canvas_y){
+    vertex(xPos, yPos);
+    endShape();
+    
+    xPos = canvas_x;
+    yPos = 0;
+    xPos = force_num(xPos, force_x);
+    yPos = force_num(yPos, force_y);
+    
+    beginShape(shape_type);
+    return;
+  }
+
+  //+x, +y
+  if(xPos > canvas_x && yPos > canvas_y){
+    vertex(xPos, yPos);
+    endShape();
+    
+    xPos = 0;
+    yPos = 0;
+    xPos = force_num(xPos, force_x);
+    yPos = force_num(yPos, force_y);
+    
+    beginShape(shape_type);
+    return;
+  }
+
+  //+x, -y
+  if(xPos > canvas_x && yPos < 0){
+    vertex(xPos, yPos);
+    endShape();
+    
+    xPos = 0;
+    yPos = canvas_y;
+    xPos = force_num(xPos, force_x);
+    yPos = force_num(yPos, force_y);
+    
+    beginShape(shape_type);
+    return;
+  }
+
+  //-x
+  if(xPos < 0){
+    vertex(xPos, yPos);
+    endShape();
+
+    xPos = canvas_x;
+    yPos = force_num(yPos, force_y);
+
+    beginShape(shape_type);
+    return;
+  }
+  
+  //+x
+  if(xPos > canvas_x){
+    vertex(xPos, yPos);
+    endShape();
+
+    xPos = 0;
+    yPos = force_num(yPos, force_y);
+
+    beginShape(shape_type);
+    return;
+  }
+
+  //-y
+  if(yPos < 0){
+    vertex(xPos, yPos);
+    endShape();
+
+    yPos = canvas_y;
+    xPos = force_num(xPos, force_x);
+
+    beginShape(shape_type);
+    return;
+  }
+  
+  //+y
+  if(yPos > canvas_y){
+    vertex(xPos, yPos);
+    endShape();
+
+    yPos = 0;
+    xPos = force_num(xPos, force_x);
+
+    beginShape(shape_type);
+    return;
+  }
+}
+
+function force_num(pos, force){
+  if(force !== undefined){
+    return force;
+  }
+  return pos;
+}

@@ -1,13 +1,18 @@
-gif = true;
-fr = 30;
+'use strict';
+//setup variables
+const gif = true;
+const fr = 30;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette, palette, bg_c, weight, c_id, lines, sub_lines;
 
-noiseMax = 1;
-phase = 0;
-phase_off = 20;
-phase_inc = 1.5;
+//project variables
+const noiseMax = 1;
+let phase = 0;
+const phase_off = 20;
+const phase_inc = 1.5;
 
-capture = false;
-capture_time = 5
 function setup() {
   suggested_palette = random([BEACHDAY, SOUTHWEST, SUPPERWARE]);
   common_setup(gif);
@@ -30,7 +35,7 @@ function draw() {
 
   clear();
   //reset loop variables
-  min_len = (sin(phase)*4+40)*global_scale;
+  const min_len = (sin(phase)*4+40)*global_scale;
   background(bg_c);
 
   //bleed
@@ -43,23 +48,23 @@ function draw() {
   circle(0,0,min_len*2);
 
   for(let i=0; i<360; i+=360/lines){
-    xoff = map(cos(i+phase), -1,1, 0, noiseMax);
-    yoff = map(sin(i+phase+phase_off), -1,1, 0, noiseMax);
-    len = map(noise(xoff, yoff), 0,1, 100,250)*global_scale;
+    const xoff = map(cos(i+phase), -1,1, 0, noiseMax);
+    const yoff = map(sin(i+phase+phase_off), -1,1, 0, noiseMax);
+    const len = map(noise(xoff, yoff), 0,1, 100,250)*global_scale;
 
     //subline precalc
-    sub_len = (len-min_len)*0.15;
-    sub_min_len = min_len;
-    cos_i = cos(i);
-    sin_i = sin(i);
+    let sub_len = (len-min_len)*0.15;
+    let sub_min_len = min_len;
+    const cos_i = cos(i);
+    const sin_i = sin(i);
     for(let j=0; j<sub_lines; j++){
       stroke(palette[c_id])
 
-      start_x = sub_min_len*cos_i;
-      start_y = sub_min_len*sin_i;
+      const start_x = sub_min_len*cos_i;
+      const start_y = sub_min_len*sin_i;
   
-      x = (sub_len+sub_min_len)*cos_i;
-      y = (sub_len+sub_min_len)*sin_i;
+      const x = (sub_len+sub_min_len)*cos_i;
+      const y = (sub_len+sub_min_len)*sin_i;
 
       line(start_x, start_y, x,y);
 
