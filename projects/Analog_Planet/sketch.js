@@ -45,7 +45,7 @@ function draw() {
   let c3 = random(working_palette);
 
   const blend_lines = random()>0.5;
-  const opacity = random(2,8);
+  let  opacity = random(2,8);
   
   c1[3] = opacity;
   c2[3] = opacity;
