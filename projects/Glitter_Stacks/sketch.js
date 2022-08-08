@@ -1,8 +1,12 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([COTTONCANDY, GAMEDAY, BIRDSOFPARADISE]);
   common_setup(gif);
@@ -14,10 +18,10 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
-  bg_c = random(working_palette)
+  let bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
@@ -27,14 +31,14 @@ function draw() {
   center_rotate(random([0, 180]));
 
   noStroke();
-  rect_width = floor(canvas_x/4);
-  rect_height = floor(canvas_y*0.75);
-  shape=random(['square', 'circle']);
+  const rect_width = floor(canvas_x/4);
+  const rect_height = floor(canvas_y*0.75);
+  const shape=random(['square', 'circle']);
   //best if even
-  step = 2*global_scale;
+  const step = 2*global_scale;
   translate(canvas_x/16, 0);
 
-  pow_arr = [0.5, 1.2, 3]
+  let pow_arr = [0.5, 1.2, 3]
   pow_arr = shuffle(pow_arr);
   for(let i=0; i<3; i++){
     push();
@@ -58,14 +62,14 @@ function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, 
     [rect_width, rect_height] = [rect_height, rect_width];
   }
   for(let i=0; i<150; i++){
-    chance = constrain(Math.pow(i/150, pow), min, max);
+    let chance = constrain(Math.pow(i/150, pow), min, max);
     if(reverse==true){
       chance = 1-chance;
     }
     
     for(let j=0; j<50; j++){
       push();
-      pixel_c = random(palette);
+      const pixel_c = random(palette);
       fill(pixel_c);
 
       if(rotate == true){

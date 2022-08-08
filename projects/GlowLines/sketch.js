@@ -1,12 +1,18 @@
-gif = true;
-fr = 30;
+'use strict';
+//setup variables
+const gif = true;
+const fr = 30;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-xoff = 0;
-inc = 0.005*60/fr;
-offset = 50
+//project variables
+let xoff = 0;
+const inc = 0.005*60/fr;
+const offset = 50
+let bg_c;
 
-capture = false;
-capture_time = 3
 function setup() {
   suggested_palette = random([SUMMERTIME, SOUTHWEST, JAZZCUP]);
   common_setup(gif);
@@ -20,7 +26,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
   background(bg_c)
@@ -35,7 +41,7 @@ function draw() {
   drawingContext.shadowBlur = noise(xoff)*global_scale*10;
 
   for(let i=0; i<map(noise(xoff), 0, 1, 10, 110); i++){
-    c = color(working_palette[i%Math.min(3, working_palette.length)])
+    const c = color(working_palette[i%Math.min(3, working_palette.length)])
     drawingContext.shadowColor = c;
     stroke(c)
     circle(0,0, map(noise(xoff+offset*i), 0, 1, -100, 600)*global_scale);
