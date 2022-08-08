@@ -8,7 +8,7 @@ const sixteen_by_nine = false;
 let suggested_palette;
 
 function setup() {
-  // suggested_palette = random([SUMMERTIME, MUTEDEARTH, SIXTIES]);
+  suggested_palette = random([SUMMERTIME, MUTEDEARTH, SIXTIES]);
   common_setup(gif);
 }
 //***************************************************
