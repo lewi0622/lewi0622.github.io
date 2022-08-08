@@ -1,8 +1,15 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
+//project variables
+let petal_size; 
+
 function setup() {
   suggested_palette = random([BEACHDAY, SOUTHWEST]);
   common_setup(gif);
@@ -14,10 +21,10 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
-  bg_c = random(working_palette)
+  let bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
@@ -32,10 +39,10 @@ function draw() {
   else{  
     stroke('black');
     strokeWeight(0.5*global_scale);}
-  distance = canvas_y/random(3,5);
+  let distance = canvas_y/random(3,5);
   for(let i=0; i<random(8,12); i++){
     rotate(random(0,360));
-    petal_c = random(working_palette);
+    const petal_c = random(working_palette);
     fill(petal_c);
       // Shadow
     drawingContext.shadowColor = color(petal_c);

@@ -1,8 +1,12 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([COTTONCANDY, BIRDSOFPARADISE, SOUTHWEST]);
   common_setup(gif);
@@ -14,10 +18,10 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
-  bg_c = random(working_palette)
+  let bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
@@ -28,28 +32,28 @@ function draw() {
   rotate(random(360));
   for(let i=0; i<40; i++){
     //confine start vector to circle
-    start = createVector(random(-canvas_x/8, canvas_x/8), random(-canvas_y/8, canvas_y/8), 0);
-    steps = random(50,100);
-    scale_factor = 2*global_scale
-    slope = start.y/start.x;
-    radius = random(5,20)*global_scale;
+    const start = createVector(random(-canvas_x/8, canvas_x/8), random(-canvas_y/8, canvas_y/8), 0);
+    const steps = random(50,100);
+    const scale_factor = 2*global_scale
+    const slope = start.y/start.x;
+    let radius = random(5,20)*global_scale;
 
     //init 
-    prev_x = start.x;
-    prev_y = start.y;
+    let prev_x = start.x;
+    let prev_y = start.y;
 
     noStroke();
     //get two unique colors
-    col1 = color(random(palette));
-    col2 = color(random(palette));
+    const col1 = color(random(palette));
+    let  col2 = color(random(palette));
     while(col2==col1){
       col2=random(palette);
     }
     push();
     for(let j=0; j<steps; j++){
       fill(lerpColor(col1, col2, j/steps));
-      new_x = start.x + Math.sign(start.x)*j*scale_factor
-      new_y = new_x*slope;
+      const new_x = start.x + Math.sign(start.x)*j*scale_factor
+      const new_y = new_x*slope;
       radius += random(-2, 2)*global_scale
       ellipse(new_x, new_y, random(radius*.75, radius*1.5), random(radius*.75, radius*1.5));
       rotate(random(-4,4));
