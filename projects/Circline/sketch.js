@@ -8,7 +8,7 @@ const sixteen_by_nine = false;
 let suggested_palette;
 
 function setup() {
-  suggested_palette = random([SUMMERTIME, MUTEDEARTH, SIXTIES]);
+  // suggested_palette = random([SUMMERTIME, MUTEDEARTH, SIXTIES]);
   common_setup(gif);
 }
 //***************************************************
@@ -22,10 +22,10 @@ function draw() {
 
   //apply background
   const line_length = random([25, 40])*global_scale;
-  const circle_x = canvas_x/line_length;
-  const circle_y = canvas_y/line_length;
+  const circle_x = round(canvas_x/line_length);
+  const circle_y = round(canvas_y/line_length);
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
-
+  console.log(line_length, circle_x, circle_y)
   //actual drawing stuff
   push();
   translate(line_length/2, line_length/2);
