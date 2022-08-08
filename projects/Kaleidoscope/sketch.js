@@ -1,16 +1,15 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette, working_palette, num_pts;
 
-capture = false;
-capture_time = 10;
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
-
-  working_palette = JSON.parse(JSON.stringify(palette))
-  bg_c = random(working_palette);
-
-  noStroke();
 }
 //***************************************************
 function draw() {
@@ -21,6 +20,12 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
+  //project variables
+  working_palette = JSON.parse(JSON.stringify(palette))
+  let bg_c = random(working_palette);
+
+  noStroke();
+
   //apply background
   background(bg_c);
 
@@ -28,11 +33,11 @@ function draw() {
   push();
 
   //create series of points
-  pt_size = floor(random(10,30)*global_scale);
-  pts = [];
+  const pt_size = floor(random(10,30)*global_scale);
+  const pts = [];
   num_pts = floor(random(6,60));
   for(let i=0; i<num_pts; i++){
-    new_pt = gen_pt(pts, pt_size*2);
+    const new_pt = gen_pt(pts, pt_size*2);
     pts.push(new_pt);
   }
 
@@ -53,7 +58,7 @@ function draw() {
 
 function gen_pt(arr, min_dist){
   //checks new point to see if it's greater than the min_dist
-  new_pt = {
+  let new_pt = {
     x:random(-canvas_x, canvas_x*2),
     y:random(-canvas_y, canvas_y*2),
     idxs:[]
@@ -75,8 +80,8 @@ function gen_pt(arr, min_dist){
 function furthest_pts(arr){
   //draw lines between the three furthest points
   arr.forEach((pt, current_idx) => {
-    distances=[];
-    idxs = [];
+    let distances=[];
+    let idxs = [];
     //get distances between all points and pt
     arr.forEach((p, sub_idx) => {
       if(sub_idx == current_idx){
@@ -88,9 +93,9 @@ function furthest_pts(arr){
     })
 
     //find three smallest distances between points
-    discard = floor(random(2,num_pts/2));
+    const discard = floor(random(2,num_pts/2));
     for(let i=0; i<discard; i++){
-      index = indexOfMin(distances);
+      const index = indexOfMin(distances);
       distances[index] = canvas_x*2;
       if(i+2>=discard){
         idxs.push(index);
@@ -102,8 +107,8 @@ function furthest_pts(arr){
 
 function draw_indices(pts, pt){
   //draw triangle between pt and two furthest points
-  c = random(working_palette)
-  c[3] = floor(random(100,220));
+  const c = color(random(working_palette));
+  c.setAlpha(floor(random(100,220)));
   fill(c);
   triangle(pts[pt.idxs[0]].x, pts[pt.idxs[0]].y, pts[pt.idxs[1]].x, pts[pt.idxs[1]].y, pt.x, pt.y);
 }

@@ -1,13 +1,15 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10;
 function setup() {
   suggested_palette = random([BEACHDAY, COTTONCANDY, SOUTHWEST]);
   common_setup(gif);
-
-  erase_or_bg = random()>0.5;
 }
 //***************************************************
 function draw() {
@@ -17,24 +19,22 @@ function draw() {
   const bleed_border = apply_bleed();
 
   //apply background
-  bg_c = bg();
+  const bg_c = bg();
+
+  const erase_or_bg = random()>0.5;
 
   //actual drawing stuff
   push();
   center_rotate(random(0,360));
 
   noStroke();
-  [h,w] = random([[20,70], [10,10], [40,100]]);
+  const [h,w] = random([[20,70], [10,10], [40,100]]);
+  const ribbon_h = h*global_scale;
+  const ribbon_w = -w*global_scale;
 
-  ribbon_h = h*global_scale;
+  const j_limit = round(canvas_y/ribbon_h);
 
-  ribbon_w = -w*global_scale;
-
-  j_limit = round(canvas_y/ribbon_h);
-
-  debug_counter = 0;
   for(let i=0; i<canvas_x*1.5; i+=random([2,4,6,8])*global_scale){
-    debug_counter++
     for(let j=0; j<j_limit; j++){
       push();
       translate(i,j*ribbon_h);

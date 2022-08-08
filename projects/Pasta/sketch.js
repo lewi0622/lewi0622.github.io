@@ -1,8 +1,14 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10;
+//project variables
+let grid_size;
 
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, GAMEDAY, BIRDSOFPARADISE]);
@@ -15,39 +21,39 @@ function draw() {
   capture_start(capture);
   clear();
 
-  tiles = [];
+  let tiles = [];
   //params
-  smaller_cnv = canvas_x;
+  let smaller_cnv = canvas_x;
   if(canvas_x>canvas_y){
     smaller_cnv = canvas_y;
   }
 
   grid_size = smaller_cnv/floor(random(4,16));
 
-  weight = ceil(random(1,5))*global_scale;
+  const weight = ceil(random(1,5))*global_scale;
 
-  max_rows = round(canvas_y/grid_size);
-  max_cols = round(canvas_x/grid_size);
+  const max_rows = round(canvas_y/grid_size);
+  const max_cols = round(canvas_x/grid_size);
 
-  rows = ceil(random(max_rows));
-  cols = ceil(random(max_cols));
+  const rows = ceil(random(max_rows));
+  const cols = ceil(random(max_cols));
 
-  bound = (max_rows+max_cols)/(rows + cols);
+  let bound = (max_rows+max_cols)/(rows + cols);
   bound = constrain(bound, 5, 50);
-  iterations = floor(random(bound, 50) * 40*global_scale/grid_size);
+  const iterations = floor(random(bound, 50) * 40*global_scale/grid_size);
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
   working_palette.forEach((e,idx) => {
     working_palette[idx] = RGBA_to_HSBA(...e);
   });
-  bg_c = random(working_palette);
+  let bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);
   
-  c_primary = random(working_palette);
+  let c_primary = random(working_palette);
   reduce_array(working_palette, c_primary);
 
   //create tiles and starting locations
-  c = random(working_palette);
+  let c = random(working_palette);
   for(let i=0; i<cols; i++){
 
     tiles.push({
@@ -83,8 +89,8 @@ function draw() {
   });
 
   //calculate number of lines per grid space
-  start = 0;
-  num_arcs = 0;
+  let start = 0;
+  let num_arcs = 0;
   while(start<grid_size/2){
     num_arcs+=4;
     start += weight*2;
@@ -103,19 +109,19 @@ function draw() {
   //actual drawing stuff
   push();
   let z = 0;
-  let draw = true;
-  while(z<iterations || draw){
+  let draw_shape = true;
+  while(z<iterations || draw_shape){
     stroke(c_primary);
     strokeWeight(weight);
     noFill();
     tiles = shuffle(tiles,true, max_cols+max_rows);
     for(let i =0; i<tiles.length; i++){
       push();
-      tile = tiles[i];
-      c_secondary = tile.c;
+      const tile = tiles[i];
+      const c_secondary = tile.c;
 
       translate(tile.x + grid_size/2, tile.y + grid_size/2);
-      dir = random(['straight', 'left', 'right']);
+      const dir = random(['straight', 'left', 'right']);
 
       //break after random call if no draw
       if(!tile.draw){
@@ -144,8 +150,7 @@ function draw() {
         if(dir == 'left'){
           rotate(-90);
         }
-        dir_sign = 0;
-        offset = (grid_size - num_arcs*weight);
+        const offset = (grid_size - num_arcs*weight);
         for(let j=0; j<num_arcs; j++){
           push();
           translate(-grid_size/2, -grid_size/2);
@@ -155,7 +160,7 @@ function draw() {
           else{
             stroke(c_secondary);
           }
-          diameter = offset+weight*(num_arcs-j)*2-weight;
+          const diameter = offset+weight*(num_arcs-j)*2-weight;
 
           arc(0,0, diameter, diameter, 0, 90);
           pop();
@@ -219,7 +224,7 @@ function draw() {
     if(z>=iterations){
       tiles = rm_tiles_OOB(tiles);
       //check if all are no-draw
-      draw = !tiles.every(function(e) {return !e.draw;})
+      draw_shape = !tiles.every(function(e) {return !e.draw;})
     }
 
     //loop cleanup
