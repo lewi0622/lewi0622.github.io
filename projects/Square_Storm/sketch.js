@@ -1,19 +1,25 @@
-gif = true;
-fr = 30;
+'use strict';
+//setup variables
+const gif = true;
+const fr = 30;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 5;
+//project variables
+const squares = [];
+const num_squares = 1000;
+let ang = 0;
+const ang_inc = 1;
+let origin;
 
-squares = [];
-num_squares = 1000;
-ang = 0;
-ang_inc = 1;
 function setup() {
   suggested_palette = random([SUMMERTIME, SOUTHWEST, NURSERY, JAZZCUP]);
   common_setup(gif);
   for(let i=0; i<num_squares; i++){
-    c = random(palette);
-    c[3] = 0.05*255;
+    const c = color(random(palette));
+    c.setAlpha(0.05*255);
     squares.push({x:random(-canvas_x/8, canvas_x*9/8), y:random(-canvas_y/8, canvas_y*9/8), c: c});
   }
   //rotation point
@@ -26,7 +32,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
   background("WHITE");
@@ -34,8 +40,8 @@ function draw() {
   noStroke();
   //actual drawing stuff
   push();
-  size = 200*global_scale;
-  corner = 20*global_scale;
+  const shape_size = 200*global_scale;
+  const corner = 20*global_scale;
 
   switch(origin){
     case "br":
@@ -60,7 +66,7 @@ function draw() {
     translate(squares[i].x, squares[i].y);
     rotate(-ang);
     fill(squares[i].c);
-    square(0,0, size+map(noise((i+ang)/100), 0,1, -size/4,size/4), corner, corner, corner, corner);
+    square(0,0, shape_size+map(noise((i+ang)/100), 0,1, -shape_size/4,shape_size/4), corner, corner, corner, corner);
     pop();
   }
   ang += ang_inc;

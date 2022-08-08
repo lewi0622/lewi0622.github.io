@@ -1,8 +1,12 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10
 function setup() {
   suggested_palette = random([BEACHDAY, SOUTHWEST, SUPPERWARE]);
   common_setup(gif);
@@ -14,10 +18,10 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
-  bg_c = random(working_palette)
+  const bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
@@ -25,17 +29,17 @@ function draw() {
   push();
   strokeCap(ROUND);
 
-  start = createVector(0,canvas_y,0);
-  end = createVector(canvas_x,0,0);
-  steps = 10;
-  radius = 65*global_scale;
+  const start = createVector(0,canvas_y,0);
+  const end = createVector(canvas_x,0,0);
+  const steps = 10;
+  const radius = 65*global_scale;
   strokeWeight(4*global_scale)
 
   center_rotate(random([0,90,180,270]));
-  suns = random([2,4])
+  const suns = random([2,4])
 
   for(let j=0;j<suns;j++){
-    c = random(working_palette);
+    const c = random(working_palette);
     stroke(c);
     fill(c);
 
@@ -45,7 +49,7 @@ function draw() {
 
     circle(0,0,radius);
     for(let i=1; i<steps; i++){
-      v3 = p5.Vector.lerp(start, end, i/steps);
+      const v3 = p5.Vector.lerp(start, end, i/steps);
       line(0,0,v3.x,v3.y);
     }
     if(suns == 2){

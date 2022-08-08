@@ -1,8 +1,15 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10;
+//project variables
+let amp;
+
 function setup() {
   suggested_palette = random([BIRDSOFPARADISE, MUTEDEARTH, OASIS]);
   common_setup(gif);
@@ -14,14 +21,14 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
   if(gif){
     //randomize noise seed
     noiseSeed(random(10000))
   }
 
   //apply background
-  bg_c = random(working_palette)
+  let bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
@@ -30,8 +37,8 @@ function draw() {
 
   center_rotate(random([0,90,180,270]));
 
-  tile_x = canvas_x/100;
-  tile_y = canvas_y/10;
+  const tile_x = canvas_x/100;
+  const tile_y = canvas_y/10;
 
   strokeWeight(5*global_scale);
 
@@ -46,8 +53,8 @@ function draw() {
     curveVertex(-10*global_scale,0);
     curveVertex(-10*global_scale,0);
     for(let i = 0;  i<200; i++){
-      l_r = random([-1,1,1])*tile_x*3;
-      u_d = random([-1,1])*amp;
+      const l_r = random([-1,1,1])*tile_x*3;
+      const u_d = random([-1,1])*amp;
       curveVertex(i*tile_x+noise(i+j)*l_r, noise(i+j)*u_d);
       amp +=0.5*global_scale;
     }

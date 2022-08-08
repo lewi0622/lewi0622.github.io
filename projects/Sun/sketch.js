@@ -1,13 +1,15 @@
+'use strict';
+//setup variables
 const gif = false;
 const fr = 1;
-
 const capture = false;
 const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
+
 function setup() {
   suggested_palette = random([BEACHDAY, SUMMERTIME, SUPPERWARE]);
   common_setup(gif);
-  
-  cutout = random()>0.5;
 }
 //***************************************************
 function draw() {
@@ -16,27 +18,29 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
   
-  working_palette = JSON.parse(JSON.stringify(palette));
+  const cutout = random()>0.5;
+  let working_palette = JSON.parse(JSON.stringify(palette));
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background
-  bg_c = random(working_palette)
+  const bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
   //actual drawing stuff
   push();
-  width = random([2,3])*global_scale;
+  const width = random([2,3])*global_scale;
 
-  angle_step = random([18,24]);
-  radius = random(175,200)*global_scale;
+  const angle_step = random([18,24]);
+  const radius = random(175,200)*global_scale;
 
   //center
   translate(canvas_x/2, canvas_y/2);
 
   //setup so we don't do two beams of the same color
-  lastColor=random(working_palette);
-  c = lastColor;
+  let lastColor=random(working_palette);
+  let c = lastColor;
+  let c0;
   for(let i=0; i<360; i+=angle_step){
     push();
     //get new color, or if last step, get different color from first or previous

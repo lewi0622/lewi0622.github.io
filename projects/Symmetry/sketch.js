@@ -1,14 +1,22 @@
-gif = true;
-fr = 30;
+'use strict';
+//setup variables
+const gif = true;
+const fr = 30;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-noise_off = 20;
-inc = 0.3*60/fr;
+//project variables
+const noise_off = 20;
+const inc = 0.3*60/fr;
+let xoff = 0;
+let sym_angs, line_segs, len, line_color;
 
-capture = false;
-//use len for frames to capture
-capture_time = 1;
 function setup() {
   common_setup(gif);
+
+  //start drawing over if autoscaled
   xoff = 0;
   frameCount = 0;
 
@@ -40,9 +48,9 @@ function draw() {
     push();
       beginShape();
       for(let j=0; j<line_segs; j++){
-        dampening = map(noise(j), 0, 1, 10, 100);
-        x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.5, canvas_x*.5));
-        y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.5, canvas_y*.5));
+        const dampening = map(noise(j), 0, 1, 10, 100);
+        const x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.5, canvas_x*.5));
+        const y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.5, canvas_y*.5));
         if(j == 0){
           curveVertex(x, y);
         }

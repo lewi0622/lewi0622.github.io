@@ -1,9 +1,12 @@
+'use strict';
+//setup variables
 const gif = false;
-const sixteen_by_nine = false;
 const fr = 1;
-
 const capture = false;
 const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
+
 function setup() {
   suggested_palette = random([BEACHDAY, GAMEDAY, NURSERY]);
   common_setup(gif);
@@ -52,12 +55,12 @@ const createBackground = function(){
   const steps = 5000;
   for(let i=0; i<steps; i++){
     rotate(ang);
-    c = lerpColor(color(c1), color(c2), i/steps);
+    let c = lerpColor(color(c1), color(c2), i/steps);
     fill(c);
     c = lerpColor(color(c2), color(c1), i/steps);
     stroke(c);
-    x =random(500)*global_scale;
-    size = random(200)*global_scale;
+    const x =random(500)*global_scale;
+    const size = random(200)*global_scale;
     square(x, 0, size);
   }
 

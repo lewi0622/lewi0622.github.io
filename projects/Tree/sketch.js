@@ -1,8 +1,15 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 20
+//project variables
+let c_leaf_primary, branch_weight;
+
 function setup() {
   suggested_palette = BIRDSOFPARADISE;
   //looks good in 300x400
@@ -15,7 +22,8 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
+  let branch_color;
   if(arrayEquals(working_palette[0], [87, 61, 38, 255])){
     branch_color = working_palette[0];
   }
@@ -26,7 +34,7 @@ function draw() {
   stroke(branch_color);
 
   //apply background
-  bg_c = random(working_palette)
+  const bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
@@ -38,7 +46,7 @@ function draw() {
   push();
 
   translate(canvas_x/2, canvas_y);
-  trunk_max=40;
+  let trunk_max=40;
   for(let z=0; z<3; z++){
     c_leaf_primary = random(working_palette);
     if(working_palette.length>1){
@@ -46,13 +54,13 @@ function draw() {
     }
     //trunk
     strokeCap(ROUND);
-    trunk_weight = 3*global_scale;
+    let trunk_weight = 3*global_scale;
     branch_weight = 2*global_scale;
-    trunk_seg_len = -10*global_scale;
-    trunk_num = floor(random(trunk_max-12, trunk_max));
+    const trunk_seg_len = -10*global_scale;
+    const trunk_num = floor(random(trunk_max-12, trunk_max));
     trunk_max=trunk_num;
-    prev_x = floor(random(-canvas_x/8,canvas_x/8));
-    prev_y = 0;
+    let prev_x = floor(random(-canvas_x/8,canvas_x/8));
+    let prev_y = 0;
     for(let i=0; i<trunk_num; i++){
       if(i+5>=trunk_num){
         trunk_weight -= 0.5*global_scale;
@@ -61,8 +69,8 @@ function draw() {
       strokeWeight(trunk_weight);
 
       // new_x = prev_x + random(-5,5)*global_scale;
-      new_x = prev_x + map(noise((i+z)/2), 0,1, -5,5)*global_scale;
-      new_y = prev_y+trunk_seg_len;
+      const new_x = prev_x + map(noise((i+z)/2), 0,1, -5,5)*global_scale;
+      const new_y = prev_y+trunk_seg_len;
       line(prev_x, prev_y, new_x, new_y);
 
       if(trunk_weight<=0 || i+1 == trunk_num){

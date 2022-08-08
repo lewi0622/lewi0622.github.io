@@ -2,7 +2,7 @@
 // globals
 let num_frames, capturer, hidden_controls, color_sel;
 
-const PALETTE_ID_DEFAULT = 10;
+const PALETTE_ID_DEFAULT = MUTEDEARTH;
 let global_palette_id = PALETTE_ID_DEFAULT;
 let global_palette;
 
@@ -147,7 +147,7 @@ function seed_scale_button(base_y){
 
   //randomize button
   randomize = createButton("Randomize");
-  randomize.mouseClicked(function (){
+  randomize.mouseClicked(() => {
     input.value(Math.round(random()*1000000));
     set_seed();
   })
@@ -180,7 +180,7 @@ function seed_scale_button(base_y){
   //START OF THIRD ROW
   //autoscale button calls url minus any scaler
   auto_scale = createButton('Autoscale');
-  auto_scale.mouseClicked(function (){
+  auto_scale.mouseClicked(() => {
     let base_url = "index.html?controls=full&colors=" + String(col_idx());
     base_url+= "&seed=" + getParamValue("seed");
     if(bleed){base_url+='&bleed=' + String(bleed_val)};
@@ -271,7 +271,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   hidden_controls = true;
 
   setParams();
-  seed_scale_button(400);
+  seed_scale_button(base_y);
   seed = reset_drawing(seed, base_x, base_y);
 
   if(!full_controls){
@@ -298,16 +298,8 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //else necessary when redrawing timed pieces
   else{ loop();}
 
-  if (typeof suggested_palette !== 'undefined') {
-    //if a suggested palette exists in sketch.js
-    console.log(suggested_palette);
-    change_default_palette(suggested_palette);
-    
-  }
-  else{
-    //otherwise supply the default
-    change_default_palette(PALETTE_ID_DEFAULT);
-  }
+  //set palette
+  change_default_palette();
 
   //add the palette colors here because the palette only just got defined 
   show_palette_colors();
@@ -347,6 +339,11 @@ function setParams(){
     seed = document.getElementById("Seed").value;
   }
 
+  full_controls = controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if(controls != undefined || full_controls){
+    hidden_controls = false;
+  }
+
   if(img_scale != undefined){
     global_scale = float(img_scale);
   }
@@ -355,10 +352,6 @@ function setParams(){
     global_scale = find_cnv_mult();
   }
 
-  full_controls = controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
-  if(controls != undefined || full_controls){
-    hidden_controls = false;
-  }
   if(add_bleed != undefined){
     if(add_bleed.toLowerCase() != 'false'){
       bleed = true;
@@ -611,10 +604,20 @@ function windowResized() {
   }
 }
 
-function change_default_palette(palette_id){
+function change_default_palette(){
+  let palette_id;
   //if color is specified in URL, use that, otherwise use the provided palette_id
-  if(getParamValue("colors") != undefined){
+  if(redraw){
+    palette_id = global_palette_id;
+  }
+  else if(getParamValue("colors") != undefined){
     palette_id = getParamValue("colors");
+  }
+  else if(typeof suggested_palette !== 'undefined'){
+    palette_id = suggested_palette;
+  }
+  else{
+    palette_id = PALETTE_ID_DEFAULT;
   }
   global_palette_id = palette_id;
   global_palette = palettes[global_palette_id];
@@ -623,11 +626,12 @@ function change_default_palette(palette_id){
 }
 
 function find_cnv_mult(){
-  let base_x = 400;
+  //a value of 401 makes it so a horizontal scroll bar never appears
+  let base_x = 401;
   let base_y = 440;
   if(full_controls){
-    //space for second row of controls, the extra 1 is make sure no scrollbar
-    base_y += 21;
+    //space for second row of controls, the extra 3 is make sure no vertical scrollbar
+    base_y += 23;
   }
   //finds smallest multipler
   const x_mult = Math.round((windowWidth/base_x)*1000)/1000;
