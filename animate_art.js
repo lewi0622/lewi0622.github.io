@@ -9,7 +9,6 @@ let arts = [
     "Enlarging_Squares",
     "GlowLines",
     "Origami",
-    "Rainbow_Heiroglyphs",
     "Starburst",
     "Worm_Symmetry"
 ];
