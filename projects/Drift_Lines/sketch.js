@@ -1,35 +1,42 @@
-gif = false;
-fr = 1;
+'use strict';
+//setup variables
+const gif = false;
+const fr = 1;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-capture = false;
-capture_time = 10;
 function setup() {
   suggested_palette = random([BUMBLEBEE, SIXTIES, SUPPERWARE]);
   common_setup(gif);
-
-  line_length = 60*global_scale;
-  tile_width = canvas_x / line_length;
-  tile_height = canvas_y / line_length;
 }
 //***************************************************
 function draw() {
   capture_start(capture);
-  i_offset = 0;
-  j_offset = 0;
 
-  x_offset_min = 0;
-  x_offset_max = 20;
-  y_offset_min = 0;
-  y_offset_max = 20;
+  //project variables
+  const line_length = 60*global_scale;
+  const tile_width = canvas_x / line_length;
+  const tile_height = canvas_y / line_length;
+
+  let i_offset = 0;
+  let j_offset = 0;
+
+  let x_offset_min = 0;
+  let x_offset_max = 20;
+  let y_offset_min = 0;
+  let y_offset_max = 20;
+  let funcs, colors, iterations;
 
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  let working_palette = JSON.parse(JSON.stringify(palette));
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background
-  bg_c = random(working_palette)
+  let bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
 

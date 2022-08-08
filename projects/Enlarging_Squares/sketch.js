@@ -1,14 +1,17 @@
-gif = true;
-fr = 30;
+'use strict';
+//setup variables
+const gif = true;
+const fr = 30;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette, palette, bg_c, square_rate, symmetries, rot_inc, shape;
 
-xoff = 0;
-inc = 0.01*60/fr;
-
-squares = [];
-rot_offset = 0;
-
-capture = false;
-capture_time = 5
+//project variables
+let xoff = 0;
+const inc = 0.01*60/fr;
+let squares = [];
+let rot_offset = 0;
 
 function setup() {
   suggested_palette = random([COTTONCANDY, SIXTIES, SUPPERWARE]);
@@ -18,7 +21,6 @@ function setup() {
   bg_c = color(random(palette));
   noStroke();
   square_rate = 5; //10 frames
-  // square_inc = 3*global_scale;
   symmetries = floor(random(5,11));
 
   rot_inc = random([-3,0,3]);
@@ -47,8 +49,8 @@ function draw() {
     push();
     center_rotate(sq.rot);
     fill(sq.color);
-    square_inc = map(noise(xoff), 0,1, 2,12);
-    size_inc = map(noise(xoff), 0,1, 0,square_inc);
+    const square_inc = map(noise(xoff), 0,1, 2,12);
+    const size_inc = map(noise(xoff), 0,1, 0,square_inc);
     sq.radius = lerp(sq.radius, sq.size, 0.001*size_inc);
     for(let i=0; i<symmetries; i++){
       center_rotate(360/symmetries);
@@ -79,7 +81,7 @@ function draw() {
 //***************************************************
 //custom funcs
 function newSquares(arr){
-  c = color(random(palette))
+  let c = color(random(palette))
   c.setAlpha(200);
   arr.push({
     x:canvas_x/4/global_scale,

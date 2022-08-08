@@ -1,12 +1,18 @@
-gif = true;
-fr = 30;
+'use strict';
+//setup variables
+const gif = true;
+const fr = 30;
+const capture = false;
+const capture_time = 10;
+const sixteen_by_nine = false;
+let suggested_palette;
 
-noise_off = 20;
-xoff = 0;
-inc = 0.1*60/fr;
+//project variables
+const noise_off = 20;
+let xoff = 0;
+const inc = 0.1*60/fr;
+let sym_angs, line_segs, line_color
 
-capture = false;
-capture_time = 5
 function setup() {
   common_setup(gif);
 
@@ -37,9 +43,9 @@ function draw() {
       curveTightness(map(noise(xoff/100), 0, 1, -5, 5));
       beginShape();
       for(let j=0; j<line_segs; j++){
-        dampening = map(noise(j), 0, 1, 10, 100);
-        x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
-        y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));
+        const dampening = map(noise(j), 0, 1, 10, 100);
+        const x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
+        const y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));
         if(j == 0){
           curveVertex(x, y);
         }
