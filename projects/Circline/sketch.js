@@ -25,7 +25,6 @@ function draw() {
   const circle_x = round(canvas_x/line_length);
   const circle_y = round(canvas_y/line_length);
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));
-  console.log(line_length, circle_x, circle_y)
   //actual drawing stuff
   push();
   translate(line_length/2, line_length/2);
