@@ -1,6 +1,6 @@
 // "use strict";
 // globals
-let num_frames, capturer, hidden_controls, color_sel;
+let num_frames, capturer, seed, hidden_controls, color_sel;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
 let global_palette_id = PALETTE_ID_DEFAULT;
@@ -718,8 +718,8 @@ function catch_save_message(){
     if(event.data == "Save"){
       var loc = window.location.pathname;
       var dir = loc.substring(0, loc.lastIndexOf('/'));
-      var palette = palette_names[default_palette];
-
+      var palette = palette_names[global_palette_id];
+      console.log(palette);
       //send message back to parent with data URL and name
       window.parent.postMessage(JSON.stringify({
         key:[dir,seed,palette].join("_"),
