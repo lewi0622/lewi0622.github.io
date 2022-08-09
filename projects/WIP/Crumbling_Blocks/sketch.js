@@ -50,7 +50,7 @@ function draw() {
   //cleanup
   apply_cutlines(bleed_border);
 
-  capture_frame(capture, num_frames);
+  capture_frame(capture);
 }
 //***************************************************
 //custom funcs
