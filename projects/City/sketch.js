@@ -39,11 +39,11 @@ function draw() {
   else{
     num_buildings = 4;
   }
-  size_buildings = canvas_x/building_size;
+  size_buildings = building_size*global_scale;
   //for scaling, round to nearest evennumber
   size_buildings = 2 * round(size_buildings/2);
 
-  translate((canvas_x-size_buildings*building_size)/2 + size_buildings, floor(canvas_y-size_buildings));
+  translate((canvas_x-size_buildings*(num_buildings+1))/2+size_buildings, floor(canvas_y-size_buildings));
   noStroke();
   for(let i=0; i<num_buildings; i++){
     push();
