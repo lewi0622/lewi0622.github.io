@@ -8,6 +8,7 @@ let arts = [
     "Endless_Symmetry",
     "Enlarging_Squares",
     "GlowLines",
+    "Kingly",
     "Origami",
     "Starburst",
     "Worm_Symmetry"
