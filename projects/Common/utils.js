@@ -322,22 +322,27 @@ function set_seed(){
     return ;
   }
 
+  let base_url = "index.html?colors=" + String(col_idx());
+  base_url += "&controls=" + getParamValue("controls");
+  base_url+= "&seed=" + input.value();
+  if(bleed){base_url+='&bleed=' + String(bleed_val)};
+  if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
+  if(cut){base_url += '&cut=' + String(cut)};
+
   //check if no scale in url, and if no change in scale
   if(getParamValue('scale') == undefined && find_cnv_mult() == float(scale_box.value())){
-    window.location.replace("index.html?colors=" + col_idx() + "&controls=" + getParamValue("controls") + "&seed=" + input.value() + '&bleed=' + bleed + '&cut=' + cut);
+    window.location.replace(base_url);
   }
   else{
-    window.location.replace("index.html?colors=" + col_idx() + "&controls=" + getParamValue("controls") + "&seed=" + input.value() + "&scale=" + scale_box.value() + '&bleed=' + bleed + '&cut=' + cut);
+    window.location.replace(base_url + "&scale=" + scale_box.value());
   }
 
 }
 
 function keyTyped() {
-  // if text box is focused, and user presses enter, it sends Custom seed
-  if (focused) {
-    if(keyCode === ENTER){
-      set_seed();
-    }
+  // user presses enter, it sends Custom seed and custom scale
+  if(keyCode === ENTER && getParamValue("controls") != undefined){
+    set_seed();
   }
 }
 
