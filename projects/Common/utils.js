@@ -648,11 +648,11 @@ function change_default_palette(){
 
 function find_cnv_mult(){
   //a value of 401 makes it so a horizontal scroll bar never appears
-  let base_x = 401;
+  let base_x = 400;
   let base_y = 440;
   if(full_controls){
     //space for second row of controls, the extra 3 is make sure no vertical scrollbar
-    base_y += 23;
+    base_y += 20;
   }
   //finds smallest multipler
   const x_mult = Math.round((windowWidth/base_x)*1000)/1000;
