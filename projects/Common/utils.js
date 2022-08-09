@@ -16,93 +16,166 @@ let full_controls = false;
 let type;
 let redraw = false;
 
-function reset_drawing(seed, base_x, base_y){
-  //call draw after this if manually refreshing canvas
-  canvas_x = base_x*global_scale;
-  canvas_y = base_y*global_scale;
-  //if no seed supplied, set random seed and pass it
-  if(isNaN(seed)){
-    seed = Math.round(random()*1000000);
-  }
-  else{
-    seed = int(seed);
-  }
-  randomSeed(seed);
-  noiseSeed(seed);
-  input.value(str(seed));
+function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
+  //override shuffle with func that uses Math.random instead of p5.js random
+  over_ride_shuffle();
 
-  return seed;
-}
-
-function col_idx(){
-  //returns the integer value of the current palette
-  return palette_names.indexOf(color_sel.value());
-}
-
-function set_seed(){
-  //reinitializes the drawing with a specific seed
-
-  //check if requested seed is the same as existing seed
-  if(input.value()==getParamValue('seed') && scale_box.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
-    return ;
-  }
-
-  //check if no scale in url, and if no change in scale
-  if(getParamValue('scale') == undefined && find_cnv_mult() == float(scale_box.value())){
-    window.location.replace("index.html?colors=" + col_idx() + "&controls=" + getParamValue("controls") + "&seed=" + input.value() + '&bleed=' + bleed + '&cut=' + cut);
-  }
-  else{
-    window.location.replace("index.html?colors=" + col_idx() + "&controls=" + getParamValue("controls") + "&seed=" + input.value() + "&scale=" + scale_box.value() + '&bleed=' + bleed + '&cut=' + cut);
-  }
-
-}
-
-function keyTyped() {
-  // if text box is focused, and user presses enter, it sends Custom seed
-  if (focused) {
-    if(keyCode === ENTER){
-      set_seed();
+  //check for different base size
+  if(typeof sixteen_by_nine !== "undefined"){
+    if(sixteen_by_nine){
+      base_x = 450;
+      base_y = 800;
     }
   }
-}
 
-function remove_controls(arr){
-  arr.forEach(ctrl => {
-    elem = document.getElementById(ctrl);
-    if(elem){
-      elem.remove();
-    }
-  });
-}
+  //set up CCapture, override num_frames in setup/draw if necessary
+  num_frames = capture_time*fr;
+  capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 
-function show_palette_colors(){
-  //can't be called in the seed_scale_button function because palette can be undefined at that point
-  global_palette.forEach(c => {
-    box_bg = document.createElement("div");
-    box_bg.style.position = "absolute";
-    box_bg.style.left = start_pos+control_spacing+"px";
-    box_bg.style.top = color_sel.position().y+"px"
-    box_bg.style.width = control_height+"px";
-    box_bg.style.height = control_height+"px";
-    box_bg.style.backgroundColor = 'rgb(' + 0 + ',' + 0 + ',' + 0 + ')'
+  //set framerate
+  if(!capture){
+    frameRate(fr);
+  }
 
-    color_box = document.createElement("div");
-    color_box.style.position = "absolute";
-    color_box.style.left = start_pos+control_spacing+control_height*.05+"px";
-    color_box.style.top = color_sel.position().y+control_height*.05+"px"
-    color_box.style.width = control_height*.9+"px";
-    color_box.style.height = control_height*.9+"px";
-    color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
+  //init globals
+  if(renderer == P2D){
+    type="png";
+  }
+  else if(renderer == SVG){
+    type="svg";
+  }
+  hidden_controls = true;
+
+  setParams();
+  seed_scale_button(base_y);
+  seed = reset_drawing(seed, base_x, base_y);
+
+  if(!full_controls){
+    // disable right clicks 
+    document.oncontextmenu = function() { 
+      return false; 
+    };
+    //suppress unnecessary errors and speed up drawing time
+    p5.disableFriendlyErrors = true; // disables FES
+  }
+  angleMode(DEGREES);
+
+  cnv = createCanvas(canvas_x, canvas_y, renderer);
   
-    color_div.appendChild(box_bg);
-    color_div.appendChild(color_box);
-    start_pos += control_height*1.25;
-  });
+  //shift position to center canvas if base is different than 400
+  if(base_x<=400 && base_y<=400){
+    cnv.position((400*global_scale-canvas_x)/2, (400*global_scale-canvas_y)/2);
+  }
+  
+  // gives change for square or rounded edges, this can be overriden within the draw function
+  strokeCap(random([PROJECT,ROUND]));
+
+  if(!gif){ noLoop(); }
+  //else necessary when redrawing timed pieces
+  else{ loop();}
+
+  //set palette
+  change_default_palette();
+
+  //add the palette colors here because the palette only just got defined 
+  show_palette_colors();
+
+  if(!redraw){
+    //post details
+    message_details();
+
+    //add listener for save messgae
+    catch_save_message();
+  }
+
+  //Assists with loading on phones and other pixel dense screens
+  pixelDensity(1)
 }
 
+function over_ride_shuffle(){
+  //to correct for palette lengths altering 'random' behavior 
+  var origShuffle = shuffle;
+  shuffle = function(array, standardize=false, len=50) {
+    //override p5js shuffle
+    if(standardize){
+      while(array.length<len){
+        array.push([""]);
+      }
+    }
+    //call original shuffle function
+    array = origShuffle(array);
+
+    return array.filter(a => !arrayEquals(a, [""]));
+  }
+}
+
+function setParams(){
+  //get params from url and set necessary globals
+
+  let colors = getParamValue('colors');
+  if(colors != undefined){
+    if(!isPositiveIntegerOrZero(colors) || parseInt(colors)>palettes.length){
+      colors = PALETTE_ID_DEFAULT;
+    }
+    global_palette=palettes[parseInt(colors)];
+  };
+  
+  controls = getParamValue('controls');
+  seed = getParamValue('seed');
+  img_scale = getParamValue('scale');
+  add_bleed = getParamValue('bleed');
+  add_cut = getParamValue('cut');
+  set_dpi = getParamValue('dpi');
+
+  //If seed isn't specified, but one exists in the box, resize w/same seed
+  if(seed == undefined && document.getElementById("Seed")){
+    seed = document.getElementById("Seed").value;
+  }
+
+  full_controls = controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if(controls != undefined || full_controls){
+    hidden_controls = false;
+  }
+
+  if(img_scale != undefined){
+    global_scale = float(img_scale);
+  }
+  else{
+    //get scale based on window size
+    global_scale = find_cnv_mult();
+  }
+
+  if(add_bleed != undefined){
+    if(add_bleed.toLowerCase() != 'false'){
+      bleed = true;
+      if(!isNaN(add_bleed)){
+        bleed_val = float(add_bleed);
+      }
+    }
+  };
+  if(add_cut != undefined){
+    if(add_cut.toLowerCase() != 'false'){
+      cut = true;
+    }
+  };
+  if(set_dpi != undefined && !isNaN(set_dpi)){
+    dpi = int(set_dpi);
+  };
+}
+
+function getParamValue(paramName){
+    var url = window.location.search.substring(1); //get rid of "?" in querystring
+    var qArray = url.split('&'); //get key-value pairs
+    for (var i = 0; i < qArray.length; i++) 
+    {
+        var pArr = qArray[i].split('='); //split key and value
+        if (pArr[0] == paramName) 
+            return pArr[1].replace(/%20/g, " "); //return value
+    }
+}
 
 function seed_scale_button(base_y){
-  ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize", "Color Boxes"]
+  let ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize", "Color Boxes"]
   full_ids = ["Auto Scale", "Scale Box", "Save"]
   remove_controls(ids);
   remove_controls(full_ids);
@@ -218,6 +291,90 @@ function seed_scale_button(base_y){
   show_hide_controls(full_ids, !full_controls);
 }
 
+function reset_drawing(seed, base_x, base_y){
+  //call draw after this if manually refreshing canvas
+  canvas_x = base_x*global_scale;
+  canvas_y = base_y*global_scale;
+  //if no seed supplied, set random seed and pass it
+  if(isNaN(seed)){
+    seed = Math.round(random()*1000000);
+  }
+  else{
+    seed = int(seed);
+  }
+  randomSeed(seed);
+  noiseSeed(seed);
+  input.value(str(seed));
+
+  return seed;
+}
+
+function col_idx(){
+  //returns the integer value of the current palette
+  return palette_names.indexOf(color_sel.value());
+}
+
+function set_seed(){
+  //reinitializes the drawing with a specific seed
+
+  //check if requested seed is the same as existing seed
+  if(input.value()==getParamValue('seed') && scale_box.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
+    return ;
+  }
+
+  //check if no scale in url, and if no change in scale
+  if(getParamValue('scale') == undefined && find_cnv_mult() == float(scale_box.value())){
+    window.location.replace("index.html?colors=" + col_idx() + "&controls=" + getParamValue("controls") + "&seed=" + input.value() + '&bleed=' + bleed + '&cut=' + cut);
+  }
+  else{
+    window.location.replace("index.html?colors=" + col_idx() + "&controls=" + getParamValue("controls") + "&seed=" + input.value() + "&scale=" + scale_box.value() + '&bleed=' + bleed + '&cut=' + cut);
+  }
+
+}
+
+function keyTyped() {
+  // if text box is focused, and user presses enter, it sends Custom seed
+  if (focused) {
+    if(keyCode === ENTER){
+      set_seed();
+    }
+  }
+}
+
+function remove_controls(arr){
+  arr.forEach(ctrl => {
+    elem = document.getElementById(ctrl);
+    if(elem){
+      elem.remove();
+    }
+  });
+}
+
+function show_palette_colors(){
+  //can't be called in the seed_scale_button function because palette can be undefined at that point
+  global_palette.forEach(c => {
+    let box_bg = document.createElement("div");
+    box_bg.style.position = "absolute";
+    box_bg.style.left = start_pos+control_spacing+"px";
+    box_bg.style.top = color_sel.position().y+"px"
+    box_bg.style.width = control_height+"px";
+    box_bg.style.height = control_height+"px";
+    box_bg.style.backgroundColor = 'rgb(' + 0 + ',' + 0 + ',' + 0 + ')'
+
+    let color_box = document.createElement("div");
+    color_box.style.position = "absolute";
+    color_box.style.left = start_pos+control_spacing+control_height*.05+"px";
+    color_box.style.top = color_sel.position().y+control_height*.05+"px"
+    color_box.style.width = control_height*.9+"px";
+    color_box.style.height = control_height*.9+"px";
+    color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
+  
+    color_div.appendChild(box_bg);
+    color_div.appendChild(color_box);
+    start_pos += control_height*1.25;
+  });
+}
+
 function reduce_array(arr, remove){
   //deletes 'remove' from a given 'arr'
   let index = arr.indexOf(remove);
@@ -238,147 +395,6 @@ function show_hide_controls(arr, hide){
       }
     }
   });
-}
-
-function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
-  //override shuffle with func that uses Math.random instead of p5.js random
-  over_ride_shuffle();
-
-  //check for different base size
-  if(typeof sixteen_by_nine !== "undefined"){
-    if(sixteen_by_nine){
-      base_x = 450;
-      base_y = 800;
-    }
-  }
-
-  //set up CCapture, override num_frames in setup/draw if necessary
-  num_frames = capture_time*fr;
-  capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
-
-  //set framerate
-  if(!capture){
-    frameRate(fr);
-  }
-
-  //init globals
-  if(renderer == P2D){
-    type="png";
-  }
-  else if(renderer == SVG){
-    type="svg";
-  }
-  hidden_controls = true;
-
-  setParams();
-  seed_scale_button(base_y);
-  seed = reset_drawing(seed, base_x, base_y);
-
-  if(!full_controls){
-    // disable right clicks 
-    document.oncontextmenu = function() { 
-      return false; 
-    };
-    //suppress unnecessary errors and speed up drawing time
-    p5.disableFriendlyErrors = true; // disables FES
-  }
-  angleMode(DEGREES);
-
-  cnv = createCanvas(canvas_x, canvas_y, renderer);
-  
-  //shift position to center canvas if base is different than 400
-  if(base_x<=400 && base_y<=400){
-    cnv.position((400*global_scale-canvas_x)/2, (400*global_scale-canvas_y)/2);
-  }
-  
-  // gives change for square or rounded edges, this can be overriden within the draw function
-  strokeCap(random([PROJECT,ROUND]));
-
-  if(!gif){ noLoop(); }
-  //else necessary when redrawing timed pieces
-  else{ loop();}
-
-  //set palette
-  change_default_palette();
-
-  //add the palette colors here because the palette only just got defined 
-  show_palette_colors();
-
-  if(!redraw){
-    //post details
-    message_details();
-
-    //add listener for save messgae
-    catch_save_message();
-  }
-
-  //Assists with loading on phones and other pixel dense screens
-  pixelDensity(1)
-}
-
-function setParams(){
-  //get params from url and set necessary globals
-
-  const colors = getParamValue('colors');
-  if(colors != undefined){
-    if(!isPositiveIntegerOrZero(colors) || parseInt(colors)>palettes.length){
-      colors = PALETTE_ID_DEFAULT;
-    }
-    global_palette=palettes[parseInt(colors)];
-  };
-  
-  controls = getParamValue('controls');
-  seed = getParamValue('seed');
-  img_scale = getParamValue('scale');
-  add_bleed = getParamValue('bleed');
-  add_cut = getParamValue('cut');
-  set_dpi = getParamValue('dpi');
-
-  //If seed isn't specified, but one exists in the box, resize w/same seed
-  if(seed == undefined && document.getElementById("Seed")){
-    seed = document.getElementById("Seed").value;
-  }
-
-  full_controls = controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
-  if(controls != undefined || full_controls){
-    hidden_controls = false;
-  }
-
-  if(img_scale != undefined){
-    global_scale = float(img_scale);
-  }
-  else{
-    //get scale based on window size
-    global_scale = find_cnv_mult();
-  }
-
-  if(add_bleed != undefined){
-    if(add_bleed.toLowerCase() != 'false'){
-      bleed = true;
-      if(!isNaN(add_bleed)){
-        bleed_val = float(add_bleed);
-      }
-    }
-  };
-  if(add_cut != undefined){
-    if(add_cut.toLowerCase() != 'false'){
-      cut = true;
-    }
-  };
-  if(set_dpi != undefined && !isNaN(set_dpi)){
-    dpi = int(set_dpi);
-  };
-}
-
-function getParamValue(paramName){
-    var url = window.location.search.substring(1); //get rid of "?" in querystring
-    var qArray = url.split('&'); //get key-value pairs
-    for (var i = 0; i < qArray.length; i++) 
-    {
-        var pArr = qArray[i].split('='); //split key and value
-        if (pArr[0] == paramName) 
-            return pArr[1].replace(/%20/g, " "); //return value
-    }
 }
 
 function save_drawing(){
@@ -720,25 +736,6 @@ function isPositiveIntegerOrZero(str) {
   }
 
   return false;
-}
-
-function over_ride_shuffle(){
-  //to correct for palette lengths altering 'random' behavior 
-  var origShuffle = shuffle;
-  shuffle = function(array, standardize=false, len=50) {
-    //override p5js shuffle
-    if(standardize){
-      while(array.length<len){
-        array.push([""]);
-      }
-    }
-    //call original shuffle function
-    array = origShuffle(array);
-
-    return array.filter(a => !arrayEquals(a, [""]));
-  }
-  //try to suppress warning
-
 }
 
 function RGBA_to_HSBA(r,g,b,a){
