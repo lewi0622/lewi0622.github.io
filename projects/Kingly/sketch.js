@@ -12,7 +12,7 @@ let xoff = 0;
 const inc = 1*60/fr;
 let yoff = 0;
 const y_inc =0.001*60/fr;
-let bg_c, crown_c, hl_c, num_points, rot;
+let bg_c, crown_c, hl_c, num_points, rot, upper_shape, lower_shape;
 
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
@@ -25,7 +25,7 @@ function draw() {
   const bleed_border = apply_bleed();
 
   let working_palette = JSON.parse(JSON.stringify(palette));
-  strokeCap(random([PROJECT,ROUND]))
+  strokeCap(random([PROJECT,ROUND]));
 
   //first time setup
   if(frameCount == 1){
@@ -36,6 +36,8 @@ function draw() {
     hl_c = random(working_palette);
     num_points = random([10,15,20, 25]);
     rot = random([0, 180]);
+    upper_shape = random(["circle", "square", "triangle"]);
+    lower_shape = random(["circle", "square", "triangle"]);
   }
   center_rotate(rot);
   background(bg_c)
@@ -49,7 +51,7 @@ function draw() {
   const point_width = 15*global_scale;
   const radius = point_width/2;
   translate((canvas_x-(num_points*point_width))/2, canvas_y-(canvas_y-max_point_height*1.1)/2);
-  const upper_circle_coords = []
+  const upper_circle_coords = [];
   const lower_circle_coords = [];
   const phase_mult = noise(xoff/1000)*20;
   const upper_mult = noise(yoff)*5000;
@@ -57,7 +59,6 @@ function draw() {
   //crown
   beginShape();
   for(let i=0; i<=num_points; i++){
-    // const height_variation = map(noise(i/10+xoff), 0,1, -0.02, 0.5)*point_height;
     const height_variation = map(sin(i*phase_mult+upper_mult), -1,1, 0,1)*point_height;
     const lower_height_variation = map(cos(i*phase_mult+lower_mult), -1,1, -0.02,1)*point_height;
     //lower left tri vertex
@@ -79,11 +80,47 @@ function draw() {
 
   //circles
   for(let i=0; i<upper_circle_coords.length; i++){
+    const up_i = upper_circle_coords[i];
     fill(crown_c);
-    circle(upper_circle_coords[i].x, upper_circle_coords[i].y, radius)
+    switch(upper_shape){
+      case "circle":
+        circle(up_i.x, up_i.y, radius);
+        break;
+      
+      case "square":
+        square(up_i.x-radius/2, up_i.y-radius/2, radius);
+        break;
+      
+      case "triangle":
+        triangle(
+          up_i.x - radius/2, up_i.y + radius/2, 
+          up_i.x, up_i.y - radius/2,
+          up_i.x + radius/2, up_i.y + radius/2
+          );
+        break;
+    }
+
+
     if(i<lower_circle_coords.length){
+      const low_i = lower_circle_coords[i];
       fill(bg_c);
-      circle(lower_circle_coords[i].x, lower_circle_coords[i].y, radius)
+      switch(lower_shape){
+        case "circle":
+          circle(low_i.x, low_i.y, radius);
+          break;
+        
+        case "square":
+          square(low_i.x-radius/2, low_i.y-radius/2, radius);
+          break;
+
+        case "triangle":
+          triangle(
+            low_i.x - radius/2, low_i.y - radius/2, 
+            low_i.x, low_i.y + radius/2,
+            low_i.x + radius/2, low_i.y - radius/2
+            );
+          break;
+      }
     }
   }
 
