@@ -12,7 +12,6 @@ let grid_size;
 
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, GAMEDAY, BIRDSOFPARADISE]);
-  // common_setup(gif, P2D, base_x=450, base_y=800);
   common_setup(gif);
   colorMode(HSB);
 }
@@ -230,7 +229,26 @@ function draw() {
     //loop cleanup
     z++;
   }
+
   pop();
+
+  if(random()>0.25){
+    push();
+    //cutout
+    noFill();
+    if(capture){stroke("WHITE");}
+    else{erase();}
+    strokeWeight(grid_size);
+    rect(0,0, canvas_x, canvas_y, grid_size);
+  
+    noErase();
+    strokeWeight(5*global_scale);
+    stroke(bg_c)
+    rect(grid_size/2, grid_size/2, canvas_x-grid_size, canvas_y-grid_size, grid_size/2);
+  
+    pop();
+  }
+
   //cutlines
   apply_cutlines(bleed_border);
   capture_frame(capture);
