@@ -420,7 +420,7 @@ function save_drawing(){
   if(bleed != false){
     bleed_name = '_bleed_' + str(bleed_val);
     if(cut != false){
-      cut_name = '_cut';
+      cut_name = '_cut_true';
     }
   };
   if(dpi != DPI_DEFAULT){dpi_name = "_dpi_"+str(dpi)};
