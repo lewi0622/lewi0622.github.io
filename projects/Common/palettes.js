@@ -1,3 +1,4 @@
+'use strict';
 const SAGEANDCITRUS =0;
 const BEACHDAY = 1;
 const COTTONCANDY =2;
