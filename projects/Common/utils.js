@@ -422,7 +422,7 @@ function save_drawing(){
       cut_name = 'cut';
     }
   };
-  filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
+  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
   if(type == 'svg'){
     save(filename)
   }
