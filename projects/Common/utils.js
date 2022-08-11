@@ -413,16 +413,18 @@ function show_hide_controls(arr, hide){
 
 function save_drawing(){
   //get project name
-  var project_name = window.location.pathname.split('/')[2];
-  var cut_name = '';
-  var bleed_name = '';
+  const project_name = window.location.pathname.split('/')[2];
+  let bleed_name = '';
+  let dpi_name = '';
+  let cut_name = '';
   if(bleed != false){
     bleed_name = '_bleed_' + str(bleed_val);
     if(cut != false){
-      cut_name = 'cut';
+      cut_name = '_cut';
     }
   };
-  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
+  if(dpi != DPI_DEFAULT){dpi_name = "_dpi_"+str(dpi)};
+  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + dpi_name + cut_name;
   if(type == 'svg'){
     save(filename)
   }
@@ -520,8 +522,8 @@ function apply_bleed(){
   if(bleed){
     let bleed_border = dpi*bleed_val;
     
-    total_canvas_x = canvas_x + bleed_border*2;
-    total_canvas_y = canvas_y + bleed_border*2;
+    const total_canvas_x = canvas_x + bleed_border*2;
+    const total_canvas_y = canvas_y + bleed_border*2;
     resizeCanvas(total_canvas_x, total_canvas_y);
 
     //move origin to within bleed lines
@@ -533,7 +535,7 @@ function apply_bleed(){
 
 function get_invert_stroke(x, y){
   // gets color at pixel x,y. Aboslute coordinates because the get function is some shit
-  c = get(x, y)
+  let c = get(x, y)
 
   //transparent case
   if(c[3]==0){
@@ -554,7 +556,7 @@ function apply_cutlines(bleed_border){
   //draw cutlines, pop before this is called
   if(bleed_border != undefined && cut){
     push();
-    strokeWeight(1);
+    strokeWeight(1*global_scale);
     //move coords back to upper left because get function uses absolute coords
     translate(-bleed_border, -bleed_border)
     //upper left going clockwise.
