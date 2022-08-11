@@ -14,7 +14,7 @@ const inc = 0.01*60/fr;
 const square_rate = 5; //10 frames
 let square_inc = 3*global_scale;
 let rot_offset = 0;
-let palette, bg_c, symmetries, rot_inc;
+let bg_c, symmetries, rot_inc;
 
 function setup() {
   suggested_palette = random([COTTONCANDY, SOUTHWEST, SIXTIES]);

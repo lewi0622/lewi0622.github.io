@@ -5,7 +5,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette, palette, bg_c, square_rate, symmetries, rot_inc, shape;
+let suggested_palette, bg_c, square_rate, symmetries, rot_inc, shape;
 
 //project variables
 let xoff = 0;

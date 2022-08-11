@@ -5,7 +5,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette, palette, bg_c, weight, c_id, lines, sub_lines;
+let suggested_palette, bg_c, weight, c_id, lines, sub_lines;
 
 //project variables
 const noiseMax = 1;

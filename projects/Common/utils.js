@@ -1,10 +1,17 @@
-// "use strict";
+"use strict";
 // globals
-let num_frames, capturer, seed, hidden_controls, color_sel;
+let canvas_x, canvas_y, cnv;
+
+let num_frames, capturer, seed;
+//control variables
+let seed_input, scale_box, control_height, control_spacing, hidden_controls, color_sel, color_div;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
+
+//if a project doesn't supply a suggested palette, we use the default 
 let global_palette_id = PALETTE_ID_DEFAULT;
-let global_palette;
+let global_palette, palette;
+
 
 let global_scale = 1;
 let cut = false;
@@ -120,12 +127,12 @@ function setParams(){
     global_palette=palettes[parseInt(colors)];
   };
   
-  controls = getParamValue('controls');
+  const controls = getParamValue('controls');
   seed = getParamValue('seed');
-  img_scale = getParamValue('scale');
-  add_bleed = getParamValue('bleed');
-  add_cut = getParamValue('cut');
-  set_dpi = getParamValue('dpi');
+  const img_scale = getParamValue('scale');
+  const add_bleed = getParamValue('bleed');
+  const add_cut = getParamValue('cut');
+  const set_dpi = getParamValue('dpi');
 
   //If seed isn't specified, but one exists in the box, resize w/same seed
   if(seed == undefined && document.getElementById("Seed")){
@@ -175,8 +182,8 @@ function getParamValue(paramName){
 }
 
 function seed_scale_button(base_y){
-  let ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize", "Color Boxes"]
-  full_ids = ["Auto Scale", "Scale Box", "Save"]
+  const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize", "Color Boxes"]
+  const full_ids = ["Auto Scale", "Scale Box", "Save"]
   remove_controls(ids);
   remove_controls(full_ids);
 
@@ -185,43 +192,43 @@ function seed_scale_button(base_y){
 
   //START OF TOP ROW
   //left/right buttons for easy seed nav
-  btLeft = createButton('<')
+  const btLeft = createButton('<')
   btLeft.size(20*global_scale, control_height);
   btLeft.position(0, base_y*global_scale);
   btLeft.mouseClicked(function() {
-    input.value(int(input.value())-1);
+    seed_input.value(int(seed_input.value())-1);
     set_seed();
   });
   btLeft.id('Bt Left')
 
   //creates controls below canvas for displaying/setting seed
-  input = createInput("seed");
-  input.size(55*global_scale, control_height-6);
-  input.position(btLeft.size().width,base_y*global_scale);
-  input.style("text-align", "right");
-  input.id('Seed');
+  seed_input = createInput("seed");
+  seed_input.size(55*global_scale, control_height-6);
+  seed_input.position(btLeft.size().width,base_y*global_scale);
+  seed_input.style("text-align", "right");
+  seed_input.id('Seed');
 
   //left/right buttons for easy seed nav
-  btRight = createButton('>')
+  const btRight = createButton('>')
   btRight.size(20*global_scale, control_height);
-  btRight.position(input.size().width + input.position().x, base_y*global_scale);
+  btRight.position(seed_input.size().width + seed_input.position().x, base_y*global_scale);
   btRight.mouseClicked(function() {
-    input.value(int(input.value())+1);
+    seed_input.value(int(seed_input.value())+1);
     set_seed();
   });
   btRight.id('Bt Right');
   
   //custom seed button
-  button = createButton("Custom Seed");
+  const button = createButton("Custom Seed");
   button.mouseClicked(set_seed);
   button.size(90*global_scale, control_height)
   button.position(btRight.size().width + btRight.position().x + control_spacing, base_y*global_scale);
   button.id('Custom Seed')
 
   //randomize button
-  randomize = createButton("Randomize");
+  const randomize = createButton("Randomize");
   randomize.mouseClicked(() => {
-    input.value(Math.round(random()*1000000));
+    seed_input.value(Math.round(random()*1000000));
     set_seed();
   })
   randomize.size(80*global_scale, control_height);
@@ -247,12 +254,12 @@ function seed_scale_button(base_y){
   color_div = document.createElement("div");
   color_div.id = "Color Boxes";
   document.body.appendChild(color_div);
-  start_pos = color_sel.position().x + color_sel.size().width;
+
 
   //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
   //START OF THIRD ROW
   //autoscale button calls url minus any scaler
-  auto_scale = createButton('Autoscale');
+  const auto_scale = createButton('Autoscale');
   auto_scale.mouseClicked(() => {
     let base_url = "index.html?controls=full&colors=" + String(col_idx());
     base_url+= "&seed=" + getParamValue("seed");
@@ -273,7 +280,7 @@ function seed_scale_button(base_y){
   scale_box.id("Scale Box")
 
   //save button
-  btSave = createButton("Save");
+  const btSave = createButton("Save");
   btSave.mouseClicked(save_drawing);
   btSave.size(70*global_scale, control_height);
   btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height*2);
@@ -281,7 +288,7 @@ function seed_scale_button(base_y){
 
   //style all ctrls
   ids.concat(full_ids).forEach(id => {
-    elem = document.getElementById(id)
+    const elem = document.getElementById(id)
     if(elem){
       elem.style.fontSize = str(12*global_scale) + 'px';
     }
@@ -304,7 +311,7 @@ function reset_drawing(seed, base_x, base_y){
   }
   randomSeed(seed);
   noiseSeed(seed);
-  input.value(str(seed));
+  seed_input.value(str(seed));
 
   return seed;
 }
@@ -318,13 +325,13 @@ function set_seed(){
   //reinitializes the drawing with a specific seed
 
   //check if requested seed is the same as existing seed
-  if(input.value()==getParamValue('seed') && scale_box.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
+  if(seed_input.value()==getParamValue('seed') && scale_box.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
     return ;
   }
 
   let base_url = "index.html?colors=" + String(col_idx());
   base_url += "&controls=" + getParamValue("controls");
-  base_url+= "&seed=" + input.value();
+  base_url+= "&seed=" + seed_input.value();
   if(bleed){base_url+='&bleed=' + String(bleed_val)};
   if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
   if(cut){base_url += '&cut=' + String(cut)};
@@ -348,7 +355,7 @@ function keyTyped() {
 
 function remove_controls(arr){
   arr.forEach(ctrl => {
-    elem = document.getElementById(ctrl);
+    const elem = document.getElementById(ctrl);
     if(elem){
       elem.remove();
     }
@@ -357,6 +364,8 @@ function remove_controls(arr){
 
 function show_palette_colors(){
   //can't be called in the seed_scale_button function because palette can be undefined at that point
+  let start_pos = color_sel.position().x + color_sel.size().width;
+
   global_palette.forEach(c => {
     let box_bg = document.createElement("div");
     box_bg.style.position = "absolute";
@@ -390,7 +399,7 @@ function reduce_array(arr, remove){
 
 function show_hide_controls(arr, hide){
   arr.forEach(ctrl => {
-    elem = document.getElementById(ctrl)
+    const elem = document.getElementById(ctrl)
     if(elem){
       if(hide){
         elem.style.visibility = "hidden"
@@ -413,7 +422,7 @@ function save_drawing(){
       cut_name = 'cut';
     }
   };
-  filename = str(project_name) + '_seed_' + str(input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
+  filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + cut_name;
   if(type == 'svg'){
     save(filename)
   }
@@ -441,6 +450,7 @@ function capture_frame(capture){
 
 //background functions
 function bg(remove, force){
+  let c;
   if(force !== undefined){
     c = force;
   }
@@ -703,9 +713,9 @@ function indexOfMax(arr) {
 
 function message_details(){
   //post messgae for squarespce consumption
-  var loc = window.location.pathname;
-  var dir = loc.substring(0, loc.lastIndexOf('/'));
-  message = JSON.stringify({
+  const loc = window.location.pathname;
+  const dir = loc.substring(0, loc.lastIndexOf('/'));
+  const message = JSON.stringify({
     design: dir,
     seed: seed,
     palette: palette_names[global_palette_id]
@@ -719,7 +729,6 @@ function catch_save_message(){
       var loc = window.location.pathname;
       var dir = loc.substring(0, loc.lastIndexOf('/'));
       var palette = palette_names[global_palette_id];
-      console.log(palette);
       //send message back to parent with data URL and name
       window.parent.postMessage(JSON.stringify({
         key:[dir,seed,palette].join("_"),

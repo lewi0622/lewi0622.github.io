@@ -5,7 +5,6 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let palette;
 
 //project variables
 const noise_off = 50;
