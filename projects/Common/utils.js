@@ -424,7 +424,7 @@ function save_drawing(){
     }
   };
   if(dpi != DPI_DEFAULT){dpi_name = "_dpi_"+str(dpi)};
-  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_color_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + dpi_name + cut_name;
+  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + dpi_name + cut_name;
   if(type == 'svg'){
     save(filename)
   }
