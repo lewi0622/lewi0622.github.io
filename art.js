@@ -16,6 +16,7 @@ let arts = [
     "Chunky_Arcs",
     "Circline",
     "City",
+    "Color_Stacks",
     "Crossy_Blurbs",
     "Crowd",
     "Drift_Lines",
