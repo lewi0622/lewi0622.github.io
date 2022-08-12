@@ -43,7 +43,6 @@ function draw() {
   background(bg_c);
   working_palette.forEach((c, idx) => {
     working_palette[idx] = color(c);
-    working_palette[idx].setAlpha(120);
   });
 
   //project variables
@@ -51,7 +50,7 @@ function draw() {
   const offset_y = canvas_y/8;
   const grid_num_col = floor(random(4, 16));
   const grid_size_col = (canvas_x-offset_x)/grid_num_col; 
-  const layers = 5;
+  const layers = 10;
 
   noStroke();
 
@@ -59,8 +58,7 @@ function draw() {
   push();
   for(let z=0; z<layers; z++){
     for(let j=0; j<grid_num_col; j++){
-      // const grid_num_row = random([5, 10, 20, 40]);
-      const grid_num_row = floor(random(5,40));
+      const grid_num_row = floor(random(5, 40));
       const grid_size_row = (canvas_y-offset_y)/grid_num_row;
   
       const init_c = random(working_palette);
@@ -72,6 +70,9 @@ function draw() {
       while(third_c == second_c){
         third_c = random(working_palette);
       }
+      init_c.setAlpha(100);
+      second_c.setAlpha(150);
+      third_c.setAlpha(100);
 
       const crossover = random(0.25, 0.75);
       const smoothness = floor(random(20)+1);
