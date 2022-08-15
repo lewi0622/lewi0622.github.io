@@ -3,7 +3,7 @@
 const gif = true;
 const fr = 10;
 const capture = false;
-const capture_time = 5;
+const capture_time = 10;
 const sixteen_by_nine = false;
 let suggested_palette;
 
@@ -14,7 +14,7 @@ let rot = 0;
 let rot_inc = 1;
 
 function setup() {
-  suggested_palette = random([])
+  suggested_palette = random([SAGEANDCITRUS, BEACHDAY, SOUTHWEST])
   common_setup(gif);
   bg_c = random(palette);
   rot_inc *= random([-1,1])
