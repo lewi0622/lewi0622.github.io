@@ -8,7 +8,7 @@ function setup() {
   common_setup(gif);
 
   //define grid
-  slots = 500;
+  slots = 40;
   grid_size = canvas_x/slots;
   bar_grey = color(160, 165, 177);
   //create array of bars
@@ -17,8 +17,10 @@ function setup() {
   bars = []
   for(let i=0; i<num_bars; i++){
     current_slot = floor(random(slots))*grid_size;
+    const base_color = random(palette);
     bars.push({
-      color: random(palette),
+      base_color: base_color,
+      current_color: base_color,
       x: current_slot,
       new_x: current_slot,  //stationary till timer runs out
       timer: floor(random(0,10)*fr),    //framecount before new slot calc
@@ -65,14 +67,14 @@ function draw() {
         }
       }
     });
-    c = bar.color;
+    c = bar.base_color;
     if(nearest_dist/grid_size<3){
-      drawingContext.shadowColor = color(bar.color);
+      drawingContext.shadowColor = color(bar.base_color);
       drawingContext.shadowBlur = map(nearest_dist/grid_size, 0,3, 15,0)*global_scale
     }
     if(nearest_dist == 0 && !bar.moving && !bars[nearest_bar].moving){
-      bar.color = [255,255,255]
-      bars[nearest_bar].color = [255,255,255]
+      // bar.color = [255,255,255]
+      // bars[nearest_bar].color = [255,255,255]
       c = color("WHITE");
       drawingContext.shadowColor = color("WHITE");
       drawingContext.shadowBlur = 15*global_scale;
@@ -96,10 +98,6 @@ function draw() {
 
     bar.timer--;
     pop();
-  }
-
-  if(bars.every((e)=>{return arrayEquals(e.color, [255,255,255])})){
-    noLoop();
   }
 
   //check for neighbors
