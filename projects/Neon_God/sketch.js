@@ -65,16 +65,18 @@ function draw() {
 
   const x_offset = random(canvas_x/16, canvas_x/8);
   const shape = random(["CIR", "SQ"]);
+  let cornering;
+  if(random()>0.5) cornering = random(rad/8)*global_scale;
   if(shape == "SQ") rad = random(rad/2, rad);
   for(let i=0; i<sym_angs; i++){
     rotate(360/sym_angs);
     if(i%2==0 && offset_me){
       if(shape=="CIR") circle(x_offset+offset, 0, rad);
-      else if(shape=="SQ") square(x_offset+offset-rad/2, -rad/2, rad);
+      else if(shape=="SQ") square(x_offset+offset-rad/2, -rad/2, rad, cornering);
     }
     else{
       if(shape=="CIR") circle(x_offset, 0, rad);
-      else if(shape=="SQ") square(x_offset-rad/2, -rad/2, rad);
+      else if(shape=="SQ") square(x_offset-rad/2, -rad/2, rad, cornering);
     }
   }
   if(shape=="CIR"){
