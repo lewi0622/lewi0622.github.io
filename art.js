@@ -25,7 +25,6 @@ let arts = [
     "Gas_Spiral",
     "Glitter_Stacks",
     "Kaleidoscope",
-    "Letters",
     "Mt",
     "Noisy_Circles",
     "Pasta",
