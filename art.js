@@ -1,5 +1,5 @@
 let base_prefix = "projects/"
-let base_suffix = "/index.html"
+let base_suffix = "/index.html?controls=true"
 //matches default palette in common/utils
 let current_palette = 10;
 
@@ -26,7 +26,7 @@ let arts = [
     "Glitter_Stacks",
     "Kaleidoscope",
     "Mt",
-    "Noisy_Circles",
+    "Neon_God",
     "Pasta",
     "Psychedelic_Ball",
     "Pyramid",
@@ -52,7 +52,7 @@ function setColor(palette){
         iframe = document.getElementById(element);
         seed = iframe.contentDocument.getElementById('Seed')['value'];
 
-        addr_req = base_prefix + element + base_suffix + "?colors=" + palette + "&seed=" + seed  + "&controls=true";
+        addr_req = base_prefix + element + base_suffix + "&colors=" + palette + "&seed=" + seed;
         iframe.setAttribute('src', addr_req);
     });
 }
