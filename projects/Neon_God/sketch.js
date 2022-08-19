@@ -1,9 +1,9 @@
 'use strict';
 //setup variables
-const gif = false;
+const gif = true;
 const fr = 1;
-const capture = false;
-const capture_time = 20;
+const capture = true;
+const capture_time = 10;
 const sixteen_by_nine = false;
 let suggested_palette;
 
@@ -44,15 +44,16 @@ function draw() {
   c=color(random(working_palette));
   translate(canvas_x/2, canvas_y/2);
 
+  drawingContext.filter = 'brightness('+floor(random(250,500))+'%)';
   c.setAlpha(255);
   strokeWeight(global_scale);
   drawingContext.shadowBlur=10*global_scale;
   drawingContext.shadowColor = c;
   stroke(c);
   noFill();
-  drawingContext.filter = 'brightness('+floor(random(250,500))+'%)';
 
-  const sym_angs = round(random(5,32));
+  const sym_angs = round(random(20,20));
+  rotate(360/sym_angs*ceil(random(sym_angs)));
   let rad = random(canvas_x/4, canvas_x/2);
   let offset_me, offset;
   if(sym_angs%2==0){
