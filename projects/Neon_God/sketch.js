@@ -43,16 +43,15 @@ function draw() {
 
   c=color(random(working_palette));
   translate(canvas_x/2, canvas_y/2);
-
-  drawingContext.filter = 'brightness('+floor(random(250,500))+'%)';
-  c.setAlpha(255);
+  const brightness = floor(random(250,500));
+  drawingContext.filter = 'brightness('+brightness+'%)';
   strokeWeight(global_scale);
-  drawingContext.shadowBlur=10*global_scale;
+  drawingContext.shadowBlur=5*global_scale;
   drawingContext.shadowColor = c;
   stroke(c);
   noFill();
 
-  const sym_angs = round(random(20,20));
+  const sym_angs = round(random(4,20));
   rotate(360/sym_angs*ceil(random(sym_angs)));
   let rad = random(canvas_x/4, canvas_x/2);
   let offset_me, offset;
@@ -69,21 +68,28 @@ function draw() {
   let cornering;
   if(random()>0.5) cornering = random(rad/8)*global_scale;
   if(shape == "SQ") rad = random(rad/2, rad);
-  for(let i=0; i<sym_angs; i++){
-    rotate(360/sym_angs);
-    if(i%2==0 && offset_me){
-      if(shape=="CIR") circle(x_offset+offset, 0, rad);
-      else if(shape=="SQ") square(x_offset+offset-rad/2, -rad/2, rad, cornering);
+
+  //running this multiple times gives brighter 'glow'
+  const steps = round(map(sym_angs, 4,20, 5,2));
+
+  for(let j=0; j<steps; j++){
+    for(let i=0; i<sym_angs; i++){
+      rotate(360/sym_angs);
+      if(i%2==0 && offset_me){
+        if(shape=="CIR") circle(x_offset+offset, 0, rad);
+        else if(shape=="SQ") square(x_offset+offset-rad/2, -rad/2, rad, cornering);
+      }
+      else{
+        if(shape=="CIR") circle(x_offset, 0, rad);
+        else if(shape=="SQ") square(x_offset-rad/2, -rad/2, rad, cornering);
+      }
     }
-    else{
-      if(shape=="CIR") circle(x_offset, 0, rad);
-      else if(shape=="SQ") square(x_offset-rad/2, -rad/2, rad, cornering);
+    if(shape=="CIR"){
+      if(offset_me) circle(0,0, rad+(x_offset+offset)*2);
+      else circle(0,0, rad+x_offset*2);
     }
   }
-  if(shape=="CIR"){
-    if(offset_me) circle(0,0, rad+(x_offset+offset)*2);
-    else circle(0,0, rad+x_offset*2);
-  }
+
   
   filter(OPAQUE)
 
