@@ -1,8 +1,8 @@
 'use strict';
 //setup variables
-const gif = true;
+const gif = false;
 const fr = 1;
-const capture = true;
+const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
 let suggested_palette;
