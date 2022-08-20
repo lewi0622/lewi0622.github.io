@@ -40,12 +40,13 @@ function draw() {
   center_rotate(360/sym_angs*ceil(random(sym_angs)));
 
   let cloud_c = [];
-  working_palette.forEach(ele => {
-    const col = color(ele);
+  working_palette = shuffle(working_palette, true);
+  for(let i=0; i<3; i++){
+    const col = color(random(working_palette));
     col.setAlpha(floor(random(3,10)));
     cloud_c.push(col);
-  });
-  cloud_c = shuffle(cloud_c, true);
+  }
+
   noStroke();
 
   for(let i=0; i<1000; i++){
