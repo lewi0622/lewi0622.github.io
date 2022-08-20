@@ -20,17 +20,20 @@ function draw() {
   let working_palette = JSON.parse(JSON.stringify(palette));
 
   //apply background
+
+  //start with background color R, G, or B
   background(random(['RED', 'GREEN', 'BLUE']));
   let bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);
   bg_c = color(bg_c);
   bg_c.setAlpha(150);
   fill(bg_c);
+  noStroke();
   rect(0,0, canvas_x, canvas_y);
 
   //actual drawing stuff
   push();
-
+  //cloudy background
   let c=random(working_palette);
   reduce_array(working_palette,c);
   c = color(c);
@@ -41,6 +44,7 @@ function draw() {
     circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
   }
 
+  //neon stuff
   c=color(random(working_palette));
   translate(canvas_x/2, canvas_y/2);
   const brightness = floor(random(250,500));
