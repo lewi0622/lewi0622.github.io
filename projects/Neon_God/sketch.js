@@ -8,7 +8,7 @@ const sixteen_by_nine = false;
 let suggested_palette;
 
 function setup() {
-  suggested_palette = random([SOUTHWEST, SIXTIES, JAZZCUP]);
+  suggested_palette = random([SOUTHWEST, SIXTIES]);
   common_setup(gif);
 }
 //***************************************************
