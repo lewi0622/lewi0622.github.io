@@ -24,7 +24,7 @@ function draw() {
   //start with background color R, G, or B
   background(random(['RED', 'GREEN', 'BLUE']));
   let bg_c = random(working_palette);
-  reduce_array(working_palette, bg_c);
+  if(working_palette.length>3) reduce_array(working_palette, bg_c);
   bg_c = color(bg_c);
   bg_c.setAlpha(150);
   fill(bg_c);
@@ -33,19 +33,44 @@ function draw() {
 
   //actual drawing stuff
   push();
+
   //cloudy background
-  let c=random(working_palette);
-  reduce_array(working_palette,c);
-  c = color(c);
-  c.setAlpha(floor(random(3,10)));
+  push();
+  const sym_angs = round(random(4,20));
+  center_rotate(360/sym_angs*ceil(random(sym_angs)));
+
+  let cloud_c = [];
+  working_palette.forEach(ele => {
+    const col = color(ele);
+    col.setAlpha(floor(random(3,10)));
+    cloud_c.push(col);
+  });
+  cloud_c = shuffle(cloud_c, true);
   noStroke();
-  fill(c);
+
   for(let i=0; i<1000; i++){
-    circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
+    push();
+    const x =random();
+    const y =random();
+
+    const lim = 0.1;
+    const lower_lim = 1/3 + map(noise(y), 0,1, 0, lim);
+    const upper_lim = 2/3 + map(noise(y+100), 0,1, -lim, 0);
+
+    if(x<lower_lim) fill(cloud_c[0]);
+    else if(x>=lower_lim && x<upper_lim) fill(cloud_c[1]);
+    else fill(cloud_c[2]);
+
+    translate(map(x, 0,1, -canvas_x/2, canvas_x*1.5), map(y, 0,1, -canvas_y/2, canvas_y*1.5));
+    circle(0,0, canvas_x/2);
+    pop();
   }
+  filter(BLUR, 1*global_scale);
+
+  pop();
 
   //neon stuff
-  c=color(random(working_palette));
+  let c=color(random(working_palette));
   translate(canvas_x/2, canvas_y/2);
   const brightness = floor(random(250,500));
   drawingContext.filter = 'brightness('+brightness+'%)';
@@ -55,7 +80,6 @@ function draw() {
   stroke(c);
   noFill();
 
-  const sym_angs = round(random(4,20));
   rotate(360/sym_angs*ceil(random(sym_angs)));
   let rad = random(canvas_x/4, canvas_x/2);
   let offset_me, offset;
