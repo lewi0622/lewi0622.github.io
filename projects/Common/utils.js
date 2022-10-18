@@ -390,10 +390,26 @@ function show_palette_colors(){
 }
 
 function reduce_array(arr, remove){
-  //deletes 'remove' from a given 'arr'
-  let index = arr.indexOf(remove);
-  if (index > -1) {
-    arr.splice(index, 1);
+  let rm_idx = -1;
+  //if remove is an array
+  if(typeof(remove)=='object'){
+    arr.every((e, idx) => {
+      if(arrayEquals(e,remove)){
+        rm_idx = idx;
+        return false;
+      }
+      else return true;
+    });
+  }
+  else{
+    //if remove is not an array
+    rm_idx = arr.indexOf(remove);
+  }
+  if (rm_idx > -1) {
+    arr.splice(rm_idx, 1);
+  }
+  else{
+    print("Unable to reduce array. Arr: ", arr, "Item to Remove: ", remove);
   }
 }
 
