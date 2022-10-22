@@ -780,3 +780,9 @@ function RGBA_to_HSBA(r,g,b,a){
     n === 0 ? 0 : n && v === r ? (g - b) / n : v === g ? 2 + (b - r) / n : 4 + (r - g) / n;
   return [60 * (h < 0 ? h + 6 : h), v && (n / v) * 100, v * 100, a];
 }
+
+function arrayRotate(arr, count) {
+  count -= arr.length * Math.floor(count / arr.length);
+  arr.push.apply(arr, arr.splice(0, count));
+  return arr;
+}
