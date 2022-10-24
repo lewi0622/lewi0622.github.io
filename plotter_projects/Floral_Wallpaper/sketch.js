@@ -60,6 +60,7 @@ function draw() {
           const y = radius*sin(ang) + map(noise(i+noise_base+noise_off), 0,1, -noise_scale, noise_scale);
           pts.push({x:x, y:y});
         }
+        //by rotating randomly, the starts and ends of paths are randomized. so on the plot the overlaps don't line up
         pts = arrayRotate(pts, floor(random(pts.length)));
         beginShape();
         for(let i=0; i<points+4; i++){
