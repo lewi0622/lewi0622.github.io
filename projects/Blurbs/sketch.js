@@ -8,8 +8,9 @@ const sixteen_by_nine = false;
 let suggested_palette;
 
 function gui_values(){
-  gui_params.push(parameterize("Weight", 10*global_scale, 0, 100*global_scale, 0.1*global_scale));
-  gui_params.push(parameterize("Line_length", 60*global_scale, 10*global_scale, 100*global_scale, 0.1*global_scale));
+  parameterize("Weight", 10*global_scale, 0, 100*global_scale, 0.1*global_scale);
+  parameterize("Line_length", 60*global_scale, 10*global_scale, 100*global_scale, 0.1*global_scale);
+  parameterize("Rotation", random([0,90,180,270]), 0, 360, 90);
 }
 
 function setup() {
@@ -37,7 +38,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  center_rotate(random([0,90,180,270]));
+  center_rotate(Rotation);
 
   //line width
   strokeWeight(Weight);
