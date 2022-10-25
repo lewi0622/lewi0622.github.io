@@ -5,7 +5,6 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-let gui_params = [];
 
 function gui_values(){
 

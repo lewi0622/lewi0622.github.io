@@ -10,7 +10,6 @@ let suggested_palette;
 //project variables
 let grid_size;
 
-let gui_params = [];
 
 function gui_values(){
 

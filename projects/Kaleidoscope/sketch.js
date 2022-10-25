@@ -7,7 +7,6 @@ const capture_time = 10;
 const sixteen_by_nine = false;
 let suggested_palette, working_palette, num_pts;
 
-let gui_params = [];
 
 function gui_values(){
 

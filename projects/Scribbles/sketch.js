@@ -10,7 +10,6 @@ let suggested_palette;
 //project variables
 let amp;
 
-let gui_params = [];
 
 function gui_values(){
 

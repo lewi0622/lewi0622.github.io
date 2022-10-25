@@ -7,7 +7,6 @@ xinc = 5;
 capture = false;
 capture_time = 10;
 
-let gui_params = [];
 
 function gui_values(){
 

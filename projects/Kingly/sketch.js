@@ -14,7 +14,6 @@ let yoff = 0;
 const y_inc =0.001*60/fr;
 let bg_c, crown_c, hl_c, num_points, rot, upper_shape, lower_shape;
 
-let gui_params = [];
 
 function gui_values(){
 

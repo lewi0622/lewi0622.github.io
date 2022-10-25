@@ -13,7 +13,6 @@ const inc = 0.01*60/fr;
 let squares = [];
 let rot_offset = 0;
 
-let gui_params = [];
 
 function gui_values(){
 

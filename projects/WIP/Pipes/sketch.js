@@ -8,7 +8,6 @@ inc = 0.5*60/fr;
 capture = false;
 capture_time = 10;
 
-let gui_params = [];
 
 function gui_values(){
 

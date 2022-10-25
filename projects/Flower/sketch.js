@@ -10,7 +10,6 @@ let suggested_palette;
 //project variables
 let petal_size; 
 
-let gui_params = [];
 
 function gui_values(){
 

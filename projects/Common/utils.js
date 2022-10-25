@@ -25,6 +25,7 @@ let redraw = false;
 let gui_created = false;
 let redraw_reason;
 var gui;
+let gui_params = [];
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //override shuffle with func that uses Math.random instead of p5.js random

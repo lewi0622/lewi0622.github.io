@@ -13,7 +13,6 @@ const capture_time = 10;
 let letter_idx = 0;
 const letters = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
-let gui_params = [];
 
 function gui_values(){
 

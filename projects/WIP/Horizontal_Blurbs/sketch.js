@@ -11,7 +11,6 @@ cols = [];
 capture = false;
 capture_time = 8;
 
-let gui_params = [];
 
 function gui_values(){
 

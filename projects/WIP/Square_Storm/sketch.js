@@ -14,7 +14,6 @@ let ang = 0;
 const ang_inc = 1;
 let origin;
 
-let gui_params = [];
 
 function gui_values(){
 

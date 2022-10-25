@@ -13,7 +13,6 @@ const inc = 0.01*60/fr;
 let rot = 0;
 let rot_inc = 1;
 
-let gui_params = [];
 
 function gui_values(){
 

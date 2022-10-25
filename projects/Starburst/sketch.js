@@ -16,7 +16,6 @@ let square_inc = 3*global_scale;
 let rot_offset = 0;
 let bg_c, symmetries, rot_inc;
 
-let gui_params = [];
 
 function gui_values(){
 

@@ -10,7 +10,6 @@ const noiseMax = 2;
 const phase_off = 20;
 let i_mult;
 
-let gui_params = [];
 
 function gui_values(){
 

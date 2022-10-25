@@ -13,7 +13,6 @@ const inc = 0.3*60/fr;
 let xoff = 0;
 let sym_angs, line_segs, len, line_color;
 
-let gui_params = [];
 
 function gui_values(){
 

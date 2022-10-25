@@ -10,7 +10,6 @@ let suggested_palette;
 //project variables
 let c_leaf_primary, branch_weight;
 
-let gui_params = [];
 
 function gui_values(){
 

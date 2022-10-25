@@ -7,13 +7,10 @@ const capture_time = 10;
 const sixteen_by_nine = false;
 let suggested_palette;
 
-let gui_params = [];
-
 function gui_values(){
-
+  gui_params.push(parameterize("Weight", 10*global_scale, 0, 100*global_scale, 0.1*global_scale));
+  gui_params.push(parameterize("Line_length", 60*global_scale, 10*global_scale, 100*global_scale, 0.1*global_scale));
 }
-gui_params.push(parameterize("Weight", 10*global_scale, 0, 100*global_scale, 0.1*global_scale));
-gui_params.push(parameterize("Line_length", 60*global_scale, 10*global_scale, 100*global_scale, 0.1*global_scale));
 
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);

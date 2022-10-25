@@ -10,7 +10,6 @@ let suggested_palette;
 //project variables
 let working_palette, bg_c, size_buildings;
 
-let gui_params = [];
 
 function gui_values(){
 

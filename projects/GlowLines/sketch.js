@@ -13,7 +13,6 @@ const inc = 0.005*60/fr;
 const offset = 50
 let bg_c;
 
-let gui_params = [];
 
 function gui_values(){
 
