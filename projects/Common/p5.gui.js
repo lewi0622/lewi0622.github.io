@@ -51,7 +51,7 @@
     // create a gui using the provider
     if(provider === 'QuickSettings') {
       if(QuickSettings) {
-        console.log('Creating p5.gui powered by QuickSettings.');
+        // console.log('Creating p5.gui powered by QuickSettings.');
         gui = new QSGui(label, parent, sketch);
       } else {
         console.log('QuickSettings not found. Is the script included in your HTML?');

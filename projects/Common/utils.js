@@ -61,7 +61,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   seed_scale_button(base_y);
   seed = reset_drawing(seed, base_x, base_y);
 
-  //call gui_values to declare necessary globals, even if gui isn't created
+  //call gui_values to declare necessary globals on first loop, even if gui isn't created
   if(!redraw) gui_values();
 
   if(!full_controls){
@@ -71,6 +71,9 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
     };
     //suppress unnecessary errors and speed up drawing time
     p5.disableFriendlyErrors = true; // disables FES
+    
+    //re-assign values for gui params
+    if(redraw) gui_values();
   }
   else{
     //declare gui before noLoop is extended in p5.gui.js
@@ -78,7 +81,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
       gui = createGui('Parameters');
       if(redraw_reason != "gui" || redraw==false){
         if(redraw) gui_values();
-        if(full_controls) gui.addGlobals(...gui_params);
+        gui.addGlobals(...gui_params);
       }
       gui_created = true;
     }
@@ -160,7 +163,7 @@ function setParams(){
     seed = document.getElementById("Seed").value;
   }
 
-  full_controls = controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  full_controls = (controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1") && (controls!="false");
   if(controls != undefined || full_controls){
     hidden_controls = false;
   }
@@ -677,7 +680,9 @@ function windowResized(ignore_scale) {
 
     if(ignore_scale.type=="resize"){
       let gui_elem = document.getElementsByClassName("qs_main")[0];
-      gui_elem.remove();
+      if(gui_elem !== undefined){
+        gui_elem.remove();
+      }
       gui_created = false;
     }
 
@@ -823,24 +828,35 @@ function arrayRotate(arr, count) {
 
 function parameterize(name, val, min, max, step){
   //create parameters for gui creation, not supposed to use eval for security reasons, but it's just soo much easier in this case
-  let val_string
-  if(Array.isArray(val)){
-    val_string = "["
-    for(let i=0; i<val.length; i++){
-      if(typeof val[i] == "string"){
-      val_string += "\'" + val[i] +"\'";
+
+  //if variables don't already exist, create them
+  if(!eval("typeof " + name + "!== 'undefined'")){
+    let val_string
+    if(Array.isArray(val)){
+      val_string = "["
+      for(let i=0; i<val.length; i++){
+        if(typeof val[i] == "string"){
+        val_string += "\'" + val[i] +"\'";
+        }
+        else val_string += val[i];
+
+        if(i + 1 != val.length) val_string += ","
       }
-      else val_string += val[i];
-
-      if(i + 1 != val.length) val_string += ","
+      val_string += "]";
+      eval('globalThis.' + name +" = " + val_string);
     }
-    val_string += "]";
-    eval('globalThis.' + name +" = " + val_string);
-  }
-  else eval('globalThis.' + name +" = " + val);
-  if(min != undefined) eval('globalThis.' + name + "Min =" + min);
-  if(max != undefined) eval('globalThis.' + name +"Max =" + max);
-  if(step != undefined) eval('globalThis.' + name +"Step =" + step);
+    else eval('globalThis.' + name +" = " + val);
+    if(min != undefined) eval('globalThis.' + name + "Min =" + min);
+    if(max != undefined) eval('globalThis.' + name +"Max =" + max);
+    if(step != undefined) eval('globalThis.' + name +"Step =" + step);
 
-  gui_params.push(name);
+    gui_params.push(name);
+  }
+  //if variables do exist, apply new values
+  else{
+    eval(name + "=" + val);
+    if(min != undefined) eval(name + "Min =" + min);
+    if(max != undefined) eval(name +"Max =" + max);
+    if(step != undefined) eval(name +"Step =" + step);
+  }
 }
