@@ -61,8 +61,9 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   seed_scale_button(base_y);
   seed = reset_drawing(seed, base_x, base_y);
 
-  //call gui_values to declare necessary globals on first loop, even if gui isn't created
-  if(!redraw) gui_values();
+  //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
+  //needs to be called before noLoop and gui.addGlobals
+  gui_values();
 
   if(!full_controls){
     // disable right clicks 
@@ -71,16 +72,12 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
     };
     //suppress unnecessary errors and speed up drawing time
     p5.disableFriendlyErrors = true; // disables FES
-    
-    //re-assign values for gui params
-    if(redraw) gui_values();
   }
   else{
     //declare gui before noLoop is extended in p5.gui.js
     if(!gui_created){
       gui = createGui('Parameters');
       if(redraw_reason != "gui" || redraw==false){
-        if(redraw) gui_values();
         gui.addGlobals(...gui_params);
       }
       gui_created = true;
@@ -854,9 +851,12 @@ function parameterize(name, val, min, max, step){
   }
   //if variables do exist, apply new values
   else{
-    eval(name + "=" + val);
-    if(min != undefined) eval(name + "Min =" + min);
-    if(max != undefined) eval(name +"Max =" + max);
-    if(step != undefined) eval(name +"Step =" + step);
+    //if redraw reason is gui, let p5.gui handle the new values
+    if(redraw_reason != "gui"){
+      eval(name + "=" + val);
+      if(min != undefined) eval(name + "Min =" + min);
+      if(max != undefined) eval(name +"Max =" + max);
+      if(step != undefined) eval(name +"Step =" + step);
+    }
   }
 }
