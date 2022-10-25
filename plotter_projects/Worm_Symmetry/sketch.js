@@ -10,6 +10,12 @@ const noise_off = 20;
 let xoff = 0;
 const inc = 0.1*60/fr;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   common_setup(gif, SVG);
 }

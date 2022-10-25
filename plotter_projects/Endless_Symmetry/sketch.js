@@ -11,6 +11,13 @@ const capture = false;
 const capture_time = 5
 
 let sym_angs, line_segs;
+
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   common_setup(gif, SVG);
 

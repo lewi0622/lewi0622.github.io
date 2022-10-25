@@ -7,6 +7,12 @@ const capture_time = 10;
 const sixteen_by_nine = false;
 let suggested_palette;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([BUMBLEBEE, SUMMERTIME, SOUTHWEST]);
   common_setup(gif);

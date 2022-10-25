@@ -3,6 +3,13 @@ fr = 30;
 
 capture = false;
 capture_time = 10;
+
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   // suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);

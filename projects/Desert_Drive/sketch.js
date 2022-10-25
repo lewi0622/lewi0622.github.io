@@ -12,6 +12,12 @@ let xoff = 0;
 let inc = 0.01*60/fr;
 const waves = 10;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   common_setup(gif);
 

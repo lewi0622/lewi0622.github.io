@@ -10,6 +10,12 @@ let suggested_palette;
 //project variables
 let c_leaf_primary, branch_weight;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = BIRDSOFPARADISE;
   //looks good in 300x400

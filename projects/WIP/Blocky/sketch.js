@@ -11,6 +11,13 @@ let xoff = 0;
 const inc = 0.1*60/fr;
 
 let bg_c, front_c, side_c, top_c, c;
+
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);

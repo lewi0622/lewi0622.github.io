@@ -9,6 +9,12 @@ const fr = 1;
 const capture = false;
 const capture_time = 8
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   common_setup(gif, SVG, 100, 80);
 

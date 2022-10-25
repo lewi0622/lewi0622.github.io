@@ -13,6 +13,12 @@ const inc = 0.005*60/fr;
 const offset = 50
 let bg_c;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([SUMMERTIME, SOUTHWEST, JAZZCUP]);
   common_setup(gif);

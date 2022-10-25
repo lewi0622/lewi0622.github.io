@@ -7,6 +7,12 @@ const capture_time = 2;
 const sixteen_by_nine = false;
 let suggested_palette, working_palette, grid_bg_c;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([BIRDSOFPARADISE, NURSERY, SIXTIES, JAZZCUP]);
   common_setup(gif);

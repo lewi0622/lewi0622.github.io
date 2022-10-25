@@ -14,6 +14,12 @@ let ang = 0;
 const ang_inc = 1;
 let origin;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([SUMMERTIME, SOUTHWEST, NURSERY, JAZZCUP]);
   common_setup(gif);

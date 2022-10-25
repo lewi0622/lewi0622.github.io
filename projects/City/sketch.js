@@ -10,6 +10,12 @@ let suggested_palette;
 //project variables
 let working_palette, bg_c, size_buildings;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([BEACHDAY, COTTONCANDY, NURSERY])
   common_setup(gif);

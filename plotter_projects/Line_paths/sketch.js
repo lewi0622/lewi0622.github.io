@@ -12,6 +12,12 @@ const phase_inc = 0.01;
 let c_offset = 0;
 let weight;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   common_setup(gif, SVG);
 

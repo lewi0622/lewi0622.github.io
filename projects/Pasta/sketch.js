@@ -10,6 +10,12 @@ let suggested_palette;
 //project variables
 let grid_size;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, GAMEDAY, BIRDSOFPARADISE]);
   common_setup(gif);

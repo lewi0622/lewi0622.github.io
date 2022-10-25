@@ -3,6 +3,13 @@ fr = 1;
 
 capture = false;
 capture_time = 10;
+
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   common_setup(gif);
 }

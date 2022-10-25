@@ -7,6 +7,13 @@ gif = false;
 fr = 2;
 capture = false;
 capture_time = 10;
+
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([COTTONCANDY, BIRDSOFPARADISE, SUPPERWARE]);
   common_setup(gif, P2D, 400, 400);

@@ -10,6 +10,12 @@ let suggested_palette;
 //project variables
 let amp;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([BIRDSOFPARADISE, MUTEDEARTH, OASIS]);
   common_setup(gif);

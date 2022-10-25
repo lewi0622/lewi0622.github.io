@@ -13,6 +13,12 @@ let phase = 0;
 const phase_off = 20;
 const phase_inc = 1.5;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([BEACHDAY, SOUTHWEST, SUPPERWARE]);
   common_setup(gif);

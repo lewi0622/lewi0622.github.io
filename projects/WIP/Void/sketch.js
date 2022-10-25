@@ -13,6 +13,12 @@ const inc = 0.01*60/fr;
 let rot = 0;
 let rot_inc = 1;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   suggested_palette = random([SAGEANDCITRUS, BEACHDAY, SOUTHWEST])
   common_setup(gif);

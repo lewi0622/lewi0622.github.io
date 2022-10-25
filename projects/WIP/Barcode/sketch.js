@@ -9,6 +9,13 @@ theta_inc = 0.5*60/fr;
 
 capture = false;
 capture_time = 8;
+
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 function setup() {
   common_setup(gif);
 

@@ -7,6 +7,12 @@ const capture_time = 10;
 const sixteen_by_nine = false;
 let suggested_palette;
 
+let gui_params = [];
+
+function gui_values(){
+
+}
+
 //project variables
 let pt_size, pts, c_idx, working_palette, bg_c, lerp_step, frame_switch;
 
