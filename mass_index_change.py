@@ -26,6 +26,8 @@ for f in to_replace:
     <script src="'''+rel_path.as_posix()+'''/utils.js"></script>
     <script src="'''+rel_path.as_posix()+'''/shapes.js"></script>
     <script src="'''+rel_path.as_posix()+'''/CCapture.all.min.js"></script>
+    <script src="'''+rel_path.as_posix()+'''/p5.gui.js"></script>
+    <script src="'''+rel_path.as_posix()+'''/quicksettings.js"></script>   
     <script src="https://unpkg.com/p5.js-svg@1.3.1"></script>
     <link rel="stylesheet" type="text/css" href="'''+rel_path.as_posix()+'''/style.css">
     <meta charset="utf-8">

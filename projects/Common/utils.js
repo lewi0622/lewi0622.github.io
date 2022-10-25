@@ -22,6 +22,9 @@ let dpi = DPI_DEFAULT;
 let full_controls = false;
 let type;
 let redraw = false;
+let gui_created = false;
+let redraw_reason;
+var gui;
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //override shuffle with func that uses Math.random instead of p5.js random
@@ -65,6 +68,18 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
     //suppress unnecessary errors and speed up drawing time
     p5.disableFriendlyErrors = true; // disables FES
   }
+  else{
+    //declare gui before noLoop is extended in p5.gui.js
+    if(!gui_created){
+      gui = createGui('Parameters');
+      if(redraw_reason != "gui" || redraw==false){
+        gui_values();
+        if(full_controls) gui.addGlobals(...gui_params);
+      }
+      gui_created = true;
+    }
+  }
+
   angleMode(DEGREES);
 
   cnv = createCanvas(canvas_x, canvas_y, renderer);
@@ -76,6 +91,8 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
+
+
 
   if(!gif){ noLoop(); }
   //else necessary when redrawing timed pieces
@@ -645,8 +662,21 @@ function arrayEquals(a, b) {
     a.every((val, index) => val === b[index]);
 }
 
-function windowResized() {
-  if(getParamValue('scale') == undefined && find_cnv_mult() != global_scale){
+function gui_changed(args){
+  windowResized(true);
+}
+
+function windowResized(ignore_scale) {
+  if((getParamValue('scale') == undefined && find_cnv_mult() != global_scale) || ignore_scale==true){
+    if(ignore_scale==true) redraw_reason = "gui";
+    else redraw_reason = "window";
+
+    if(ignore_scale.type=="resize"){
+      let gui_elem = document.getElementsByClassName("qs_main")[0];
+      gui_elem.remove();
+      gui_created = false;
+    }
+
     redraw = true;
     setup();
     draw();
@@ -785,4 +815,14 @@ function arrayRotate(arr, count) {
   count -= arr.length * Math.floor(count / arr.length);
   arr.push.apply(arr, arr.splice(0, count));
   return arr;
+}
+
+function parameterize(name, val, min, max, step){
+  //create parameters for gui creation
+  eval('globalThis.' + name +" = " + val);
+  if(min != undefined) eval('globalThis.' + name + "Min =" + min);
+  if(max != undefined) eval('globalThis.' + name +"Max =" + max);
+  if(step != undefined) eval('globalThis.' + name +"Step =" + step);
+
+  return name;
 }
