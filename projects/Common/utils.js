@@ -5,12 +5,13 @@ let canvas_x, canvas_y, cnv;
 let num_frames, capturer, seed;
 //control variables
 let seed_input, scale_box, control_height, control_spacing, hidden_controls, color_sel, color_div;
+let btLeft, btRight, button, reset_palette, randomize, auto_scale, btSave;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
 
 //if a project doesn't supply a suggested palette, we use the default 
 let global_palette_id = PALETTE_ID_DEFAULT;
-let global_palette, palette;
+let global_palette, palette, working_palette;
 
 
 let global_scale = 1;
@@ -22,10 +23,17 @@ let dpi = DPI_DEFAULT;
 let full_controls = false;
 let type;
 let redraw = false;
+
+//gui vars
 let gui_created = false;
 let redraw_reason;
 var gui;
 let gui_params = [];
+
+//color picker vars
+let picker, picker_popper;
+const swatches = [];
+const pickers = [];
 
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //override shuffle with func that uses Math.random instead of p5.js random
@@ -96,8 +104,6 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
 
-
-
   if(!gif){ noLoop(); }
   //else necessary when redrawing timed pieces
   else{ loop();}
@@ -139,15 +145,6 @@ function over_ride_shuffle(){
 
 function setParams(){
   //get params from url and set necessary globals
-
-  let colors = getParamValue('colors');
-  if(colors != undefined){
-    if(!isPositiveIntegerOrZero(colors) || parseInt(colors)>palettes.length){
-      colors = PALETTE_ID_DEFAULT;
-    }
-    global_palette=palettes[parseInt(colors)];
-  };
-  
   const controls = getParamValue('controls');
   seed = getParamValue('seed');
   const img_scale = getParamValue('scale');
@@ -203,109 +200,144 @@ function getParamValue(paramName){
 }
 
 function seed_scale_button(base_y){
-  const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Color Select", "Randomize", "Color Boxes"]
+  const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"]
   const full_ids = ["Auto Scale", "Scale Box", "Save"]
-  remove_controls(ids);
-  remove_controls(full_ids);
 
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
 
+  if(!redraw){
+    //declare unchanging properties
+    //START OF TOP ROW
+    //left/right buttons for easy seed nav
+    btLeft = createButton('<');
+    btLeft.mouseClicked(function() {
+      seed_input.value(int(seed_input.value())-1);
+      set_seed();
+    });
+    btLeft.id('Bt Left')
+
+    //creates controls below canvas for displaying/setting seed
+    seed_input = createInput("seed");
+    seed_input.style("text-align", "right");
+    seed_input.id('Seed');
+
+    //left/right buttons for easy seed nav
+    btRight = createButton('>');
+    btRight.mouseClicked(function() {
+      seed_input.value(int(seed_input.value())+1);
+      set_seed();
+    });
+    btRight.id('Bt Right');
+
+    //custom seed button
+    button = createButton("Custom Seed");
+    button.mouseClicked(set_seed);
+    button.id('Custom Seed')
+
+    //reset palette button
+    reset_palette = createButton("Reset Palette");
+    reset_palette.mouseClicked(()=>{
+      window.localStorage.removeItem(palette_names[global_palette_id]);
+      redraw_reason = "picker";
+      redraw_sketch();
+    });
+    reset_palette.id('Reset Palette');
+
+    //randomize button
+    randomize = createButton("Randomize");
+    randomize.mouseClicked(() => {
+      seed_input.value(Math.round(random()*1000000));
+      set_seed();
+    })
+    randomize.id('Randomize');
+
+    //START OF SECOND ROW
+    //color palette select
+    color_sel = createSelect();
+    palette_names.forEach(name => {
+      if(!exclude_palette.includes(name)){
+        color_sel.option(name);
+      }
+    });
+    color_sel.selected(palette_names[col_idx()]);
+    color_sel.changed(set_seed);
+    color_sel.id('Color Select');
+
+      //color boxes
+    color_div = document.createElement("div");
+    color_div.id = "Color Boxes";
+    document.body.appendChild(color_div);
+
+    //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
+    //START OF THIRD ROW
+    //autoscale button calls url minus any scaler
+    auto_scale = createButton('Autoscale');
+    auto_scale.mouseClicked(() => {
+      let base_url = "index.html?controls=full&colors=" + String(col_idx());
+      base_url+= "&seed=" + getParamValue("seed");
+      if(bleed){base_url+='&bleed=' + String(bleed_val)};
+      if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
+      if(cut){base_url += '&cut=' + String(cut)};
+      window.location.replace(base_url);
+    })
+    auto_scale.id("Auto Scale");
+
+    //scale text box
+    scale_box = createInput('');
+    scale_box.id("Scale Box");
+
+    //save button
+    btSave = createButton("Save");
+    btSave.mouseClicked(save_drawing);
+    btSave.id("Save")
+  }
+
+  //resize for given global scale
   //START OF TOP ROW
   //left/right buttons for easy seed nav
-  const btLeft = createButton('<')
   btLeft.size(20*global_scale, control_height);
   btLeft.position(0, base_y*global_scale);
-  btLeft.mouseClicked(function() {
-    seed_input.value(int(seed_input.value())-1);
-    set_seed();
-  });
-  btLeft.id('Bt Left')
 
   //creates controls below canvas for displaying/setting seed
-  seed_input = createInput("seed");
   seed_input.size(55*global_scale, control_height-6);
   seed_input.position(btLeft.size().width,base_y*global_scale);
-  seed_input.style("text-align", "right");
-  seed_input.id('Seed');
 
   //left/right buttons for easy seed nav
-  const btRight = createButton('>')
   btRight.size(20*global_scale, control_height);
   btRight.position(seed_input.size().width + seed_input.position().x, base_y*global_scale);
-  btRight.mouseClicked(function() {
-    seed_input.value(int(seed_input.value())+1);
-    set_seed();
-  });
-  btRight.id('Bt Right');
-  
+
   //custom seed button
-  const button = createButton("Custom Seed");
-  button.mouseClicked(set_seed);
   button.size(90*global_scale, control_height)
   button.position(btRight.size().width + btRight.position().x + control_spacing, base_y*global_scale);
-  button.id('Custom Seed')
+
+  //reset palette button
+  reset_palette.size(90*global_scale, control_height)
+  reset_palette.position(button.size().width + button.position().x + control_spacing, base_y*global_scale);
 
   //randomize button
-  const randomize = createButton("Randomize");
-  randomize.mouseClicked(() => {
-    seed_input.value(Math.round(random()*1000000));
-    set_seed();
-  })
   randomize.size(80*global_scale, control_height);
   randomize.position(400*global_scale-randomize.size().width, base_y*global_scale);
-  randomize.id('Randomize')
 
   //START OF SECOND ROW
   //color palette select
-  color_sel = createSelect();
   color_sel.position(0, base_y*global_scale+control_height);
   color_sel.size(120*global_scale, control_height);
-  palette_names.forEach(name => {
-    if(!exclude_palette.includes(name)){
-      color_sel.option(name);
-    }
-  });
-  color_sel.selected(palette_names[col_idx()]);
-
-  color_sel.changed(set_seed);
-  color_sel.id('Color Select')
-
-  //color boxes
-  color_div = document.createElement("div");
-  color_div.id = "Color Boxes";
-  document.body.appendChild(color_div);
-
 
   //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
   //START OF THIRD ROW
   //autoscale button calls url minus any scaler
-  const auto_scale = createButton('Autoscale');
-  auto_scale.mouseClicked(() => {
-    let base_url = "index.html?controls=full&colors=" + String(col_idx());
-    base_url+= "&seed=" + getParamValue("seed");
-    if(bleed){base_url+='&bleed=' + String(bleed_val)};
-    if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
-    if(cut){base_url += '&cut=' + String(cut)};
-    window.location.replace(base_url);
-  })
   auto_scale.position(0, base_y*global_scale + control_height*2);
   auto_scale.size(70*global_scale, control_height)
-  auto_scale.id("Auto Scale")
 
   //scale text box
-  scale_box = createInput('');
   scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height*2)
   scale_box.size(30*global_scale, 17*global_scale);
   scale_box.value(global_scale);
-  scale_box.id("Scale Box")
 
   //save button
-  const btSave = createButton("Save");
-  btSave.mouseClicked(save_drawing);
   btSave.size(70*global_scale, control_height);
   btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height*2);
-  btSave.id("Save")
 
   //style all ctrls
   ids.concat(full_ids).forEach(id => {
@@ -374,39 +406,70 @@ function keyTyped() {
   }
 }
 
-function remove_controls(arr){
-  arr.forEach(ctrl => {
-    const elem = document.getElementById(ctrl);
-    if(elem){
-      elem.remove();
-    }
-  });
-}
-
 function show_palette_colors(){
   //can't be called in the seed_scale_button function because palette can be undefined at that point
+  //generate swatches for current palette
+  if(!redraw){
+    for(let i=0; i<palette.length; i++){
+      swatches.push('rgb(' + global_palette[i][0] + ',' + global_palette[i][1] + ',' + global_palette[i][2] + ',' + map(global_palette[i][3],0,255, 0,1) + ')');
+    }
+  }
+  else{
+    palette.forEach((c,idx) => {
+      //set button colors to match palette after initial draw
+      pickers[idx].setColor('rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + map(c[3],0,255, 0,1) + ')');
+    });
+  }
+
   let start_pos = color_sel.position().x + color_sel.size().width;
+  palette.forEach((c, idx) => {
+    if(!redraw){
+      let color_picker = document.createElement("div");
+      color_picker.id = "color_picker" + idx;
+      color_div.appendChild(color_picker);
+    }
 
-  global_palette.forEach(c => {
-    let box_bg = document.createElement("div");
-    box_bg.style.position = "absolute";
-    box_bg.style.left = start_pos+control_spacing+"px";
-    box_bg.style.top = color_sel.position().y+"px"
-    box_bg.style.width = control_height+"px";
-    box_bg.style.height = control_height+"px";
-    box_bg.style.backgroundColor = 'rgb(' + 0 + ',' + 0 + ',' + 0 + ')'
+    color_div.style.position = "absolute";
+    color_div.style.left = start_pos+control_spacing*idx+"px";
+    color_div.style.top = color_sel.position().y+"px"
+    color_div.style.width = control_height+"px";
+    color_div.style.height = control_height+"px";
 
-    let color_box = document.createElement("div");
-    color_box.style.position = "absolute";
-    color_box.style.left = start_pos+control_spacing+control_height*.05+"px";
-    color_box.style.top = color_sel.position().y+control_height*.05+"px"
-    color_box.style.width = control_height*.9+"px";
-    color_box.style.height = control_height*.9+"px";
-    color_box.style.backgroundColor = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
-  
-    color_div.appendChild(box_bg);
-    color_div.appendChild(color_box);
-    start_pos += control_height*1.25;
+    if(!redraw){
+      //color picker code, ref https://github.com/SofianChouaib/alwan
+      const alwan = new Alwan('#color_picker'+idx, {
+        id: "picker_"+idx,
+        theme: 'light',
+        toggle: true,
+        popover: true,
+        preset: true,
+        color: 'rgb(' + palette[idx][0] + ',' + palette[idx][1] + ',' + palette[idx][2] + ',' + map(palette[idx][3],0,255, 0,1) + ')',
+        format: 'rgb',
+        singleInput: false,
+        inputs: {
+          rgb: true,
+          hex: true,
+          hsl: true,
+        },
+        opacity: true,
+        preview: true,
+        copy: true,
+        swatches: swatches
+      });
+      pickers.push(alwan);
+
+      picker_popper = document.getElementById("picker_"+idx);
+      //custom event listener because the colorpicker events are shit
+      picker_popper.addEventListener("mouseup", color_changed);
+
+    }
+    picker = document.getElementById("color_picker"+idx);
+    picker.style.position = "absolute";
+    picker.style.left = control_height*idx*1.1 + control_height*.05+"px";
+    picker.style.top = control_height*.05+"px"
+    picker.style.width = control_height*.9+"px";
+    picker.style.height = control_height*.9+"px";
+    picker.style.border = floor(1.5*global_scale) + 'px solid black' //rgb(' + 0 + ',' + 0 + ',' + 0 + ')'
   });
 }
 
@@ -414,13 +477,25 @@ function reduce_array(arr, remove){
   let rm_idx = -1;
   //if remove is an array
   if(typeof(remove)=='object'){
-    arr.every((e, idx) => {
-      if(arrayEquals(e,remove)){
-        rm_idx = idx;
-        return false;
-      }
-      else return true;
-    });
+    //check for color object
+    if(remove.levels != undefined){
+      arr.every((e, idx) => {
+        if(arrayEquals(e.levels,remove.levels)){
+          rm_idx = idx;
+          return false;
+        }
+        else return true;
+      });
+    }
+    else{
+      arr.every((e, idx) => {
+        if(arrayEquals(e,remove)){
+          rm_idx = idx;
+          return false;
+        }
+        else return true;
+      });
+    }
   }
   else{
     //if remove is not an array
@@ -666,48 +741,102 @@ function arrayEquals(a, b) {
     a.every((val, index) => val === b[index]);
 }
 
-function gui_changed(args){
-  windowResized(true);
+function gui_changed(){
+  redraw_reason = "gui";
+  redraw_sketch();
 }
 
-function windowResized(ignore_scale) {
-  if((getParamValue('scale') == undefined && find_cnv_mult() != global_scale) || ignore_scale==true){
-    if(ignore_scale==true) redraw_reason = "gui";
-    else redraw_reason = "window";
-
-    if(ignore_scale.type=="resize"){
-      let gui_elem = document.getElementsByClassName("qs_main")[0];
-      if(gui_elem !== undefined){
-        gui_elem.remove();
+function color_changed(e){
+  setTimeout(() =>{
+    const path = e.path;
+    let picker_id;
+    //get picker id
+    for(let i=0; i<path.length; i++){
+      if(path[i].id != undefined){
+        if(path[i].id.includes("picker_")){
+          picker_id = path[i].id;
+        }
       }
-      gui_created = false;
     }
+  
+    //check to see if the color has changed
+    const picker = document.getElementById(picker_id);
+    const picker_values = picker.getElementsByClassName("lw-label")
+    const picker_color = [];
+    for(let i=0; i<picker_values.length; i++){
+      let val = picker_values[i].getElementsByClassName("alwan__input")[0].value;
+      if(i==3) val = map(val, 0,1, 0,255);
+      picker_color.push(parseInt(val));
+    }
+   
+    picker_id = picker_id.replace("picker_","");
+    picker_id = parseInt(picker_id);
 
-    redraw = true;
-    setup();
-    draw();
+    //check if picker color is different from existing color
+    if(!arrayEquals(picker_color, palette[picker_id])){
+      palette[picker_id] = picker_color;
+      window.localStorage.setItem(palette_names[global_palette_id], JSON.stringify(palette));
+      redraw_reason = "picker";
+      redraw_sketch();
+    }
+  }, 10)
+}
+
+function windowResized(e) {
+  if((getParamValue('scale') == undefined && find_cnv_mult() != global_scale)){
+    redraw_reason = "window";
+    let gui_elem = document.getElementsByClassName("qs_main")[0];
+    if(gui_elem !== undefined){
+      gui_elem.remove();
+    }
+    gui_created = false;
+
+    redraw_sketch();
   }
+}
+function redraw_sketch(){
+  redraw = true;
+  setup();
+  draw();
 }
 
 function change_default_palette(){
   let palette_id;
+  let colors = getParamValue('colors');
   //if color is specified in URL, use that, otherwise use the provided palette_id
   if(redraw){
     palette_id = global_palette_id;
   }
-  else if(getParamValue("colors") != undefined){
-    palette_id = getParamValue("colors");
+  //if not redraw, get palette from url
+  else if(colors != undefined){
+    //is the color given within the palettes range
+    if(!isPositiveIntegerOrZero(colors) || parseInt(colors)>palettes.length){
+      colors = PALETTE_ID_DEFAULT;
+    }
+    palette_id = parseInt(colors);
   }
+  //if no url palette, grab the suggested palette
   else if(typeof suggested_palette !== 'undefined'){
     palette_id = suggested_palette;
   }
+  //if no suggested palette, use the default palette
   else{
     palette_id = PALETTE_ID_DEFAULT;
   }
+
   global_palette_id = palette_id;
   global_palette = palettes[global_palette_id];
-  palette = JSON.parse(JSON.stringify(global_palette));
+  //check if local storage
+  let stored_palette = window.localStorage.getItem(palette_names[global_palette_id]);
+  if(stored_palette != undefined) palette = JSON.parse(stored_palette);
+  else palette = JSON.parse(JSON.stringify(global_palette));
   color_sel.selected(palette_names[global_palette_id]);
+
+  refresh_working_palette();
+}
+
+function refresh_working_palette(){
+  working_palette = JSON.parse(JSON.stringify(palette));
 }
 
 function find_cnv_mult(){
@@ -823,40 +952,49 @@ function arrayRotate(arr, count) {
   return arr;
 }
 
-function parameterize(name, val, min, max, step){
+function parameterize(name, val, min, max, step, scale){
+  if(scale == undefined) scale=false;
   //create parameters for gui creation, not supposed to use eval for security reasons, but it's just soo much easier in this case
-
   //if variables don't already exist, create them
   if(!eval("typeof " + name + "!== 'undefined'")){
-    let val_string
+    //build string if array
     if(Array.isArray(val)){
-      val_string = "["
-      for(let i=0; i<val.length; i++){
-        if(typeof val[i] == "string"){
-        val_string += "\'" + val[i] +"\'";
-        }
-        else val_string += val[i];
-
-        if(i + 1 != val.length) val_string += ","
-      }
-      val_string += "]";
+      let val_string = JSON.stringify(val);
       eval('globalThis.' + name +" = " + val_string);
     }
-    else eval('globalThis.' + name +" = " + val);
-    if(min != undefined) eval('globalThis.' + name + "Min =" + min);
-    if(max != undefined) eval('globalThis.' + name +"Max =" + max);
-    if(step != undefined) eval('globalThis.' + name +"Step =" + step);
+    else {
+      if(scale) eval('globalThis.' + name +" = " + val*global_scale);
+      else eval('globalThis.' + name +" = " + val);
+    }
+    if(scale){
+      if(min != undefined) eval('globalThis.' + name + "Min =" + min*global_scale);
+      if(max != undefined) eval('globalThis.' + name +"Max =" + max*global_scale);
+      if(step != undefined) eval('globalThis.' + name +"Step =" + step*global_scale);
+    }
+    else{
+      if(min != undefined) eval('globalThis.' + name + "Min =" + min);
+      if(max != undefined) eval('globalThis.' + name +"Max =" + max);
+      if(step != undefined) eval('globalThis.' + name +"Step =" + step);
+    }
 
     gui_params.push(name);
   }
   //if variables do exist, apply new values
   else{
     //if redraw reason is gui, let p5.gui handle the new values
-    if(redraw_reason != "gui"){
-      eval(name + "=" + val);
-      if(min != undefined) eval(name + "Min =" + min);
-      if(max != undefined) eval(name +"Max =" + max);
-      if(step != undefined) eval(name +"Step =" + step);
+    if(redraw_reason == "window"){
+      if(scale){
+        eval(name + "=" + val*global_scale);
+        if(min != undefined) eval(name + "Min =" + min*global_scale);
+        if(max != undefined) eval(name +"Max =" + max*global_scale);
+        if(step != undefined) eval(name +"Step =" + step*global_scale);
+      }
+      else{
+        eval(name + "=" + val);
+        if(min != undefined) eval(name + "Min =" + min);
+        if(max != undefined) eval(name +"Max =" + max);
+        if(step != undefined) eval(name +"Step =" + step);
+      }
     }
   }
 }
