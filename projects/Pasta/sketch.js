@@ -46,7 +46,7 @@ function draw() {
   bound = constrain(bound, 5, 50);
   const iterations = floor(random(bound, 50) * 40*global_scale/grid_size);
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   working_palette.forEach((e,idx) => {
     working_palette[idx] = RGBA_to_HSBA(...e);
   });

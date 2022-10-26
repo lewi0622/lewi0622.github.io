@@ -13,7 +13,7 @@ function gui_values(){
 }
 
 //project variables
-let pt_size, pts, c_idx, working_palette, bg_c, lerp_step, frame_switch;
+let pt_size, pts, c_idx, bg_c, lerp_step, frame_switch;
 
 function setup() {
   suggested_palette = random([BEACHDAY, COTTONCANDY, NURSERY]);

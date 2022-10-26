@@ -39,7 +39,7 @@ function draw() {
 //custom funcs
 const createBackground = function(){
   push();
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background
@@ -76,7 +76,7 @@ const createBackground = function(){
 const createSpiral = function(){
   push();
   noStroke();
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   const steps = 1000;    
   let c1 = random(working_palette);
   reduce_array(working_palette,c1);

@@ -25,7 +25,7 @@ function draw() {
   //actual drawing stuff
   push();
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
 
   let tree_c = random(working_palette);
   fill(tree_c);

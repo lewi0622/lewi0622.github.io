@@ -8,7 +8,7 @@ const sixteen_by_nine = false;
 let suggested_palette;
 
 //project variables
-let working_palette, bg_c, size_buildings;
+let bg_c, size_buildings;
 
 
 function gui_values(){
@@ -26,7 +26,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background

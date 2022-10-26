@@ -39,7 +39,7 @@ function draw() {
 const createSpiral = function(){
   push();
   noStroke();
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   const steps = 1000;    
 
   translate(canvas_x/2, canvas_y/2);

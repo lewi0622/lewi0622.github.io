@@ -28,7 +28,7 @@ function draw() {
   const tile_height = canvas_y / line_length;
   let funcs, colors, iterations, x_offset_min, x_offset_max, y_offset_min, y_offset_max;
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background

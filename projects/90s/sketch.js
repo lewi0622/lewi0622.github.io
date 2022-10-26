@@ -5,7 +5,7 @@ const fr = 5;
 const capture = false;
 const capture_time = 2;
 const sixteen_by_nine = false;
-let suggested_palette, working_palette, grid_bg_c;
+let suggested_palette, grid_bg_c;
 
 
 function gui_values(){
@@ -22,7 +22,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   //actual drawing stuff
   push();
   let grid_size = 400*global_scale;
@@ -55,7 +55,7 @@ function draw() {
         push();
         rotate(360/num_arcs*i);
         translate(random(wobble_x), random(wobble_y));
-        working_palette = JSON.parse(JSON.stringify(palette));
+        refresh_working_palette();
         reduce_array(working_palette, grid_bg_c);
         let dir = "LEFT";
         if(i!=0){

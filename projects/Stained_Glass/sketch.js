@@ -8,7 +8,7 @@ const sixteen_by_nine = false;
 let suggested_palette;
 
 //project variables
-let working_palette, num_pts;
+let num_pts;
 
 
 function gui_values(){

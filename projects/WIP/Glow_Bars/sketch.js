@@ -44,7 +44,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   // reduce_array(working_palette, bg_c)
 
   //apply background

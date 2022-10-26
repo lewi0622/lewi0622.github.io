@@ -26,7 +26,7 @@ function draw() {
   let xPos = 0;
   let yPos = canvas_y/2;
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
 
   //apply background
   random([bg_vertical_strips, bg_horizontal_strips])(random([2,3,4]));

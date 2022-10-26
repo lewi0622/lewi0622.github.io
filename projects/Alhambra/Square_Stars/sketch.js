@@ -24,7 +24,7 @@ function draw() {
 
   //projct variables
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   working_palette = shuffle(working_palette, true);
   //apply background
   let bg_c = color("WHITE");

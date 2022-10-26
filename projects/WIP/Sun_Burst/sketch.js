@@ -28,7 +28,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background

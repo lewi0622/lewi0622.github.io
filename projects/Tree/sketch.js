@@ -27,7 +27,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   let branch_color;
   if(arrayEquals(working_palette[0], [87, 61, 38, 255])){
     branch_color = working_palette[0];

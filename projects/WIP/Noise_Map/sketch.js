@@ -25,7 +25,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
   let primary_c = random(working_palette);
   reduce_array(working_palette, primary_c);
   let secondary_c = random(working_palette);

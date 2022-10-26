@@ -5,7 +5,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette, working_palette, x_fourth, y_fourth;
+let suggested_palette, x_fourth, y_fourth;
 
 
 function gui_values(){
@@ -23,7 +23,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
 
   //apply background
   let bg_c = random(working_palette)

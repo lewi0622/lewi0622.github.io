@@ -26,7 +26,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
+  refresh_working_palette();
 
   //apply background
   let bg_c = random(working_palette)
