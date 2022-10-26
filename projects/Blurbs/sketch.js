@@ -8,13 +8,13 @@ const sixteen_by_nine = false;
 let suggested_palette;
 
 function gui_values(){
-  parameterize("Weight", 10*global_scale, 0, 100*global_scale, 0.1*global_scale);
-  parameterize("Line_length", 60*global_scale, 10*global_scale, 100*global_scale, 0.1*global_scale);
-  parameterize("Rotation", random([0,90,180,270]), 0, 360, 90);
+  parameterize("Weight", 10, 0, 100, 0.1, true);
+  parameterize("Line_length", 60, 10, 100, 0.1, true);
+  parameterize("Rotation", random([0,90,180,270]), 0, 360, 90);  
 }
 
 function setup() {
-  suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
+  suggested_palette = random([SAGEANDCITRUS])//, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
 }
 //***************************************************
@@ -28,11 +28,10 @@ function draw() {
   const tile_height = canvas_y / Line_length;
   let funcs, colors, iterations, x_offset_min, x_offset_max, y_offset_min, y_offset_max;
 
-  let working_palette = JSON.parse(JSON.stringify(palette));
-  strokeCap(random([PROJECT,ROUND]))
+  // refresh_working_palette();
 
   //apply background
-  let bg_c = random(working_palette)
+  let bg_c = random(working_palette);
   background(bg_c)
   reduce_array(working_palette, bg_c)
 
