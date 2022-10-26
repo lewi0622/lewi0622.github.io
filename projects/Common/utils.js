@@ -238,9 +238,13 @@ function seed_scale_button(base_y){
     //reset palette button
     reset_palette = createButton("Reset Palette");
     reset_palette.mouseClicked(()=>{
-      window.localStorage.removeItem(palette_names[global_palette_id]);
-      redraw_reason = "picker";
-      redraw_sketch();
+      //check if stored_palette exists
+      const pal = window.localStorage.getItem(palette_names[global_palette_id]);
+      if(pal != null){
+        window.localStorage.removeItem(palette_names[global_palette_id]);
+        redraw_reason = "picker";
+        redraw_sketch();
+      }
     });
     reset_palette.id('Reset Palette');
 
