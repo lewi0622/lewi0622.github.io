@@ -1,11 +1,13 @@
 "use strict";
 // globals
+const project_path = window.location.pathname.split('/')
+let project_name = project_path[project_path.length-2];
 let canvas_x, canvas_y, cnv;
 
 let num_frames, capturer, seed;
 //control variables
 let seed_input, scale_box, control_height, control_spacing, hidden_controls, color_sel, color_div;
-let btLeft, btRight, button, reset_palette, randomize, auto_scale, btSave;
+let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
 
@@ -21,6 +23,7 @@ let bleed_val = 0.25; //quarter inch bleed
 const DPI_DEFAULT = 300;
 let dpi = DPI_DEFAULT;
 let full_controls = false;
+let in_iframe = window.location !== window.parent.location;
 let type;
 let redraw = false;
 
@@ -201,7 +204,7 @@ function getParamValue(paramName){
 
 function seed_scale_button(base_y){
   const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"]
-  const full_ids = ["Auto Scale", "Scale Box", "Save"]
+  const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "Save"]
 
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
@@ -235,6 +238,7 @@ function seed_scale_button(base_y){
     button.mouseClicked(set_seed);
     button.id('Custom Seed')
 
+    if(!in_iframe){
     //reset palette button
     reset_palette = createButton("Reset Palette");
     reset_palette.mouseClicked(()=>{
@@ -247,6 +251,7 @@ function seed_scale_button(base_y){
       }
     });
     reset_palette.id('Reset Palette');
+    }
 
     //randomize button
     randomize = createButton("Randomize");
@@ -291,6 +296,11 @@ function seed_scale_button(base_y){
     scale_box = createInput('');
     scale_box.id("Scale Box");
 
+    //reset parameters button
+    reset_parameters = createButton("Reset Parameters");
+    reset_parameters.mouseClicked(clear_params);
+    reset_parameters.id("Reset Parameters");
+
     //save button
     btSave = createButton("Save");
     btSave.mouseClicked(save_drawing);
@@ -315,9 +325,11 @@ function seed_scale_button(base_y){
   button.size(90*global_scale, control_height)
   button.position(btRight.size().width + btRight.position().x + control_spacing, base_y*global_scale);
 
-  //reset palette button
-  reset_palette.size(90*global_scale, control_height)
-  reset_palette.position(button.size().width + button.position().x + control_spacing, base_y*global_scale);
+  if(!in_iframe){
+    //reset palette button
+    reset_palette.size(90*global_scale, control_height)
+    reset_palette.position(button.size().width + button.position().x + control_spacing, base_y*global_scale);
+  }
 
   //randomize button
   randomize.size(80*global_scale, control_height);
@@ -336,8 +348,12 @@ function seed_scale_button(base_y){
 
   //scale text box
   scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height*2)
-  scale_box.size(30*global_scale, 17*global_scale);
+  scale_box.size(30*global_scale, 18*global_scale);
   scale_box.value(global_scale);
+
+  //reset parameters button
+  reset_parameters.position(scale_box.position().x+scale_box.size().width+control_spacing, base_y*global_scale+control_height*2);
+  reset_parameters.size(130*global_scale, control_height);
 
   //save button
   btSave.size(70*global_scale, control_height);
@@ -465,6 +481,7 @@ function show_palette_colors(){
       picker_popper = document.getElementById("picker_"+idx);
       //custom event listener because the colorpicker events are shit
       picker_popper.addEventListener("mouseup", color_changed);
+      picker_popper.addEventListener("touchend", color_changed);
 
     }
     picker = document.getElementById("color_picker"+idx);
@@ -475,6 +492,12 @@ function show_palette_colors(){
     picker.style.height = control_height*.9+"px";
     picker.style.border = floor(1.5*global_scale) + 'px solid black' //rgb(' + 0 + ',' + 0 + ',' + 0 + ')'
   });
+
+  //disable color picker buttons if in iframe
+  if(in_iframe){
+    const color_buttons = document.getElementsByClassName("lw-ref");
+    color_buttons.forEach(btn => btn.disabled = true);
+  }
 }
 
 function reduce_array(arr, remove){
@@ -529,7 +552,6 @@ function show_hide_controls(arr, hide){
 
 function save_drawing(){
   //get project name
-  const project_name = window.location.pathname.split('/')[2];
   let bleed_name = '';
   let dpi_name = '';
   let cut_name = '';
@@ -750,6 +772,22 @@ function gui_changed(){
   redraw_sketch();
 }
 
+function clear_params(){
+  //deletes all parameter values from local storage and calls redraw
+  //retrieve gui values
+  const gui_containers = document.getElementsByClassName("qs_container");
+  gui_containers.forEach(container => {
+      //check if variable exists in local storage
+    let gui_label = container.getElementsByClassName("qs_label")[0];
+    gui_label = gui_label.textContent.split(": ");
+    const stored_name = project_name + "_" + gui_label[0];
+    let stored_variable = window.localStorage.getItem(stored_name);
+    if(stored_variable != null) window.localStorage.removeItem(stored_name);
+  });
+  redraw_reason = "window";
+  redraw_sketch();
+}
+
 function color_changed(e){
   setTimeout(() =>{
     const path = e.path;
@@ -958,6 +996,57 @@ function arrayRotate(arr, count) {
 
 function parameterize(name, val, min, max, step, scale){
   if(scale == undefined) scale=false;
+
+  //check if variable exists in local storage
+  const stored_name = project_name + "_" + name;
+  let stored_variable = window.localStorage.getItem(stored_name);
+  if(stored_variable != null){
+    stored_variable = JSON.parse(stored_variable);
+    if(redraw_reason == 'gui'){
+      //retrieve gui values
+      const gui_containers = document.getElementsByClassName("qs_container");
+      gui_containers.forEach(container => {
+        let gui_label = container.getElementsByClassName("qs_label")[0];
+        gui_label = gui_label.textContent.split(": ");
+
+        //Check if current container matches given parameter name
+        if(gui_label[0]==name){
+          //save to storage
+          let new_value = gui_label[1];
+          if(stored_variable.scale) stored_variable.val = new_value/global_scale;
+          else stored_variable.val = new_value;
+          
+          window.localStorage.setItem(stored_name, JSON.stringify(stored_variable));
+        }
+      });
+    }
+    else{
+      //retrieve locally stored values
+      name = stored_variable.name;
+      val = stored_variable.val;
+      min = stored_variable.min;
+      max = stored_variable.max;
+      step = stored_variable.step;
+      scale = stored_variable.scale;
+    }
+  }
+  else{
+    window.localStorage.setItem(stored_name, JSON.stringify({
+      name: name,
+      val: val,
+      min: min, 
+      max: max,
+      step: step,
+      scale: scale
+    }));
+  }
+
+  if(scale){
+    val = val*global_scale;
+    min = min*global_scale;
+    max = max*global_scale;
+    step = step*global_scale;
+  }
   //create parameters for gui creation, not supposed to use eval for security reasons, but it's just soo much easier in this case
   //if variables don't already exist, create them
   if(!eval("typeof " + name + "!== 'undefined'")){
@@ -966,20 +1055,11 @@ function parameterize(name, val, min, max, step, scale){
       let val_string = JSON.stringify(val);
       eval('globalThis.' + name +" = " + val_string);
     }
-    else {
-      if(scale) eval('globalThis.' + name +" = " + val*global_scale);
-      else eval('globalThis.' + name +" = " + val);
-    }
-    if(scale){
-      if(min != undefined) eval('globalThis.' + name + "Min =" + min*global_scale);
-      if(max != undefined) eval('globalThis.' + name +"Max =" + max*global_scale);
-      if(step != undefined) eval('globalThis.' + name +"Step =" + step*global_scale);
-    }
-    else{
-      if(min != undefined) eval('globalThis.' + name + "Min =" + min);
-      if(max != undefined) eval('globalThis.' + name +"Max =" + max);
-      if(step != undefined) eval('globalThis.' + name +"Step =" + step);
-    }
+    else eval('globalThis.' + name +" = " + val);
+
+    if(min != undefined) eval('globalThis.' + name + "Min =" + min);
+    if(max != undefined) eval('globalThis.' + name +"Max =" + max);
+    if(step != undefined) eval('globalThis.' + name +"Step =" + step);
 
     gui_params.push(name);
   }
@@ -987,18 +1067,10 @@ function parameterize(name, val, min, max, step, scale){
   else{
     //if redraw reason is gui, let p5.gui handle the new values
     if(redraw_reason == "window"){
-      if(scale){
-        eval(name + "=" + val*global_scale);
-        if(min != undefined) eval(name + "Min =" + min*global_scale);
-        if(max != undefined) eval(name +"Max =" + max*global_scale);
-        if(step != undefined) eval(name +"Step =" + step*global_scale);
-      }
-      else{
-        eval(name + "=" + val);
-        if(min != undefined) eval(name + "Min =" + min);
-        if(max != undefined) eval(name +"Max =" + max);
-        if(step != undefined) eval(name +"Step =" + step);
-      }
+      eval(name + "=" + val);
+      if(min != undefined) eval(name + "Min =" + min);
+      if(max != undefined) eval(name +"Max =" + max);
+      if(step != undefined) eval(name +"Step =" + step);
     }
   }
 }
