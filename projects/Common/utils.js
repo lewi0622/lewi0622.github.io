@@ -97,7 +97,10 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
 
   angleMode(DEGREES);
 
-  cnv = createCanvas(canvas_x, canvas_y, renderer);
+  if(redraw && type == 'svg'){
+    print("SVG Redraw")
+  }
+  else cnv = createCanvas(canvas_x, canvas_y, renderer);
   
   //shift position to center canvas if base is different than 400
   if(base_x<=400 && base_y<=400){
@@ -781,8 +784,8 @@ function clear_params(){
     let gui_label = container.getElementsByClassName("qs_label")[0];
     gui_label = gui_label.textContent.split(": ");
     const stored_name = project_name + "_" + gui_label[0];
-    let stored_variable = window.localStorage.getItem(stored_name);
-    if(stored_variable != null) window.localStorage.removeItem(stored_name);
+    let stored_variable = sessionStorage.getItem(stored_name);
+    if(stored_variable != null) sessionStorage.removeItem(stored_name);
   });
   redraw_reason = "window";
   redraw_sketch();
@@ -838,6 +841,7 @@ function windowResized(e) {
 }
 function redraw_sketch(){
   redraw = true;
+  clear();
   setup();
   draw();
 }
@@ -995,11 +999,10 @@ function arrayRotate(arr, count) {
 }
 
 function parameterize(name, val, min, max, step, scale){
-  if(scale == undefined) scale=false;
-
+  if(scale == undefined || scale != true) scale=false;
   //check if variable exists in local storage
   const stored_name = project_name + "_" + name;
-  let stored_variable = window.localStorage.getItem(stored_name);
+  let stored_variable = sessionStorage.getItem(stored_name);
   if(stored_variable != null){
     stored_variable = JSON.parse(stored_variable);
     if(redraw_reason == 'gui'){
@@ -1015,8 +1018,11 @@ function parameterize(name, val, min, max, step, scale){
           let new_value = gui_label[1];
           if(stored_variable.scale) stored_variable.val = new_value/global_scale;
           else stored_variable.val = new_value;
-          
-          window.localStorage.setItem(stored_name, JSON.stringify(stored_variable));
+          stored_variable.min = min;
+          stored_variable.max = max;
+          stored_variable.step = step;
+          stored_variable.scale = scale;
+          sessionStorage.setItem(stored_name, JSON.stringify(stored_variable));
         }
       });
     }
@@ -1031,7 +1037,7 @@ function parameterize(name, val, min, max, step, scale){
     }
   }
   else{
-    window.localStorage.setItem(stored_name, JSON.stringify({
+    sessionStorage.setItem(stored_name, JSON.stringify({
       name: name,
       val: val,
       min: min, 
