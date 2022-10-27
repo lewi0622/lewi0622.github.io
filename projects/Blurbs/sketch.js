@@ -11,10 +11,11 @@ function gui_values(){
   parameterize("Weight", 10, 0, 100, 0.1, true);
   parameterize("Line_length", 60, 10, 100, 0.1, true);
   parameterize("Rotation", random([0,90,180,270]), 0, 360, 90);  
+  parameterize("iterations", 1, 1, 100, 1);
 }
 
 function setup() {
-  suggested_palette = random([SAGEANDCITRUS])//, COTTONCANDY, SUPPERWARE]);
+  suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
 }
 //***************************************************
@@ -26,9 +27,9 @@ function draw() {
   //projct variables
   const tile_width = canvas_x / Line_length;
   const tile_height = canvas_y / Line_length;
-  let funcs, colors, iterations, x_offset_min, x_offset_max, y_offset_min, y_offset_max;
+  let funcs, colors, x_offset_min, x_offset_max, y_offset_min, y_offset_max;
 
-  // refresh_working_palette();
+  refresh_working_palette();
 
   //apply background
   let bg_c = random(working_palette);
@@ -44,7 +45,7 @@ function draw() {
 
   //tile lines
   tile(tile_width, tile_height, Line_length, funcs=[draw_diag, draw_cardinal], 
-    colors=working_palette, iterations=1, 
+    colors=working_palette, iterations, 
     x_offset_min=0, x_offset_max=0,
     y_offset_min=0, y_offset_max=0);
   
