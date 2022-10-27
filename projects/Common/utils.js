@@ -97,10 +97,8 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
 
   angleMode(DEGREES);
 
-  if(redraw && type == 'svg'){
-    print("SVG Redraw")
-  }
-  else cnv = createCanvas(canvas_x, canvas_y, renderer);
+  const svg_redraw = redraw && type == 'svg'
+  if(!svg_redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   
   //shift position to center canvas if base is different than 400
   if(base_x<=400 && base_y<=400){
@@ -1027,13 +1025,15 @@ function parameterize(name, val, min, max, step, scale){
       });
     }
     else{
-      //retrieve locally stored values
-      name = stored_variable.name;
-      val = stored_variable.val;
-      min = stored_variable.min;
-      max = stored_variable.max;
-      step = stored_variable.step;
-      scale = stored_variable.scale;
+      if(full_controls){
+        //retrieve locally stored values
+        name = stored_variable.name;
+        val = stored_variable.val;
+        min = stored_variable.min;
+        max = stored_variable.max;
+        step = stored_variable.step;
+        scale = stored_variable.scale;
+      }
     }
   }
   else{
