@@ -161,7 +161,6 @@ function setParams(){
   }
 
   full_controls = (controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1") && (controls!="false");
-  full_controls = false;
   if((controls != undefined && controls != "false") || full_controls){
     hidden_controls = false;
   }
