@@ -737,7 +737,8 @@ function compare_colors(arr){
   if(arr.length == 0){
     return generate_color();
   }
-  color_match=true;
+  let color_match=true;
+  let c;
   while(color_match){
     c = generate_color();
     arr.forEach(element => {
@@ -754,10 +755,10 @@ function compare_colors(arr){
 
 function generate_color(){
   //generates random color with full alpha value
-  r = random(255)
-  g = random(255)
-  b = random(255)
-  a = 255
+  const r = random(255);
+  const g = random(255);
+  const b = random(255);
+  const a = 255;
   return(color(r,g,b,a))
 }
 
@@ -1080,3 +1081,7 @@ function parameterize(name, val, min, max, step, scale){
     }
   }
 }
+
+//Dice icon attribution
+//<a href="https://www.flaticon.com/free-icons/dice" title="dice icons">Dice icons created by Freepik - Flaticon</a>
+
