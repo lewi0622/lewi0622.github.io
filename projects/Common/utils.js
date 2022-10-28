@@ -95,6 +95,8 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
     }
   }
 
+  if(gui_created) attach_icons();
+
   angleMode(DEGREES);
 
   const svg_redraw = redraw && type == 'svg'
@@ -775,7 +777,7 @@ function gui_changed(){
 }
 
 function clear_params(){
-  //deletes all parameter values from local storage and calls redraw
+  //deletes all parameter values from session storage and calls redraw
   //retrieve gui values
   const gui_containers = document.getElementsByClassName("qs_container");
   gui_containers.forEach(container => {
@@ -787,6 +789,7 @@ function clear_params(){
     if(stored_variable != null) sessionStorage.removeItem(stored_name);
   });
   redraw_reason = "window";
+  clear_gui();
   redraw_sketch();
 }
 
@@ -829,15 +832,19 @@ function color_changed(e){
 function windowResized(e) {
   if((getParamValue('scale') == undefined && find_cnv_mult() != global_scale)){
     redraw_reason = "window";
-    let gui_elem = document.getElementsByClassName("qs_main")[0];
-    if(gui_elem !== undefined){
-      gui_elem.remove();
-    }
-    gui_created = false;
-
+    clear_gui();
     redraw_sketch();
   }
 }
+
+function clear_gui(){
+  let gui_elem = document.getElementsByClassName("qs_main")[0];
+  if(gui_elem !== undefined){
+    gui_elem.remove();
+  }
+  gui_created = false;
+}
+
 function redraw_sketch(){
   redraw = true;
   clear();
@@ -997,8 +1004,9 @@ function arrayRotate(arr, count) {
   return arr;
 }
 
-function parameterize(name, val, min, max, step, scale){
+function parameterize(name, val, min, max, step, scale, rand){
   if(scale == undefined || scale != true) scale=false;
+  if(rand == undefined || rand != true) rand = false;
   //check if variable exists in local storage
   const stored_name = project_name + "_" + name;
   let stored_variable = sessionStorage.getItem(stored_name);
@@ -1021,12 +1029,16 @@ function parameterize(name, val, min, max, step, scale){
           stored_variable.max = max;
           stored_variable.step = step;
           stored_variable.scale = scale;
+          stored_variable.rand = rand;
+          if(rand) stored_variable.frozen = true;
+          else stored_variable.frozen = false;
           sessionStorage.setItem(stored_name, JSON.stringify(stored_variable));
         }
       });
     }
     else{
-      if(full_controls){
+      //if frozen take stored values, otherwise, use values as given
+      if(full_controls && stored_variable.frozen){
         //retrieve locally stored values
         name = stored_variable.name;
         val = stored_variable.val;
@@ -1034,6 +1046,7 @@ function parameterize(name, val, min, max, step, scale){
         max = stored_variable.max;
         step = stored_variable.step;
         scale = stored_variable.scale;
+        rand = stored_variable.rand;
       }
     }
   }
@@ -1044,7 +1057,9 @@ function parameterize(name, val, min, max, step, scale){
       min: min, 
       max: max,
       step: step,
-      scale: scale
+      scale: scale,
+      rand: rand,
+      frozen: !rand
     }));
   }
 
@@ -1082,6 +1097,58 @@ function parameterize(name, val, min, max, step, scale){
   }
 }
 
-//Dice icon attribution
-//<a href="https://www.flaticon.com/free-icons/dice" title="dice icons">Dice icons created by Freepik - Flaticon</a>
+function attach_icons(){
+  // finds param gui and creates dice icon and slashes to indicate unfrozen/frozen/disabled
+  //Dice icon attribution
+  //<a href="https://www.flaticon.com/free-icons/dice" title="dice icons">Dice icons created by Freepik - Flaticon</a>
+  const gui_containers = document.getElementsByClassName("qs_container");
+  gui_containers.forEach(container => {
+    let gui_label = container.getElementsByClassName("qs_label")[0];
+    let label_content = gui_label.textContent.split(": ");
+    const stored_name = project_name + "_" + label_content[0];
+    let stored_variable = sessionStorage.getItem(stored_name);
+    if(stored_variable != null){
+      let param = JSON.parse(stored_variable);
+      if(param.rand){
+        let div = document.createElement('div');
+        div.class = "dice";
+        div.style = "display: inline-block;";
+        div.align = "right";
 
+        //append dice image
+        let dice = document.createElement('img');
+        dice.src = "/images/dice.png";
+        dice.style = "height: 25px; position: relative; z-index: 0; left: 70px;";
+        //if dice clicked, apply slash
+        dice.addEventListener('click', (e)=>{
+          e.path[1].appendChild(create_slash(stored_name, param));
+          param.frozen = true;
+          window.sessionStorage.setItem(stored_name, JSON.stringify(param));
+        });
+
+        div.appendChild(dice);
+
+        if(param.frozen){
+          //append red lash
+          div.appendChild(create_slash(stored_name, param));
+        }
+
+        gui_label.appendChild(div);
+      }
+    }
+  })
+}
+
+function create_slash(name, data){
+  let slash = document.createElement('img');
+  slash.id = "slash";
+  slash.src = "/images/red_slash_up.svg";
+  slash.style = "height: 25px;position: relative;z-index: 1;left: 45px;";
+  //if slash clicked, remove slash
+  slash.addEventListener('click', (e)=>{
+    e.path[0].remove();
+    data.frozen = false;
+    window.sessionStorage.setItem(name, JSON.stringify(data));
+  });
+  return slash;
+}
