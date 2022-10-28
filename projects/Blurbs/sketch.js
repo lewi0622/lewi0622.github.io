@@ -8,10 +8,10 @@ const sixteen_by_nine = false;
 let suggested_palette;
 
 function gui_values(){
-  parameterize("Weight", 10, 0, 100, 0.1, true);
-  parameterize("Line_length", 60, 10, 100, 0.1, true);
-  parameterize("Rotation", random([0,90,180,270]), 0, 360, 90);  
-  parameterize("iterations", 1, 1, 100, 1);
+  parameterize("Weight", 10, 0, 100, 0.1, true,false);
+  parameterize("Line_length", 60, 10, 100, 0.1, true, false);
+  parameterize("Rotation", random([0,90,180,270]), 0, 360, 90, false, true);  
+  parameterize("iterations", 1, 1, 100, 1, false, false);
 }
 
 function setup() {
