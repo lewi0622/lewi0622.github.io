@@ -95,7 +95,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
     }
   }
 
-  if(gui_created) attach_icons();
+  attach_icons();
 
   angleMode(DEGREES);
 
@@ -565,7 +565,8 @@ function save_drawing(){
     }
   };
   if(dpi != DPI_DEFAULT){dpi_name = "_dpi_"+str(dpi)};
-  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(col_idx()) + '_scale_' + str(global_scale) + bleed_name + dpi_name + cut_name;
+  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(col_idx()) + '_scale_' + str(global_scale).replace(".", "_") + bleed_name + dpi_name + cut_name;
+  print(filename);
   if(type == 'svg'){
     save(filename)
   }
@@ -1004,9 +1005,8 @@ function arrayRotate(arr, count) {
   return arr;
 }
 
-function parameterize(name, val, min, max, step, scale, rand){
+function parameterize(name, val, min, max, step, scale){
   if(scale == undefined || scale != true) scale=false;
-  if(rand == undefined || rand != true) rand = false;
   //check if variable exists in local storage
   const stored_name = project_name + "_" + name;
   let stored_variable = sessionStorage.getItem(stored_name);
@@ -1023,15 +1023,13 @@ function parameterize(name, val, min, max, step, scale, rand){
         if(gui_label[0]==name){
           //save to storage
           let new_value = gui_label[1];
-          if(stored_variable.scale) stored_variable.val = new_value/global_scale;
-          else stored_variable.val = new_value;
+          if(stored_variable.scale) new_value = new_value/global_scale;
+          if(new_value != stored_variable.val && abs(new_value - stored_variable.val) > stored_variable.step) stored_variable.frozen = true;
+          stored_variable.val = new_value;
           stored_variable.min = min;
           stored_variable.max = max;
           stored_variable.step = step;
           stored_variable.scale = scale;
-          stored_variable.rand = rand;
-          if(rand) stored_variable.frozen = true;
-          else stored_variable.frozen = false;
           sessionStorage.setItem(stored_name, JSON.stringify(stored_variable));
         }
       });
@@ -1046,7 +1044,18 @@ function parameterize(name, val, min, max, step, scale, rand){
         max = stored_variable.max;
         step = stored_variable.step;
         scale = stored_variable.scale;
-        rand = stored_variable.rand;
+      }
+      else{
+        // if not frozen store new values
+        sessionStorage.setItem(stored_name, JSON.stringify({
+          name: name,
+          val: val,
+          min: min, 
+          max: max,
+          step: step,
+          scale: scale,
+          frozen: false
+        }));
       }
     }
   }
@@ -1058,8 +1067,7 @@ function parameterize(name, val, min, max, step, scale, rand){
       max: max,
       step: step,
       scale: scale,
-      rand: rand,
-      frozen: !rand
+      frozen: false
     }));
   }
 
@@ -1101,6 +1109,13 @@ function attach_icons(){
   // finds param gui and creates dice icon and slashes to indicate unfrozen/frozen/disabled
   //Dice icon attribution
   //<a href="https://www.flaticon.com/free-icons/dice" title="dice icons">Dice icons created by Freepik - Flaticon</a>
+
+  //find div class dice and remove them and re-add them
+  let to_remove = document.getElementsByClassName("dice");
+  for (let i = to_remove.length - 1; i >= 0; --i) {
+    to_remove[i].remove();
+  }
+
   const gui_containers = document.getElementsByClassName("qs_container");
   gui_containers.forEach(container => {
     let gui_label = container.getElementsByClassName("qs_label")[0];
@@ -1109,32 +1124,29 @@ function attach_icons(){
     let stored_variable = sessionStorage.getItem(stored_name);
     if(stored_variable != null){
       let param = JSON.parse(stored_variable);
-      if(param.rand){
-        let div = document.createElement('div');
-        div.class = "dice";
-        div.style = "display: inline-block;";
-        div.align = "right";
+      let div = document.createElement('div');
+      div.className = "dice";
+      div.style = "display: inline-block; padding-left: 10px;"
 
-        //append dice image
-        let dice = document.createElement('img');
-        dice.src = "/images/dice.png";
-        dice.style = "height: 25px; position: relative; z-index: 0; left: 70px;";
-        //if dice clicked, apply slash
-        dice.addEventListener('click', (e)=>{
-          e.path[1].appendChild(create_slash(stored_name, param));
-          param.frozen = true;
-          window.sessionStorage.setItem(stored_name, JSON.stringify(param));
-        });
+      //append dice image
+      let dice = document.createElement('img');
+      dice.src = "/images/dice.png";
+      dice.style = "height: 25px; position: relative; z-index: 0;";
+      //if dice clicked, apply slash
+      dice.addEventListener('click', (e)=>{
+        e.path[1].appendChild(create_slash(stored_name, param));
+        param.frozen = true;
+        window.sessionStorage.setItem(stored_name, JSON.stringify(param));
+      });
 
-        div.appendChild(dice);
+      div.appendChild(dice);
 
-        if(param.frozen){
-          //append red lash
-          div.appendChild(create_slash(stored_name, param));
-        }
-
-        gui_label.appendChild(div);
+      if(param.frozen){
+        //append red slash
+        div.appendChild(create_slash(stored_name, param));
       }
+
+      gui_label.appendChild(div);
     }
   })
 }
@@ -1143,7 +1155,7 @@ function create_slash(name, data){
   let slash = document.createElement('img');
   slash.id = "slash";
   slash.src = "/images/red_slash_up.svg";
-  slash.style = "height: 25px;position: relative;z-index: 1;left: 45px;";
+  slash.style = "height: 25px;position: relative;z-index: 1; right: 25px;";
   //if slash clicked, remove slash
   slash.addEventListener('click', (e)=>{
     e.path[0].remove();
