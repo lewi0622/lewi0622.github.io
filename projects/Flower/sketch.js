@@ -6,13 +6,14 @@ const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
 let suggested_palette;
-
-//project variables
-let petal_size; 
-
+let this_petal;
 
 function gui_values(){
-
+  parameterize("petal_size", random(35,45), 20, 50, 1, true);
+  parameterize("petal_rings", floor(random(8,12)), 4, 20, 1, false);
+  parameterize("no_stroke", random([0,1]), 0,1,1,false);
+  // parameterize("stroke_color", ["BLACK"])
+  parameterize("weight", 0.5, 0.1, 5, 0.1, true);
 }
 
 function setup() {
@@ -35,17 +36,17 @@ function draw() {
 
   //actual drawing stuff
   push();
-  petal_size = random(35,45)*global_scale;
 
+  this_petal = petal_size;
   translate(canvas_x/2, canvas_y/2);
-  if(random([0,1])==0){
+  if(no_stroke==0){
     noStroke();
   }
   else{  
     stroke('black');
-    strokeWeight(0.5*global_scale);}
+    strokeWeight(weight);}
   let distance = canvas_y/random(3,5);
-  for(let i=0; i<random(8,12); i++){
+  for(let i=0; i<petal_rings; i++){
     rotate(random(0,360));
     const petal_c = random(working_palette);
     fill(petal_c);
@@ -56,7 +57,7 @@ function draw() {
     //at 30 or higher, the last half petal applies tends to overwrite lines
     petalLayer(floor(random(12,26)), distance);
 
-    petal_size *= random(0.6, 0.9);
+    this_petal *= random(0.6, 0.9);
     distance *= random(0.7, 0.8);
   }
 
@@ -74,9 +75,9 @@ function petal(start_y, close){
   beginShape();
   curveVertex(0,0);
   curveVertex(0,0);
-  curveVertex(petal_size/2, petal_size/2);
-  curveVertex(0, petal_size);
-  curveVertex(-petal_size/2, petal_size/2);
+  curveVertex(this_petal/2, this_petal/2);
+  curveVertex(0, this_petal);
+  curveVertex(-this_petal/2, this_petal/2);
   if(close){
     endShape(CLOSE);
   }
