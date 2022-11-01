@@ -1017,6 +1017,15 @@ function parameterize(name, val, min, max, step, scale){
       const gui_containers = document.getElementsByClassName("qs_container");
       gui_containers.forEach(container => {
         let gui_label = container.getElementsByClassName("qs_label")[0];
+        if(gui_label == undefined){
+          //check if checkbox
+          gui_label = container.getElementsByClassName("qs_checkbox_label")[0];
+          
+          if(gui_label == undefined){
+            //otherwise post error with container
+            print("cannot find label in control: ", container);
+          }
+        }
         gui_label = gui_label.textContent.split(": ");
 
         //Check if current container matches given parameter name
@@ -1024,7 +1033,7 @@ function parameterize(name, val, min, max, step, scale){
           //save to storage
           let new_value = gui_label[1];
           if(stored_variable.scale) new_value = new_value/global_scale;
-          if(new_value != stored_variable.val && abs(new_value - stored_variable.val) > stored_variable.step) stored_variable.frozen = true;
+          if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) stored_variable.frozen = true;
           stored_variable.val = new_value;
           stored_variable.min = min;
           stored_variable.max = max;
@@ -1119,6 +1128,15 @@ function attach_icons(){
   const gui_containers = document.getElementsByClassName("qs_container");
   gui_containers.forEach(container => {
     let gui_label = container.getElementsByClassName("qs_label")[0];
+    if(gui_label == undefined){
+      //check if checkbox
+      gui_label = container.getElementsByClassName("qs_checkbox_label")[0];
+      
+      if(gui_label == undefined){
+        //otherwise post error with container
+        print("cannot find label in control: ", container);
+      }
+    }
     let label_content = gui_label.textContent.split(": ");
     const stored_name = project_name + "_" + label_content[0];
     let stored_variable = sessionStorage.getItem(stored_name);
