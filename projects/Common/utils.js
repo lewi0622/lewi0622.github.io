@@ -797,7 +797,7 @@ function clear_params(){
 function color_changed(e){
   setTimeout(() =>{
     // search for nearest element with id = 'picker_*' wildcard
-    const picker = e.srcElement.closest("[id^='picker_']");
+    const picker = e.target.closest("[id^='picker_']");
     let picker_id = picker.id;
 
     //check to see if the color has changed
@@ -1144,7 +1144,10 @@ function attach_icons(){
       dice.style = "height: 25px; position: relative; z-index: 0;";
       //if dice clicked, apply slash
       dice.addEventListener('click', (e)=>{
-        e.path[1].appendChild(create_slash(stored_name, param));
+        print(e.target)
+        let slash = create_slash(stored_name, param);
+        print(slash);
+        e.target.parentElement.appendChild(slash);
         param.frozen = true;
         window.sessionStorage.setItem(stored_name, JSON.stringify(param));
       });
@@ -1168,7 +1171,7 @@ function create_slash(name, data){
   slash.style = "height: 25px;position: relative;z-index: 1; right: 25px;";
   //if slash clicked, remove slash
   slash.addEventListener('click', (e)=>{
-    e.path[0].remove();
+    e.target.remove();
     data.frozen = false;
     window.sessionStorage.setItem(name, JSON.stringify(data));
   });
