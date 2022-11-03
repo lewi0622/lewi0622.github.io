@@ -453,7 +453,7 @@ function show_palette_colors(){
     }
 
     color_div.style.position = "absolute";
-    color_div.style.left = start_pos+control_spacing*idx+"px";
+    color_div.style.left = start_pos+control_spacing+"px";
     color_div.style.top = color_sel.position().y+"px"
     color_div.style.width = control_height+"px";
     color_div.style.height = control_height+"px";
@@ -485,11 +485,12 @@ function show_palette_colors(){
       //custom event listener because the colorpicker events are shit
       picker_popper.addEventListener("mouseup", color_changed);
       picker_popper.addEventListener("touchend", color_changed);
+      picker_popper.addEventListener("pointerup", color_changed);
 
     }
     picker = document.getElementById("color_picker"+idx);
     picker.style.position = "absolute";
-    picker.style.left = control_height*idx*1.1 + control_height*.05+"px";
+    picker.style.left = control_height*idx*1.1 + "px";
     picker.style.top = control_height*.05+"px"
     picker.style.width = control_height*.9+"px";
     picker.style.height = control_height*.9+"px";
