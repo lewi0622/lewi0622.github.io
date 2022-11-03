@@ -485,7 +485,6 @@ function show_palette_colors(){
       //custom event listener because the colorpicker events are shit
       picker_popper.addEventListener("mouseup", color_changed);
       picker_popper.addEventListener("touchend", color_changed);
-      picker_popper.addEventListener("pointerup", color_changed);
 
     }
     picker = document.getElementById("color_picker"+idx);
@@ -797,19 +796,11 @@ function clear_params(){
 
 function color_changed(e){
   setTimeout(() =>{
-    const path = e.path;
-    let picker_id;
-    //get picker id
-    for(let i=0; i<path.length; i++){
-      if(path[i].id != undefined){
-        if(path[i].id.includes("picker_")){
-          picker_id = path[i].id;
-        }
-      }
-    }
-  
+    // search for nearest element with id = 'picker_*' wildcard
+    const picker = e.srcElement.closest("[id^='picker_']");
+    let picker_id = picker.id;
+
     //check to see if the color has changed
-    const picker = document.getElementById(picker_id);
     const picker_values = picker.getElementsByClassName("lw-label")
     const picker_color = [];
     for(let i=0; i<picker_values.length; i++){
