@@ -18,7 +18,10 @@ output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
 # crop 0 0 8in 10in can be placed after letter if need be
 
 #read command
-prefix = r"vpype read"
+prefix = r"vpype read "
+
+# conserve stroke colors
+prefix += r" --attr stroke "
 
 # read flag: doesn't crop incoming picture
 prefix += r" --no-crop "
@@ -26,8 +29,16 @@ prefix += r" --no-crop "
 args = r""
 
 # sclaing argument, uncomment which one is the preferred size
-#standard mat opening
-args += r" scaleto 8in 10in"
+#standard mat opening for an 8x10 artwork is 7.5x9.5, usually scale to something less
+# 7.3, 9.3 gives a decent space from the sides if desired
+args += r" scaleto 7.3in 9.3in "
+
+# scaled for 5x7
+# args += r" scaleto 4in 6in "
+# args += r" layout 5inx7in "
+
+#full 8x10 size
+# args += r" scaleto 8in 10in "
 #slightly larger than mat opening, so edges aren't visible
 # args += r" scaleto 8.5in 10.5in"
 #full sized
