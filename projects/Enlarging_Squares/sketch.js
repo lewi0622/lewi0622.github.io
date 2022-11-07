@@ -6,8 +6,8 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette, bg_c, square_rate, symmetries, rot_inc, shape;
-
+let bg_c, square_rate, symmetries, rot_inc, shape;
+suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE];
 //project variables
 let xoff = 0;
 const inc = 0.01*60/fr;
@@ -20,7 +20,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([COTTONCANDY, SIXTIES, SUPPERWARE]);
   common_setup(gif);
 
   palette = shuffle(palette, true);

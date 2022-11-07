@@ -10,7 +10,6 @@ function gui_values(){
 }
 
 function setup() {
-  // suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
 
   //define grid

@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette;
+suggested_palettes = [BEACHDAY, COTTONCANDY, NURSERY]
 
 //project variables
 let bg_c, size_buildings;
@@ -17,7 +17,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([BEACHDAY, COTTONCANDY, NURSERY])
   common_setup(gif);
 }
 //***************************************************

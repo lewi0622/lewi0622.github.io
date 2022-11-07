@@ -9,7 +9,7 @@ const fr = 30;
 const capture = true;
 const capture_time = 3;
 const sixteen_by_nine = false;
-let suggested_palette;
+suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 
 function gui_values(){
@@ -17,7 +17,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]);
   common_setup(gif);
 }
 //***************************************************

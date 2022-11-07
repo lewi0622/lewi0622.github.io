@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette;
+suggested_palettes = [BEACHDAY, COTTONCANDY, NURSERY]
 
 
 function gui_values(){
@@ -17,7 +17,6 @@ function gui_values(){
 let pt_size, pts, c_idx, bg_c, lerp_step, frame_switch;
 
 function setup() {
-  suggested_palette = random([BEACHDAY, COTTONCANDY, NURSERY]);
   common_setup(gif);
 
   //create series of points

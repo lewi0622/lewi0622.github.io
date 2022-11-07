@@ -6,15 +6,14 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette, x_fourth, y_fourth;
-
+let x_fourth, y_fourth;
+suggested_palettes = [COTTONCANDY, GAMEDAY, BIRDSOFPARADISE]
 
 function gui_values(){
 
 }
 
 function setup() {
-  suggested_palette = random([COTTONCANDY, GAMEDAY, BIRDSOFPARADISE]);
   common_setup(gif);
 }
 //***************************************************

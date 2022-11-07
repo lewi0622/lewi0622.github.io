@@ -6,7 +6,8 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette, bg_c, weight, c_id, lines, sub_lines;
+let bg_c, weight, c_id, lines, sub_lines;
+suggested_palettes = [BEACHDAY, SOUTHWEST, SUPPERWARE];
 
 //project variables
 const noiseMax = 1;
@@ -20,7 +21,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([BEACHDAY, SOUTHWEST, SUPPERWARE]);
   common_setup(gif);
 
   //styling

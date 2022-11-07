@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette;
+suggested_palettes = [COTTONCANDY, SOUTHWEST, SIXTIES]
 
 //project variables
 const squares = [];
@@ -23,7 +23,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([COTTONCANDY, SOUTHWEST, SIXTIES]);
   common_setup(gif);
 
   palette = shuffle(palette, true);

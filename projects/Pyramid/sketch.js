@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette;
+suggested_palettes = [COTTONCANDY, BUMBLEBEE, SOUTHWEST]
 
 
 function gui_values(){
@@ -14,7 +14,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([COTTONCANDY, BUMBLEBEE, SOUTHWEST]);
   common_setup(gif);
 }
 //***************************************************

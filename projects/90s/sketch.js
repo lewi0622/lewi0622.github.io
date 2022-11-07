@@ -6,7 +6,8 @@ const fr = 5;
 const capture = false;
 const capture_time = 2;
 const sixteen_by_nine = false;
-let suggested_palette, grid_bg_c;
+let grid_bg_c;
+suggested_palettes = [BIRDSOFPARADISE, NURSERY, SIXTIES, JAZZCUP];
 
 
 function gui_values(){
@@ -14,7 +15,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([BIRDSOFPARADISE, NURSERY, SIXTIES, JAZZCUP]);
   common_setup(gif);
 }
 //***************************************************

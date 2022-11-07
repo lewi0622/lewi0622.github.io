@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette;
+suggested_palettes = [SUMMERTIME, SOUTHWEST, JAZZCUP]
 
 //project variables
 let xoff = 0;
@@ -20,7 +20,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([SUMMERTIME, SOUTHWEST, JAZZCUP]);
   common_setup(gif);
 
   bg_c = random(palette)

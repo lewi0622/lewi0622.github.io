@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette;
+suggested_palettes = [BIRDSOFPARADISE]
 
 //project variables
 let c_leaf_primary, branch_weight;
@@ -17,7 +17,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = BIRDSOFPARADISE;
   //looks good in 300x400
   common_setup(gif, P2D, 300);
 }

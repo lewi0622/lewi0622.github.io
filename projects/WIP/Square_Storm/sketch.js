@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let suggested_palette;
+suggested_palettes = [SUMMERTIME, SOUTHWEST, NURSERY, JAZZCUP]
 
 //project variables
 const squares = [];
@@ -21,7 +21,6 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([SUMMERTIME, SOUTHWEST, NURSERY, JAZZCUP]);
   common_setup(gif);
   for(let i=0; i<num_squares; i++){
     const c = color(random(palette));

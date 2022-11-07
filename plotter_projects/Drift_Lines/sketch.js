@@ -5,7 +5,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 8
-let suggested_palette;
+suggested_palettes = [BUMBLEBEE, SIXTIES, SUPPERWARE]
 
 
 function gui_values(){
@@ -14,7 +14,6 @@ function gui_values(){
 
 
 function setup() {
-  suggested_palette = random([BUMBLEBEE, SIXTIES, SUPPERWARE]);
   common_setup(gif, SVG);
 }
 //***************************************************
