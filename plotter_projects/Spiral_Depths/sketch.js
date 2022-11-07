@@ -45,7 +45,6 @@ const createSpiral = function(){
   translate(canvas_x/2, canvas_y/2);
   const phi = random(1,255);
   const dist_scale = random(1.25,2.5);
-  print(dist_scale);
   //50/50 circle or square.
   const circ = random()>0.5;
   const dir = random([1,-1]);
