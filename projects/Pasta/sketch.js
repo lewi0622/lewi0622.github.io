@@ -12,7 +12,9 @@ let grid_size;
 
 
 function gui_values(){
-
+  parameterize("weight", ceil(random(1,5)), 0.1, 50, 0.25, true);
+  parameterize("grid_divisor", floor(random(4,16)), 1, 32, 1,false);
+  parameterize("cutout", random([0,1,1,1]), 0, 1, 1, false);
 }
 
 function setup() {
@@ -32,9 +34,7 @@ function draw() {
     smaller_cnv = canvas_y;
   }
 
-  grid_size = smaller_cnv/floor(random(4,16));
-
-  const weight = ceil(random(1,5))*global_scale;
+  grid_size = smaller_cnv/grid_divisor;
 
   const max_rows = round(canvas_y/grid_size);
   const max_cols = round(canvas_x/grid_size);
@@ -45,6 +45,7 @@ function draw() {
   let bound = (max_rows+max_cols)/(rows + cols);
   bound = constrain(bound, 5, 50);
   const iterations = floor(random(bound, 50) * 40*global_scale/grid_size);
+  print(bound, iterations)
 
   refresh_working_palette();
   working_palette.forEach((e,idx) => {
@@ -237,7 +238,7 @@ function draw() {
 
   pop();
 
-  if(random()>0.25){
+  if(cutout){
     push();
     //cutout
     noFill();
