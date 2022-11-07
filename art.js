@@ -7,7 +7,10 @@ let art_id = 0;
 let art_timeout = 5000;
 
 let arts = [
+    "90s",
+    "Alhambra/Square_Stars",
     "Analog_Planet",
+    "Angel_Hair_Pasta",
     "Arcs",
     "Barbed_Wire",
     "Birds",
@@ -21,6 +24,7 @@ let arts = [
     "Crowd",
     "Drift_Lines",
     "Escaping_Gasses",
+    "Floral_Wallpaper",
     "Flower",
     "Gas_Spiral",
     "Glitter_Stacks",
