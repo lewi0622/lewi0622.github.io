@@ -7,12 +7,10 @@ const capture_time = 15;
 
 //project variables
 const noise_off = 20;
-let xoff = 0;
-const inc = 0.1*60/fr;
-
 
 function gui_values(){
-
+  parameterize("xoff_coarse", 0, 0, 100, 10, false);
+  parameterize("xoff_fine", 0, 0, 10, 0.2, false);
 }
 
 function setup() {
@@ -32,11 +30,19 @@ function draw() {
 
   //actual drawing stuff
   push();
+  rectMode(CENTER);
+  translate(canvas_x/2, canvas_y/2);
+  noFill();
+  stroke("RED")
+  rect(0,0, 380*global_scale, 380*global_scale)
+  pop();
+  push();
+  let xoff = xoff_coarse + xoff_fine;
   for(let i=0; i<sym_angs; i++){
     push();
       translate(canvas_x/2, canvas_y/2);
       noFill();
-      strokeWeight(1.5*global_scale);
+      strokeWeight(1*global_scale);
 
       beginShape();
       for(let j=0; j<line_segs; j++){
