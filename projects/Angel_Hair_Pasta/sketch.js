@@ -1,17 +1,18 @@
 'use strict';
 //setup variables
-const gif = true;
+const gif = false;
+const animation = false;
 const new_suggested_palette = true;
 const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
+let suggested_palettes = [SAGEANDCITRUS, GAMEDAY, BIRDSOFPARADISE]
 let suggested_palette;
 
 //project variables
 let grid_size;
 let cutout = 0;
-
 
 function gui_values(){
   parameterize("weight", random(0.1,0.5), 0.1, 0.5, 0.1, true);
@@ -21,7 +22,7 @@ function gui_values(){
 }
 
 function setup() {
-  suggested_palette = random([SAGEANDCITRUS, GAMEDAY, BIRDSOFPARADISE]);
+  suggested_palette = random(suggested_palettes);
   common_setup(gif);
   colorMode(HSB);
 }
