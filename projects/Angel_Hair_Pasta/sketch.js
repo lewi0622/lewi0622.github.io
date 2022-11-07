@@ -13,10 +13,11 @@ let grid_size;
 let cutout = 0;
 
 function gui_values(){
-  parameterize("weight", random(0.1,0.5), 0.1, 0.5, 0.1, true);
+  parameterize("weight", random(0.1,0.5), 0.1, 0.5, 0.05, true);
   parameterize("grid_divisor", floor(random(4,16)), 1, 32, 1,false);
   parameterize("path_end_offscreen", random([0,1]), 0, 1, 1, false);
   parameterize('iterations', floor(random(5, 50)), 1, 200, 1, false);
+  parameterize('colors', random([1,2]), 1, 5, 1, false);
 }
 
 function setup() {
@@ -33,8 +34,8 @@ function draw() {
   if(canvas_x>canvas_y){
     smaller_cnv = canvas_y;
   }
-
   grid_size = smaller_cnv/grid_divisor;
+  grid_size = round(grid_size);
 
   const max_rows = round(canvas_y/grid_size);
   const max_cols = round(canvas_x/grid_size);
@@ -56,22 +57,24 @@ function draw() {
   reduce_array(working_palette, c_primary);
 
   //create tiles and starting locations
-  let c = random(working_palette);
+
+  //choose colors
+  let c=[];
+  for(let i=0; i<colors; i++){
+    c.push(random(working_palette));
+  }
   for(let i=0; i<cols; i++){
 
     tiles.push({
       x: i*grid_size, 
       y: 0, 
       dir: "down", 
-      c:c});
+      c:random(c)});
     tiles.push({
       x: (i+1)*grid_size, 
       y: max_rows*grid_size, 
       dir: "up", 
-      c:c});
-  }
-  if(random()>0.75){
-    c = random(working_palette);
+      c:random(c)});
   }
 
   for(let i=0; i<rows; i++){
@@ -80,12 +83,12 @@ function draw() {
       x: 0, 
       y: (i+1)*grid_size, 
       dir: "right", 
-      c:c});
+      c:random(c)});
     tiles.push({
       x: max_cols*grid_size, 
       y: i*grid_size, 
       dir: "left", 
-      c:c});
+      c:random(c)});
   }
   tiles.forEach(e => {
     e.draw = true;
@@ -103,8 +106,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
   
-  //round is the only way to not have weird artifacts on the last tiles placed
-  strokeCap(ROUND)
+  strokeCap(SQUARE)
 
   //apply background  
   background(bg_c)
@@ -149,6 +151,7 @@ function draw() {
           if(dir=='left'){rotate(180)}
           break;
       }
+      //curved segments
       if(dir != 'straight'){
         if(dir == 'left'){
           rotate(-90);
@@ -188,20 +191,31 @@ function draw() {
             break;
         }
       }
+      //straight segments
       else{
         start = 0;
-        while(start<grid_size/2){
+        let drawn_arcs = 0;
+        while(drawn_arcs<num_arcs){
           push();
           translate(start, 0);
-          line(0,-grid_size/2,0,grid_size/2)
+          line(0,-grid_size/2,0,grid_size/2);
+          drawn_arcs++;
+
           stroke(c_secondary);
-          line(-weight, -grid_size/2, -weight, grid_size/2);
+          if(drawn_arcs+1<num_arcs) line(weight, -grid_size/2, weight, grid_size/2);
+          drawn_arcs++;
           pop();
+          
           push();
           translate(-start, 0);
-          line(0,-grid_size/2,0,grid_size/2)
+          if(start !== 0) {
+            line(0,-grid_size/2,0,grid_size/2);
+            drawn_arcs++;
+          }
+
           stroke(c_secondary)
-          line(weight, -grid_size/2, weight, grid_size/2);
+          if(drawn_arcs<num_arcs) line(-weight, -grid_size/2, -weight, grid_size/2);
+          drawn_arcs++;
           pop();
           start+=weight*2;
         }
