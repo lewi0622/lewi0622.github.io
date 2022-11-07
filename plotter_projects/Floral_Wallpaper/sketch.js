@@ -43,7 +43,7 @@ function draw() {
 
       let radius = starter_radius;
       push();
-      stroke(0);
+      stroke((j+z+1)*10);
       translate(z*spacing,j*spacing);
       // if(j%2==1)translate(canvas_x/4,0);
       rotate(random(360));
@@ -63,6 +63,7 @@ function draw() {
         //by rotating randomly, the starts and ends of paths are randomized. so on the plot the overlaps don't line up
         pts = arrayRotate(pts, floor(random(pts.length)));
         beginShape();
+        //set points+3 to close loops, or +4 to overlap loops and not have closed shapes
         for(let i=0; i<points+4; i++){
           curveVertex(pts[i%pts.length].x, pts[i%pts.length].y)
         }
