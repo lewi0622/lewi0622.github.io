@@ -55,17 +55,11 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 
   //set framerate
-  if(!capture){
-    frameRate(fr);
-  }
+  if(!capture) frameRate(fr);
 
   //init globals
-  if(renderer == P2D){
-    type="png";
-  }
-  else if(renderer == SVG){
-    type="svg";
-  }
+  if(renderer == P2D) type="png";
+  else if(renderer == SVG) type="svg";
   hidden_controls = true;
 
   setParams();
@@ -110,9 +104,9 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   // gives change for square or rounded edges, this can be overriden within the draw function
   strokeCap(random([PROJECT,ROUND]));
 
-  if(!gif){ noLoop(); }
+  if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
-  else{ loop();}
+  else noLoop();
 
   //set palette
   change_default_palette();
@@ -577,7 +571,19 @@ function save_drawing(){
 
 function capture_start(capture){
   //called from top of Draw to start capturing, requires CCapture
-  if(capture && frameCount==1) capturer.start();
+  if(!redraw && capture)capturer.start();
+
+  redraw = true;
+  redraw_reason = "gif";
+
+  //no actually to do with capture, just a convenient place to put it
+  if(gif && !animation){
+    //redo suggested palettes
+    change_default_palette();
+    
+    //redo parameterizations
+    gui_values();
+  }
 }
 
 function capture_frame(capture){
@@ -849,7 +855,8 @@ function change_default_palette(){
   let colors = getParamValue('colors');
   //if color is specified in URL, use that, otherwise use the provided palette_id
   if(redraw){
-    palette_id = global_palette_id;
+    if(gif && suggested_palettes !== undefined) palette_id = random(suggested_palettes);
+    else palette_id = global_palette_id;
   }
   //if not redraw, get palette from url
   else if(colors != undefined){
@@ -1096,7 +1103,7 @@ function parameterize(name, val, min, max, step, scale){
   //if variables do exist, apply new values
   else{
     //if redraw reason is gui, let p5.gui handle the new values
-    if(redraw_reason == "window"){
+    if(redraw_reason == "window" || redraw_reason == "gif"){
       eval(name + "=" + val);
       if(min != undefined) eval(name + "Min =" + min);
       if(max != undefined) eval(name +"Max =" + max);
