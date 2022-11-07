@@ -5,9 +5,12 @@ const fr = 1;
 const capture = false;
 const capture_time = 8;
 
-
 function gui_values(){
-
+  parameterize("radius", 100, 0, 200, 1, true);
+  parameterize("min_radius", 15, 0, 100, 1, true);
+  parameterize("tightness", 1, 0.1, 5, 0.1, true);
+  parameterize("x_offset", 0, -100, 100, 5, true);
+  parameterize("y_offset", 0, -100, 100, 5, true);
 }
 
 function setup() {
@@ -26,30 +29,26 @@ function draw() {
   noFill();
 
   translate(canvas_x/2, canvas_y/2);
-
-  const min_radius = 15*global_scale;
-  const noise_off = 20;
-  stroke(random(255))
-  for(let j=0; j<5; j++){
-
-    let radius = canvas_x/2;
-    const dec = 1*global_scale;
+  for(let j=0; j<2; j++){
+    translate(j*x_offset, j*y_offset);
+    stroke(random(100))
+    let working_radius = radius;
     beginShape();
-    while(radius>min_radius){
+    while(working_radius>min_radius){
       const points = 20;
       for(let i=0; i<points; i++){
-        const x = radius*cos(i*(360/points));
-        const y = radius*sin(i*(360/points));
-        let noise_scale = radius/(canvas_x/2)*global_scale;
+        const x = working_radius*cos(i*(360/points));
+        const y = working_radius*sin(i*(360/points));
+        let noise_scale = working_radius/(canvas_x/2)*global_scale;
         const scale_factor = 6;
-        if(radius == canvas_x/2){
-          curveVertex(x,y);
-          curveVertex(x,y);
-        }
-        else{
-          curveVertex(x+map(noise(i*j), 0,1, -scale_factor,scale_factor)*noise_scale, y+map(noise(i*j+noise_off), 0,1, -scale_factor,scale_factor)*noise_scale);
-        }
-        radius -= dec;
+        // if(radius == canvas_x/2){
+          // curveVertex(x,y);
+        curveVertex(x,y);
+        // }
+        // else{
+        //   curveVertex(x+map(noise(i*j), 0,1, -scale_factor,scale_factor)*noise_scale, y+map(noise(i*j+noise_off), 0,1, -scale_factor,scale_factor)*noise_scale);
+        // }
+        working_radius -= tightness;
       }
     }
     endShape();
