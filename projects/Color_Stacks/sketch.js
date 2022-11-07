@@ -2,6 +2,7 @@
 
 //setup variables
 const gif = false;
+const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 10;

@@ -1,6 +1,7 @@
 'use strict';
 //setup variables
 const gif = false;
+const animation = false;
 const fr = 30;
 
 const noise_off = 20;

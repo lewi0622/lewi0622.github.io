@@ -1,6 +1,7 @@
 'use strict';
 //setup variables
 const gif = false;
+const animation = false;
 const fr = 5;
 const capture = false;
 const capture_time = 2;

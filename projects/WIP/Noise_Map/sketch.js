@@ -4,6 +4,7 @@ function preload() {  font = loadFont('..\\..\\fonts\\xband-ro.ttf');  }
 
 //setup variables
 const gif = false;
+const animation = false;
 const fr = 30;
 const capture = true;
 const capture_time = 3;
