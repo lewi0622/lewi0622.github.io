@@ -7,7 +7,11 @@ const capture_time = 8
 
 
 function gui_values(){
-
+  parameterize("layers", 3, 1, 5, 1, false);
+  parameterize("brush_width", 200, 10, 400, 10, true);
+  parameterize("steps", floor(random(200, 400)), 50, 600, 10, false);
+  parameterize("detail", random(4), 0, 10, 0.5, false);
+  parameterize("y_spacing", 0.01, 0.01, 0.1, 0.005, false);
 }
 
 function setup() {
@@ -20,10 +24,7 @@ function draw() {
   //bleed
   const bleed_border = apply_bleed();
 
-  //actual drawing stuff
-  const layers = 3;  
-  const brush_width = canvas_y/layers;
-
+  //actual drawing stuff 
   const colors = gen_n_colors(layers+1);
   noFill();
   const weight = 1*global_scale;
@@ -31,11 +32,9 @@ function draw() {
 
   push();
   
-  noiseDetail(random(4));
+  noiseDetail(detail);
 
   translate(canvas_x/2, canvas_y/2);
-
-  const steps = floor(random(200,400));
 
   const brush_rad = canvas_y*0.95/2;
 
@@ -96,7 +95,7 @@ function draw() {
       vertex(end_x, end_y);
       endShape();
 
-      start_y += random(canvas_y*.01);
+      start_y += random(canvas_y*y_spacing);
       
     }
     pop();
