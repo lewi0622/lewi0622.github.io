@@ -45,7 +45,7 @@ function draw() {
   let bound = (max_rows+max_cols)/(rows + cols);
   bound = constrain(bound, 5, 50);
   const iterations = floor(random(bound, 50) * 40*global_scale/grid_size);
-  print(bound, iterations)
+
 
   refresh_working_palette();
   working_palette.forEach((e,idx) => {

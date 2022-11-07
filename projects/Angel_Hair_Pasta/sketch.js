@@ -18,7 +18,6 @@ function gui_values(){
   parameterize("grid_divisor", floor(random(4,16)), 1, 32, 1,false);
   parameterize("path_end_offscreen", random([0,1]), 0, 1, 1, false);
   parameterize('iterations', floor(random(5, 50)), 1, 200, 1, false);
-  print(path_end_offscreen)
 }
 
 function setup() {

@@ -566,7 +566,6 @@ function save_drawing(){
   };
   if(dpi != DPI_DEFAULT){dpi_name = "_dpi_"+str(dpi)};
   const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(col_idx()) + '_scale_' + str(global_scale).replace(".", "_") + bleed_name + dpi_name + cut_name;
-  print(filename);
   if(type == 'svg'){
     save(filename)
   }
@@ -1144,9 +1143,7 @@ function attach_icons(){
       dice.style = "height: 25px; position: relative; z-index: 0;";
       //if dice clicked, apply slash
       dice.addEventListener('click', (e)=>{
-        print(e.target)
         let slash = create_slash(stored_name, param);
-        print(slash);
         e.target.parentElement.appendChild(slash);
         param.frozen = true;
         window.sessionStorage.setItem(stored_name, JSON.stringify(param));
