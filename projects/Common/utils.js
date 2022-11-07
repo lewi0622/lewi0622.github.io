@@ -11,9 +11,9 @@ let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_paramet
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
 
-//if a project doesn't supply a suggested palette, we use the default 
+//if a project doesn't supply an array of suggested palettes, we use the default
 let global_palette_id = PALETTE_ID_DEFAULT;
-let global_palette, palette, working_palette;
+let global_palette, palette, working_palette, suggested_palettes;
 
 
 let global_scale = 1;
@@ -851,7 +851,9 @@ function redraw_sketch(){
 }
 
 function change_default_palette(){
-  let palette_id;
+  //if no suggested palette, use the default palette
+  let palette_id= PALETTE_ID_DEFAULT;
+
   let colors = getParamValue('colors');
   //if color is specified in URL, use that, otherwise use the provided palette_id
   if(redraw){
@@ -867,12 +869,8 @@ function change_default_palette(){
     palette_id = parseInt(colors);
   }
   //if no url palette, grab the suggested palette
-  else if(typeof suggested_palette !== 'undefined'){
-    palette_id = suggested_palette;
-  }
-  //if no suggested palette, use the default palette
-  else{
-    palette_id = PALETTE_ID_DEFAULT;
+  else if(suggested_palettes !== undefined){
+    if(suggested_palettes.length>0) palette_id = random(suggested_palettes);
   }
 
   global_palette_id = palette_id;
