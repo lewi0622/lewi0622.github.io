@@ -11,7 +11,11 @@ suggested_palettes = [BIRDSOFPARADISE, NURSERY, SIXTIES, JAZZCUP];
 
 
 function gui_values(){
-
+  parameterize("grid_size", 400, 50, 400, 10, true);
+  parameterize("wobble_x", 50, -400, 400, 5, true);
+  parameterize("wobble_y", 30, -400, 400 ,5, true);
+  parameterize("arc_size", 130, 1, 400, 1, true);
+  parameterize("weight", 20, 1, 100, 1, true);
 }
 
 function setup() {
@@ -26,7 +30,6 @@ function draw() {
   refresh_working_palette();
   //actual drawing stuff
   push();
-  let grid_size = 400*global_scale;
   let num_cols = floor(canvas_y/grid_size);
   let num_rows = floor(canvas_x/grid_size);
   num_cols = constrain(num_cols,1,num_cols);
@@ -37,16 +40,12 @@ function draw() {
   num_cols = floor(canvas_y/grid_size);
   
   translate((canvas_x-grid_size*num_rows)/2, (canvas_y-grid_size*num_cols)/2);
-
-  const wobble_x = grid_size/8;
-  const wobble_y = grid_size/12;
   const num_arcs = 2;
-  const arc_size = grid_size/3;
   if(frameCount==1){
     grid_bg_c = random(working_palette);
   }
   background(grid_bg_c);
-  strokeWeight(grid_size/20);
+  strokeWeight(weight);
   for(let col=0; col<num_cols; col++){
     for(let row=0; row<num_rows; row++){
       push();

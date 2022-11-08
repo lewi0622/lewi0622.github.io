@@ -10,11 +10,11 @@ suggested_palettes = [BEACHDAY, COTTONCANDY, NURSERY]
 
 
 function gui_values(){
-
+  parameterize("lerp_step_size", 0.2, 0, 1, 0.05, false);
 }
 
 //project variables
-let pt_size, pts, c_idx, bg_c, lerp_step, frame_switch;
+let pt_size, pts, c_idx, bg_c, frame_switch;
 
 function setup() {
   common_setup(gif);
@@ -31,7 +31,6 @@ function setup() {
   c_idx = 0;
   working_palette = JSON.parse(JSON.stringify(palette))
   bg_c = color(random(working_palette));
-  lerp_step = 0.2;
   frame_switch = fr;
 
   furthest_pts(pts);
@@ -61,8 +60,8 @@ function draw() {
       pt.dest_y = new_pt.y;
       pt.moving = true;
     }
-    pt.x = lerp(pt.x, pt.dest_x, lerp_step);
-    pt.y = lerp(pt.y, pt.dest_y, lerp_step);
+    pt.x = lerp(pt.x, pt.dest_x, lerp_step_size);
+    pt.y = lerp(pt.y, pt.dest_y, lerp_step_size);
 
     draw_indices(pts, pt);
   })

@@ -13,11 +13,14 @@ let xoff = 0;
 const inc = 1*60/fr;
 let yoff = 0;
 const y_inc =0.001*60/fr;
-let bg_c, crown_c, hl_c, num_points, rot, upper_shape, lower_shape;
+let bg_c, crown_c, hl_c, rot, upper_shape, lower_shape;
 
 
 function gui_values(){
-
+  parameterize("max_point_height", 800/3, 10, 400, 10, true);
+  parameterize("num_points", random([10,15,20, 25]), 1, 50, 1, false);
+  parameterize("flip",random([0,1]), 0, 1, 1, false);
+  parameterize("point_width", 15, 1, 100, 1, true);
 }
 
 function setup() {
@@ -39,21 +42,17 @@ function draw() {
     crown_c = random(working_palette);
     reduce_array(working_palette, crown_c);
     hl_c = random(working_palette);
-    num_points = random([10,15,20, 25]);
-    rot = random([0, 180]);
     upper_shape = random(["circle", "square", "triangle"]);
     lower_shape = random(["circle", "square", "triangle"]);
   }
-  center_rotate(rot);
+  center_rotate(flip*180);
   background(bg_c)
 
   //actual drawing stuff
   push();
   noStroke();
   fill(crown_c);
-  const max_point_height = canvas_y * 2/3;
   const point_height = max_point_height*map(noise(xoff/100), 0,1, 0.5,1);
-  const point_width = 15*global_scale;
   const radius = point_width/2;
   translate((canvas_x-(num_points*point_width))/2, canvas_y-(canvas_y-max_point_height*1.1)/2);
   const upper_circle_coords = [];
