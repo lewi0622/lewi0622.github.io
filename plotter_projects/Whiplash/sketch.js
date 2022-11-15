@@ -7,14 +7,18 @@ const capture = false;
 const capture_time = 8;
 
 //project variables
-const phase_off = 20;
-// let i_mult;
-
+// const phase_off = 20;
 
 function gui_values(){
   parameterize("i_mult_coarse", random([0, 1.5, 2.5,  5, 10, 20, 30, 40, 120]), 0, 120, 1, false);
-  parameterize("i_mult_fine", 0, 0, 1, 0.0001, false);
+  parameterize("i_mult_fine", 0, -1, 1, 0.0001, false);
+  parameterize("i_mult_inc", 0.000003, 0.000001, 0.000100, 0.000001, false);
   parameterize("noise_maximum", 2, 0, 5, 0.1, false);
+  parameterize("step_size", 3, 1, 50, 1, false);
+  parameterize("step_num", 720, 10, 1500, 20, false);
+  parameterize("rotation", 0, 0, 360, 1, false);
+  parameterize("line_size", 300, 100, 500, 10, true);
+  parameterize("phase_off", 20, 0, 20, 0.1, false);
 }
 
 function setup() {
@@ -23,6 +27,7 @@ function setup() {
   }
   else{
     common_setup(gif);
+    background("WHITE")
   }
   noFill();
   strokeWeight(1.5)
@@ -40,14 +45,12 @@ function draw() {
 
   //actual drawing stuff
   push();
-
+  center_rotate(rotation);
   let working_i_mult = i_mult_coarse + i_mult_fine;
 
   translate(canvas_x/2, canvas_y/2);
-  const line_size = 300*global_scale;
-  const step_size = 3;
   beginShape();
-  for(let i=0; i<720; i+=step_size){
+  for(let i=0; i<step_num; i+=step_size){
     let xoff = map(cos(i*working_i_mult), -1,1, 0, noise_maximum);
     let yoff = map(sin(i*working_i_mult), -1,1, 0, noise_maximum);
     const x = map(noise(xoff, yoff), 0,1, -line_size,line_size)
@@ -57,7 +60,7 @@ function draw() {
     const y = map(noise(xoff, yoff), 0,1, -line_size,line_size)
     curveVertex(x, y)
     
-    working_i_mult += 0.000003
+    working_i_mult += i_mult_inc;
 
     }
   endShape();
