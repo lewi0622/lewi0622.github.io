@@ -15,11 +15,12 @@ const SIXTIES =12;
 const OASIS =13;
 const SUPPERWARE =14;
 const JAZZCUP =15;
+const TOYBLOCKS = 16;
 
 const palette_names = [
     "Sage and Citrus", "Beach Day", "Cotton Candy", "Bumblebee", "Minty",
     "Game Day", "Birds of Paradise", "Deathloop", "Summertime", "Southwest", "Muted Earth",
-    "Nursery", "60s", "Oasis", "Supperware", "Jazz Cup"];
+    "Nursery", "60s", "Oasis", "Supperware", "Jazz Cup", "Toy Blocks"];
     
 const exclude_palette = ["Minty", "Deathloop"]
 
@@ -141,5 +142,11 @@ const palettes=[
     [154, 41, 166, 255], //purple
     [57, 43, 134, 255], //indigo
     [255, 255, 255, 255] //white
+    ],
+    //Toy Blocks
+    [[23, 167, 150, 255], //dark teal
+    [255, 189, 74,255], //gold
+    [132, 102, 185,255],//dark purple
+    [253, 75, 41, 255] //red
     ]
 ];
