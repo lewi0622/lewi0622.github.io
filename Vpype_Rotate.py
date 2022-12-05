@@ -21,18 +21,17 @@ output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
 prefix = r"vpype read "
 
 # conserve stroke colors
-prefix += r" -a stroke  "
+prefix += r" --attr stroke "
 
 # read flag: doesn't crop incoming picture
 prefix += r" --no-crop "
 
-args = r""
+args = r" rotate 90 "
 
 # sclaing argument, uncomment which one is the preferred size
 #standard mat opening for an 8x10 artwork is 7.5x9.5, usually scale to something less
 # 7.3, 9.3 gives a decent space from the sides if desired
-args += r" scaleto 9.3in 7.3in "
-# args += r" scaleto 9in 6in "
+# args += r" scaleto 7.3in 9.3in "
 
 # scaled for 5x7
 # args += r" scaleto 4in 6in "
@@ -41,22 +40,22 @@ args += r" scaleto 9.3in 7.3in "
 #full 8x10 size
 # args += r" scaleto 10in 8in "
 #slightly larger than mat opening, so edges aren't visible
-# args += r" scaleto 8.5in 11in "
+# args += r" scaleto 8.5in 10.5in"
 #full sized
-# args += r" scaleto 279.4cm 215.9cm "
+# args += r" scaleto 8.5in 11in"
 
 #occult function uses most recently drawn closed shapes to erase lines that are below the shape
 # the flag -i ignores layers and occults everything
-args += r" occult -i "
+# args += r" occult -i "
 
 #layout as letter centers graphics within a letter size, but does not scale it
-args += r" layout -l letter "
-# args += r" layout -l 10.125x6.875in"
+# args += r" layout -l letter "
 
 #linemerge connects start/ends of shapes. linesort sorts for plotting pendown time. 
 # reloop randomizes starts ends of closed shapes to reduce alignment of up/down marks. linesimplify changes curves to polygons for better plotter control
 #still need to check on color-mode-layer
-args += r" linemerge linesort reloop linesimplify write --color-mode layer "
-print(prefix + '"' + input_file + '"' + args + '"' + output_file + '"')
-full_cmd = prefix + '"' + input_file + '"' + args + '"' + output_file + '"'
+# args += r" linemerge linesort reloop linesimplify write --color-mode layer "
+args += r" write --color-mode layer "
+print(args)
+full_cmd = prefix + '"' + input_file + '"' + args + '"' + input_file + '"'
 subprocess.run(full_cmd)
