@@ -8,7 +8,9 @@ const capture_time = 8;
 
 
 function gui_values(){
-
+  parameterize("baseFrequency", 0.05, 0, 1, 0.01, false);
+  parameterize("numOctaves", 2, 1, 10, 1, false);
+  parameterize("filter_scale", 50, 1, 100, 1, false);
 }
 
 function setup() {
@@ -73,6 +75,7 @@ function draw() {
 
   pop();
 
+  feTurbulence(baseFrequency, numOctaves, filter_scale);
   //cleanup
   apply_cutlines(bleed_border);
 
