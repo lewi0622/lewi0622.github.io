@@ -16,6 +16,9 @@ function gui_values(){
   parameterize("noise_off", 50, 0, 100, 0.1, false);
   parameterize("starter_radius", canvas_x/global_scale/random(4.5,6), canvas_x/global_scale/10, canvas_x/global_scale/3, 1 ,true);
   parameterize("min_radius", 1, 0.1,5,0.1,true);
+  parameterize("start_ang",0,0,360,1,false);
+  parameterize("end_ang", 180, 0, 360, 1, false);
+  parameterize("ang_div", 20, 1, 50, 0.5, false);
   parameterize("spacing", 60, 60, 400, true);
   parameterize("rows", 1, 1, 5, 1, false);
   parameterize("cols", 1, 1, 5, 1, false);
@@ -53,11 +56,14 @@ function draw() {
       let dir = random([-1,1]);
       while(radius>min_radius){
         let noise_scale = radius/starter_radius*global_scale*scale_factor;
+        let ang_scale;
         let pts = [];
         for(let i=0; i<points; i++){
           const ang = dir*i*(360/points);
-          const x = radius*cos(ang) + map(noise(i+noise_base), 0,1, -noise_scale, noise_scale);
-          const y = radius*sin(ang) + map(noise(i+noise_base+noise_off), 0,1, -noise_scale, noise_scale);
+          if(abs(ang)>start_ang && abs(ang)<=end_ang) ang_scale = noise_scale/ang_div;
+          else ang_scale = noise_scale;
+          const x = radius*cos(ang) + map(noise(i+noise_base), 0,1, -ang_scale, ang_scale);
+          const y = radius*sin(ang) + map(noise(i+noise_base+noise_off), 0,1, -ang_scale, ang_scale);
           pts.push({x:x, y:y});
         }
         //by rotating randomly, the starts and ends of paths are randomized. so on the plot the overlaps don't line up
