@@ -10,7 +10,12 @@ suggested_palettes = [COTTONCANDY, GAMEDAY, BIRDSOFPARADISE]
 
 
 function gui_values(){
-
+  parameterize("flip", random([0,1]), 0, 1, 1, false);
+  parameterize("num_steps", 150, 1, 300, 1, false);
+  parameterize("num_shapes", 50, 0, 100, 1, false);
+  parameterize("stack1_dist", 0.5, 0.1, 5, 0.1, false);
+  parameterize("stack2_dist", 1.2, 0.1, 5, 0.1, false);
+  parameterize("stack3_dist", 3, 0.1, 5, 0.1, false);
 }
 
 function setup() {
@@ -33,23 +38,21 @@ function draw() {
   //actual drawing stuff
   push();
 
-  center_rotate(random([0, 180]));
+  center_rotate(flip*180);
 
   noStroke();
-  const rect_width = floor(canvas_x/4);
-  const rect_height = floor(canvas_y*0.75);
   const shape=random(['square', 'circle']);
   //best if even
   const step = 2*global_scale;
   translate(canvas_x/16, 0);
 
-  let pow_arr = [0.5, 1.2, 3]
+  let pow_arr = [stack1_dist, stack2_dist, stack3_dist];
   pow_arr = shuffle(pow_arr);
   for(let i=0; i<3; i++){
     push();
     translate((canvas_x/16+canvas_y/4)*i, canvas_y/8);
   
-    noise_matrix(rect_width, rect_height, step, true, true, 0, 1, pow_arr[i],  i, shape);
+    noise_matrix(step, 0, 1, pow_arr[i],  i, shape);
     pop();
   }
 
@@ -61,28 +64,17 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function noise_matrix(rect_width, rect_height, step, rotate, reverse, min, max, pow, seed, shape){
+function noise_matrix(step, min, max, pow, seed, shape){
   //creates a matrix of noise going from more likely to less. Use rotate to swap i/j. Use reverse to change noise density sides
-  if(rotate==true){
-    [rect_width, rect_height] = [rect_height, rect_width];
-  }
-  for(let i=0; i<150; i++){
+  for(let i=0; i<num_steps; i++){
     let chance = constrain(Math.pow(i/150, pow), min, max);
-    if(reverse==true){
-      chance = 1-chance;
-    }
+    chance = 1-chance;
     
-    for(let j=0; j<50; j++){
+    for(let j=0; j<num_shapes; j++){
       push();
-      const pixel_c = random(palette);
-      fill(pixel_c);
+      fill(random(palette));
 
-      if(rotate == true){
-        translate(j*step, i*step);
-      }
-      else{
-        translate(i*step, j*step);
-      }
+      translate(j*step, i*step);
       if(noise((i+1)*(j+1)+seed)>chance){
         if(shape=='square'){
           square(0,0,random(step/2, step*2));
