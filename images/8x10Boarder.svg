@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="tiny" height="21.59001166cm" version="1.2" viewBox="0 0 1056.0005702400001 816.00044064" width="27.94001509cm">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:source>vpype read --attr stroke --no-crop C:/Users/lewi0/Downloads/8x10Boarder.svg rotate 90 write --color-mode layer C:/Users/lewi0/Downloads/8x10Boarder.svg
+</dc:source>
+        <dc:date>2022-11-15T09:42:56.933474</dc:date>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs/>
+  <g fill="none" id="layer1" inkscape:groupmode="layer" inkscape:label="1" stroke="#0000ff" stroke-width="1.0" style="display:inline">
+    <polygon points="48.0,792.0004 48.0,24.0 1008.0005,24.0 1008.0005,792.0004"/>
+  </g>
+</svg>
