@@ -6,11 +6,13 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-let num_pts;
 suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE];
 
 function gui_values(){
-
+  parameterize("num_pts", floor(random(5,60)), 4, 120, 1, false);
+  parameterize("pt_size", floor(random(10,30)), 1, 50, true);
+  parameterize("min_padding", -400, -800, 400, 200, true);
+  parameterize("max_padding", 800, 0, 1200, 200, true);
 }
 
 function setup() {
@@ -38,9 +40,7 @@ function draw() {
   push();
 
   //create series of points
-  const pt_size = floor(random(10,30)*global_scale);
   const pts = [];
-  num_pts = floor(random(6,60));
   for(let i=0; i<num_pts; i++){
     const new_pt = gen_pt(pts, pt_size*2);
     pts.push(new_pt);
@@ -64,8 +64,8 @@ function draw() {
 function gen_pt(arr, min_dist){
   //checks new point to see if it's greater than the min_dist
   let new_pt = {
-    x:random(-canvas_x, canvas_x*2),
-    y:random(-canvas_y, canvas_y*2),
+    x:random(min_padding, max_padding),
+    y:random(min_padding, max_padding),
     idxs:[]
   };
   
