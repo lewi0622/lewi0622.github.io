@@ -13,7 +13,12 @@ let amp;
 
 
 function gui_values(){
-
+  parameterize("tile_div", round(random(40,100)), 1, 400, 1, false);
+  parameterize("weight", random(1, 7), 0.1, 20, 0.1, true);
+  parameterize("num_lines", round(random(3,12)), 1, 15, 1, false);
+  parameterize("amp_start", random(1,10), 0.1, 10, 0.1, true);
+  parameterize("amp_inc", 0.5, 0, 10, 0.1, true);
+  parameterize("tightness", random([-2,-1, 0, 4, 5]), -5, 5, 0.1, false);
 }
 
 function setup() {
@@ -42,30 +47,29 @@ function draw() {
 
   center_rotate(random([0,90,180,270]));
 
-  const tile_x = canvas_x/100;
-  const tile_y = canvas_y/10;
+  const tile_x = canvas_x/tile_div;
 
-  strokeWeight(5*global_scale);
-
-  for(let j=0; j<5; j++){
+  strokeWeight(weight);
+  translate(0,canvas_y/num_lines/2);
+  for(let j=0; j<num_lines; j++){
     stroke(random(working_palette))
 
-    translate(0, 65*global_scale);
-    amp = 1*global_scale;
+    amp = amp_start;
 
     beginShape();
     noFill();
+    curveTightness(tightness);
     curveVertex(-10*global_scale,0);
     curveVertex(-10*global_scale,0);
     for(let i = 0;  i<200; i++){
       const l_r = random([-1,1,1])*tile_x*3;
       const u_d = random([-1,1])*amp;
       curveVertex(i*tile_x+noise(i+j)*l_r, noise(i+j)*u_d);
-      amp +=0.5*global_scale;
+      amp +=amp_inc;
     }
 
     endShape();
-
+    translate(0, canvas_y/num_lines);
   }
   pop();
   //cutlines
@@ -75,19 +79,3 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function noise_curve(){
-  beginShape();
-  amp = 0.5*global_scale;
-  for(let j=0; j<200; j++){
-    vertex(j*2*global_scale, noise(j)*amp)
-    if(j<100){
-      amp += 0.15*global_scale;
-    }
-    else{
-      amp -= 0.15*global_scale;
-    }
-  }
-  endShape();
-}
-
-
