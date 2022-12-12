@@ -11,7 +11,8 @@ let x_fourth, y_fourth;
 suggested_palettes = [COTTONCANDY, SOUTHWEST, NURSERY, SIXTIES]
 
 function gui_values(){
-
+  parameterize("grid_num_col", floor(random(1, 100)), 1, 150, 1, false);
+  parameterize("stroke_alpha", 80, 0, 255, 1, false);
 }
 
 function setup() {
@@ -61,8 +62,8 @@ function draw() {
   let smaller_offset = offset_x;
   if(offset_y<offset_x) smaller_offset=offset_y;
 
-  const grid_num_col = floor(random(4, 40));
   let grid_size_col = (canvas_x-smaller_offset)/grid_num_col; 
+  //minimum 4 layers to cover up background color, plateaus after that
   const layers = floor(random(4,11));
 
   noStroke();
