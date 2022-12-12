@@ -571,7 +571,9 @@ function save_drawing(){
 
 function capture_start(capture){
   //called from top of Draw to start capturing, requires CCapture
-  if(!redraw && capture)capturer.start();
+  if(!redraw && capture){
+    capturer.start();
+  }
 
   redraw = true;
   redraw_reason = "gif";
@@ -589,7 +591,7 @@ function capture_start(capture){
 function capture_frame(capture){
   if (capture){
     capturer.capture(document.getElementById("defaultCanvas0"));
-    if(frameCount-1 == num_frames){
+    if(frameCount-1 == num_frames || !isLooping()){
       capturer.stop();
       capturer.save();
       noLoop();
@@ -857,7 +859,7 @@ function change_default_palette(){
   let colors = getParamValue('colors');
   //if color is specified in URL, use that, otherwise use the provided palette_id
   if(redraw){
-    if(gif && suggested_palettes !== undefined) palette_id = random(suggested_palettes);
+    if(gif && suggested_palettes.length>0) palette_id = random(suggested_palettes);
     else palette_id = global_palette_id;
   }
   //if not redraw, get palette from url
