@@ -878,7 +878,14 @@ function change_default_palette(){
   global_palette_id = palette_id;
   global_palette = palettes[global_palette_id];
   //check if local storage
-  let stored_palette = window.localStorage.getItem(palette_names[global_palette_id]);
+  let stored_palette;
+  try{
+    stored_palette = window.localStorage.getItem(palette_names[global_palette_id]);
+  }
+  catch(err){
+    console.log("Local storage is being blocked by a 3rd party application");
+    stored_palette = undefined;
+  }
   if(stored_palette != undefined) palette = JSON.parse(stored_palette);
   else palette = JSON.parse(JSON.stringify(global_palette));
   color_sel.selected(palette_names[global_palette_id]);
