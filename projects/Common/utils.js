@@ -855,11 +855,16 @@ function redraw_sketch(){
 function change_default_palette(){
   //if no suggested palette, use the default palette
   let palette_id= PALETTE_ID_DEFAULT;
-
   let colors = getParamValue('colors');
+
+  let suggested_palette_id;
+  if(suggested_palettes !== undefined){
+    if(suggested_palettes.length>0) suggested_palette_id = random(suggested_palettes);
+  }
+
   //if color is specified in URL, use that, otherwise use the provided palette_id
   if(redraw){
-    if(gif && suggested_palettes.length>0) palette_id = random(suggested_palettes);
+    if(gif && suggested_palette_id !== undefined) palette_id = suggested_palette_id;
     else palette_id = global_palette_id;
   }
   //if not redraw, get palette from url
@@ -871,8 +876,8 @@ function change_default_palette(){
     palette_id = parseInt(colors);
   }
   //if no url palette, grab the suggested palette
-  else if(suggested_palettes !== undefined){
-    if(suggested_palettes.length>0) palette_id = random(suggested_palettes);
+  else if(suggested_palette_id !== undefined){
+    palette_id = suggested_palette_id;
   }
 
   global_palette_id = palette_id;
