@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 2;
 const sixteen_by_nine = false;
 let grid_bg_c;
-suggested_palettes = [SIXTIES];
+suggested_palettes = [SIXTIES, SOUTHWEST, TOYBLOCKS];
 
 
 function gui_values(){
