@@ -48,7 +48,6 @@ function draw() {
   //less shapes, more alpha
   let c_alpha = map(num_shapes, 2,200, 175, 100)
 
-  print(start, end);
   for(let i=0; i<num_shapes; i++){
     beginShape();
     const c=color(random(working_palette));
