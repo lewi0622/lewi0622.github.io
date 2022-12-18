@@ -10,7 +10,10 @@ suggested_palettes = [BEACHDAY, COTTONCANDY, SOUTHWEST]
 
 
 function gui_values(){
-
+  let h_w_id = random([0,1,2]);
+  parameterize("ribbon_h", [20,10,40][h_w_id],1,200,1,true);
+  parameterize("ribbon_w", [70,10,100][h_w_id],-200,200,1,true);
+  parameterize("i_inc", random([2,4,6,8]),1,50,1,true);
 }
 
 function setup() {
@@ -33,14 +36,11 @@ function draw() {
   center_rotate(random(0,360));
 
   noStroke();
-  const [h,w] = random([[20,70], [10,10], [40,100]]);
-  const ribbon_h = h*global_scale;
-  const ribbon_w = -w*global_scale;
 
   const j_limit = round(canvas_y/ribbon_h);
 
-  for(let i=0; i<canvas_x*1.5; i+=random([2,4,6,8])*global_scale){
-    for(let j=0; j<j_limit; j++){
+  for(let i=-canvas_x*0.5; i<canvas_x*1.5; i+=i_inc){
+    for(let j=0; j<=j_limit; j++){
       push();
       translate(i,j*ribbon_h);
       fill(random(palette));

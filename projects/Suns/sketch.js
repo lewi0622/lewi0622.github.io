@@ -10,7 +10,9 @@ suggested_palettes = [BEACHDAY, SOUTHWEST, SUPPERWARE]
 
 
 function gui_values(){
-
+  parameterize("steps", 10, 1, 50, 1, false);
+  parameterize("radius", 65, 1, 400, 1, true);
+  parameterize("weight", 4, 0.1, 100, 0.1, true);
 }
 
 function setup() {
@@ -36,9 +38,7 @@ function draw() {
 
   const start = createVector(0,canvas_y,0);
   const end = createVector(canvas_x,0,0);
-  const steps = 10;
-  const radius = 65*global_scale;
-  strokeWeight(4*global_scale)
+  strokeWeight(weight);
 
   center_rotate(random([0,90,180,270]));
   const suns = random([2,4])
