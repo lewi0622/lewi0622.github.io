@@ -17,7 +17,7 @@ function gui_values(){
   parameterize("num_points", floor(random(1,6)), 1, 20, 1, false);
   parameterize("damp", random(1,20), 1, 100, 1, false);
   parameterize("offset", 20, 0, 200, 1, false);
-  parameterize("tightness", random(-1,1), -5, 5, 0.01, false);
+  parameterize("tightness", random(random(-5,0), random(0,5)), -5, 5, 0.01, false);
   parameterize("rotation", random(360), 0,360, 1, false);
 }
 
