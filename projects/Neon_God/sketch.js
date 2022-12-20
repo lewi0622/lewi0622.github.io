@@ -10,7 +10,12 @@ suggested_palettes = [SOUTHWEST, SIXTIES]
 
 
 function gui_values(){
-
+  parameterize("bg_alpha", 150, 0,255,1,false);
+  parameterize("x_offset", random(1,70), 1,70,1, true);
+  parameterize("weight", 1, 0.1, 10, 0.1, true);
+  parameterize("rad", random(100,200), 10, 400, 1, true);
+  parameterize("bright", floor(random(150,600)), 0, 600, 1, false);
+  parameterize("cloud_rad", 200, 1, 400, 1, true);
 }
 
 function setup() {
@@ -31,7 +36,7 @@ function draw() {
   let bg_c = random(working_palette);
   if(working_palette.length>3) reduce_array(working_palette, bg_c);
   bg_c = color(bg_c);
-  bg_c.setAlpha(150);
+  bg_c.setAlpha(bg_alpha);
   fill(bg_c);
   noStroke();
   rect(0,0, canvas_x, canvas_y);
@@ -68,7 +73,7 @@ function draw() {
     else fill(cloud_c[2]);
 
     translate(map(x, 0,1, -canvas_x/2, canvas_x*1.5), map(y, 0,1, -canvas_y/2, canvas_y*1.5));
-    circle(0,0, canvas_x/2);
+    circle(0,0, cloud_rad);
     pop();
   }
   filter(BLUR, 1*global_scale);
@@ -78,16 +83,14 @@ function draw() {
   //neon stuff
   let c=color(random(working_palette));
   translate(canvas_x/2, canvas_y/2);
-  const brightness = floor(random(250,500));
-  drawingContext.filter = 'brightness('+brightness+'%)';
-  strokeWeight(global_scale);
+  drawingContext.filter = 'brightness('+bright+'%)';
+  strokeWeight(weight);
   drawingContext.shadowBlur=5*global_scale;
   drawingContext.shadowColor = c;
   stroke(c);
   noFill();
 
   rotate(360/sym_angs*ceil(random(sym_angs)));
-  let rad = random(canvas_x/4, canvas_x/2);
   let offset_me, offset;
   if(sym_angs%2==0){
     offset_me = true;
@@ -97,11 +100,12 @@ function draw() {
     offset_me = false;
   }
 
-  const x_offset = random(canvas_x/16, canvas_x/8);
+  // const x_offset = random(canvas_x/16, canvas_x/8);
   const shape = random(["CIR", "SQ"]);
   let cornering;
-  if(random()>0.5) cornering = random(rad/8)*global_scale;
-  if(shape == "SQ") rad = random(rad/2, rad);
+  let shape_rad = rad;
+  if(random()>0.5) cornering = random(shape_rad/8)*global_scale;
+  if(shape == "SQ") shape_rad = random(shape_rad/2, shape_rad);
 
   //running this multiple times gives brighter 'glow'
   const steps = round(map(sym_angs, 4,20, 5,2));
@@ -110,22 +114,22 @@ function draw() {
     for(let i=0; i<sym_angs; i++){
       rotate(360/sym_angs);
       if(i%2==0 && offset_me){
-        if(shape=="CIR") circle(x_offset+offset, 0, rad);
-        else if(shape=="SQ") square(x_offset+offset-rad/2, -rad/2, rad, cornering);
+        if(shape=="CIR") circle(x_offset+offset, 0, shape_rad);
+        else if(shape=="SQ") square(x_offset+offset-shape_rad/2, -shape_rad/2, shape_rad, cornering);
       }
       else{
-        if(shape=="CIR") circle(x_offset, 0, rad);
-        else if(shape=="SQ") square(x_offset-rad/2, -rad/2, rad, cornering);
+        if(shape=="CIR") circle(x_offset, 0, shape_rad);
+        else if(shape=="SQ") square(x_offset-shape_rad/2, -shape_rad/2, shape_rad, cornering);
       }
     }
     if(shape=="CIR"){
-      if(offset_me) circle(0,0, rad+(x_offset+offset)*2);
-      else circle(0,0, rad+x_offset*2);
+      if(offset_me) circle(0,0, shape_rad+(x_offset+offset)*2);
+      else circle(0,0, shape_rad+x_offset*2);
     }
   }
 
   
-  filter(OPAQUE)
+  filter(OPAQUE);
 
   pop();
   //cutlines
