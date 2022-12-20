@@ -32,6 +32,7 @@ let gui_created = false;
 let redraw_reason;
 var gui;
 let gui_params = [];
+let gui_collapsed = false;
 
 //color picker vars
 let picker, picker_popper;
@@ -85,11 +86,14 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
       if(redraw_reason != "gui" || redraw==false){
         gui.addGlobals(...gui_params);
       }
+      add_gui_event_handlers();
       gui_created = true;
     }
   }
-
+  // add dice and slashes if necessary
   attach_icons();
+  // collapse or reposition param
+  retrieve_gui_settings();
 
   angleMode(DEGREES);
 
@@ -1232,6 +1236,62 @@ function create_slash(name, data){
     }
   });
   return slash;
+}
+
+function add_gui_event_handlers(){
+  //extend _endDrag function
+  let old_endDrag = gui.prototype._endDrag;
+  function new_endDrag(event){
+    old_endDrag(event);
+    const gui_container = document.getElementsByClassName("qs_main")[0];
+    const rect = gui_container.getBoundingClientRect();
+    try{
+      sessionStorage.setItem("gui_loc", JSON.stringify(rect));
+    }
+    catch(err){
+      console.log("Cannot access session storage to set item, probably an ad blocker issue");
+    }
+  }
+  gui.prototype._endDrag = new_endDrag;
+
+  const gui_title_bar = document.getElementsByClassName("qs_title_bar")[0];
+  gui_title_bar.addEventListener("dblclick", gui_dblclick);
+}
+
+function gui_dblclick(){
+  //toggle gui collapsed status
+  gui_collapsed = !gui_collapsed;
+  try{
+    sessionStorage.setItem("gui_collapsed", JSON.stringify(gui_collapsed));
+  }
+  catch(err){
+    console.log("Cannot access session storage to set item, probably an ad blocker issue");
+  }
+}
+
+function retrieve_gui_settings(){
+  // retrieve gui collapsed status and location
+  let stored_loc, collapsed;
+  try{
+    stored_loc = sessionStorage.getItem("gui_loc");
+    collapsed = sessionStorage.getItem("gui_collapsed");
+  }
+  catch(err){
+    console.log("Cannot access session storage to get item, probably an ad blocker issue");
+    return;
+  }
+  stored_loc = JSON.parse(stored_loc); 
+  // set position
+  if(stored_loc !== null){
+    gui.setPosition(stored_loc.x, stored_loc.y);
+  }
+
+  collapsed = JSON.parse(collapsed);
+  //recollapse new gui if previously collapsed
+  if(collapsed){
+    gui.prototype._doubleClickTitle();
+    gui_collapsed = true;
+  }
 }
 
 
