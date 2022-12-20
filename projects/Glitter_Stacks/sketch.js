@@ -40,7 +40,8 @@ function draw() {
 
   center_rotate(flip*180);
 
-  noStroke();
+  if(random()>0.5) noStroke();
+  else strokeWeight(0.05*global_scale);
   const shape=random(['square', 'circle']);
   //best if even
   const step = 2*global_scale;
