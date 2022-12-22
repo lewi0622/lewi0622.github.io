@@ -10,7 +10,7 @@ suggested_palettes = [COTTONCANDY, NURSERY];
 let cloud_color, cloud_back_color;
 function gui_values(){
   parameterize("cloud_min_radius", random(0,5), 0, 200, 1, true);
-  parameterize("cloud_max_radius", random(5,20), 0, 200, 1, true);
+  parameterize("cloud_max_radius", random(5,10), 0, 200, 1, true);
 }
 
 function setup() {
@@ -26,6 +26,7 @@ function draw() {
   //actual drawing stuff
   push();
   let multi_color = random()>0.75;
+  multi_color = false;
   let bg_c;
   if(multi_color)bg_c = "WHITE";
   else {
@@ -75,12 +76,18 @@ function cloud(cloud_width, cloud_height, noise_offset, rain, random_background_
   noStroke();
   //build cloud from mid bottom
   const gaussian_mean = random(-1,1);
+  const gaussian_std = random(0.5,1.5);
+  const lower_limit = -cloud_width*2*gaussian_std;
+  const upper_limit = cloud_width*2*gaussian_std;
   const circle_data = [];
   let cloud_cirlces = map(cloud_width/global_scale*cloud_height/global_scale, 100, 8000, 1000, 20000)
   for(let i=0; i<cloud_cirlces; i++){
-    let x = randomGaussian(gaussian_mean)*cloud_width;
+    let x = randomGaussian(gaussian_mean,gaussian_std)*cloud_width;
+    //ignore point if too far left/right
+    if(x<lower_limit || x>upper_limit) continue;
+
     //shfit x by cloud width, as perlin noise is reflected about the 0 axis;
-    const y_max = -abs(map(noise(x+cloud_width+noise_offset), 0,1, -cloud_height, cloud_height));
+    const y_max = -abs(map(noise((x+cloud_width+noise_offset)), 0,1, -cloud_height, cloud_height));
     let y = random(-y_max/8,y_max);
     let circle_rad = random(cloud_min_radius,cloud_max_radius);
     x += random(-circle_rad, circle_rad);
@@ -93,9 +100,9 @@ function cloud(cloud_width, cloud_height, noise_offset, rain, random_background_
 
     push();
     translate(x,y);
-    // fill("BLACK");
-    if(random_background_color) fill(random(working_palette));
-    else fill(cloud_back_color);
+    fill("BLACK");
+    // if(random_background_color) fill(random(working_palette));
+    // else fill(cloud_back_color);
     circle(0,0, rad);
     pop();
   });
@@ -107,7 +114,9 @@ function cloud(cloud_width, cloud_height, noise_offset, rain, random_background_
     translate(x,y);
     fill(cloud_color);
     rad *= random(0.3,random(0.5,0.9));
-    circle(0,0, rad);
+    const x_wiggle = random(-1,1)*(data[2]-rad)/8;
+    const y_wiggle = random(-1,1)*(data[2]-rad)/8;
+    circle(x_wiggle, y_wiggle, rad);
     pop();
   });
 
