@@ -33,8 +33,8 @@ for f in to_replace:
     <script src="'''+rel_path.as_posix()+'''/quicksettings.js"></script>   
     <script src="https://unpkg.com/p5.js-svg@1.3.1"></script>
     <!-- Color Picker lib -->
-    <link rel="stylesheet" href="https://unpkg.com/alwan/dist/css/alwan.min.css">
-    <script src="https://unpkg.com/alwan/dist/js/alwan.min.js"></script>
+    <link rel="stylesheet" href="'''+rel_path.as_posix()+'''/Alwan_Color_Picker/css/alwan.min.css">
+    <script src="'''+rel_path.as_posix()+'''/Alwan_Color_Picker/js/alwan.min.js"></script>
     <!-- Global Stylesheet -->
     <link rel="stylesheet" type="text/css" href="'''+rel_path.as_posix()+'''/style.css">
     <meta charset="utf-8">
