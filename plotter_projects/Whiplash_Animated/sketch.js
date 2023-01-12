@@ -18,7 +18,6 @@ function gui_values(){
 
 function setup() {
   common_setup(gif);
-  background("WHITE");
 
   //project variables
   i_mult = random([0, 1.5, 2.5,  5, 10, 20, 30, 40, 120]);
@@ -32,9 +31,7 @@ function setup() {
 function draw() {
   capture_start(capture);
   clear();
-  if(capture){
-    background("WHITE");
-  }
+  background("WHITE");
   //bleed
   const bleed_border = apply_bleed();
 
