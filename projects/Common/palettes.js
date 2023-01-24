@@ -16,13 +16,14 @@ const OASIS =13;
 const SUPPERWARE =14;
 const JAZZCUP =15;
 const TOYBLOCKS = 16;
+const LASER = 17;
 
 const palette_names = [
     "Sage and Citrus", "Beach Day", "Cotton Candy", "Bumblebee", "Minty",
     "Game Day", "Birds of Paradise", "Deathloop", "Summertime", "Southwest", "Muted Earth",
-    "Nursery", "60s", "Oasis", "Supperware", "Jazz Cup", "Toy Blocks"];
+    "Nursery", "60s", "Oasis", "Supperware", "Jazz Cup", "Toy Blocks", "Laser"];
     
-const exclude_palette = ["Minty", "Deathloop"]
+const exclude_palette = ["Minty", "Deathloop", "Laser"]
 
 const palettes=[
     //citrus & sage
@@ -148,5 +149,14 @@ const palettes=[
     [255, 189, 74,255], //gold
     [132, 102, 185,255],//dark purple
     [253, 75, 41, 255] //red
+    ],
+    //laser cutter colors 
+    [[0,0,0,255], //Black
+    [255,0,0,255], //Red
+    [0,255,0,255], //Green
+    [0,0,255,255], //Blue
+    [0, 255,255,255], //Cyan
+    [255,0,255,255], //Magenta
+    [255,255,0,255] //Yellow
     ]
 ];
