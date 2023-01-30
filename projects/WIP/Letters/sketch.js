@@ -1,8 +1,8 @@
 let font;
 function preload() {
-  font = loadFont('..\\..\\fonts\\Roboto-Black.ttf');
+  font = loadFont('..\\..\\..\\fonts\\Roboto-Black.ttf');
 }
-
+animation = false;
 gif = false;
 fr = 2;
 capture = false;

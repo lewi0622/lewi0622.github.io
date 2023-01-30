@@ -161,7 +161,7 @@ function setParams(){
     seed = document.getElementById("Seed").value;
   }
 
-  full_controls = (controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1") && (controls!="false");
+  full_controls = (controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "127.0.0.2") && (controls!="false");
   if((controls != undefined && controls != "false") || full_controls){
     hidden_controls = false;
   }
@@ -266,7 +266,7 @@ function seed_scale_button(base_y){
     //color palette select
     color_sel = createSelect();
     palette_names.forEach(name => {
-      if(!exclude_palette.includes(name)){
+      if(!exclude_palette.includes(name) || full_controls){
         color_sel.option(name);
       }
     });
@@ -907,7 +907,6 @@ function refresh_working_palette(){
 }
 
 function find_cnv_mult(){
-  //a value of 401 makes it so a horizontal scroll bar never appears
   let base_x = 400;
   let base_y = 440;
   if(full_controls){
@@ -917,13 +916,12 @@ function find_cnv_mult(){
   //finds smallest multipler
   const x_mult = Math.round((windowWidth/base_x)*1000)/1000;
   const y_mult = Math.round((windowHeight/base_y)*1000)/1000;
-  if(x_mult<y_mult){
-    return constrain(x_mult, 1, 12);
-  }
-  else{
-    return constrain(y_mult, 1, 12);
-  }
 
+  //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
+  if(type == "svg") return 1;
+
+  if(x_mult<y_mult) return constrain(x_mult, 1, 12);
+  else return constrain(y_mult, 1, 12);
 }
 
 function indexOfMin(arr) {

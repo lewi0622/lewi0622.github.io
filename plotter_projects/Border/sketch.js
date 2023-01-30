@@ -12,7 +12,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(gif, SVG, 1056, 816);
 }
 //***************************************************
 function draw() {
@@ -23,7 +23,7 @@ function draw() {
   //actual drawing stuff
   push();
 
-  rect(0,0, 800, 1000);
+  rect(0,0, canvas_x, canvas_y);
 
   pop();
 
