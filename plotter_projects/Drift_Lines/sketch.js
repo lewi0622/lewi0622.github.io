@@ -14,7 +14,7 @@ function gui_values(){
 
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(gif, SVG, 1100, 850);
 }
 //***************************************************
 function draw() {
@@ -27,9 +27,9 @@ function draw() {
 
   let funcs, colors, iterations;
   let x_offset_min = 0;
-  let x_offset_max = 20;
+  let x_offset_max = 100;
   let y_offset_min = 0;
-  let y_offset_max = 20;
+  let y_offset_max = 100;
   
 
   //bleed
