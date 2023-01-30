@@ -10,7 +10,7 @@ suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
 
 
 function gui_values(){
-  parameterize("dec", random(2,3),2,3,0.1,true);
+  parameterize("dec", random(2,3),2,10,0.1,true);
   parameterize("points", floor(random(10,30)), 3, 100, 1, false);
   parameterize("scale_factor", random(10,15), 1, 30, 0.25, false);
   parameterize("noise_off", 50, 0, 100, 0.1, false);
@@ -70,7 +70,7 @@ function draw() {
         pts = arrayRotate(pts, floor(random(pts.length)));
         beginShape();
         //set points+3 to close loops, or +4 to overlap loops and not have closed shapes
-        for(let i=0; i<points+4; i++){
+        for(let i=0; i<points+3; i++){
           curveVertex(pts[i%pts.length].x, pts[i%pts.length].y)
         }
         endShape();
