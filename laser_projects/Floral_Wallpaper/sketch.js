@@ -10,7 +10,7 @@ suggested_palettes = [LASER]
 
 
 function gui_values(){
-  parameterize("dec", random(2,3),2,3,0.1,true);
+  parameterize("dec", random(2,3),2,20,0.1,true);
   parameterize("points", floor(random(10,30)), 3, 100, 1, false);
   parameterize("scale_factor", random(10,15), 1, 30, 0.25, false);
   parameterize("noise_off", 50, 0, 100, 0.1, false);
@@ -38,12 +38,15 @@ function draw() {
 
   refresh_working_palette();
 
-  strokeWeight(random(0.25,0.75)*global_scale);
+  strokeWeight(0.5*global_scale);
   let padding = starter_radius;
   translate(padding, padding);
   for(let j=0; j<rows; j++){
     for(let z=0; z<cols; z++){
 
+      //TEST FOR LASERING
+      dec += 0.75*global_scale;
+      print(dec/global_scale);
       let radius = starter_radius;
       push();
       stroke((j+z+1)*10);
@@ -61,7 +64,6 @@ function draw() {
         if(radius == starter_radius) stroke(working_palette[1]);
         else {
           stroke(working_palette[2]);
-          fill(working_palette[3]);
         }
         for(let i=0; i<points; i++){
           const ang = dir*i*(360/points);
