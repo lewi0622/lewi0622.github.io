@@ -1,4 +1,5 @@
-gif = true;
+animation = false;
+gif = false;
 fr = 5;
 c_id = 0;
 last_c_id = c_id;
