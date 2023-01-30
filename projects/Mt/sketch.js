@@ -10,7 +10,10 @@ suggested_palettes = [COTTONCANDY, SOUTHWEST, OASIS]
 
 
 function gui_values(){
-
+  parameterize("base_size", 20, 1, 100, 1, false);
+  parameterize("num_points", 200, 1, 500, 1, false);
+  parameterize("amp", 0.5, 0, 20, 0.1, true);
+  parameterize("amp_diff", 0.15, 0.01, 1, 0.01, true);
 }
 
 function setup() {
@@ -35,7 +38,6 @@ function draw() {
   //actual drawing stuff
   push();
   noFill();
-  const base_size = 20;
   let mt_size = working_palette.length*base_size*global_scale;
   translate(0, canvas_y/2)
   for(let i=0; i<working_palette.length; i){
@@ -62,14 +64,13 @@ function noise_curve(){
   beginShape();
   vertex(-canvas_x/2, 0);
 
-  let amp = 0.5*global_scale;
-  for(let j=0; j<200; j++){
+  for(let j=0; j<num_points; j++){
     vertex(j*2*global_scale, noise(j)*amp)
-    if(j<100){
-      amp += 0.15*global_scale;
+    if(j<num_points/2){
+      amp += amp_diff;
     }
     else{
-      amp -= 0.15*global_scale;
+      amp -= amp_diff;
     }
   }
 
