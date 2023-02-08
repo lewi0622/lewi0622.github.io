@@ -10,6 +10,7 @@ suggested_palettes = [LASER]
 
 //project variables
 let grid_size, line_padding, num_arcs, c_arr;
+let pen_weight;
 
 function gui_values(){
   parameterize("weight", ceil(random(1,6)), 0.1, 50, 0.25, true);
@@ -19,8 +20,9 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
-  colorMode(HSB);
+  //7 inches * 96 = 672 px
+  common_setup(gif, SVG, 672, 672);
+  pen_weight = MICRON05;
 }
 //***************************************************
 function draw() {
@@ -49,11 +51,6 @@ function draw() {
   bound = constrain(bound, 5, 50);
   const iterations = floor(random(bound, 50) * 40*global_scale/grid_size);
   refresh_working_palette();
-
-  //convert working palette to use HSBA
-  working_palette.forEach((e,idx) => {
-    working_palette[idx] = RGBA_to_HSBA(...e);
-  });
   
   const c_primary =  working_palette[0];
   const c_secondary = working_palette[1];
@@ -107,20 +104,11 @@ function draw() {
 
   //create color array
   c_arr = [];
-  let c_type = "Normal"//random(["Normal", "Rand", "Hue", "Sat", "Bri"]);
-  if(force_type != 0) c_type = ["Normal", "Rand", "Hue", "Sat", "Bri"][force_type-1];
   for(let i=0; i<num_arcs; i++){
     let c_to_add;
     const rand_color = random(working_palette);
     if(i%2 == 0) c_to_add = c_primary;
-    else{
-      let c_copy = JSON.parse(JSON.stringify(c_secondary));
-      if(c_type == "Hue") {c_copy[0] += 10*i; c_copy[0] = c_copy[0]%360}
-      else if(c_type == "Sat") c_copy[1] *= map(i/num_arcs, 0,1, 0.25, 2);
-      else if(c_type == "Bri") c_copy[2] *= map(i/num_arcs, 0,1, 0.25, 1.5);
-      else if(c_type == "Rand") c_copy = rand_color;
-      c_to_add = c_copy;
-    }
+    else c_to_add = c_secondary;
     c_to_add = color(c_to_add);
     c_arr.push(c_to_add)
   }
@@ -155,9 +143,9 @@ function draw() {
       }
 
       //draw tile
-      const do_not_draw = (current_tile.x<-grid_size||current_tile.x>canvas_x||current_tile.y<0||current_tile.y>canvas_y/2);
+      const do_not_draw = (current_tile.x<0||current_tile.x>canvas_x||current_tile.y<0||current_tile.y>canvas_y/2);
       if(current_tile.previous == current_tile.facing) current_tile.swapped = draw_lines(current_tile.facing, current_tile.swapped, do_not_draw);
-      else current_tile.swapped = draw_arcs(current_tile.previous, current_tile.facing, current_tile.swapped, do_not_draw);
+      // else current_tile.swapped = draw_arcs(current_tile.previous, current_tile.facing, current_tile.swapped, do_not_draw);
       //save facing to previous
       current_tile.previous = current_tile.facing;
       //move coordinates based on facing
@@ -234,18 +222,16 @@ function draw_lines(facing, swapped, do_not_draw){
   (swapped && facing == "up") ||
   (swapped && facing == "down")) swapped = !swapped;
 
-  //draw occluding rect
   push();
-  fill(working_palette[2])
-  noStroke();
-  if(!do_not_draw) rect(0,0, (num_arcs-1)*weight,-grid_size);
-  pop();
-
+  strokeWeight(pen_weight);
+  fill(working_palette[working_palette.length-1])
   for(let j=0; j<num_arcs; j++){
     if(swapped) stroke(c_arr[num_arcs-j-1]);
     else stroke(c_arr[j]);
-    if(!do_not_draw) line(j*weight,0, j*weight, -grid_size);
+    // if(!do_not_draw) line(j*weight,0, j*weight, -grid_size);
+    if(!do_not_draw) rect(j*weight-weight/2,0, weight, -grid_size);
   }
+  pop();
 }
 
 function draw_arcs(previous, facing, swapped, do_not_draw){
@@ -266,27 +252,14 @@ function draw_arcs(previous, facing, swapped, do_not_draw){
   if(!do_not_draw){
     beginShape();
     vertex(offset-weight, 0);
-    const xc = 0;
-    const yc = 0;
     const x1 = grid_size - offset + weight;
     const y1 = 0;
     vertex(x1,y1);
     const x4 = 0;
     const y4 = -grid_size + offset - weight;
     //bezier points calculated based on the center of the circle at 0,0
-    const ax = x1 - xc;
-    const ay = y1 - yc;
-    const bx = x4 - xc;
-    const by = y4 - yc;
-    const q1 = ax * ax + ay * ay
-    const q2 = q1 + ax * bx + ay * by
-    const k2 = (4/3) * (sqrt(2 * q1 * q2) - q2) / (ax * by - ay * bx)
-
-    const x2 = xc + ax - k2 * ay
-    const y2 = yc + ay + k2 * ax
-    const x3 = xc + bx + k2 * by                                 
-    const y3 = yc + by - k2 * bx
-    bezierVertex(x2,y2, x3,y3, x4,y4);
+    const controls = bezier_arc_controls(0,0 , x1, y1, x4, y4);                             
+    bezierVertex(...controls, x4,y4);
     endShape(CLOSE);
   }
   pop();
