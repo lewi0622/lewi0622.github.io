@@ -32,6 +32,8 @@ for f in to_replace:
     <script src="'''+rel_path.as_posix()+'''/p5.gui.js"></script>
     <script src="'''+rel_path.as_posix()+'''/quicksettings.js"></script>   
     <script src="https://unpkg.com/p5.js-svg@1.3.3"></script>
+    <!-- Pen Size Files for Plotting -->
+    <script src="'''+rel_path.as_posix()+'''/pen_utils.js"></script>
     <!-- Color Picker lib -->
     <link rel="stylesheet" href="'''+rel_path.as_posix()+'''/Alwan_Color_Picker/css/alwan.min.css">
     <script src="'''+rel_path.as_posix()+'''/Alwan_Color_Picker/js/alwan.min.js"></script>
