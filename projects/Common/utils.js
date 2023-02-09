@@ -1325,3 +1325,21 @@ function feTurbulence(baseFrequency, numOctaves, filter_scale){
   let g_tag = document.getElementsByTagName("g")[0];
   g_tag.setAttribute("filter", "url(#turb)");
 }
+
+function bezier_arc_controls(xc, yc, x1, y1, x4, y4){
+  //returns bezier control points creating an arc based on two points and the center of the circle
+  //https://stackoverflow.com/questions/734076/how-to-best-approximate-a-geometrical-arc-with-a-bezier-curve
+  const ax = x1 - xc;
+  const ay = y1 - yc;
+  const bx = x4 - xc;
+  const by = y4 - yc;
+  const q1 = ax * ax + ay * ay;
+  const q2 = q1 + ax * bx + ay * by;
+  const k2 = (4/3) * (sqrt(2 * q1 * q2) - q2) / (ax * by - ay * bx);
+
+  const x2 = xc + ax - k2 * ay;
+  const y2 = yc + ay + k2 * ax;
+  const x3 = xc + bx + k2 * by;                                 
+  const y3 = yc + by - k2 * bx;
+  return [x2, y2, x3, y3];
+}
