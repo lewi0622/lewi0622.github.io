@@ -15,7 +15,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(gif, SVG, 1056, 816);
 }
 //***************************************************
 function draw() {
@@ -36,7 +36,7 @@ function draw() {
   let cloud_info = [];
   for(let i=0; i<num_clouds; i++){
     let cloud_width = random(10,40)*global_scale;
-    let cloud_height = random(cloud_width*1.5, cloud_width*4);
+    let cloud_height = random(cloud_width*1.5, cloud_width*6);
     let starting_x = canvas_x/2 +random(-cloud_width, cloud_width);
     let starting_y = canvas_y/2 + random(-cloud_height, cloud_height);
     let coords = (create_cloud_coords(cloud_width, cloud_height, i*50, false, circle_rad));
@@ -47,7 +47,7 @@ function draw() {
     push();
     let x_upper_limit = e[1];
     translate(e[2][0], e[2][1]);
-    make_it_rain(x_upper_limit, rain_dir);
+    // make_it_rain(x_upper_limit, rain_dir);
     pop();
   });
   cloud_info.forEach(e => {
@@ -58,16 +58,6 @@ function draw() {
     pop();
   });
 
-  //grain
-  pop();
-  push();
-  noFill();
-  stroke("#f3f0de");
-  // stroke(random(working_palette));
-  strokeWeight(global_scale*0.006);
-  for(let i=0; i<60000; i++){
-    circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
-  }
   pop();
 
   //cutlines
@@ -77,7 +67,7 @@ function draw() {
 //***************************************************
 //custom funcs
 function create_cloud_coords(cloud_width, cloud_height, noise_offset, rain, circle_rad){
-  noStroke();
+
   //build cloud from mid bottom
   const gaussian_mean = random(-1,1);
   const gaussian_std = random(0.75,1.5);
@@ -114,7 +104,7 @@ function draw_clouds(coords){
 
     push();
     translate(x,y);
-    fill("BLACK");
+    stroke("BLACK");
     const x_wiggle = random(-1,1)*(rad)/2;
     const y_wiggle = random(-1,1)*(rad)/2;
     circle(x_wiggle, y_wiggle, rad);
@@ -128,7 +118,7 @@ function draw_clouds(coords){
     let rad = data[2];
     push();
     translate(x,y);
-    fill(cloud_color);
+    stroke(cloud_color);
     rad *= random(0.1,random(0.5,0.9));
     const x_wiggle = random(-1,1)*(data[2]-rad)/8;
     const y_wiggle = random(-1,1)*(data[2]-rad)/8;
