@@ -15,8 +15,19 @@ tree = ET.parse(input_file)
 root = tree.getroot()
 svg_width = root.attrib["width"] #size in pixels, css units are 96 px = 1 inch 
 svg_height = root.attrib["height"] 
-svg_width_inches = float(svg_width)/96 
-svg_height_inches = float(svg_height)/96
+
+if "in" in svg_width:
+    svg_width_inches = svg_width.replace("in", "")
+else:
+    svg_width_inches = float(svg_width)/96 
+
+if "in" in svg_height:
+    svg_height_inches = svg_height.replace("in", "")
+else:
+    svg_height_inches = float(svg_height)/96
+
+
+
 
 #set output file
 file_parts = os.path.splitext(input_file)
