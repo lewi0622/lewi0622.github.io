@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-suggested_palettes = [SIXTIES]
+suggested_palettes = [BIRDSOFPARADISE, SIXTIES, SUPPERWARE]
 
 function gui_values(){
   parameterize("tile_div", random(70, 300), 1, 400, 1, false);
@@ -28,7 +28,10 @@ function draw() {
 
   //apply background
   let bg_c;
-  if(getParamValue("colors")== 12) bg_c = working_palette[0];
+  print(global_palette_id)
+  if(global_palette_id == 6) bg_c = working_palette[7];
+  else if(global_palette_id == 12) bg_c = working_palette[0];
+  else if(global_palette_id == 14) bg_c = working_palette[5];
   else bg_c = random(working_palette)
   background(bg_c)
   reduce_array(working_palette, bg_c)
@@ -148,6 +151,16 @@ function draw() {
     }
     current_y += amp_start*2;
     pop();
+  }
+  //grain
+  pop();
+  push();
+  noFill();
+  stroke("#f3f0de");
+  // stroke(random(working_palette));
+  strokeWeight(global_scale*0.006);
+  for(let i=0; i<60000; i++){
+    circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
   }
   pop();
   //cutlines
