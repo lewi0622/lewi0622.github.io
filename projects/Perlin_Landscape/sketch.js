@@ -9,11 +9,11 @@ const sixteen_by_nine = false;
 suggested_palettes = []
 
 function gui_values(){
-  parameterize("step_number", 400, 10, 1000, 1, false);
-  parameterize("noise_damp_x", 500, 1, 1000, 10, false);
+  parameterize("step_number", 200, 10, 1000, 1, false);
+  parameterize("y_slide", 1.1, 0, 5, 0.1, true);
   parameterize("noise_damp_y", 300, 1, 500, 10, false);
-  parameterize("noise_damp_drift", 500, 1, 500, 1, false);
-  parameterize("shape_number", 100, 1, 1000, 1, false);
+  parameterize("noise_damp_drift", 100, 1, 500, 1, false);
+  parameterize("shape_number", 500, 1, 1000, 1, false);
 }
 
 function setup() {
@@ -29,14 +29,12 @@ function draw() {
 
   //apply background
   let bg_c = random(working_palette);
-  background(bg_c)
-  reduce_array(working_palette, bg_c)
+  background(bg_c);
+  reduce_array(working_palette, bg_c);
+  bg_c = color(bg_c);
 
   //actual drawing stuff
   push();
-
-  //origin in lower left
-  translate(-canvas_x/2, canvas_y);
 
   let primary_color = random(working_palette);
   reduce_array(working_palette, primary_color);
@@ -46,43 +44,95 @@ function draw() {
   secondary_color = color(secondary_color);
 
   noFill();
-  strokeWeight(3*global_scale);
+  strokeWeight(10*global_scale);
   strokeJoin(ROUND)
   const step_size = canvas_x*2/step_number;
 
-  const slope_down_point = step_number/2-(canvas_x/3)/step_size;
-  const slope_up_point = step_number/2+(canvas_x/3)/step_size;
-  // const slope_points = slope_up_point-slope_down_point;
+  //find a minimum value to try and center on screen
+  let max_noise = 0;
+  let max_noise_x_index = 0;
+  let max_noise_y_index = 0;
+  for(let i=0; i<100; i++){
+    for(let j=0; j<100; j++){
+      if(noise(i,j)>max_noise){
+        max_noise=noise(i,j);
+        max_noise_x_index = i;
+        max_noise_y_index = j;
+      }
+    }
+  }
+  // const slope_down_point = step_number/2-(canvas_x/3)/step_size;
+  // const slope_up_point = step_number/2+(canvas_x/3)/step_size;
 
   for(let j=0; j<shape_number; j++){
     push();
+    if(j/shape_number<0.5) stroke(lerpColor(bg_c, primary_color, map(j/shape_number, 0,0.5, 0,1)));
+    else stroke(lerpColor(primary_color,secondary_color, map(j/shape_number, 0.5,1, 0,1)));
+    drawingContext.filter = 'blur('+map(j/shape_number, 0,1, 1,0)*global_scale+'px)';
+
+
+
+    // let depth_valley_factor = 0;
+    // if(j>shape_number/2) depth_valley_factor = map(j, shape_number/2, shape_number, 0, 5*global_scale);
+
+    // y_min += j*y_slide;
+    // y_max += j*y_slide;
+
+
     //drive drift close to zero so that the center is open at the end
-    const horizontal_drift = map(j, 0, shape_number, 400*global_scale, 10*global_scale);
-    translate(map(noise(j/noise_damp_drift), 0,1, -horizontal_drift, horizontal_drift),0);
-    stroke(lerpColor(primary_color,secondary_color, j/shape_number));
+    // const horizontal_drift_amplitude = 5//map(j, 0, shape_number, 1, 0.1);
+    // const horizontal_drift = map(noise(j/noise_damp_drift), 0,1, -horizontal_drift_amplitude, horizontal_drift_amplitude);
 
+    // drift = map(j/shape_number, 0, 1, drift,0);
+
+    //sample noise range window centered on minmim noise index
+    //a range of 2.5 was found to give a good looking curve
+    // const noise_range = map(j, 0, shape_number, 10 + drift, drift);
+    const noise_range = 2.5;
+    const drift_offset = map(noise(j/noise_damp_drift), 0,1, -noise_range,noise_range);
+    const noise_range_min = max_noise_x_index + drift_offset - noise_range/2;
+    const noise_range_max = max_noise_x_index + drift_offset + noise_range/2;
     beginShape();
-    let y_min = canvas_y*0.25;
-    let y_max = -canvas_y*1.25;
     for(let i=0; i<step_number; i++){
-      //add feature for checking if just beyond canvas before beginging/ending
-      //draw noise curve from -canvas_x/2 to canvas_x*1.5
-      let depth_valley_factor = 0;;
-      if(j>shape_number/2) depth_valley_factor = map(j, shape_number/2, shape_number, 0, 5*global_scale);
-
-      if(i<step_number/2 && i>slope_down_point){
-        // y_min += depth_valley_factor;
-        y_max += depth_valley_factor;
-      }
-      else if(i>step_number/2 && i<slope_up_point){
-        // y_min -= depth_valley_factor;
-        y_max -= depth_valley_factor;
-      }
-
-      const y = map(noise(i*step_size/noise_damp_x, j/noise_damp_y), 0,1, y_min, y_max);
-      vertex(i*step_size, y);
+      let y_min = 0//map(j, 0, shape_number, 0, -canvas_y) + j*y_slide;
+      let y_max = canvas_y + j*y_slide;
+      const noise_index = map(i, 0,step_number, noise_range_min, noise_range_max);
+      const x = map(i, 0,step_number, -step_size, canvas_x+step_size);
+      //down slope
+      // let y_slope_down = 0;
+      // if(x>canvas_x/8 && x<=canvas_x/2) y_slope_down = map(x, canvas_x/8, canvas_x/2, 0, canvas_y/2);
+      // else if(x>canvas_x/2 && x<canvas_x*7/8) y_slope_down = map(x, canvas_x/2,canvas_x*7/8, canvas_y/2, 0);
+      // y_min += y_slope_down;
+      // y_max += y_slope_down;
+      const y = map(noise(noise_index,j/noise_damp_y), 0,1, y_min, y_max);
+      vertex(x,y);
     }
     endShape();
+
+
+    //water
+    // push();
+    // stroke("BLUE")
+    // line(0, canvas_y*3/4 + j*y_slide, canvas_x, canvas_y*3/4+j*y_slide);
+    // pop();
+    // for(let i=0; i<step_number; i++){
+    //   let depth_valley_factor = 0;;
+    //   if(j>shape_number/2) depth_valley_factor = map(j, shape_number/2, shape_number, 0, 5*global_scale);
+
+    //   if(i<step_number/2 && i>slope_down_point){
+    //     // y_min += depth_valley_factor;
+    //     y_max += depth_valley_factor;
+    //   }
+    //   else if(i>step_number/2 && i<slope_up_point){
+    //     // y_min -= depth_valley_factor;
+    //     y_max -= depth_valley_factor;
+    //   }
+    //   const x = x_start + x_offset+ i*step_size;
+
+    //   const y = y_start + map(noise(i*step_size/noise_damp_x, j/noise_damp_y), 0,1, y_min, y_max);
+
+    // }
+
     pop();
   }
 
