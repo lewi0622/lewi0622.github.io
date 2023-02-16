@@ -19,11 +19,13 @@ function gui_values(){
   parameterize("rotation", 0, 0, 360, 1, false);
   parameterize("line_size", 300, 100, 500, 10, true);
   parameterize("phase_off", 20, 0, 20, 0.1, false);
+  parameterize("octaves", 4, 1, 20, 1, false);
+  parameterize("falloff", 0.5, 0, 1, 0.01, false);
 }
 
 function setup() {
   if(!capture){
-    common_setup(gif, SVG);
+    common_setup(gif, SVG, 7*96, 7*96);
   }
   else{
     common_setup(gif);
@@ -45,6 +47,7 @@ function draw() {
 
   //actual drawing stuff
   push();
+  noiseDetail(octaves, falloff);
   center_rotate(rotation);
   let working_i_mult = i_mult_coarse + i_mult_fine;
 
