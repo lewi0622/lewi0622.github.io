@@ -18,12 +18,16 @@ svg_height = root.attrib["height"]
 
 if "in" in svg_width:
     svg_width_inches = svg_width.replace("in", "")
+elif "px" in svg_width:
+    svg_width_inches = float(svg_width.replace("px", ""))/96 
 else:
     svg_width_inches = float(svg_width)/96 
 
 if "in" in svg_height:
     svg_height_inches = svg_height.replace("in", "")
-else:
+elif "px" in svg_height:
+    svg_height_inches = float(svg_height.replace("px", ""))/96 
+else:   
     svg_height_inches = float(svg_height)/96
 
 
@@ -98,11 +102,12 @@ def build_vpypeline(show=False):
 
     if show:
         args += r" show "
+
         return prefix + '"' + input_file + '"' + args
     else:
         args += r" write "
-        # if color_mode.get():
-        #args += r" --color-mode layer "
+        if color_mode.get():
+            args += r" --color-mode stroke "
         return prefix + '"' + input_file + '"' + args + '"' + output_file + '"'
 
 
@@ -209,8 +214,8 @@ linesimplify_tolerance = Entry(window)
 linesimplify_tolerance.insert(0, "0.001968504")
 linesimplify_tolerance.pack()
 
-# color_mode = IntVar()
-# color_mode_button = Checkbutton(window, text="Order by color (will overwrite colors)", variable=color_mode).pack()
+color_mode = IntVar()
+color_mode_button = Checkbutton(window, text="Order by color (will overwrite colors)", variable=color_mode).pack()
 
 #OUTPUT FILENAME, EDITABLE
 
