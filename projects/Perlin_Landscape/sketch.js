@@ -17,7 +17,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, P2D, 800, 450);
+  common_setup(gif, P2D, 400, 225);
 }
 //***************************************************
 function draw() {

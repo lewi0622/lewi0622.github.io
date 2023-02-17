@@ -102,7 +102,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   
   //shift position to center canvas if base is different than 400
   if(base_x<=400 && base_y<=400){
-    cnv.position((400*global_scale-canvas_x)/2, (400*global_scale-canvas_y)/2);
+    cnv.position((400*global_scale-canvas_x)/2, 0);
   }
   
   // gives change for square or rounded edges, this can be overriden within the draw function
