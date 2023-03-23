@@ -76,7 +76,9 @@ def build_vpypeline(show=False):
         prefix += r" --no-crop "
 
     #standard mat opening for an 8x10 artwork is 7.5x9.5, usually scale to something less
-    args = f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
+    args = ""
+    if scale_option.get():
+        args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
     args += f" rotate {rotate_entry.get()} "
 
     #occult function uses most recently drawn closed shapes to erase lines that are below the shape
@@ -140,6 +142,8 @@ crop_button = Checkbutton(window, text="Crop input", variable=crop).pack()
 scale_label = Label(window, text="Scale options (default: input file size)", fg="blue", cursor="hand2")
 scale_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#scaleto"))
 scale_label.pack()
+scale_option = IntVar(value=1)
+scale_button = Checkbutton(window, text="Scale?", variable=scale_option).pack()
 scale_width_label = Label(window, text="Width Scale to (inches):").pack()
 scale_width_entry = Entry(window)
 scale_width_entry.insert(0,f"{svg_width_inches}")
