@@ -20,6 +20,8 @@ if "in" in svg_width:
     svg_width_inches = svg_width.replace("in", "")
 elif "px" in svg_width:
     svg_width_inches = float(svg_width.replace("px", ""))/96 
+elif "cm" in svg_width:
+    svg_width_inches = float(svg_width.replace("cm", ""))/2.54
 else:
     svg_width_inches = float(svg_width)/96 
 
@@ -27,6 +29,10 @@ if "in" in svg_height:
     svg_height_inches = svg_height.replace("in", "")
 elif "px" in svg_height:
     svg_height_inches = float(svg_height.replace("px", ""))/96 
+elif "cm" in svg_height:
+    print(svg_height.replace("cm", ""))
+    svg_height_inches = float(svg_height.replace("cm", ""))/2.54
+    print(svg_height_inches)
 else:   
     svg_height_inches = float(svg_height)/96
 
@@ -117,7 +123,7 @@ title = Label(window, text="Vpype Options", fg="blue", cursor="hand2")
 title.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/index.html"))
 title.pack()
 
-dimensions = Label(window, text=f"Input file Width(px): {svg_width}, Height(px): {svg_height}").pack()
+dimensions = Label(window, text=f"Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").pack()
 
 read_stroke_label = Label(window, text="Preserve Colors", fg="blue", cursor="hand2")
 read_stroke_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#preserve-color-or-other-attributes-when-reading-svg"))
