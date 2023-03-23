@@ -63,7 +63,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   else if(renderer == SVG) type="svg";
   hidden_controls = true;
 
-  setParams();
+  setParams(base_x, base_y);
   seed_scale_button(base_y);
   seed = reset_drawing(seed, base_x, base_y);
 
@@ -102,7 +102,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   
   //shift position to center canvas if base is different than 400
   if(base_x<=400 && base_y<=400){
-    cnv.position((400*global_scale-canvas_x)/2, (400*global_scale-canvas_y)/2);
+    cnv.position((400*global_scale-canvas_x)/2, 0);
   }
   
   // gives change for square or rounded edges, this can be overriden within the draw function
@@ -147,7 +147,7 @@ function over_ride_shuffle(){
   }
 }
 
-function setParams(){
+function setParams(base_x, base_y){
   //get params from url and set necessary globals
   const controls = getParamValue('controls');
   seed = getParamValue('seed');
@@ -171,7 +171,7 @@ function setParams(){
   }
   else{
     //get scale based on window size
-    global_scale = find_cnv_mult();
+    global_scale = find_cnv_mult(base_x, base_y);
   }
 
   if(add_bleed != undefined){
@@ -906,9 +906,8 @@ function refresh_working_palette(){
   working_palette = JSON.parse(JSON.stringify(palette));
 }
 
-function find_cnv_mult(){
-  let base_x = 400;
-  let base_y = 440;
+function find_cnv_mult(base_x, base_y){
+  base_y += 40;
   if(full_controls){
     //space for second row of controls, the extra 3 is make sure no vertical scrollbar
     base_y += 20;
