@@ -13,6 +13,8 @@ const BICCRISTAL = 0.0629921*96/2;
 //for fill use this value/2 distance between lines
 const COPICMARKER = 0.1*96;
 
+//Faber-Castell Pitt Brush Pens
+const PITTPEN = 0.04*96;
 
 //copic marker hex codes
 const COPIC_OPACITY = 0.75;
