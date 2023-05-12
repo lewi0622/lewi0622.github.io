@@ -1,14 +1,101 @@
 import subprocess, os, glob
 from tkinter import *
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilenames
 import xml.etree.ElementTree as ET
 import webbrowser
+
+#Define a callback function
+def callback(url):
+   webbrowser.open_new_tab(url)
+
+
+def run_vpypeline():
+    window.quit()
+    for filename in input_files:
+        command = build_vpypeline(filename=filename, show=False)
+        print("Running: \n", command)
+        subprocess.run(command)
+
+
+def show_vpypeline():
+    show=True
+    command = build_vpypeline(filename=input_files[0], show=show)
+    print("Showing: \n", command)
+    subprocess.run(command)
+
+
+def build_vpypeline(filename, show):
+    #set output file
+    file_parts = os.path.splitext(filename)
+    output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
+
+    #read command
+    prefix = r"vpype read "
+
+    # conserve stroke colors\
+    if read_stroke.get():
+        prefix += r" -a stroke  "
+
+    # read flag: doesn't crop incoming picture
+    if not crop.get():
+        prefix += r" --no-crop "
+
+    #standard mat opening for an 8x10 artwork is 7.5x9.5, usually scale to something less
+    args = ""
+    if scale_option.get():
+        args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
+    if rotate_entry.get() != 0:
+        args += f" rotate {rotate_entry.get()} "
+
+    #occult function uses most recently drawn closed shapes to erase lines that are below the shape
+    # the flag -i ignores layers and occults everything
+    if occult.get():
+        args += r" occult "
+        if occult_ignore.get():
+            args += r" -i "
+        elif occult_accross.get():
+            args += r" -a "
+ 
+    #layout as letter centers graphics within given page size
+    args += r" layout "
+    if(layout_landscape.get()):
+        args += r" -l "
+    args += f" {layout_width_entry.get()}x{layout_height_entry.get()}in "
+
+    if linemerge.get():
+        args += f" linemerge "
+        if linemerge_tolerance.get() != "0.001968504":
+            args += f" -t {linemerge_tolerance.get()} "
+
+    if linesort.get():
+        args += r" linesort "
+
+    if reloop.get():
+        args += r" reloop "  
+
+    if linesimplify.get():
+        args += f" linesimplify "
+        if linesimplify_tolerance.get() != "0.001968504":
+            args += f" -t {linesimplify_tolerance.get()} "
+
+    if show:
+        args += r" show "
+
+        return prefix + '"' + filename + '"' + args
+    else:
+        args += r" write "
+        if color_mode.get():
+            args += r" --color-mode stroke "
+        return prefix + '"' + filename + '"' + args + '"' + output_file + '"'
+
 
 initial_dir = r"C:\Users\lewi0\Downloads"
 list_of_files = glob.glob(initial_dir + r"\*.svg")
 latest_file = max(list_of_files, key=os.path.getctime)
 
-input_file = askopenfilename(initialdir=initial_dir, filetypes=(("SVG files","*.svg*"),("all files","*.*")), initialfile=latest_file)
+input_files = askopenfilenames(initialdir=initial_dir, filetypes=(("SVG files","*.svg*"),("all files","*.*")), initialfile=latest_file)
+
+input_file = input_files[0]
 
 #get svg size
 tree = ET.parse(input_file)
@@ -35,89 +122,6 @@ elif "cm" in svg_height:
     print(svg_height_inches)
 else:   
     svg_height_inches = float(svg_height)/96
-
-
-
-
-#set output file
-file_parts = os.path.splitext(input_file)
-output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
-
-
-#Define a callback function
-def callback(url):
-   webbrowser.open_new_tab(url)
-
-
-def run_vpypeline():
-    window.quit()
-    command = build_vpypeline()
-    print("Running: \n", command)
-    subprocess.run(command)
-
-
-def show_vpypeline():
-    show=True
-    command = build_vpypeline(show)
-    print("Showing: \n", command)
-    subprocess.run(command)
-
-
-def build_vpypeline(show=False):
-    #read command
-    prefix = r"vpype read "
-
-    # conserve stroke colors\
-    if read_stroke.get():
-        prefix += r" -a stroke  "
-
-    # read flag: doesn't crop incoming picture
-    if not crop.get():
-        prefix += r" --no-crop "
-
-    #standard mat opening for an 8x10 artwork is 7.5x9.5, usually scale to something less
-    args = ""
-    if scale_option.get():
-        args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
-    args += f" rotate {rotate_entry.get()} "
-
-    #occult function uses most recently drawn closed shapes to erase lines that are below the shape
-    # the flag -i ignores layers and occults everything
-    if occult.get():
-        args += r" occult "
-        if occult_ignore.get():
-            args += r" -i "
-        elif occult_accross.get():
-            args += r" -a "
- 
-    #layout as letter centers graphics within given page size
-    args += r" layout "
-    if(layout_landscape.get()):
-        args += r" -l "
-    args += f" {layout_width_entry.get()}x{layout_height_entry.get()}in "
-
-    if linemerge.get():
-        args += f" linemerge -t {linemerge_tolerance.get()} "
-
-    if linesort.get():
-        args += r" linesort "
-
-    if reloop.get():
-        args += r" reloop "  
-
-    if linesimplify.get():
-        args += f" linesimplify -t{linesimplify_tolerance.get()} "
-
-    if show:
-        args += r" show "
-
-        return prefix + '"' + input_file + '"' + args
-    else:
-        args += r" write "
-        if color_mode.get():
-            args += r" --color-mode stroke "
-        return prefix + '"' + input_file + '"' + args + '"' + output_file + '"'
-
 
 #tk widgets and window
 window = Tk()
@@ -185,7 +189,7 @@ layout_landscape_button.pack()
 occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
 occult_label.bind("<Button-1>", lambda e: callback("https://github.com/LoicGoulefert/occult"))
 occult_label.pack()
-occult = IntVar(value=1)
+occult = IntVar(value=0)
 occult_button = Checkbutton(window, text="Occult", variable=occult).pack()
 occult_ignore = IntVar(value=1)
 occult_ignore_button = Checkbutton(window, text="Ignore Layers", variable=occult_ignore).pack()
@@ -230,7 +234,10 @@ color_mode_button = Checkbutton(window, text="Order by color (will overwrite col
 #OUTPUT FILENAME, EDITABLE
 
 show_button = Button(window, text="Show Output", command=show_vpypeline).pack()
-confirm_button = Button(window, text="Confirm", command=run_vpypeline).pack()
+if len(input_files)>1:
+    confirm_button = Button(window, text="Apply to All", command=run_vpypeline).pack()
+else:
+    confirm_button = Button(window, text="Confirm", command=run_vpypeline).pack()
 
 window.mainloop()
 
