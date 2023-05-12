@@ -5,7 +5,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 8;
-suggested_palettes = [BIRDSOFPARADISE]
+suggested_palettes = []
 
 //project variables
 let c_leaf_primary, branch_weight;
@@ -136,9 +136,9 @@ function branch(branch_num, start_x, start_y, start_weight){
 
 function leaves(x,y){
   push();
-  noStroke();
+  noFill();
 
-  fill(c_leaf_primary);
+  stroke(c_leaf_primary);
   for(let i=0; i<6; i++){
     circle(x+random(-2,2)*global_scale, y+random(-2,2)*global_scale, 5*global_scale)
   }
