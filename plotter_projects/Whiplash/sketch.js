@@ -17,10 +17,13 @@ function gui_values(){
   parameterize("step_size", 3, 1, 50, 1, false);
   parameterize("step_num", 720, 10, 1500, 20, false);
   parameterize("rotation", 0, 0, 360, 1, false);
-  parameterize("line_size", 300, 100, 500, 10, true);
+  parameterize("line_size", 300, 100, 1500, 10, true);
   parameterize("phase_off", 20, 0, 20, 0.1, false);
   parameterize("octaves", 4, 1, 20, 1, false);
   parameterize("falloff", 0.5, 0, 1, 0.01, false);
+  parameterize("tightness", 0, -5, 5, 0.1, false);
+  parameterize("x_translate", 0, -400, 400, 1, true);
+  parameterize("y_translate", 0, -400, 400, 1, true);
 }
 
 function setup() {
@@ -32,8 +35,9 @@ function setup() {
     background("WHITE")
   }
   noFill();
-  strokeWeight(1.5)
-  angleMode(DEGREES)
+  // strokeWeight(COPICMARKER*3/4);
+  // strokeWeight(0.0944882*96);
+  angleMode(DEGREES);
 }
 //***************************************************
 function draw() {
@@ -47,11 +51,12 @@ function draw() {
 
   //actual drawing stuff
   push();
+  curveTightness(tightness);
   noiseDetail(octaves, falloff);
   center_rotate(rotation);
   let working_i_mult = i_mult_coarse + i_mult_fine;
 
-  translate(canvas_x/2, canvas_y/2);
+  translate(canvas_x/2+x_translate, canvas_y/2+y_translate);
   beginShape();
   for(let i=0; i<step_num; i+=step_size){
     let xoff = map(cos(i*working_i_mult), -1,1, 0, noise_maximum);
