@@ -1,7 +1,7 @@
 'use strict';
 //setup variables
-const gif = true;
-const animation = true;
+const gif = false;
+const animation = false;
 const fr = 4;
 const capture = false;
 const capture_time = 10;
@@ -82,8 +82,7 @@ function draw() {
   }
   xoff+=inc;
   pop();
-  filter(ERODE);
-  filter(ERODE);
+
   //cutlines
   apply_cutlines(bleed_border);
   capture_frame(capture);

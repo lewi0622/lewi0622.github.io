@@ -59,7 +59,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   if(!capture) frameRate(fr);
 
   //init globals
-  if(renderer == P2D) type="png";
+  if(renderer == P2D || renderer == WEBGL) type="png";
   else if(renderer == SVG) type="svg";
   hidden_controls = true;
 
@@ -106,7 +106,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   }
   
   // gives change for square or rounded edges, this can be overriden within the draw function
-  strokeCap(random([PROJECT,ROUND]));
+  if(renderer != WEBGL) strokeCap(random([PROJECT,ROUND]));
 
   if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
