@@ -1342,3 +1342,15 @@ function bezier_arc_controls(xc, yc, x1, y1, x4, y4){
   const y3 = yc + by - k2 * bx;
   return [x2, y2, x3, y3];
 }
+
+
+function nTimes(func, arg, n) {
+  //perform func n times on arg. i.e. sin(sin(sin(theta))): nTimes(sin, theta, 3)
+  let returnValue = arg;
+
+  for (let i = 0; i < n; i++) {
+    returnValue = func(returnValue)
+ }
+
+  return returnValue;
+}
