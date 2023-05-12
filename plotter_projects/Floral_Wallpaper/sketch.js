@@ -15,9 +15,9 @@ function gui_values(){
   parameterize("scale_factor", random(10,15), 1, 30, 0.25, false);
   parameterize("noise_off", 50, 0, 100, 0.1, false);
   parameterize("starter_radius", canvas_x/global_scale/random(4.5,6), canvas_x/global_scale/10, canvas_x/global_scale/3, 1 ,true);
-  parameterize("min_radius", 1, 0.1,5,0.1,true);
+  parameterize("min_radius", 1, 0.1,50,0.1,true);
   parameterize("start_ang",0,0,360,1,false);
-  parameterize("end_ang", 180, 0, 360, 1, false);
+  parameterize("end_ang", 0, 0, 360, 1, false);
   parameterize("ang_div", 20, 1, 50, 0.5, false);
   parameterize("spacing", 60, 60, 400, true);
   parameterize("rows", 1, 1, 5, 1, false);
@@ -25,7 +25,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(gif, SVG, 5*96, 5*96);
 }
 //***************************************************
 function draw() {
@@ -37,8 +37,9 @@ function draw() {
   push();
 
   refresh_working_palette();
-
-  strokeWeight(random(0.25,0.75)*global_scale);
+  
+  // strokeWeight(random(0.25,0.75)*global_scale);
+  // strokeWeight(COPICMARKER*3/4)
   let padding = starter_radius;
   translate(padding, padding);
   for(let j=0; j<rows; j++){
@@ -70,7 +71,7 @@ function draw() {
         pts = arrayRotate(pts, floor(random(pts.length)));
         beginShape();
         //set points+3 to close loops, or +4 to overlap loops and not have closed shapes
-        for(let i=0; i<points+3; i++){
+        for(let i=0; i<points+4; i++){
           curveVertex(pts[i%pts.length].x, pts[i%pts.length].y)
         }
         endShape();
