@@ -35,6 +35,9 @@ function draw() {
   noFill();
   // strokeWeight(random(0.25,0.75)*global_scale);
   // strokeWeight(COPICMARKER*3/4)
+  let c = color("BLACK");
+  c.setAlpha(100);
+  stroke(c);
   strokeWeight(0.019685*96);
   translate(canvas_x/2, canvas_y/2);
   //scale line segments depending on radius??
