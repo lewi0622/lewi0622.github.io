@@ -14,7 +14,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(gif, SVG, 4*96, 4*96);
 }
 //***************************************************
 function draw() {  
@@ -25,11 +25,11 @@ function draw() {
 
   refresh_working_palette();
   strokeCap(SQUARE)
-  strokeWeight(COPICMARKER);
+  // strokeWeight(COPICMARKER);
   noFill();
   //apply background
   let bg_c = working_palette[1]; //white
-  background(bg_c)
+  // background(bg_c)
   
   //actual drawing stuff
   push();
@@ -43,7 +43,7 @@ function draw() {
   rotate(120);
   stroke(working_palette[0]);
   arcs.forEach(e => {
-    strokeWeight(random(COPICMARKER, COPICMARKER*2))
+    // strokeWeight(random(COPICMARKER, COPICMARKER*2))
     arc(0, 0, e.radius, e.radius, 0, e.angle);
   });
   pop();
