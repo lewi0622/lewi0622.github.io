@@ -15,7 +15,8 @@ def run_vpypeline():
         command = build_vpypeline(filename=filename, show=False)
         print("Running: \n", command)
         subprocess.run(command)
-
+        if paint.get():
+            subprocess.run("python C:\\Users\\lewi0\\Desktop\\lewi0622.github.io\\Vpype_Paint.py")
 
 def show_vpypeline():
     show=True
@@ -36,16 +37,10 @@ def build_vpypeline(filename, show):
     if read_stroke.get():
         prefix += r" -a stroke  "
 
-    # read flag: doesn't crop incoming picture
-    if not crop.get():
-        prefix += r" --no-crop "
+    # alwasy no crop, and execute crop command separately
+    prefix += r" --no-crop "
 
-    #standard mat opening for an 8x10 artwork is 7.5x9.5, usually scale to something less
     args = ""
-    if scale_option.get():
-        args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
-    if rotate_entry.get() != 0:
-        args += f" rotate {rotate_entry.get()} "
 
     #occult function uses most recently drawn closed shapes to erase lines that are below the shape
     # the flag -i ignores layers and occults everything
@@ -55,6 +50,15 @@ def build_vpypeline(filename, show):
             args += r" -i "
         elif occult_accross.get():
             args += r" -a "
+
+    # read flag: doesn't crop incoming picture
+    if crop.get():
+        args += f" crop 0 0 {svg_width_inches}in {svg_height_inches}in"
+
+    if scale_option.get():
+        args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
+    if rotate_entry.get() != 0:
+        args += f" rotate {rotate_entry.get()} "
  
     #layout as letter centers graphics within given page size
     if layout.get():
@@ -103,6 +107,8 @@ tree = ET.parse(input_file)
 root = tree.getroot()
 svg_width = root.attrib["width"] #size in pixels, css units are 96 px = 1 inch 
 svg_height = root.attrib["height"] 
+svg_viewbox = root.attrib["viewBox"]
+svg_viewbox = svg_viewbox.split(" ")
 
 if "in" in svg_width:
     svg_width_inches = svg_width.replace("in", "")
@@ -110,6 +116,8 @@ elif "px" in svg_width:
     svg_width_inches = float(svg_width.replace("px", ""))/96 
 elif "cm" in svg_width:
     svg_width_inches = float(svg_width.replace("cm", ""))/2.54
+elif "%" in svg_width:
+    svg_width_inches = float(svg_viewbox[2])/96
 else:
     svg_width_inches = float(svg_width)/96 
 
@@ -118,9 +126,9 @@ if "in" in svg_height:
 elif "px" in svg_height:
     svg_height_inches = float(svg_height.replace("px", ""))/96 
 elif "cm" in svg_height:
-    print(svg_height.replace("cm", ""))
     svg_height_inches = float(svg_height.replace("cm", ""))/2.54
-    print(svg_height_inches)
+elif "%" in svg_height:
+    svg_height_inches = float(svg_viewbox[3])/96
 else:   
     svg_height_inches = float(svg_height)/96
 
@@ -141,6 +149,19 @@ read_stroke_label.grid(row=current_row, column=0)
 read_stroke = IntVar(value=1)
 read_stroke_button = Checkbutton(window, text="--attr stroke", variable=read_stroke).grid(row=current_row, column=1)
 current_row +=1 
+
+occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
+occult_label.bind("<Button-1>", lambda e: callback("https://github.com/LoicGoulefert/occult"))
+occult_label.grid(row=current_row, column=0)
+occult = IntVar(value=0)
+occult_button = Checkbutton(window, text="Occult", variable=occult).grid(row=current_row, column=1)
+current_row +=1 
+occult_ignore = IntVar(value=1)
+occult_ignore_button = Checkbutton(window, text="Occult ignores Layers", variable=occult_ignore).grid(row=current_row, column=0)
+occult_accross = IntVar(value=0)
+occult_accross_button = Checkbutton(window, text="Occult accross layers, not within", variable=occult_accross).grid(row=current_row, column=1)
+current_row +=1 
+
 crop_label = Label(window, text="Crop to above dimensions on read", fg="blue", cursor="hand2")
 crop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#cmdoption-read-c"))
 crop_label.grid(row=current_row,column=0)
@@ -155,16 +176,18 @@ scale_option = IntVar(value=1)
 scale_button = Checkbutton(window, text="Scale?", variable=scale_option).grid(row=current_row,column=1)
 current_row +=1 
 scale_width_label = Label(window, text="Width Scale to (inches):").grid(row=current_row, column=0)
+scale_height_label = Label(window, text="Height Scale to (inches):").grid(row=current_row, column=1)
+
 current_row +=1 
 scale_width_entry = Entry(window)
 scale_width_entry.insert(0,f"{svg_width_inches}")
 scale_width_entry.grid(row=current_row, column=0)
 
-scale_height_label = Label(window, text="Height Scale to (inches):").grid(row=current_row-1, column=1)
 scale_height_entry = Entry(window)
 scale_height_entry.insert(0,f"{svg_height_inches}")
 scale_height_entry.grid(row=current_row, column=1)
 current_row +=1 
+
 rotate_label = Label(window, text="Rotate Clockwise", fg="blue", cursor="hand2")
 rotate_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
 rotate_label.grid(row=current_row, column=0)
@@ -175,39 +198,29 @@ current_row +=1
 
 layout_label = Label(text="Layout(centers scaled design in page size)", fg="blue", cursor="hand2")
 layout_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#layout"))
-layout_label.grid(row=current_row, column=0, columnspan=1)
+layout_label.grid(row=current_row, column=0)
 layout = IntVar(value=1)
 layout_button = Checkbutton(window, text="Layout?", variable=layout).grid(row=current_row, column=1)
 current_row +=1 
 
 layout_width_label = Label(window, text="Page Layout Width(inches):").grid(row=current_row, column=0)
+layout_height_label = Label(window, text="Page Layout Height(inches):").grid(row=current_row, column=1)
+
 current_row +=1 
 layout_width_entry = Entry(window)
 layout_width_entry.insert(0,f"8.5")
 layout_width_entry.grid(row=current_row, column=0)
 
-layout_height_label = Label(window, text="Page Layout Height(inches):").grid(row=9, column=1)
 layout_height_entry = Entry(window)
 layout_height_entry.insert(0,f"11")
 layout_height_entry.grid(row=current_row, column=1)
 current_row +=1 
+
 layout_landscape_label = Label(window, text="By default, the larger layout size is assumed to\n be the height Landscape flips the orientation")
 layout_landscape_label.grid(row=current_row, column=0)
 layout_landscape = IntVar(value=1)
 layout_landscape_button = Checkbutton(window, text="Landscape", variable=layout_landscape)
 layout_landscape_button.grid(row=current_row, column=1)
-current_row +=1 
-
-occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
-occult_label.bind("<Button-1>", lambda e: callback("https://github.com/LoicGoulefert/occult"))
-occult_label.grid(row=current_row, column=0)
-occult = IntVar(value=0)
-occult_button = Checkbutton(window, text="Occult", variable=occult).grid(row=current_row, column=1)
-current_row +=1 
-occult_ignore = IntVar(value=1)
-occult_ignore_button = Checkbutton(window, text="Occult ignores Layers", variable=occult_ignore).grid(row=current_row, column=0)
-occult_accross = IntVar(value=0)
-occult_accross_button = Checkbutton(window, text="Occult accross layers, not within", variable=occult_accross).grid(row=current_row, column=1)
 current_row +=1 
 
 linemerge_label = Label(window, text="Merge Lines with overlapping line endings", fg="blue", cursor="hand2")
@@ -252,7 +265,11 @@ color_mode = IntVar()
 color_mode_button = Checkbutton(window, text="Order by color (will overwrite colors)", variable=color_mode).grid(row=current_row, column=0, columnspan=2)
 current_row +=1 
 
-#OUTPUT FILENAME, EDITABLE
+if len(input_files) == 1:
+    paint_label = Label(window, text="Run Paint after").grid(row=current_row, column=0)
+    paint = IntVar(value=0)
+    paint_button = Checkbutton(window, text="Paint", variable=paint).grid(row=current_row, column=1)
+    current_row +=1
 
 show_button = Button(window, text="Show Output", command=show_vpypeline).grid(row=current_row, column=0)
 if len(input_files)>1:
