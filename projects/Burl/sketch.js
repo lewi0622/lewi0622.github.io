@@ -53,7 +53,7 @@ function gui_values(){
 }
 
 function preload(){
-  img = loadImage("Preferred_Orientation.jpeg");
+  // img = loadImage("Preferred_Orientation.jpeg");
 }
 
 function setup() {
@@ -106,7 +106,7 @@ function draw() {
   translate(canvas_x/2, canvas_y/2);
   stroke(tan);
   strokeWeight(0.65*global_scale);
-  rings(300, 0, 600, 3, 2, 2, 5, 0.5);
+  rings(300, 0*global_scale, 600, 50*global_scale, 1, 1, 5*global_scale, 0.5, 2*global_scale, 2*global_scale);
   pop();
   // image(img, 0, 0, 480*global_scale, 640*global_scale);
 
@@ -129,19 +129,21 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function rings(num_points, start_rad, num_rings, noise_max, x_damp, y_damp, rad_inc, rotation){
+function rings(num_points, start_rad, num_rings, noise_max, x_damp, y_damp, rad_inc, rotation, x_drift, y_drift){
   const noise_offset = random(100000)
   const xoff_offset = random(360);
   //add noise offset for different ring groupings
   const radii = new Array(num_points).fill(start_rad);
   for(let i=0; i<=num_rings; i++){
+    translate(random(-x_drift, x_drift), random(-y_drift, y_drift));
     rotate(random(-rotation, rotation));
+    let lerp_noise = lerp(0,noise_max,i/num_rings);
     beginShape();
     for(let j=0; j<num_points; j++){
       const theta = 360/num_points*j;
-      const xoff = map(cos(theta+xoff_offset),-1,1,0,noise_max);
-      const yoff = map(sin(theta),-1,1,0,noise_max);
-      let r = radii[j] + map(noise(noise_offset + xoff/x_damp, noise_offset + yoff/y_damp),0,1,0,rad_inc);
+      const xoff = map(cos(theta+xoff_offset),-1,1,0,lerp_noise);
+      const yoff = map(sin(theta),-1,1,0,lerp_noise);
+      let r = radii[j] + map(noise(noise_offset + xoff/x_damp, noise_offset + yoff/y_damp),0,1, 0,rad_inc);
       let x = r * cos(theta);
       let y = r * sin(theta);
       for(let z=0; z<small_knots.length; z++){
