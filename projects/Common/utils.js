@@ -39,10 +39,13 @@ let picker, picker_popper;
 const swatches = [];
 const pickers = [];
 
+//blend modes 
+let modes;
+
 function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
-
+  modes = [BLEND, ADD, DARKEST, LIGHTEST, DIFFERENCE, EXCLUSION, MULTIPLY, SCREEN, REPLACE, REMOVE, OVERLAY, HARD_LIGHT, SOFT_LIGHT, DODGE, BURN, SUBTRACT];
   //check for different base size
   if(typeof sixteen_by_nine !== "undefined"){
     if(sixteen_by_nine){
@@ -67,6 +70,8 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   seed_scale_button(base_y);
   seed = reset_drawing(seed, base_x, base_y);
 
+  //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
+  parameterize("blend_mode", 0, 0, 15, 1, false);
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals
   gui_values();
@@ -587,6 +592,9 @@ function capture_start(capture){
     //redo suggested palettes
     change_default_palette();
     
+    //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
+    parameterize("blend_mode", 0, 0, 15, 1, false);
+
     //redo parameterizations
     gui_values();
   }
