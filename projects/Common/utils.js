@@ -20,6 +20,7 @@ let global_scale = 1;
 let cut = false;
 let bleed = false;
 let bleed_val = 0.25; //quarter inch bleed
+let bleed_border;
 const DPI_DEFAULT = 300;
 let dpi = DPI_DEFAULT;
 let full_controls = false;
@@ -42,10 +43,10 @@ const pickers = [];
 //blend modes 
 let modes;
 
-function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
+function common_setup(base_x=400, base_y=400, renderer=P2D){
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
-  modes = [BLEND, ADD, DARKEST, LIGHTEST, DIFFERENCE, EXCLUSION, MULTIPLY, SCREEN, REPLACE, REMOVE, OVERLAY, HARD_LIGHT, SOFT_LIGHT, DODGE, BURN, SUBTRACT];
+  
   //check for different base size
   if(typeof sixteen_by_nine !== "undefined"){
     if(sixteen_by_nine){
@@ -71,6 +72,25 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   seed = reset_drawing(seed, base_x, base_y);
 
   //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
+  //https://p5js.org/reference/#/p5/blendMode
+  modes = [
+    BLEND, //0
+    ADD, //1
+    DARKEST, //2 
+    LIGHTEST, //3
+    DIFFERENCE, //4
+    EXCLUSION, //5
+    MULTIPLY, //6
+    SCREEN, //7
+    REPLACE, //8
+    REMOVE, //9
+    OVERLAY, //10
+    HARD_LIGHT, //11
+    SOFT_LIGHT, //12
+    DODGE, //13
+    BURN, //14
+    SUBTRACT //15
+  ];
   parameterize("blend_mode", 0, 0, 15, 1, false);
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals
@@ -577,28 +597,33 @@ function save_drawing(){
   }
 }
 
+function global_draw_start(clear_cnv=true){
+  if(clear_cnv)clear(); //should be false for some animating pieces
 
-function capture_start(capture){
   //called from top of Draw to start capturing, requires CCapture
   if(!redraw && capture){
     capturer.start();
   }
 
-  redraw = true;
-  redraw_reason = "gif";
-
-  //no actually to do with capture, just a convenient place to put it
+  //if creating a gif of different designs, re-randomize palette from suggested palettes and rerandomize gui values
   if(gif && !animation){
-    //redo suggested palettes
-    change_default_palette();
-    
-    //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
-    parameterize("blend_mode", 0, 0, 15, 1, false);
-
-    //redo parameterizations
-    gui_values();
+    change_default_palette(); //redo suggested palettes
+    gui_values(); //redo parameterizations
+    redraw = true; //unsure about this
+    redraw_reason = "gif"; //unsure about this
   }
+
+  parameterize("blend_mode", 0, 0, 15, 1, false);//add param for blend mode
+  blendMode(modes[blend_mode]); // blend mode param for all designs
+
+  bleed_border = apply_bleed();
 }
+
+function global_draw_end(){
+  apply_cutlines(bleed_border);
+  capture_frame(capture);
+}
+
 
 function capture_frame(capture){
   if (capture){
@@ -858,6 +883,7 @@ function clear_gui(){
 }
 
 function redraw_sketch(){
+  print("HERE")
   redraw = true;
   clear();
   setup();
