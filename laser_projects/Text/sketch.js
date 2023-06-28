@@ -19,7 +19,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(6*96, 6*96, SVG);
   opentype.load('..\\..\\fonts\\Roboto-Black.ttf', function (err, f) {
     if (err) {
       alert('Font could not be loaded: ' + err);
@@ -34,9 +34,7 @@ function setup() {
 function draw() {
   if(!font) return
 
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //actual drawing stuff
   push();
@@ -57,10 +55,7 @@ function draw() {
   }
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs
