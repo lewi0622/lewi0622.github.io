@@ -19,13 +19,12 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
   colorMode(HSB);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  clear();
+  global_draw_start();
 
   //empty tiles array
   let tiles = [];
@@ -129,8 +128,7 @@ function draw() {
     c_to_add = color(c_to_add);
     c_arr.push(c_to_add)
   }
-  //bleed
-  const bleed_border = apply_bleed();
+
   
   //round is the only way to not have weird artifacts on the last tiles placed
   strokeCap(ROUND)
@@ -203,9 +201,7 @@ function draw() {
     pop();
   }
   
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

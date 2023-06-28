@@ -1,4 +1,5 @@
 gif = true;
+animation = true;
 fr = 30;
 
 capture = false;
@@ -10,7 +11,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 
   //define grid
   slots = 40;
@@ -37,12 +38,10 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  blendMode(modes[blend_mode]);
+  global_draw_start();
 
   clear();
-  //bleed
-  const bleed_border = apply_bleed();
+
 
   refresh_working_palette();
   // reduce_array(working_palette, bg_c)
@@ -109,9 +108,8 @@ function draw() {
   //check for neighbors
   
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

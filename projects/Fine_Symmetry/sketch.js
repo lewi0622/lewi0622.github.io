@@ -22,7 +22,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 
   //start drawing over if autoscaled
   xoff = 0;
@@ -45,9 +45,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start(false);
 
   //actual drawing stuff
   push();
@@ -74,14 +72,10 @@ function draw() {
   xoff+= inc;
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
 
-  //stop drawing
-  if(frameCount>len){
-    noLoop();
-  }
-  capture_frame(capture, len);
+  if(frameCount>len) noLoop();  //stop drawing
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

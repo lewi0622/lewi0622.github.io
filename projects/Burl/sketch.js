@@ -56,7 +56,7 @@ function preload(){
 }
 
 function setup() {
-  common_setup(gif, P2D, 400, 600);
+  common_setup(400, 600);
   // opentype.load('..\\..\\fonts\\PeachyRoseRegular-w1xpw.ttf', function (err, f) {
   //   if (err) {
   //     alert('Font could not be loaded: ' + err);
@@ -69,80 +69,79 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  // if(typeof font !== 'undefined'){
-    capture_start(capture);
-    blendMode(modes[blend_mode]);
-    //bleed
-    const bleed_border = apply_bleed();
+  global_draw_start();
 
-    //outline shape processing
-    let split_path = path.split("C");
-    let subdivided_path = [];
-    split_path.forEach(p => {
-      const points = p.split(/,| /);
-      const pt_array = [];
-      for(let i=0; i<points.length; i++){
-        pt_array.push(parseFloat(points[i])*global_scale/outline_divisor);
-      }
-      subdivided_path.push(pt_array);
-    });
+  //outline shape processing
+  let split_path = path.split("C");
+  let subdivided_path = [];
+  split_path.forEach(p => {
+    const points = p.split(/,| /);
+    const pt_array = [];
+    for(let i=0; i<points.length; i++){
+      pt_array.push(parseFloat(points[i])*global_scale/outline_divisor);
+    }
+    subdivided_path.push(pt_array);
+  });
 
-    //actual drawing stuff
-    push();
+  //actual drawing stuff
+  push();
 
-    const brown = "#604747";
-    const tan = "#e1d8c1";
-    noFill();
-    background("WHITE");
+  const brown = "#604747";
+  const tan = "#e1d8c1";
+  noFill();
+  background("WHITE");
 
-    stroke(tan);
-    strokeWeight(weight*4);
-    //outline clip
-    outline_x_offset = -15*global_scale;
-    outline_y_offset = -2*global_scale;
-    translate(outline_x_offset,outline_y_offset);
-    beginShape();
-    const starting_x = subdivided_path[0][0];
-    const starting_y = subdivided_path[0][1];
-    vertex(starting_x, starting_y);
-    subdivided_path.forEach(pts => {
-      bezierVertex(...pts);
-    });
-    endShape(CLOSE);
-    drawingContext.clip(); //CLIP ALL BELOW TO SHAPE ABOVE
+  stroke(tan);
+  strokeWeight(weight*4);
+  //outline clip
+  outline_x_offset = -15*global_scale;
+  outline_y_offset = -2*global_scale;
+  translate(outline_x_offset,outline_y_offset);
+  beginShape();
+  const starting_x = subdivided_path[0][0];
+  const starting_y = subdivided_path[0][1];
+  vertex(starting_x, starting_y);
+  subdivided_path.forEach(pts => {
+    bezierVertex(...pts);
+  });
+  endShape(CLOSE);
+  drawingContext.clip(); //CLIP ALL BELOW TO SHAPE ABOVE
 
-    // let fSize = 200*global_scale;
-    // let msg = "BURL"
-    // let text_path = font.getPath(msg, 50*global_scale, canvas_y/2, fSize)
-    // draw_open_type_js_path(text_path);
-    // drawingContext.clip();
-    translate(-outline_x_offset, -outline_y_offset);
-    push();
-    blendMode(MULTIPLY);
-    translate(canvas_x/2, canvas_y/2);
-    stroke(tan);
-    strokeWeight(weight);
-    rings(number_of_points, number_of_rings, 30*global_scale, 1, 1, 2*global_scale, 0.5, 1*global_scale, 1*global_scale);
-    pop();
-    // image(img, 0, 0, 480*global_scale, 640*global_scale);
+  // let fSize = 200*global_scale;
+  // let msg = "BURL"
+  // let text_path = font.getPath(msg, 50*global_scale, canvas_y/2, fSize)
+  // draw_open_type_js_path(text_path);
+  // drawingContext.clip();
+  translate(-outline_x_offset, -outline_y_offset);
+  push();
+  if(type == 'svg'){
+    const canvas_tag = document.getElementById("defaultCanvas0");
+    canvas_tag.children[0].style.mixBlendMode = "multiply";
+  }
+  else blendMode(MULTIPLY);
+  translate(canvas_x/2, canvas_y/2);
+  stroke(tan);
+  strokeWeight(weight);
+  rings(number_of_points, number_of_rings, 30*global_scale, 1, 1, 2*global_scale, 0.5, 1*global_scale, 1*global_scale);
+  pop();
+  // image(img, 0, 0, 480*global_scale, 640*global_scale);
 
-    // stroke(tan);
-    // strokeWeight(weight);
+  // stroke(tan);
+  // strokeWeight(weight);
 
-    // for(let z=0; z<small_knots.length; z++){
-    //   push();
-    //   const coords = small_knots[z];
-    //   translate(coords.x*global_scale, coords.y*global_scale);
-    //   // rings(number_of_points, number_of_rings, max_noise, x_noise_damp, y_noise_damp, radius_inc, 0);
-    //   pop();
-    // }
-    pop();
-
-    //cleanup
-    apply_cutlines(bleed_border);
-
-    capture_frame(capture);
+  // for(let z=0; z<small_knots.length; z++){
+  //   push();
+  //   const coords = small_knots[z];
+  //   translate(coords.x*global_scale, coords.y*global_scale);
+  //   // rings(number_of_points, number_of_rings, max_noise, x_noise_damp, y_noise_damp, radius_inc, 0);
+  //   pop();
   // }
+  pop();
+
+  //set multiply mode for each path
+  if(type == "svg") document.getElementsByTagName("path").forEach(p => p.style.mixBlendMode = "multiply");
+
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

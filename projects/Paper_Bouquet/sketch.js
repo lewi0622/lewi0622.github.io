@@ -19,16 +19,15 @@ function gui_values(){
   parameterize("offset", 20, 0, 200, 1, false);
   parameterize("tightness", random(random(-5,0), random(0,5)), -5, 5, 0.01, false);
   parameterize("rotation", random(360), 0,360, 1, false);
+  blend_mode = 6;
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   refresh_working_palette();
   //actual drawing stuff
@@ -72,9 +71,7 @@ function draw() {
   }
   pop();
 
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

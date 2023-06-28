@@ -8,39 +8,29 @@ const capture_time = 10;
 const sixteen_by_nine = false;
 suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
-//project variables
-let num_pts;
-
-
 function gui_values(){
-
+  parameterize("num_pts", floor(random(6,60)), 4, 100, 1, false);
+  parameterize("pt_size", floor(random(10,30)), 1, 100, 1, true);
+  parameterize("weight", 4, 0.1, 20, 0.1, true);
+  parameterize("multiply", 0, 0, 1, 1, false);
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
+  global_draw_start();
 
-  clear();
-  
-  //bleed
-  const bleed_border = apply_bleed();
-
-  working_palette = JSON.parse(JSON.stringify(palette))
-
-  noStroke();
+  refresh_working_palette();
+ 
   //apply background
   background(working_palette[floor(random(working_palette.length))]);
 
   //actual drawing stuff
   push();
-
   //create series of points
-  const pt_size = floor(random(10,30)*global_scale);
   const pts = [];
-  num_pts = floor(random(6,60));
   for(let i=0; i<num_pts; i++){
     const new_pt = gen_pt(pts, pt_size*2);
     pts.push(new_pt);
@@ -53,10 +43,8 @@ function draw() {
   })
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
 
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs
@@ -123,7 +111,7 @@ function draw_indices(pts, pt){
   noFill();
   stroke("BLACK")
   strokeJoin(ROUND)
-  strokeWeight(8)
+  strokeWeight(weight);
   drawingContext.filter = 'none'
   triangle(pts[pt.idxs[0]].x, pts[pt.idxs[0]].y, pts[pt.idxs[1]].x, pts[pt.idxs[1]].y, pt.x, pt.y);
 }

@@ -1,4 +1,5 @@
 gif = true;
+animation = true;
 fr = 30;
 initialized = false;
 
@@ -17,7 +18,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 
   palette = JSON.parse(JSON.stringify(shuffle(palette, true))).slice(0,5);
   bg_c = bg(true);
@@ -25,10 +26,8 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  blendMode(modes[blend_mode]);
+  global_draw_start();
   if(gif){
-    clear();
     background(bg_c);
     palette = palette_reset;
     color_id = 0;
@@ -55,8 +54,7 @@ function draw() {
     initialized = true;
   }
 
-  //bleed
-  const bleed_border = apply_bleed();
+
 
   //actual drawing stuff
   push();
@@ -87,10 +85,8 @@ function draw() {
   }
   xoff += inc;
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  
-  capture_frame(capture);
+
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

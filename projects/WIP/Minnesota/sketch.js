@@ -20,7 +20,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
   strokeWeight(weight);
 
   bg_c = random(working_palette);
@@ -34,14 +34,9 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  blendMode(modes[blend_mode]);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   push();
-
-
   background(bg_c);
   // let line_c = random(working_palette);
   // reduce_array(working_palette, line_c);
@@ -78,9 +73,8 @@ function draw() {
     endShape(CLOSE);
   }  
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

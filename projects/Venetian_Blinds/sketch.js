@@ -16,21 +16,20 @@ function gui_values(){
   parameterize('number_of_lines', random(30, 100), 1, 500, 1, false);
   parameterize("x_noise_amp", 1350, 0, 500, 1, true);
   parameterize("x_noise_damp", 135, 1, 1000, 1, false);
+  blend_mode = 6; //multiply
 }
 
 function setup() {
-  common_setup(gif, 400, 400);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //actual drawing stuff
   push();
   noFill();
-  blendMode(MULTIPLY)//multiply HARD_LIGHT BURN
+
   const bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);
   background(bg_c);
@@ -83,9 +82,7 @@ function draw() {
   }
   pop();
 
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

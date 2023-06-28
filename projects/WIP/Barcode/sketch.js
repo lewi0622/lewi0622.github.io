@@ -1,4 +1,5 @@
 gif = true;
+animation = true;
 fr = 30;
 
 xoff = 0;
@@ -16,7 +17,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 
   //apply background
   bg_c = bg(true);
@@ -25,15 +26,12 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  blendMode(modes[blend_mode]);
+  global_draw_start();
   if(gif){
-    clear();
     background(bg_c);
     palette = palette_reset;
   }
-  //bleed
-  const bleed_border = apply_bleed();
+
   //actual drawing stuff
   push();
   noFill();
@@ -56,10 +54,7 @@ function draw() {
   theta += theta_inc;
   pop();
 
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

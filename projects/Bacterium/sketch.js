@@ -21,7 +21,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 
   //styling
   palette = shuffle(palette, true);
@@ -37,15 +37,13 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
+  global_draw_start();
 
-  clear();
   //reset loop variables
   const min_len = (sin(phase)*4+40)*global_scale;
   background(bg_c);
 
-  //bleed
-  const bleed_border = apply_bleed();
+
   //actual drawing stuff
   push();
 
@@ -87,10 +85,7 @@ function draw() {
 
   pop();
   
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs
