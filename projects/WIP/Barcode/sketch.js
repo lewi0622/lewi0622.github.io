@@ -26,6 +26,7 @@ function setup() {
 //***************************************************
 function draw() {
   capture_start(capture);
+  blendMode(modes[blend_mode]);
   if(gif){
     clear();
     background(bg_c);

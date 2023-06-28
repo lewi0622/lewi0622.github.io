@@ -16,6 +16,7 @@ function setup() {
 function draw() {
   clear();
   capture_start(capture);
+  blendMode(modes[blend_mode]);
   //bleed
   const bleed_border = apply_bleed();
 
