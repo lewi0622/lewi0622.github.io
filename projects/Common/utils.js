@@ -2,7 +2,7 @@
 // globals
 const project_path = window.location.pathname.split('/')
 let project_name = project_path[project_path.length-2];
-let canvas_x, canvas_y, cnv;
+let canvas_x, canvas_y, cnv, base_x, base_y;
 
 let num_frames, capturer, seed;
 //control variables
@@ -43,7 +43,9 @@ const pickers = [];
 //blend modes 
 let modes;
 
-function common_setup(base_x=400, base_y=400, renderer=P2D){
+function common_setup(size_x=400, size_y=400, renderer=P2D){
+  base_x = size_x;
+  base_y = size_y;
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
   
@@ -127,6 +129,7 @@ function common_setup(base_x=400, base_y=400, renderer=P2D){
   
   //shift position to center canvas if base is different than 400
   if(base_x<=400 && base_y<=400){
+    print((400*global_scale-canvas_x)/2)
     cnv.position((400*global_scale-canvas_x)/2, 0);
   }
   
@@ -196,7 +199,7 @@ function setParams(base_x, base_y){
   }
   else{
     //get scale based on window size
-    global_scale = find_cnv_mult(base_x, base_y);
+    global_scale = find_cnv_mult();
   }
 
   if(add_bleed != undefined){
@@ -883,7 +886,7 @@ function clear_gui(){
 }
 
 function redraw_sketch(){
-  print("HERE")
+
   redraw = true;
   clear();
   setup();
@@ -940,15 +943,18 @@ function refresh_working_palette(){
   working_palette = JSON.parse(JSON.stringify(palette));
 }
 
-function find_cnv_mult(base_x, base_y){
-  base_y += 40;
+function find_cnv_mult(){
+  let size_x = base_x;
+  if(size_x<400) size_x = 400; //because we center within a 400x400 canvas for things smaller than 400
+  let size_y = base_y;
+  size_y += 40;
   if(full_controls){
     //space for second row of controls, the extra 3 is make sure no vertical scrollbar
-    base_y += 20;
+    size_y += 20;
   }
   //finds smallest multipler
-  const x_mult = Math.round((windowWidth/base_x)*1000)/1000;
-  const y_mult = Math.round((windowHeight/base_y)*1000)/1000;
+  const x_mult = Math.round((windowWidth/size_x)*1000)/1000;
+  const y_mult = Math.round((windowHeight/size_y)*1000)/1000;
 
   //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
   if(type == "svg") return 1;
