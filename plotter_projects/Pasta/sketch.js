@@ -20,16 +20,15 @@ function gui_values(){
 
 function setup() {
   //7 inches * 96 = 672 px
-  common_setup(gif, SVG, 672, 672);
+  common_setup(672, 672, SVG);
   pen_weight = COPICMARKER;
   fill_iterations = ceil(weight/pen_weight);
   print(fill_iterations)
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  clear();
-
+  global_draw_start();
+  
   //empty tiles array
   let tiles = [];
 
@@ -113,8 +112,7 @@ function draw() {
     c_to_add = color(c_to_add);
     c_arr.push(c_to_add)
   }
-  //bleed
-  const bleed_border = apply_bleed();
+
   
   //round is the only way to not have weird artifacts on the last tiles placed
   strokeCap(ROUND)
@@ -186,9 +184,7 @@ function draw() {
     pop();
   }
   
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

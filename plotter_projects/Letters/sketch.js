@@ -20,14 +20,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(6*96, 6*69, SVG);
 }
 //***************************************************
 function draw() {
-  clear();
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
   // background("WHITE")
 
   //actual drawing stuff
@@ -59,10 +56,7 @@ function draw() {
 
   pop();
 
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

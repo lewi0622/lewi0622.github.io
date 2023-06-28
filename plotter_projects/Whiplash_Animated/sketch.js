@@ -17,7 +17,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 
   //project variables
   i_mult = random([0, 1.5, 2.5,  5, 10, 20, 30, 40, 120]);
@@ -29,11 +29,9 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  clear();
+  global_draw_start();
   background("WHITE");
-  //bleed
-  const bleed_border = apply_bleed();
+
 
   //actual drawing stuff
   push();
@@ -57,10 +55,7 @@ function draw() {
     }
   endShape();
   pop();
-  //cleanup
-  apply_cutlines(bleed_border);
-  
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

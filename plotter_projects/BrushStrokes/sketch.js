@@ -16,14 +16,12 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG, 7*96, 7*96);
+  common_setup(7*96, 7*96, SVG);
 
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //actual drawing stuff 
   const colors = gen_n_colors(layers+1);
@@ -107,10 +105,8 @@ function draw() {
   circle(canvas_x/2, canvas_y/2, brush_rad*2-weight);
   circle(canvas_x/2, canvas_y/2, brush_rad*2);
   circle(canvas_x/2, canvas_y/2, brush_rad*2+weight);
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

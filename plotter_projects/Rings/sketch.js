@@ -18,16 +18,15 @@ function gui_values(){
   parameterize("max_noise_inc", 0.03, 0, 1, 0.01, false);
   parameterize("x_offset", random(200), 0, 200, 1, false);
   parameterize("z_inc", random(0.05), 0, 1, 0.01, false);
+  parameterize("sine_radius_inc", 1, 0, 1, 1, false);
 }
 
 function setup() {
-  common_setup(gif, SVG, 6*96, 6*96);
+  common_setup(6*96, 6*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   refresh_working_palette();
   //actual drawing stuff
@@ -70,12 +69,9 @@ function draw() {
     }
     endShape();
 
-        // inc the radius less and less as it moves outward
-    // radius += map(j, 0, number_of_rings, radius_inc,0);
-
     // radius inc as sine
-    print(sin(j*8)*radius_inc)
-    radius += map(sin(j*32), -1,1, -radius_inc/4, radius_inc);
+    if(sine_radius_inc) radius += map(sin(j*32), -1,1, -radius_inc/4, radius_inc);
+    else radius += map(j, 0, number_of_rings, radius_inc,0);// inc the radius less and less as it moves outward
 
     max_noise += max_noise_inc;
     z += random(z_inc);
@@ -83,10 +79,7 @@ function draw() {
 
   pop();
 
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

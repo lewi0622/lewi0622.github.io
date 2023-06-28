@@ -21,14 +21,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG, 8.5*96, 11*96);
+  common_setup(8.5*96, 11*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  blendMode(modes[blend_mode]);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //actual drawing stuff
   push();
@@ -87,9 +84,7 @@ function draw() {
   }
   pop();
 
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

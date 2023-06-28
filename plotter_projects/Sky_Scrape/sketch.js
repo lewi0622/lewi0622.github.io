@@ -16,7 +16,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG, 6*96, 8*96);
+  common_setup(6*96, 8*96, SVG);
 }
 //***************************************************
 function draw() {

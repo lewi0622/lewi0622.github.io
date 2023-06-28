@@ -15,23 +15,20 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG, 816, 1056);
+  common_setup(4*96, 6*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   refresh_working_palette();
 
   //apply background
-  let bg_c;
-  if(getParamValue("colors")== 12) bg_c = working_palette[0];
-  else bg_c = random(working_palette)
-  background(bg_c)
-  reduce_array(working_palette, bg_c)
+  // let bg_c;
+  // if(getParamValue("colors")== 12) bg_c = working_palette[0];
+  // else bg_c = random(working_palette)
+  // background(bg_c)
+  // reduce_array(working_palette, bg_c)
 
   //actual drawing stuff
   push();
@@ -150,10 +147,7 @@ function draw() {
     pop();
   }
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

@@ -13,15 +13,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG,(12+5/32)*96, 8.5*96);
+  common_setup((12+5/32)*96, 8.5*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  blendMode(modes[blend_mode]);
-  clear();
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
   const container_radius = 1.25*96; //2.5 inch diameter circles for spyhouse bottoms
   push();
   translate(container_radius, 0);
@@ -33,9 +29,7 @@ function draw() {
   endShape(CLOSE);
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

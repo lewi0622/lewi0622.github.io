@@ -17,14 +17,11 @@ function gui_values(){
 
 function setup() {
   //looks good in 300x400
-  common_setup(gif, SVG);
+  common_setup(3*96, 4*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   const colors = gen_n_colors(6);
 
@@ -74,10 +71,7 @@ function draw() {
     }
   }
   pop();
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs
