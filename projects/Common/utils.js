@@ -129,7 +129,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   
   //shift position to center canvas if base is different than 400
   if(base_x<=400 && base_y<=400){
-    print((400*global_scale-canvas_x)/2)
     cnv.position((400*global_scale-canvas_x)/2, 0);
   }
   
