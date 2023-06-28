@@ -14,16 +14,15 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
+  global_draw_start();
 
-  //bleed
-  const bleed_border = apply_bleed();
-
-  palette = shuffle(palette, true);
+  refresh_working_palette();
+  
+  working_palette = shuffle(working_palette, true);
   //apply background
   random([bg_horizontal_strips,bg_vertical_strips])(2);
 
@@ -31,15 +30,12 @@ function draw() {
   push();
   noFill();
   const base_size = random(20,25);
-  let tri_size = palette.length*base_size*global_scale;
+  let tri_size = working_palette.length*base_size*global_scale;
 
-  //reorder palette
-  palette = shuffle(palette, true);
-
-  for(let i=0; i<palette.length; i++){
+  for(let i=0; i<working_palette.length; i++){
     push();
     strokeWeight(tri_size);
-    stroke(palette[i]);
+    stroke(working_palette[i]);
     triangle(0, canvas_y, canvas_x/4, canvas_y/4, -canvas_x/4, canvas_y/4);
     center_rotate(180);
     triangle(0, canvas_y, canvas_x/4, canvas_y/4, -canvas_x/4, canvas_y/4);
@@ -48,10 +44,8 @@ function draw() {
     pop();
   }
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs
