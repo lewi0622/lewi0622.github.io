@@ -50,10 +50,8 @@ const createSpiral = function(){
     fill("WHITE");
     const radius = sqrt(0.5);
     const angle = i * phi * dir;
-    let smaller_cnv = canvas_x;
-    if(canvas_y<canvas_x){
-      smaller_cnv = canvas_y;
-    }
+    let smaller_cnv = min(canvas_x, canvas_y);   //find the smaller dimension
+
     const distance = f * radius * smaller_cnv*dist_scale;
     const x = cos(angle)*distance;
     const y = sin(angle)*distance;

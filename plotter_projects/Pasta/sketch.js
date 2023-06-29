@@ -32,11 +32,7 @@ function draw() {
   //empty tiles array
   let tiles = [];
 
-  //find the smaller dimension
-  let smaller_cnv = canvas_x;
-  if(canvas_x>canvas_y){
-    smaller_cnv = canvas_y;
-  }
+  let smaller_cnv = min(canvas_x, canvas_y);   //find the smaller dimension
 
   //set grid size based on smallest dim
   grid_size = smaller_cnv/grid_divisor;

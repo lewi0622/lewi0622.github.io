@@ -30,10 +30,7 @@ function draw() {
 
   let tiles = [];
   //params
-  let smaller_cnv = canvas_x;
-  if(canvas_x>canvas_y){
-    smaller_cnv = canvas_y;
-  }
+  let smaller_cnv = min(canvas_x, canvas_y);   //find the smaller dimension
   grid_size = smaller_cnv/grid_divisor;
   grid_size = round(grid_size);
 
