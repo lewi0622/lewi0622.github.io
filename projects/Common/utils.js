@@ -128,7 +128,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(!svg_redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   
   //shift position to center canvas if base is different than 400
-  if(base_x<=400 && base_y<=400){
+  if(base_x<=400){
     cnv.position((400*global_scale-canvas_x)/2, 0);
   }
   
@@ -403,7 +403,7 @@ function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
   canvas_x = round(base_x*global_scale);
   canvas_y = round(base_y*global_scale);
-  print(canvas_x, canvas_y);
+
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)){
     seed = Math.round(random()*1000000);
@@ -955,8 +955,7 @@ function find_cnv_mult(){
   //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
   if(type == "svg") return 1;
 
-  let size_x = base_x;
-  if(size_x<400) size_x = 400; //because we center within a 400x400 canvas for things smaller than 400
+  let size_x = max(400, base_x); //because we center within a 400x400 canvas for things smaller than 400
   let size_y = base_y;
   size_y += 40;
   if(full_controls){
@@ -967,10 +966,8 @@ function find_cnv_mult(){
   const x_mult = Math.round((windowWidth/size_x)*1000)/1000; //find multiplier based on the x dimension  
   const y_mult = Math.round((windowHeight/size_y)*1000)/1000; //find multipler based on the y dimension
 
-  //find the smaller mult
-  let smaller_multiplier = x_mult;
-  if(y_mult<x_mult) smaller_multiplier = y_mult;
-
+  let smaller_multiplier = min(x_mult, y_mult);  //find the smaller mult
+  
   //constrain between 1 and 12
   smaller_multiplier = constrain(smaller_multiplier, 1, 12);
 
