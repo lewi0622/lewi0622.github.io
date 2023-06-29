@@ -4,7 +4,7 @@ const project_path = window.location.pathname.split('/')
 let project_name = project_path[project_path.length-2];
 let canvas_x, canvas_y, cnv, base_x, base_y;
 
-let num_frames, capturer, seed;
+let num_frames, capturer, capture_state, seed;
 //control variables
 let seed_input, scale_box, control_height, control_spacing, hidden_controls, color_sel, color_div;
 let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave;
@@ -401,8 +401,9 @@ function seed_scale_button(base_y){
 
 function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
-  canvas_x = base_x*global_scale;
-  canvas_y = base_y*global_scale;
+  canvas_x = round(base_x*global_scale);
+  canvas_y = round(base_y*global_scale);
+  print(canvas_x, canvas_y);
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)){
     seed = Math.round(random()*1000000);
@@ -605,14 +606,17 @@ function global_draw_start(clear_cnv=true){
   //called from top of Draw to start capturing, requires CCapture
   if(!redraw && capture){
     capturer.start();
+    capture_state = "start";
   }
 
   //if creating a gif of different designs, re-randomize palette from suggested palettes and rerandomize gui values
   if(gif && !animation){
     change_default_palette(); //redo suggested palettes
     gui_values(); //redo parameterizations
-    redraw = true; //unsure about this
-    redraw_reason = "gif"; //unsure about this
+  }
+  else{
+    redraw = true; //I believe these two lines exist to not prompt capturer.start() multiple times
+    redraw_reason = "gif";
   }
 
   parameterize("blend_mode", 0, 0, 15, 1, false);//add param for blend mode
@@ -623,18 +627,23 @@ function global_draw_start(clear_cnv=true){
 
 function global_draw_end(){
   apply_cutlines(bleed_border);
-  capture_frame(capture);
+  capture_frame();
 }
 
 
-function capture_frame(capture){
-  if (capture){
-    capturer.capture(document.getElementById("defaultCanvas0"));
-    if(frameCount-1 == num_frames || !isLooping()){
-      capturer.stop();
-      capturer.save();
-      noLoop();
-    } 
+function capture_frame(){ 
+  if(capture){
+    if(capture_state != "stop"){
+      capturer.capture(document.getElementById("defaultCanvas0"));
+      capture_state = "capture";
+      
+      if(frameCount-1 == num_frames || !isLooping()){
+        capturer.stop();
+        capture_state = "stop";
+        capturer.save();
+      } 
+    }
+    if(capture_state == "stop") noLoop(); //CCapture executes an extra loop every time
   }
 }
 
@@ -943,6 +952,9 @@ function refresh_working_palette(){
 }
 
 function find_cnv_mult(){
+  //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
+  if(type == "svg") return 1;
+
   let size_x = base_x;
   if(size_x<400) size_x = 400; //because we center within a 400x400 canvas for things smaller than 400
   let size_y = base_y;
@@ -951,15 +963,22 @@ function find_cnv_mult(){
     //space for second row of controls, the extra 3 is make sure no vertical scrollbar
     size_y += 20;
   }
-  //finds smallest multipler
-  const x_mult = Math.round((windowWidth/size_x)*1000)/1000;
-  const y_mult = Math.round((windowHeight/size_y)*1000)/1000;
 
-  //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
-  if(type == "svg") return 1;
+  const x_mult = Math.round((windowWidth/size_x)*1000)/1000; //find multiplier based on the x dimension  
+  const y_mult = Math.round((windowHeight/size_y)*1000)/1000; //find multipler based on the y dimension
 
-  if(x_mult<y_mult) return constrain(x_mult, 1, 12);
-  else return constrain(y_mult, 1, 12);
+  //find the smaller mult
+  let smaller_multiplier = x_mult;
+  if(y_mult<x_mult) smaller_multiplier = y_mult;
+
+  //constrain between 1 and 12
+  smaller_multiplier = constrain(smaller_multiplier, 1, 12);
+
+  //get a mult that will give an even number of whole pixels for the x dimension
+  if(round(size_x*smaller_multiplier) % 2 != 0) smaller_multiplier = (round(size_x*smaller_multiplier)-1)/size_x; //-1 so that the canvas is always slightly smaller than the window
+
+  //canvas_x and canvas_y rounded later on
+  return smaller_multiplier;
 }
 
 function indexOfMin(arr) {
