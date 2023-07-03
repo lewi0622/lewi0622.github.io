@@ -30,8 +30,16 @@ function draw() {
   push();
   noFill();
 
-  const bg_c = random(working_palette);
-  reduce_array(working_palette, bg_c);
+
+  //limit background colors to be bright enough
+  let working_brightness = [];
+  working_palette.forEach((c,idx) => {
+    if(RGBA_to_HSBA(...c)[2]>70) working_brightness.push(idx);
+  });
+
+  let bg_c;
+  if(working_brightness.length>0) bg_c = working_palette[random(working_brightness)];
+  else bg_c = random(working_palette);
   background(bg_c);
   
 
