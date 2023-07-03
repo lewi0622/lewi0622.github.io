@@ -16,14 +16,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   refresh_working_palette();
   let bg_c;
@@ -59,8 +56,7 @@ function draw() {
   const offset_y = canvas_y/8;
 
   //find the smaller offset and use that for both edges
-  let smaller_offset = offset_x;
-  if(offset_y<offset_x) smaller_offset=offset_y;
+  let smaller_offset = min(offset_x, offset_y);
 
   let grid_size_col = (canvas_x-smaller_offset)/grid_num_col; 
   //minimum 4 layers to cover up background color, plateaus after that
@@ -112,10 +108,7 @@ function draw() {
     }
   }
   pop();
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

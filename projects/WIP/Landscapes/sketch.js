@@ -1,4 +1,5 @@
 gif = false;
+animation = false;
 fr = 60;
 
 xoff = 0;
@@ -13,15 +14,13 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
   c = color(random(palette));
   background(c);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //actual drawing stuff
   push();
@@ -44,10 +43,7 @@ function draw() {
   }
   pop();
 
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

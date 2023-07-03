@@ -14,13 +14,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //projct variables
 
@@ -85,9 +83,7 @@ function draw() {
   }
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

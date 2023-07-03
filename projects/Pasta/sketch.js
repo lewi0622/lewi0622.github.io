@@ -19,22 +19,17 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
   colorMode(HSB);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  clear();
+  global_draw_start();
 
   //empty tiles array
   let tiles = [];
 
-  //find the smaller dimension
-  let smaller_cnv = canvas_x;
-  if(canvas_x>canvas_y){
-    smaller_cnv = canvas_y;
-  }
+  let smaller_cnv = min(canvas_x, canvas_y); //find the smaller dimension
 
   //set grid size based on smallest dim
   grid_size = smaller_cnv/grid_divisor;
@@ -129,8 +124,7 @@ function draw() {
     c_to_add = color(c_to_add);
     c_arr.push(c_to_add)
   }
-  //bleed
-  const bleed_border = apply_bleed();
+
   
   //round is the only way to not have weird artifacts on the last tiles placed
   strokeCap(ROUND)
@@ -203,9 +197,7 @@ function draw() {
     pop();
   }
   
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

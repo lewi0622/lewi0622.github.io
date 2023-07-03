@@ -15,14 +15,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(6*96, 6*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   const sym_angs = floor(random(6,49));
   const line_segs = floor(random(20,51));
@@ -63,7 +60,5 @@ function draw() {
   xoff+= inc;
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }

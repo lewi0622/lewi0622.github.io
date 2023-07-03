@@ -16,16 +16,14 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG, 100, 80);
+  common_setup(100, 80, SVG);
 
   textFont(font);
   textSize(32*global_scale);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
   push();
   translate(0*global_scale, canvas_y/2)
   text("Lewiston", 0,0);
@@ -33,10 +31,7 @@ function draw() {
   text(":D", 0, -78*global_scale)
 
   pop();
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

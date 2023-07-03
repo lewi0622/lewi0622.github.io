@@ -1,6 +1,6 @@
 'use strict';
 let font;
-function preload() {  font = loadFont('..\\..\\fonts\\xband-ro.ttf');  }
+function preload() {  font = loadFont('..\\..\\..\\fonts\\xband-ro.ttf');  }
 
 //setup variables
 const gif = false;
@@ -17,13 +17,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   refresh_working_palette();
   let primary_c = random(working_palette);
@@ -88,9 +86,8 @@ function draw() {
   filter(POSTERIZE, 2)
   // filter(POSTERIZE, 3)
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

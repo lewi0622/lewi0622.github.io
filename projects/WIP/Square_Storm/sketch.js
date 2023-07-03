@@ -21,7 +21,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
   for(let i=0; i<num_squares; i++){
     const c = color(random(palette));
     c.setAlpha(0.05*255);
@@ -32,10 +32,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  clear();
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   refresh_working_palette();
 
@@ -76,9 +73,8 @@ function draw() {
   }
   ang += ang_inc;
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

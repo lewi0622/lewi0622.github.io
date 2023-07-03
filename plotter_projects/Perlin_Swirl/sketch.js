@@ -9,44 +9,55 @@ const capture_time = 10;
 const sixteen_by_nine = false;
 
 function gui_values(){
-  parameterize("line_steps", 100, 1, 1000, 1, false);
-  parameterize("noise_damp", 10, 1, 1000, 1, false);
-  parameterize("noise_amp", 10, 1, 100, 1, true);
-  parameterize("rotation_steps", 50, 1, 500, 1, false);
-  parameterize("rotation_step_size", 1, -180, 180, 1, false);
+  parameterize("number_of_swirls", 1, 1, 5, 1, false);
+  parameterize("margin", 0.5*96, 0, 200, 1, true);
+  parameterize("line_steps", 400, 1, 1000, 1, false);
+  parameterize("i_noise_damp", 100, 1, 1000, 1, false);
+  parameterize("j_noise_damp", 60, 1, 1000, 1, false);
+  parameterize('z_noise_damp', 0.01, 0.01, 1000, 1, false);
+  parameterize("noise_amp", 100, 1, 100, 1, true);
+  parameterize("rotation_steps", 100, 1, 500, 1, false);
+  parameterize("rotation_step_size", 1, -5, 5, 0.1, false);
 }
 
 function setup() {
-  common_setup(gif, SVG, 6*96, 6*96);
+  common_setup(6*96, 6*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //actual drawing stuff
   push();
-  
-  translate(canvas_x/2, canvas_y/2);
-  const line_step_size = canvas_x/line_steps;
-  for(let j=0; j<rotation_steps; j++){
+  const colors = gen_n_colors(number_of_swirls);
+  for(let z=0; z<number_of_swirls; z++){
     push();
-    rotate(j*rotation_step_size);
-    translate(-canvas_x/2, 0);
-    const line_chance = map(j, 0, rotation_steps, 1, 0.5);
-    for(let i=1; i<=line_steps; i++){
-      if(random()>line_chance) continue;
-      line(i*line_step_size, map(noise(i/noise_damp), 0,1, -noise_amp, noise_amp),
-      (i+1)*line_step_size, map(noise((i+1)/noise_damp), 0,1, -noise_amp, noise_amp))
+    stroke(colors[z]);
+    const rotation_direction = random([-1,1]);
+    const offset_x = random(-canvas_x/16, canvas_x/16);
+    const offset_y = random(-canvas_y/16, canvas_y/16);
+    translate(canvas_x/2+offset_x, canvas_y/2+offset_y);
+    rotate(random(360));
+    const line_step_size = (canvas_x-margin*2)/line_steps;
+    const skips = new Array(line_steps).fill(0); //
+    for(let j=0; j<rotation_steps; j++){
+      push();
+      rotate(j*rotation_step_size*rotation_direction);
+      translate(-canvas_x/2+margin, 0);
+      const line_chance = map(j, 0, rotation_steps, 1, 0.9);
+      for(let i=1; i<=line_steps; i++){
+        if(random()>line_chance) skips[i] = 1;
+        if(skips[i] == 1) continue;
+        line(i*line_step_size, map(noise(i/i_noise_damp, j/j_noise_damp, z/z_noise_damp), 0,1, -noise_amp, noise_amp),
+        (i+1)*line_step_size, map(noise((i+1)/i_noise_damp, j/j_noise_damp, z/z_noise_damp), 0,1, -noise_amp, noise_amp))
+      }
+      pop();
     }
     pop();
   }
   pop();
 
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

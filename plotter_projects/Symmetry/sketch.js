@@ -8,30 +8,27 @@ const capture_time = 10;
 
 
 function gui_values(){
-
+  parameterize("noise_off", 20, 0, 200, 1, false);
+  parameterize("inc", 0.6, 0.01, 1.5, 0.01, false);
+  parameterize("sym_angs", floor(random(4,17)), 1, 30, 1, false);
+  parameterize("line_segs", floor(random(5,15)), 3, 30, 1, false);
+  parameterize("len", random(6, 25), 1, 50, 1, false);
+  parameterize("tightness", 0, -5, 5, 0.1, false);
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(8*96, 8*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
+  global_draw_start();
 
-  //project variables
-  const noise_off = 20;
-  const inc = 0.3*60/fr;
-  const sym_angs = floor(random(4,17));
-  const line_segs = floor(random(5,15));
-
-  const len = 800/(line_segs*constrain(sym_angs, 4,8));
-
+  push();
   noFill();
   strokeWeight(1*global_scale);
   const colors = gen_n_colors(sym_angs);
+  curveTightness(tightness);
 
-  //bleed
-  const bleed_border = apply_bleed();
   translate(canvas_x/2, canvas_y/2);
 
   //actual drawing stuff
@@ -50,18 +47,15 @@ function draw() {
           }
           curveVertex(x, y);
         }
-        endShape(CLOSE);
+        endShape();
         pop();
 
       xoff+= inc;
     }
     rotate(360/sym_angs);
   }
-
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  pop();
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

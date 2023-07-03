@@ -14,21 +14,19 @@ const inc = 0.01*60/fr;
 let rot = 0;
 let rot_inc = 1;
 
-
+//TRY ADDING TWO COLOR VERSIONS, OR ONE COLOR THAT HAS HSB VARIATIONS ATTACHED
 function gui_values(){
 
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
   bg_c = random(palette);
   rot_inc *= random([-1,1])
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //apply background
   refresh_working_palette();
@@ -79,10 +77,8 @@ function draw() {
   xoff+=inc;
   rot += rot_inc;
   pop();
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

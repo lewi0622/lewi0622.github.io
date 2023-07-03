@@ -14,13 +14,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup(400, 400);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //actual drawing stuff
   push();
@@ -31,9 +29,8 @@ function draw() {
   createSpiral();
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs
@@ -97,10 +94,7 @@ const createSpiral = function(){
     fill(c);
     const radius = sqrt(0.5);
     const angle = i * phi * dir;
-    let smaller_cnv = canvas_x;
-    if(canvas_y<canvas_x){
-      smaller_cnv = canvas_y;
-    }
+    let smaller_cnv = min(canvas_x, canvas_y);
     const distance = f * radius * smaller_cnv*dist_scale;
     const x = cos(angle)*distance;
     const y = sin(angle)*distance;

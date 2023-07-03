@@ -17,7 +17,7 @@ function gui_values(){
 let pt_size, pts, c_idx, bg_c, frame_switch;
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 
   //create series of points
   pt_size = 20*global_scale;
@@ -38,11 +38,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-
-  clear();
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //apply background
   background(bg_c);
@@ -70,10 +66,8 @@ function draw() {
   c_idx = 0;
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

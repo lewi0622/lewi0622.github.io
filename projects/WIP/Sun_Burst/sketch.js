@@ -1,4 +1,5 @@
 gif = true;
+animation = true;
 fr = 30;
 
 x_rot = 0;
@@ -13,7 +14,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
   line_length = random([25, 40])*global_scale;
   rot = random(0, 360);
   rad = 50*global_scale;
@@ -24,9 +25,7 @@ function setup() {
 }
 //***************************************************
 function draw() {  
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]))
@@ -86,10 +85,7 @@ function draw() {
   
   x_rot+=x_inc;
 
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

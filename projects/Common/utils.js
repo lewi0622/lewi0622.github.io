@@ -2,9 +2,9 @@
 // globals
 const project_path = window.location.pathname.split('/')
 let project_name = project_path[project_path.length-2];
-let canvas_x, canvas_y, cnv;
+let canvas_x, canvas_y, cnv, base_x, base_y;
 
-let num_frames, capturer, seed;
+let num_frames, capturer, capture_state, seed;
 //control variables
 let seed_input, scale_box, control_height, control_spacing, hidden_controls, color_sel, color_div;
 let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave;
@@ -20,6 +20,7 @@ let global_scale = 1;
 let cut = false;
 let bleed = false;
 let bleed_val = 0.25; //quarter inch bleed
+let bleed_border;
 const DPI_DEFAULT = 300;
 let dpi = DPI_DEFAULT;
 let full_controls = false;
@@ -39,10 +40,15 @@ let picker, picker_popper;
 const swatches = [];
 const pickers = [];
 
-function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
+//blend modes 
+let modes;
+
+function common_setup(size_x=400, size_y=400, renderer=P2D){
+  base_x = size_x;
+  base_y = size_y;
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
-
+  
   //check for different base size
   if(typeof sixteen_by_nine !== "undefined"){
     if(sixteen_by_nine){
@@ -67,6 +73,27 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   seed_scale_button(base_y);
   seed = reset_drawing(seed, base_x, base_y);
 
+  //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
+  //https://p5js.org/reference/#/p5/blendMode
+  modes = [
+    BLEND, //0
+    ADD, //1
+    DARKEST, //2 
+    LIGHTEST, //3
+    DIFFERENCE, //4
+    EXCLUSION, //5
+    MULTIPLY, //6
+    SCREEN, //7
+    REPLACE, //8
+    REMOVE, //9
+    OVERLAY, //10
+    HARD_LIGHT, //11
+    SOFT_LIGHT, //12
+    DODGE, //13
+    BURN, //14
+    SUBTRACT //15
+  ];
+  parameterize("blend_mode", 0, 0, 15, 1, false);
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals
   gui_values();
@@ -101,7 +128,7 @@ function common_setup(gif=false, renderer=P2D, base_x=400, base_y=400){
   if(!svg_redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   
   //shift position to center canvas if base is different than 400
-  if(base_x<=400 && base_y<=400){
+  if(base_x<=400){
     cnv.position((400*global_scale-canvas_x)/2, 0);
   }
   
@@ -171,7 +198,7 @@ function setParams(base_x, base_y){
   }
   else{
     //get scale based on window size
-    global_scale = find_cnv_mult(base_x, base_y);
+    global_scale = find_cnv_mult();
   }
 
   if(add_bleed != undefined){
@@ -374,8 +401,9 @@ function seed_scale_button(base_y){
 
 function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
-  canvas_x = base_x*global_scale;
-  canvas_y = base_y*global_scale;
+  canvas_x = round(base_x*global_scale);
+  canvas_y = round(base_y*global_scale);
+
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)){
     seed = Math.round(random()*1000000);
@@ -572,34 +600,50 @@ function save_drawing(){
   }
 }
 
+function global_draw_start(clear_cnv=true){
+  if(clear_cnv)clear(); //should be false for some animating pieces
 
-function capture_start(capture){
   //called from top of Draw to start capturing, requires CCapture
   if(!redraw && capture){
     capturer.start();
+    capture_state = "start";
   }
 
-  redraw = true;
-  redraw_reason = "gif";
-
-  //no actually to do with capture, just a convenient place to put it
+  //if creating a gif of different designs, re-randomize palette from suggested palettes and rerandomize gui values
   if(gif && !animation){
-    //redo suggested palettes
-    change_default_palette();
-    
-    //redo parameterizations
-    gui_values();
+    change_default_palette(); //redo suggested palettes
+    gui_values(); //redo parameterizations
   }
+  else{
+    redraw = true; //I believe these two lines exist to not prompt capturer.start() multiple times
+    redraw_reason = "gif";
+  }
+
+  parameterize("blend_mode", 0, 0, 15, 1, false);//add param for blend mode
+  blendMode(modes[blend_mode]); // blend mode param for all designs
+
+  bleed_border = apply_bleed();
 }
 
-function capture_frame(capture){
-  if (capture){
-    capturer.capture(document.getElementById("defaultCanvas0"));
-    if(frameCount-1 == num_frames || !isLooping()){
-      capturer.stop();
-      capturer.save();
-      noLoop();
-    } 
+function global_draw_end(){
+  apply_cutlines(bleed_border);
+  capture_frame();
+}
+
+
+function capture_frame(){ 
+  if(capture){
+    if(capture_state != "stop"){
+      capturer.capture(document.getElementById("defaultCanvas0"));
+      capture_state = "capture";
+      
+      if(frameCount-1 == num_frames || !isLooping()){
+        capturer.stop();
+        capture_state = "stop";
+        capturer.save();
+      } 
+    }
+    if(capture_state == "stop") noLoop(); //CCapture executes an extra loop every time
   }
 }
 
@@ -850,6 +894,7 @@ function clear_gui(){
 }
 
 function redraw_sketch(){
+
   redraw = true;
   clear();
   setup();
@@ -906,21 +951,31 @@ function refresh_working_palette(){
   working_palette = JSON.parse(JSON.stringify(palette));
 }
 
-function find_cnv_mult(base_x, base_y){
-  base_y += 40;
-  if(full_controls){
-    //space for second row of controls, the extra 3 is make sure no vertical scrollbar
-    base_y += 20;
-  }
-  //finds smallest multipler
-  const x_mult = Math.round((windowWidth/base_x)*1000)/1000;
-  const y_mult = Math.round((windowHeight/base_y)*1000)/1000;
-
+function find_cnv_mult(){
   //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
   if(type == "svg") return 1;
 
-  if(x_mult<y_mult) return constrain(x_mult, 1, 12);
-  else return constrain(y_mult, 1, 12);
+  let size_x = max(400, base_x); //because we center within a 400x400 canvas for things smaller than 400
+  let size_y = base_y;
+  size_y += 40;
+  if(full_controls){
+    //space for second row of controls, the extra 3 is make sure no vertical scrollbar
+    size_y += 20;
+  }
+
+  const x_mult = Math.round((windowWidth/size_x)*1000)/1000; //find multiplier based on the x dimension  
+  const y_mult = Math.round((windowHeight/size_y)*1000)/1000; //find multipler based on the y dimension
+
+  let smaller_multiplier = min(x_mult, y_mult);  //find the smaller mult
+  
+  //constrain between 1 and 12
+  smaller_multiplier = constrain(smaller_multiplier, 1, 12);
+
+  //get a mult that will give an even number of whole pixels for the x dimension
+  if(round(size_x*smaller_multiplier) % 2 != 0) smaller_multiplier = (round(size_x*smaller_multiplier)-1)/size_x; //-1 so that the canvas is always slightly smaller than the window
+
+  //canvas_x and canvas_y rounded later on
+  return smaller_multiplier;
 }
 
 function indexOfMin(arr) {

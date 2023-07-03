@@ -1,4 +1,5 @@
 gif = false;
+animation = false;
 fr = 1;
 
 capture = false;
@@ -10,13 +11,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  //bleed
-  const bleed_border = apply_bleed();
+  global_draw_start();
 
   //apply background
   bg_c = bg(true);
@@ -24,7 +23,6 @@ function draw() {
   //actual drawing stuff
   push();
   // center_rotate(random([0,90,180,270]));
-  const ctx = canvas.getContext('2d');
 
   step=10*global_scale;
   x_off = canvas_x/8;
@@ -40,8 +38,8 @@ function draw() {
     translate(0, random(-vert_offset, vert_offset));
 
     // Shadow
-    ctx.shadowColor = color(c);
-    ctx.shadowBlur = 1*global_scale;
+    drawingContext.shadowColor = color(c);
+    drawingContext.shadowBlur = 1*global_scale;
     for(let j= 0; j<canvas_y/2; j+=step){
       push();
       translate(i+x_off, j+y_off);
@@ -53,10 +51,8 @@ function draw() {
   }
 
   pop();
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

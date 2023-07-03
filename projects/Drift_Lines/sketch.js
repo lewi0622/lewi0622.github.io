@@ -14,11 +14,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
+  global_draw_start();
 
   //project variables
   const line_length = 60*global_scale;
@@ -34,8 +34,7 @@ function draw() {
   let y_offset_max = 20;
   let funcs, colors, iterations;
 
-  //bleed
-  const bleed_border = apply_bleed();
+
 
   refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]))
@@ -58,10 +57,7 @@ function draw() {
     y_offset_min=y_offset_min*global_scale, y_offset_max=y_offset_max*global_scale);
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

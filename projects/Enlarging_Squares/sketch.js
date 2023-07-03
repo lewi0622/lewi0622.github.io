@@ -20,7 +20,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
 
   palette = shuffle(palette, true);
   bg_c = color(random(palette));
@@ -33,11 +33,8 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
+  global_draw_start();
 
-  clear();
-  //bleed
-  const bleed_border = apply_bleed();
   //actual drawing stuff
   push();
 
@@ -78,10 +75,7 @@ function draw() {
 
   xoff += inc;
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

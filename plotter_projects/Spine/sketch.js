@@ -12,12 +12,11 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif, SVG);
+  common_setup(6*96, 6*96, SVG);
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  clear();
+  global_draw_start();
 
   noFill();
   strokeCap(SQUARE);
@@ -27,8 +26,7 @@ function draw() {
   let pts0 = [];
   let pts1 = [];
   let pts2 = [];
-  //bleed
-  const bleed_border = apply_bleed();
+
 
   //actual drawing stuff
   // center_rotate(90);
@@ -110,10 +108,7 @@ function draw() {
   curveVertex(pts1[pts1.length-1].x, pts1[pts1.length-1].y);
   endShape();
 
-  //cleanup
-  apply_cutlines(bleed_border);
-
-  capture_frame(capture);
+  global_draw_end();
 }
 //***************************************************
 //custom funcs

@@ -28,10 +28,10 @@ function gui_values(){
 
 function setup() {
   if(!capture){
-    common_setup(gif, SVG, 7*96, 7*96);
+    common_setup(11*96, 8.5*96, SVG);
   }
   else{
-    common_setup(gif);
+    common_setup();
     background("WHITE")
   }
   noFill();
@@ -41,13 +41,11 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
-  clear();
+  global_draw_start();
   if(capture){
     background("WHITE");
   }
-  //bleed
-  const bleed_border = apply_bleed();
+
 
   //actual drawing stuff
   push();
@@ -73,10 +71,7 @@ function draw() {
     }
   endShape();
   pop();
-  //cleanup
-  apply_cutlines(bleed_border);
-  
-  capture_frame(capture);
+global_draw_end();
 }
 //***************************************************
 //custom funcs

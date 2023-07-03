@@ -20,7 +20,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(gif);
+  common_setup();
   
   sym_angs = floor(random(6,49));
   line_segs = floor(random(20,51));
@@ -32,11 +32,10 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  capture_start(capture);
+  global_draw_start();
 
   background("BLACK");
-  //bleed
-  const bleed_border = apply_bleed();
+
 
   //actual drawing stuff
   push();
@@ -64,7 +63,6 @@ function draw() {
   xoff+= inc;
 
   pop();
-  //cutlines
-  apply_cutlines(bleed_border);
-  capture_frame(capture);
+  
+  global_draw_end();
 }
