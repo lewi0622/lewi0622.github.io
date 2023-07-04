@@ -54,3 +54,15 @@ function center_rotate(deg){
   rotate(deg);
   translate(-canvas_x/2, -canvas_y/2);
 }
+
+//draw npointed polygon from the center of the shape
+function polygon(x, y, radius, npoints) {
+  const angle = 360 / npoints;
+  beginShape();
+  for (let a = 0; a < 360; a += angle) {
+    const sx = x + cos(a) * radius;
+    const sy = y + sin(a) * radius;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
+}
