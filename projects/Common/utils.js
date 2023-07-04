@@ -93,7 +93,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     BURN, //14
     SUBTRACT //15
   ];
-  parameterize("blend_mode", 0, 0, 15, 1, false);
+  if(type != 'svg') parameterize("blend_mode", 0, 0, 15, 1, false);
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals
   gui_values();
@@ -619,9 +619,10 @@ function global_draw_start(clear_cnv=true){
     redraw_reason = "gif";
   }
 
-  parameterize("blend_mode", 0, 0, 15, 1, false);//add param for blend mode
-  blendMode(modes[blend_mode]); // blend mode param for all designs
-
+  if(type != 'svg'){
+    parameterize("blend_mode", 0, 0, 15, 1, false);//add param for blend mode
+    blendMode(modes[blend_mode]); // blend mode param for all designs
+  }
   bleed_border = apply_bleed();
 }
 
