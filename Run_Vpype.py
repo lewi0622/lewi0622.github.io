@@ -50,6 +50,8 @@ def build_vpypeline(filename, show):
             args += r" -i "
         elif occult_accross.get():
             args += r" -a "
+        if occult_keep_lines.get():
+            args += r" -k "
 
     # read flag: doesn't crop incoming picture
     if crop.get():
@@ -152,9 +154,12 @@ current_row +=1
 
 occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
 occult_label.bind("<Button-1>", lambda e: callback("https://github.com/LoicGoulefert/occult"))
-occult_label.grid(row=current_row, column=0)
+occult_label.grid(row=current_row, column=0, columnspan=2)
+current_row += 1 
 occult = IntVar(value=0)
-occult_button = Checkbutton(window, text="Occult", variable=occult).grid(row=current_row, column=1)
+occult_button = Checkbutton(window, text="Occult", variable=occult).grid(row=current_row, column=0)
+occult_keep_lines = IntVar(value=0)
+occult_keep_lines_button = Checkbutton(window, text="Keep occulted lines", variable=occult_keep_lines).grid(row=current_row, column=1)
 current_row +=1 
 occult_ignore = IntVar(value=1)
 occult_ignore_button = Checkbutton(window, text="Occult ignores Layers", variable=occult_ignore).grid(row=current_row, column=0)
