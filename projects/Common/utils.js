@@ -611,16 +611,20 @@ function global_draw_start(clear_cnv=true){
 
   //if creating a gif of different designs, re-randomize palette from suggested palettes and rerandomize gui values
   if(gif && !animation){
+    noiseSeed(floor(random(10000))); //randomize noise seed
+
     change_default_palette(); //redo suggested palettes
     gui_values(); //redo parameterizations
   }
-  else{
+  if(gif || animation){
     redraw = true; //I believe these two lines exist to not prompt capturer.start() multiple times
     redraw_reason = "gif";
   }
+  
 
   if(type != 'svg'){
-    parameterize("blend_mode", 0, 0, 15, 1, false);//add param for blend mode
+    if(blend_mode != null) parameterize("blend_mode", blend_mode, 0, 15, 1, false);//add param for blend mode
+    else parameterize("blend_mode", 0, 0, 15, 1, false);//add param for blend mode
     blendMode(modes[blend_mode]); // blend mode param for all designs
   }
   bleed_border = apply_bleed();
@@ -1086,7 +1090,7 @@ function parameterize(name, val, min, max, step, scale){
   }
   if(stored_variable != null){
     stored_variable = JSON.parse(stored_variable);
-    if(redraw_reason == 'gui'){
+    if(redraw_reason == 'gui' || redraw_reason == 'gif'){
       //retrieve gui values
       const gui_containers = document.getElementsByClassName("qs_container");
       gui_containers.forEach(container => {
