@@ -7,14 +7,18 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 const sixteen_by_nine = false;
-suggested_palettes = [SOUTHWEST, NURSERY];
+suggested_palettes = [MUTEDEARTH];
 
 function gui_values(){
-  parameterize("num_lines", 10, 1, 100, 1, false);
-  parameterize("i_lines", 100, 1, 500, 1, false);
-  parameterize("num_points", 100, 1, 500, 1, false);
-  parameterize("amp", 30, 1, 50, 1, true);
-  parameterize("point_noise_damp", 10, 1, 1000, 1, false);
+  parameterize("cols", 4, 1, 50, 1, false);
+  parameterize("rows", 4, 1, 50, 1, false);  
+  parameterize("circle_rad", 10, 1, 200, 1, true);
+  parameterize("x_margin", 100, 0, 400, 1, true);
+  parameterize("y_margin", 100, 0, 400, 1, true);
+  parameterize("drift", 0.1, 0, 10, 0.1, true);
+  parameterize("growth", 1, 0, 5, 0.1, true);
+  parameterize("layers", 50, 1, 200, 1, false);
+  parameterize("blur_size", 2, 0, 20, 0.1, true);
 }
 
 function setup() {
@@ -26,24 +30,41 @@ function draw() {
 
   //actual drawing stuff
   push();
-  background("BLACK");
-  noFill();
-  strokeWeight(1);
-  for(let i=0; i<i_lines; i++){
-    stroke(map(i, 0,i_lines, 0, 256*2)%256);
-    for(let j=0; j<=num_lines; j++){
-      push();
-      translate(j*canvas_x/num_lines, 0);
-      beginShape();
-      for(let z=0; z<=num_points; z++){
-        const x = map(noise(i/100, j*100, z/point_noise_damp), 0,1, -amp, amp);
-        vertex(x, z*canvas_y/num_points);
-      }
-      endShape();
-      pop();
-    }
-  }
+  noStroke();
+  translate(x_margin, y_margin);
+  let bg_c = color("BLACK");
+  background(bg_c);
+  let c = color(random(working_palette));
 
+  let center_coords = [floor(random(cols)), floor(random(rows))];
+  
+  const x_step_size = (canvas_x-x_margin*2)/cols;
+  const y_step_size = (canvas_y-y_margin*2)/rows;
+
+  let radius = circle_rad;
+  for(let z=0; z<layers; z++){
+    const current_c = lerpColor(bg_c, c, z/layers);
+    fill(current_c);
+    drawingContext.shadowColor = current_c;
+    drawingContext.shadowBlur = blur_size;
+    for(let i=0; i<cols; i++){
+      for(let j=0; j<rows; j++){
+        push();
+        translate((i+1)*x_step_size, (j+1)*y_step_size);
+        translate(circle_rad, circle_rad);
+        if(i<center_coords[0]) translate(-drift*z, 0);
+        else if(i>center_coords[0]) translate(drift*z, 0);
+
+        if(j<center_coords[1]) translate(0, -drift*z);
+        else if(j>center_coords[1]) translate(0, drift*z);
+
+        circle(0,0, radius);
+
+        pop();
+      }
+    }
+    radius += growth;
+  }
   pop();
 
   global_draw_end();
