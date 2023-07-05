@@ -27,11 +27,7 @@ function setup() {
 //***************************************************
 function draw() {
   global_draw_start();
-  if(gif){
-    background(bg_c);
-    palette = palette_reset;
-  }
-
+  
   //actual drawing stuff
   push();
   noFill();

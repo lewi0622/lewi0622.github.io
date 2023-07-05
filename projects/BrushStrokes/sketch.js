@@ -21,10 +21,6 @@ function draw() {
   global_draw_start();
 
   refresh_working_palette();
-  if(gif){
-    //randomize noise seed
-    noiseSeed(random(10000))
-  }
 
   //actual drawing stuff
   push();
