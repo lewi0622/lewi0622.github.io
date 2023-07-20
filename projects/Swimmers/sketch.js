@@ -13,7 +13,11 @@ let swimmers = [];
 let bg_c;
 
 function gui_values(){
-  parameterize("number_of_swimmers", 1, 1, 100, 1, false);
+  parameterize("number_of_swimmers", 100, 1, 1000, 1, false);
+  parameterize("heading_change", 30, 0, 180, 1, false);
+  parameterize("swimmer_starting_rad", random(10,30), 1, 100, 1, true);
+  parameterize("swimmer_tail_length", floor(random(10, 50)), 1, 100, 1, false);
+  parameterize("swimmer_movement_speed", random(1,10), 0.1, 10, 0.1, true);
 }
 
 function setup() {
@@ -26,10 +30,6 @@ function draw() {
 
   //actual drawing stuff
   push();
-
-  let swimmer_starting_rad = 10*global_scale;
-  let swimmer_tail_length = 20;
-  let swimmer_movement_speed = 1*global_scale;
   let swimmers_to_remove = [];
 
   //background stuff
@@ -43,13 +43,11 @@ function draw() {
 
   //check to see which swimmers are fully offscreen
   swimmers.forEach((swimmer, swimmer_index) => {
-    if((swimmer.x<0 || swimmer.x>canvas_x) && (swimmer.y<0 || swimmer.y>canvas_y)){
-      let tail_in_screen = false;
-      swimmer.tail.forEach(tail => {
-        if((tail.x>0 && tail.x<canvas_x) || (tail.y>0 && tail.y<canvas_y)) tail_in_screen = true;
-      });
-      if(!tail_in_screen) swimmers_to_remove.push(swimmer_index);
-    }
+    let tail_in_screen = false;
+    swimmer.tail.forEach(tail => {
+      if((tail.x>0 && tail.x<canvas_x) || (tail.y>0 && tail.y<canvas_y)) tail_in_screen = true;
+    });
+    if(!tail_in_screen) swimmers_to_remove.push(swimmer_index);
   });
 
   //remove swimmers offscreen
@@ -65,26 +63,23 @@ function draw() {
     fill(swimmers[j].color);
 
     //allow movement within +/-45 degrees from heading.
-    const theta = random(swimmers[j].heading-45, swimmers[j].heading+45);
+    const theta = random(swimmers[j].heading-heading_change, swimmers[j].heading+heading_change);
     swimmers[j].heading = theta;
     const radius = swimmer_movement_speed;
 
-    //propagate tail
-    for(let i=swimmer_tail_length-1; i>0; i--){
-      swimmers[j].tail[i].x = swimmers[j].tail[i-1].x;
-      swimmers[j].tail[i].y = swimmers[j].tail[i-1].y;
-      circle(swimmers[j].tail[i].x, swimmers[j].tail[i].y, lerp(swimmer_starting_rad,0,i/swimmer_tail_length));
-    }
+    const new_x = swimmers[j].tail[0].x + radius*cos(theta);
+    const new_y = swimmers[j].tail[0].y + radius*sin(theta);
+    //rotate tail array
+    const new_tail = arrayRotate(swimmers[j].tail,1);
+    new_tail[0] = {x:new_x, y:new_y};
+  
+    new_tail.forEach((tail_coords, tail_index) => {
+      circle(tail_coords.x, tail_coords.y, lerp(0,swimmer_starting_rad, tail_index/swimmer_tail_length));
+    });
 
-    swimmers[j].tail[0].x = swimmers[j].x;
-    swimmers[j].tail[0].y = swimmers[j].y;
-    swimmers[j].x += radius*cos(theta);
-    swimmers[j].y += radius*sin(theta);
-
-    circle(swimmers[j].x, swimmers[j].y, swimmer_starting_rad);
   }
 
-  // if(frameCount == 20) noLoop();
+  // if(frameCount==20)noLoop();
 
   pop();
 
@@ -98,8 +93,6 @@ function spawn_swimmers(tail_legnth){
   const y = random(canvas_x/4, canvas_x*3/4);
 
   let swimmer = {};
-  swimmer.x = x;
-  swimmer.y = y;
   swimmer.heading = random(360);
   swimmer.color = random(working_palette);
   swimmer.tail = new Array(tail_legnth).fill({x:x, y:y});
