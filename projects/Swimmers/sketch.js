@@ -4,19 +4,19 @@ const gif = true;
 const animation = true;
 const fr = 30;
 const capture = false;
-const capture_time = 2;
+const capture_time = 10;
 const sixteen_by_nine = false;
 let grid_bg_c;
-suggested_palettes = [BIRDSOFPARADISE];
+suggested_palettes = [GAMEDAY, BIRDSOFPARADISE, NURSERY, SUPPERWARE];
 
 let swimmers = [];
 let bg_c;
 
 function gui_values(){
-  parameterize("number_of_swimmers", 100, 1, 1000, 1, false);
-  parameterize("heading_change", 30, 0, 180, 1, false);
+  parameterize("number_of_swimmers", floor(random(50,120)), 1, 1000, 1, false);
+  parameterize("heading_change", random(20,60), 0, 180, 1, false);
   parameterize("swimmer_starting_rad", random(10,30), 1, 100, 1, true);
-  parameterize("swimmer_tail_length", floor(random(10, 50)), 1, 100, 1, false);
+  parameterize("swimmer_tail_length", floor(random(10, 40)), 1, 100, 1, false);
   parameterize("swimmer_movement_speed", random(1,10), 0.1, 10, 0.1, true);
 }
 
@@ -65,7 +65,7 @@ function draw() {
     //allow movement within +/-45 degrees from heading.
     const theta = random(swimmers[j].heading-heading_change, swimmers[j].heading+heading_change);
     swimmers[j].heading = theta;
-    const radius = swimmer_movement_speed;
+    const radius = random(swimmer_movement_speed/2, swimmer_movement_speed);
 
     const new_x = swimmers[j].tail[0].x + radius*cos(theta);
     const new_y = swimmers[j].tail[0].y + radius*sin(theta);
@@ -78,8 +78,6 @@ function draw() {
     });
 
   }
-
-  // if(frameCount==20)noLoop();
 
   pop();
 
