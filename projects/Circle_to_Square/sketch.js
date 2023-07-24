@@ -4,13 +4,14 @@ const gif = true;
 const animation = true;
 const fr = 30;
 const capture = false;
-const capture_time = 5;
+const capture_time = 10;
 const sixteen_by_nine = false;
 suggested_palettes = [BEACHDAY, BUMBLEBEE, SIXTIES]
 let rotation_per_loop = 0;
 let rotation_inc;
 let bg_c, c, corner_radius_start, corner_radius_end;
 let drift_x_start, drift_x_end, drift_y_start, drift_y_end;
+let cornering;
 function gui_values(){
   parameterize("num_circles", floor(random(20,100)), 1, 500, 1, false);
   parameterize("starting_radius", random(200,375), 1, 1000, 1, true);
@@ -34,13 +35,13 @@ function draw() {
     c = random(working_palette);
     bg_c = color(bg_c);
     c = color(c);
-    corner_radius_start = random(360);
-    corner_radius_end = 360-corner_radius_start;
 
     drift_x_start = random(-canvas_x/2, 0);
     drift_x_end = random(canvas_x/2);
     drift_y_start = random(-canvas_y/2, 0);
     drift_y_end = random(canvas_y/2);
+
+    cornering = random(-0.5, 0.25);
   }
   background(bg_c);
 
@@ -69,7 +70,8 @@ function draw() {
     rotate(rotation_per_loop*i);
 
     const radius = lerp(starting_radius, ending_radius, i/num_circles);
-    const corner_radius = constrain(map(i/num_circles, 0,1, corner_radius_start, -corner_radius_end), 0, 360);
+    // const corner_radius = constrain(map(i/num_circles, 0,1, corner_radius_start, -corner_radius_end), 0, 360);
+    let corner_radius = constrain(lerp(radius/2, radius*cornering, i/num_circles), 0, starting_radius);
     square(0, 0, radius, corner_radius, corner_radius, corner_radius, corner_radius);
     pop();
   }
