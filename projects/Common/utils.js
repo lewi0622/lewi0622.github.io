@@ -2,7 +2,7 @@
 // globals
 const project_path = window.location.pathname.split('/')
 let project_name = project_path[project_path.length-2];
-let canvas_x, canvas_y, cnv, base_x, base_y;
+let canvas_x, canvas_y, cnv;
 
 let num_frames, capturer, capture_state, seed;
 //control variables
@@ -17,6 +17,7 @@ let global_palette, palette, working_palette, suggested_palettes;
 
 
 let global_scale = 1;
+let multiplier_changed = false;
 let cut = false;
 let bleed = false;
 let bleed_val = 0.25; //quarter inch bleed
@@ -43,17 +44,15 @@ const pickers = [];
 //blend modes 
 let modes;
 
-function common_setup(size_x=400, size_y=400, renderer=P2D){
-  base_x = size_x;
-  base_y = size_y;
+function common_setup(size_x=400, size_y=400, renderer=P2D){ 
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
-  
+
   //check for different base size
   if(typeof sixteen_by_nine !== "undefined"){
     if(sixteen_by_nine){
-      base_x = 450;
-      base_y = 800;
+      size_x = 450;
+      size_y = 800;
     }
   }
 
@@ -69,33 +68,13 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   else if(renderer == SVG) type="svg";
   hidden_controls = true;
 
-  setParams(base_x, base_y);
+
+  setParams(size_x, size_y); //base_x and base_y globals are init here
   seed_scale_button(base_y);
   seed = reset_drawing(seed, base_x, base_y);
 
-  //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
-  //https://p5js.org/reference/#/p5/blendMode
-  modes = [
-    BLEND, //0
-    ADD, //1
-    DARKEST, //2 
-    LIGHTEST, //3
-    DIFFERENCE, //4
-    EXCLUSION, //5
-    MULTIPLY, //6
-    SCREEN, //7
-    REPLACE, //8
-    REMOVE, //9
-    OVERLAY, //10
-    HARD_LIGHT, //11
-    SOFT_LIGHT, //12
-    DODGE, //13
-    BURN, //14
-    SUBTRACT //15
-  ];
-  if(type != 'svg') parameterize("blend_mode", 0, 0, 15, 1, false);
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
-  //needs to be called before noLoop and gui.addGlobals
+  //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
   gui_values();
 
   if(!full_controls){
@@ -174,7 +153,7 @@ function over_ride_shuffle(){
   }
 }
 
-function setParams(base_x, base_y){
+function setParams(size_x, size_y){
   //get params from url and set necessary globals
   const controls = getParamValue('controls');
   seed = getParamValue('seed');
@@ -191,6 +170,38 @@ function setParams(base_x, base_y){
   full_controls = (controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "127.0.0.2") && (controls!="false");
   if((controls != undefined && controls != "false") || full_controls){
     hidden_controls = false;
+  }
+
+  //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
+  //https://p5js.org/reference/#/p5/blendMode
+  modes = [
+    BLEND, //0
+    ADD, //1
+    DARKEST, //2 
+    LIGHTEST, //3
+    DIFFERENCE, //4
+    EXCLUSION, //5
+    MULTIPLY, //6
+    SCREEN, //7
+    REPLACE, //8
+    REMOVE, //9
+    OVERLAY, //10
+    HARD_LIGHT, //11
+    SOFT_LIGHT, //12
+    DODGE, //13
+    BURN, //14
+    SUBTRACT //15
+  ];
+  if(type != 'svg'){
+    parameterize("blend_mode", 0, 0, 15, 1, false);
+    //create parameters for base_x and base_y
+    parameterize("base_x", size_x, 1, 1100, 1, false);
+    parameterize("base_y", size_y, 1, 1100, 1, false);
+  }
+  else{
+    //create parameters for base_x and base_y
+    parameterize("base_x", size_x, 1, 1056, 96/4, false);
+    parameterize("base_y", size_y, 1, 1056, 96/4, false);
   }
 
   if(img_scale != undefined){
@@ -622,11 +633,8 @@ function global_draw_start(clear_cnv=true){
   }
   
 
-  if(type != 'svg'){
-    if(blend_mode != null) parameterize("blend_mode", blend_mode, 0, 15, 1, false);//add param for blend mode
-    else parameterize("blend_mode", 0, 0, 15, 1, false);//add param for blend mode
-    blendMode(modes[blend_mode]); // blend mode param for all designs
-  }
+  if(type != 'svg') blendMode(modes[blend_mode]); // blend mode param for all designs
+  
   bleed_border = apply_bleed();
 }
 
@@ -899,9 +907,7 @@ function clear_gui(){
 }
 
 function redraw_sketch(){
-
   redraw = true;
-  clear();
   setup();
   draw();
 }
@@ -980,6 +986,14 @@ function find_cnv_mult(){
   if(round(size_x*smaller_multiplier) % 2 != 0) smaller_multiplier = (round(size_x*smaller_multiplier)-1)/size_x; //-1 so that the canvas is always slightly smaller than the window
 
   //canvas_x and canvas_y rounded later on
+
+  //check for change in multiplier due to gui param changes
+  if(redraw_reason == 'gui'){
+    multiplier_changed = smaller_multiplier != global_scale;
+    print(smaller_multiplier, global_scale, multiplier_changed);
+  }
+  else multiplier_changed = false;
+
   return smaller_multiplier;
 }
 
@@ -1088,6 +1102,7 @@ function parameterize(name, val, min, max, step, scale){
     console.log("Cannot access session storage to get item, probably an ad blocker issue");
     stored_variable = null;
   }
+
   if(stored_variable != null){
     stored_variable = JSON.parse(stored_variable);
     if(redraw_reason == 'gui' || redraw_reason == 'gif'){
@@ -1111,7 +1126,10 @@ function parameterize(name, val, min, max, step, scale){
           //save to storage
           let new_value = gui_label[1];
           if(stored_variable.scale) new_value = new_value/global_scale;
-          if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) stored_variable.frozen = true;
+          if(!multiplier_changed || name == "base_x" || name == "base_y"){
+            //don't freeze params that change due to multiplier changing. Multiplier changed only happens when base_x, base_y change
+            if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) stored_variable.frozen = true; 
+          }
           stored_variable.val = new_value;
           stored_variable.min = min;
           stored_variable.max = max;
