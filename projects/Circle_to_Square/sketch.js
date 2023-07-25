@@ -11,7 +11,7 @@ let rotation_per_loop = 0;
 let rotation_inc;
 let bg_c, c, corner_radius_start, corner_radius_end;
 let drift_x_start, drift_x_end, drift_y_start, drift_y_end;
-let cornering;
+let cornering_start, cornering_end;
 function gui_values(){
   parameterize("num_circles", floor(random(20,100)), 1, 500, 1, false);
   parameterize("starting_radius", random(200,375), 1, 1000, 1, true);
@@ -41,7 +41,8 @@ function draw() {
     drift_y_start = random(-canvas_y/2, 0);
     drift_y_end = random(canvas_y/2);
 
-    cornering = random(-0.5, 0.25);
+    cornering_start = constrain(random(), 0, 0.5);
+    cornering_end = random(-1, 0.25);
   }
   background(bg_c);
 
@@ -71,7 +72,7 @@ function draw() {
 
     const radius = lerp(starting_radius, ending_radius, i/num_circles);
     // const corner_radius = constrain(map(i/num_circles, 0,1, corner_radius_start, -corner_radius_end), 0, 360);
-    let corner_radius = constrain(lerp(radius/2, radius*cornering, i/num_circles), 0, starting_radius);
+    let corner_radius = constrain(lerp(radius*cornering_start, radius*cornering_end, (i+1)/num_circles), 0, starting_radius);
     square(0, 0, radius, corner_radius, corner_radius, corner_radius, corner_radius);
     pop();
   }
