@@ -10,8 +10,8 @@ let x_fourth, y_fourth, copic_palette;
 suggested_palettes = []
 
 function gui_values(){
-  parameterize("number_of_lines", 10, 1, 100, 1, false);
-  parameterize("sym_angs", 2, 1, 8, 1, false);
+  parameterize("number_of_lines", floor(random(15,50)), 1, 100, 1, false);
+  parameterize("sym_angs", floor(random(2,9)), 1, 8, 1, false);
   parameterize("lower_starting_x", 0, -500, 1500, 1, true);
   parameterize("lower_starting_y", canvas_y, -500, 1500, 1, true);
   parameterize("upper_starting_x", 0, -500, 1500, 1, true);
@@ -34,6 +34,8 @@ function draw() {
   //actual drawing stuff
   push();
   
+  while(sym_angs == 4) sym_angs = floor(random(2,9))//swastika check
+
   for(let j=0; j<sym_angs; j++){
     push();
     stroke(j*10);
