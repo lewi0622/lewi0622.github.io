@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter.filedialog import askopenfilenames
 import xml.etree.ElementTree as ET
 import webbrowser
+import vpype_cli as vp
 
 #Define a callback function
 def callback(url):
@@ -14,7 +15,7 @@ def run_vpypeline():
     for filename in input_files:
         command = build_vpypeline(filename=filename, show=False)
         print("Running: \n", command)
-        subprocess.run(command)
+        vp.execute(command)
         if paint.get():
             subprocess.run("python C:\\Users\\lewi0\\Desktop\\lewi0622.github.io\\Vpype_Paint.py")
 
@@ -22,7 +23,7 @@ def show_vpypeline():
     show=True
     command = build_vpypeline(filename=input_files[0], show=show)
     print("Showing: \n", command)
-    subprocess.run(command)
+    vp.execute(command)
 
 
 def build_vpypeline(filename, show):
@@ -31,7 +32,7 @@ def build_vpypeline(filename, show):
     output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
 
     #read command
-    prefix = r"vpype read "
+    prefix = r"read "
 
     # conserve stroke colors\
     if read_stroke.get():
@@ -105,12 +106,13 @@ input_files = askopenfilenames(initialdir=initial_dir, filetypes=(("SVG files","
 input_file = input_files[0]
 
 #get svg size
-tree = ET.parse(input_file)
-root = tree.getroot()
-svg_width = root.attrib["width"] #size in pixels, css units are 96 px = 1 inch 
-svg_height = root.attrib["height"] 
-svg_viewbox = root.attrib["viewBox"]
-svg_viewbox = svg_viewbox.split(" ")
+with open(input_file, "r") as svg_file:
+    tree = ET.parse(svg_file)
+    root = tree.getroot()
+    svg_width = root.attrib["width"] #size in pixels, css units are 96 px = 1 inch 
+    svg_height = root.attrib["height"] 
+    svg_viewbox = root.attrib["viewBox"]
+    svg_viewbox = svg_viewbox.split(" ")
 
 if "in" in svg_width:
     svg_width_inches = svg_width.replace("in", "")
@@ -197,7 +199,10 @@ rotate_label = Label(window, text="Rotate Clockwise", fg="blue", cursor="hand2")
 rotate_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
 rotate_label.grid(row=current_row, column=0)
 rotate_entry = Entry(window)
-rotate_entry.insert(0, "0")
+if svg_width_inches < svg_height_inches:
+    rotate_entry.insert(0, "90") 
+else:
+    rotate_entry.insert(0, "0") 
 rotate_entry.grid(row=current_row, column=1)
 current_row +=1 
 
@@ -270,9 +275,9 @@ color_mode = IntVar()
 color_mode_button = Checkbutton(window, text="Order by color (will overwrite colors)", variable=color_mode).grid(row=current_row, column=0, columnspan=2)
 current_row +=1 
 
+paint = IntVar(value=0)
 if len(input_files) == 1:
     paint_label = Label(window, text="Run Paint after").grid(row=current_row, column=0)
-    paint = IntVar(value=0)
     paint_button = Checkbutton(window, text="Paint", variable=paint).grid(row=current_row, column=1)
     current_row +=1
 
