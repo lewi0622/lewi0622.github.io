@@ -9,46 +9,51 @@ suggested_palettes = [BUMBLEBEE, SIXTIES, SUPPERWARE]
 
 
 function gui_values(){
-
+  parameterize("line_length", 60, 1, 150, 1, true);
+  parameterize("iterations", 50, 1, 200, 1, false);
+  parameterize("offset_max_col", 100, 0, 200, 1, true);
+  parameterize("offset_max_row", 100, 0, 200, 1, true);
 }
 
 
 function setup() {
-  common_setup(7*96, 7*96, SVG);
+  common_setup(9.75*96, 5.5*96, SVG);
 }
 //***************************************************
 function draw() {
   global_draw_start();
 
   //project variables
-  const line_length = 60*global_scale;
-  const tile_width = canvas_x / line_length;
-  const tile_height = canvas_y / line_length;
+  const cols = canvas_x / line_length;
+  const rows = canvas_y / line_length;
 
-  let funcs, colors, iterations;
   let x_offset_min = 0;
-  let x_offset_max = 100;
   let y_offset_min = 0;
-  let y_offset_max = 100;
-  
-
-
-
-  background("#abada0")
-  refresh_working_palette();
-  strokeCap(random([PROJECT,ROUND]))
 
   //actual drawing stuff
   push();
-  center_rotate(random([0, 90, 180, 270]));
-  //line width
   strokeWeight(2*global_scale);
   
-  //tile lines
-  tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 
-    colors=working_palette, iterations=50, 
-    x_offset_min=x_offset_min*global_scale, x_offset_max=x_offset_max*global_scale,
-    y_offset_min=y_offset_min*global_scale, y_offset_max=y_offset_max*global_scale);
+  let i_offset = 0;
+  let j_offset = 0;
+
+  for(let loop_num = 0; loop_num < iterations; loop_num++){
+    for(let i = 0; i < cols; i++){
+      for(let j = 0; j < rows; j++){
+        if(i*line_length + i_offset > canvas_x + line_length || j*line_length + j_offset > canvas_y + line_length){
+          break;
+        }
+        push();
+        stroke(random(working_palette));
+        translate(i*line_length + i_offset, j*line_length + j_offset);
+        if(random()>0.5)draw_cardinal(line_length);
+        else draw_diag(line_length);
+        pop();
+      }
+    }
+    i_offset += random(x_offset_min, offset_max_col);
+    j_offset += random(y_offset_min, offset_max_row);
+  }
 
   pop();
   
