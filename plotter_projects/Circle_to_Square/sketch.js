@@ -15,8 +15,8 @@ function gui_values(){
   parameterize("ending_radius", 0, 0, 500, 1, true);
   parameterize("drift_x_per_loop", 0, -10, 10, 0.1, true);
   parameterize("drift_y_per_loop", 0, -10, 10, 0.1, true);
-  parameterize("starting_corner_radius", 270, 0, 360, 1, false);
-  parameterize("ending_corner_radius", -140, -360, 360, 1, false);
+  parameterize("cornering_end", 0, -4, 4, 0.1, false);
+  parameterize("cornering_start", 0.5, -4, 4, 0.1, false);
   parameterize("rotation_per_loop", 0, -180, 180, 0.01, false);
 }
 
@@ -41,7 +41,7 @@ function draw() {
     rotate(rotation_per_loop*i);
 
     const radius = lerp(starting_radius, ending_radius, i/num_circles);
-    const corner_radius = constrain(lerp(starting_corner_radius, ending_corner_radius, i/num_circles), 0, 360);
+    let corner_radius = constrain(lerp(radius*cornering_start, radius*cornering_end, (i+1)/num_circles), 0, starting_radius);
     square(0, 0, radius, corner_radius, corner_radius, corner_radius, corner_radius);
     pop();
   }
