@@ -48,6 +48,9 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
 
+  //midi.js initiate connection
+  midiConnect();
+
   //check for different base size
   if(typeof sixteen_by_nine !== "undefined"){
     if(sixteen_by_nine){

@@ -17,8 +17,6 @@ let grid_button_2 = 41;
 let grid_button_3 = 42;
 let grid_button_4 = 43;
 
-midiConnect();
-
 if (navigator.requestMIDIAccess) {
   console.log('This browser supports WebMIDI!');
 } else {
@@ -52,7 +50,6 @@ function getMIDIMessage(midiMessage) {
   on = midiMessage.data[0];
   channel = midiMessage.data[1];
   val = midiMessage.data[2];
-  print(on, val);
   if(channel == 40 && val == 127) previous_seed();//previous
   else if(channel == 41 && val == 127) next_seed();//next
   else if(channel == 42 && val == 127) randomize_drawing();//randomize
