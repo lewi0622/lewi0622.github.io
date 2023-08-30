@@ -13,11 +13,11 @@ function gui_values(){
   parameterize("amp", random(50,200), 1, 1000, 1, true);
   parameterize("i_damp", 150, 1, 1000, 1, false);
   parameterize("j_damp", 1, 1, 1000, 1, false);
-  parameterize("z_mult", 100, 0.1, 1000, 1, false);
+  parameterize("z_mult", 100, 0.1, 1000, 0.1, false);
 }
 
 function setup() {
-  common_setup(6*96, 6*96, SVG);
+  common_setup(8*96, 6*96, SVG);
 }
 //***************************************************
 function draw() {
@@ -44,7 +44,7 @@ function draw() {
       for(let j=0; j<cols; j++){
         const x = j*col_step_size;
         const y = map(noise(i/i_damp,j/j_damp, z*z_mult), 0,1, -amp, amp);
-        vertex(j*col_step_size, y);
+        vertex(x, y);
       }
       endShape();
       pop();
