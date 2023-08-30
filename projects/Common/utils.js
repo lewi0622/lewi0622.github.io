@@ -253,10 +253,7 @@ function seed_scale_button(base_y){
     //START OF TOP ROW
     //left/right buttons for easy seed nav
     btLeft = createButton('<');
-    btLeft.mouseClicked(function() {
-      seed_input.value(int(seed_input.value())-1);
-      set_seed();
-    });
+    btLeft.mouseClicked(previous_seed);
     btLeft.id('Bt Left')
 
     //creates controls below canvas for displaying/setting seed
@@ -266,10 +263,7 @@ function seed_scale_button(base_y){
 
     //left/right buttons for easy seed nav
     btRight = createButton('>');
-    btRight.mouseClicked(function() {
-      seed_input.value(int(seed_input.value())+1);
-      set_seed();
-    });
+    btRight.mouseClicked(next_seed);
     btRight.id('Bt Right');
 
     //custom seed button
@@ -294,10 +288,7 @@ function seed_scale_button(base_y){
 
     //randomize button
     randomize = createButton("Randomize");
-    randomize.mouseClicked(() => {
-      seed_input.value(Math.round(random()*1000000));
-      set_seed();
-    })
+    randomize.mouseClicked(randomize_drawing);
     randomize.id('Randomize');
 
     //START OF SECOND ROW
@@ -408,6 +399,21 @@ function seed_scale_button(base_y){
 
   show_hide_controls(ids, hidden_controls);
   show_hide_controls(full_ids, !full_controls);
+}
+
+function randomize_drawing(){
+  seed_input.value(Math.round(random()*1000000));
+  set_seed();
+}
+
+function next_seed(){
+  seed_input.value(int(seed_input.value())+1);
+  set_seed();
+}
+
+function previous_seed(){
+  seed_input.value(int(seed_input.value())-1);
+  set_seed();
 }
 
 function reset_drawing(seed, base_x, base_y){
@@ -601,14 +607,12 @@ function save_drawing(){
       cut_name = '_cut_true';
     }
   };
-  if(dpi != DPI_DEFAULT){dpi_name = "_dpi_"+str(dpi)};
-  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(col_idx()) + '_scale_' + str(global_scale).replace(".", "_") + bleed_name + dpi_name + cut_name;
-  if(type == 'svg'){
-    save(filename)
-  }
-  else{
-    saveCanvas(filename, type);
-  }
+  if(dpi != DPI_DEFAULT) dpi_name = "_dpi_"+str(dpi);
+  let scale_text = round(global_scale*1000)/1000; //round to nearest 1000th place
+  scale_text = str(scale_text).replace(".", "_");
+  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(col_idx()) + '_scale_' + scale_text + bleed_name + dpi_name + cut_name;
+  if(type == 'svg')save(filename);
+  else saveCanvas(filename, type);
 }
 
 function global_draw_start(clear_cnv=true){
@@ -988,11 +992,7 @@ function find_cnv_mult(){
   //canvas_x and canvas_y rounded later on
 
   //check for change in multiplier due to gui param changes
-  if(redraw_reason == 'gui'){
-    multiplier_changed = smaller_multiplier != global_scale;
-    print(smaller_multiplier, global_scale, multiplier_changed);
-  }
-  else multiplier_changed = false;
+  multiplier_changed = redraw_reason == 'gui' && smaller_multiplier != global_scale
 
   return smaller_multiplier;
 }
@@ -1090,8 +1090,9 @@ function arrayRotate(arr, count) {
   return arr;
 }
 
-function parameterize(name, val, min, max, step, scale){
+function parameterize(name, val, min, max, step, scale, midi_channel){
   if(scale == undefined || scale != true) scale=false;
+  if(midi_channel == undefined) midi_channel = false;
   //check if variable exists in local storage
   const stored_name = project_name + "_" + name;
   let stored_variable
@@ -1105,7 +1106,7 @@ function parameterize(name, val, min, max, step, scale){
 
   if(stored_variable != null){
     stored_variable = JSON.parse(stored_variable);
-    if(redraw_reason == 'gui' || redraw_reason == 'gif'){
+    if(redraw_reason == 'gui' || redraw_reason == 'gif' || redraw_reason == 'midi'){
       //retrieve gui values
       const gui_containers = document.getElementsByClassName("qs_container");
       gui_containers.forEach(container => {
