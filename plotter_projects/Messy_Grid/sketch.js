@@ -22,10 +22,6 @@ function draw() {
   const num_grid = 16;
   const grid_size = canvas_x/num_grid;
 
-  background("#abada0")
-  refresh_working_palette();
-  strokeCap(SQUARE);
-
   //actual drawing stuff
   push();
   translate(grid_size/2, grid_size/2);
