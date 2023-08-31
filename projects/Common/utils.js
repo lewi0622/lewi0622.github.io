@@ -1106,23 +1106,31 @@ function arrayRotate(arr, count) {
   return arr;
 }
 
+function protected_session_storage_get(name){
+  try{ return sessionStorage.getItem(name); }
+  catch(err){
+    console.log("Cannot access session storage to get item, probably an ad blocker issue");
+    return null;
+  }
+}
+
 function parameterize(name, val, min, max, step, scale, midi_channel){
   if(scale == undefined || scale != true) scale=false;
   if(midi_channel == undefined) midi_channel = false;
+
+  if(midi_channel){
+    const channel_name = give_grid_chanel_name(midi_channel);
+    const channel_value = protected_session_storage_get(channel_name);
+    if(channel_value != null) val = map(channel_value, 0, 127, min, max);
+  }
+
   //check if variable exists in local storage
   const stored_name = project_name + "_" + name;
-  let stored_variable
-  try{
-    stored_variable = sessionStorage.getItem(stored_name);
-  }
-  catch(err){
-    console.log("Cannot access session storage to get item, probably an ad blocker issue");
-    stored_variable = null;
-  }
+  let stored_variable = protected_session_storage_get(stored_name);
 
   if(stored_variable != null){
     stored_variable = JSON.parse(stored_variable);
-    if(redraw_reason == 'gui' || redraw_reason == 'gif' || redraw_reason == 'midi'){
+    if(redraw_reason == 'gui' || redraw_reason == 'gif'){
       //retrieve gui values
       const gui_containers = document.getElementsByClassName("qs_container");
       gui_containers.forEach(container => {
@@ -1234,7 +1242,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
   //if variables do exist, apply new values
   else{
     //if redraw reason is gui, let p5.gui handle the new values
-    if(redraw_reason == "window" || redraw_reason == "gif"){
+    if(redraw_reason == "window" || redraw_reason == "gif" || redraw_reason == "midi"){
       eval(name + "=" + val);
       if(min != undefined) eval(name + "Min =" + min);
       if(max != undefined) eval(name +"Max =" + max);
