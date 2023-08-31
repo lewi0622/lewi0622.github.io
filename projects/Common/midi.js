@@ -82,7 +82,7 @@ function getMIDIMessage(midiMessage) {
     sessionStorage.setItem(give_grid_chanel_name(channel), val);
 
     redraw_reason = "midi";
-    //ideally we would check to see if the dials/sliders were actually being referenced somewhere
+
     redraw_sketch();
   }
 }

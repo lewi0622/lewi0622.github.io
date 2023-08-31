@@ -1121,9 +1121,11 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
   if(midi_channel){
     const channel_name = give_grid_chanel_name(midi_channel);
     const channel_value = protected_session_storage_get(channel_name);
-    if(channel_value != null) val = map(channel_value, 0, 127, min, max);
+    if(channel_value != null){
+      val = map(channel_value, 0, 127, min, max); //midi vals go from 0 to 127
+      val = round(val/step)*step; //coerce to nearest step val
+    }
   }
-
   //check if variable exists in local storage
   const stored_name = project_name + "_" + name;
   let stored_variable = protected_session_storage_get(stored_name);
