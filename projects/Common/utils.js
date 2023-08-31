@@ -39,8 +39,8 @@ let gui_collapsed = false;
 
 //color picker vars
 let picker, picker_popper;
-const swatches = [];
-const pickers = [];
+let swatches = [];
+let pickers = [];
 
 //blend modes 
 let modes;
@@ -316,7 +316,10 @@ function seed_scale_button(base_y){
       if(bleed){base_url+='&bleed=' + String(bleed_val)};
       if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
       if(cut){base_url += '&cut=' + String(cut)};
-      window.location.replace(base_url);
+
+      window.history.pushState({}, "", base_url);
+      redraw_reason = "url";
+      redraw_sketch();
     })
     auto_scale.id("Auto Scale");
 
@@ -438,9 +441,14 @@ function col_idx(){
   return palette_names.indexOf(color_sel.value());
 }
 
+window.onpopstate = function(e){
+  //captures the back/forward browser buttons to move between history states without reloading the page
+  redraw_reason = "url";
+  if(e.state) redraw_sketch();
+};
+
 function set_seed(){
   //refreshes the drawing with new settings
-
   //check if any changes have ocurred
   const seed_same = seed_input.value()==getParamValue('seed');
   const scale_same = scale_box.value()==find_cnv_mult();
@@ -456,7 +464,12 @@ function set_seed(){
 
   //check if no scale in url, and if no change in scale
   if(getParamValue('scale') !== undefined || !scale_same) base_url += "&scale=" + scale_box.value();
-  window.location.replace(base_url);
+  
+  //using pushState allows for changing the url, and then redrawing without needing to reload the page
+  window.history.pushState({}, "", base_url);
+  redraw_reason = "url";
+  if(!palette_same) redraw_reason = "palette";
+  redraw_sketch();
 }
 
 function keyTyped() {
@@ -468,8 +481,18 @@ function keyTyped() {
 
 function show_palette_colors(){
   //can't be called in the seed_scale_button function because palette can be undefined at that point
-  //generate swatches for current palette
-  if(!redraw){
+  if(redraw_reason == "palette"){
+    //delete existing 
+    let existing_pickers = document.getElementsByClassName("lw-ref");
+    for(let i=existing_pickers.length-1; i>=0; i--) existing_pickers[i].remove();
+  
+    let existing_poppers = document.getElementsByClassName("alwan lw-popper");
+    for(let i=existing_poppers.length-1; i>=0; i--) existing_poppers[i].remove();
+    //generate swatches for current palette
+    swatches = [];
+    pickers = [];
+  }
+  if(!redraw || redraw_reason == "palette"){
     for(let i=0; i<palette.length; i++){
       swatches.push('rgb(' + global_palette[i][0] + ',' + global_palette[i][1] + ',' + global_palette[i][2] + ',' + map(global_palette[i][3],0,255, 0,1) + ')');
     }
@@ -483,7 +506,7 @@ function show_palette_colors(){
 
   let start_pos = color_sel.position().x + color_sel.size().width;
   palette.forEach((c, idx) => {
-    if(!redraw){
+    if(!redraw || redraw_reason == "palette"){
       let color_picker = document.createElement("div");
       color_picker.id = "color_picker" + idx;
       color_div.appendChild(color_picker);
@@ -495,7 +518,7 @@ function show_palette_colors(){
     color_div.style.width = control_height+"px";
     color_div.style.height = control_height+"px";
 
-    if(!redraw){
+    if(!redraw || redraw_reason == "palette"){
       //color picker code, ref https://github.com/SofianChouaib/alwan
       const alwan = new Alwan('#color_picker'+idx, {
         id: "picker_"+idx,
@@ -932,14 +955,13 @@ function change_default_palette(){
   //if no suggested palette, use the default palette
   let palette_id= PALETTE_ID_DEFAULT;
   let colors = getParamValue('colors');
-
   let suggested_palette_id;
   if(suggested_palettes !== undefined){
     if(suggested_palettes.length>0) suggested_palette_id = random(suggested_palettes);
   }
 
   //if color is specified in URL, use that, otherwise use the provided palette_id
-  if(redraw){
+  if(redraw && redraw_reason != "palette"){
     if(gif && suggested_palette_id !== undefined) palette_id = suggested_palette_id;
     else palette_id = global_palette_id;
   }
@@ -1345,7 +1367,7 @@ function retrieve_gui_settings(){
   if(stored_loc !== null) gui.setPosition(stored_loc.x, stored_loc.y);
 
   //recollapse new gui if previously collapsed
-  if(collapsed && redraw_reason != "midi"){
+  if(collapsed && !redraw){
     gui.prototype._doubleClickTitle();
     gui_collapsed = true;
   }
