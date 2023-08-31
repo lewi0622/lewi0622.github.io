@@ -439,12 +439,13 @@ function col_idx(){
 }
 
 function set_seed(){
-  //reinitializes the drawing with a specific seed
+  //refreshes the drawing with new settings
 
-  //check if requested seed is the same as existing seed
-  if(seed_input.value()==getParamValue('seed') && scale_box.value()==getParamValue('scale') && col_idx()==getParamValue('colors')){
-    return ;
-  }
+  //check if any changes have ocurred
+  const seed_same = seed_input.value()==getParamValue('seed');
+  const scale_same = scale_box.value()==find_cnv_mult();
+  const palette_same = col_idx()==int(getParamValue('colors'));
+  if(seed_same && scale_same && palette_same) return;
 
   let base_url = "index.html?colors=" + String(col_idx());
   base_url += "&controls=" + getParamValue("controls");
@@ -454,13 +455,8 @@ function set_seed(){
   if(cut){base_url += '&cut=' + String(cut)};
 
   //check if no scale in url, and if no change in scale
-  if(getParamValue('scale') == undefined && find_cnv_mult() == float(scale_box.value())){
-    window.location.replace(base_url);
-  }
-  else{
-    window.location.replace(base_url + "&scale=" + scale_box.value());
-  }
-
+  if(getParamValue('scale') !== undefined || !scale_same) base_url += "&scale=" + scale_box.value();
+  window.location.replace(base_url);
 }
 
 function keyTyped() {

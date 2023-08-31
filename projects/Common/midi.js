@@ -77,6 +77,16 @@ function getMIDIMessage(midiMessage) {
   else if(channel == grid_button_4){
     if(val == 127 && !file_saved) save_drawing();//save
   }
+  else if(channel == grid_dial_4 && type != "svg"){
+    //scroll through colors
+    const select_elem = document.getElementById("Color Select");
+    const select_options = Array.from(select_elem.options);
+    
+    const new_val = round(map(val, 0,127, 0, select_options.length-1));
+    select_elem.value = select_options[new_val].value;
+
+    set_seed();
+  }
   else{
     //capture dials and sliders in session memory
     protected_session_storage_set(give_grid_chanel_name(channel), val);
