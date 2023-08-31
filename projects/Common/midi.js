@@ -1,5 +1,6 @@
 var channel, val, on, port_id;
 var grid_connected = false;
+var saved_file = false;
 
 //channels
 let grid_dial_1 = 32;
@@ -50,10 +51,21 @@ function getMIDIMessage(midiMessage) {
   on = midiMessage.data[0];
   channel = midiMessage.data[1];
   val = midiMessage.data[2];
-  if(channel == 40 && val == 127) previous_seed();//previous
-  else if(channel == 41 && val == 127) next_seed();//next
-  else if(channel == 42 && val == 127) randomize_drawing();//randomize
-  else if(channel == 43 && val == 127) save_drawing();//save
+  if(channel == 40){
+    if(val == 127) previous_seed();//previous
+  }
+  else if(channel == 41){
+    if(val == 127) next_seed();//next
+  }
+  else if(channel == 42){
+    if(val == 127) randomize_drawing();//randomize
+  }
+  else if(channel == 43 ){
+    if(val == 127 && !saved_file){
+      save_drawing();//save
+      saved_file = true; //only one save allowed, reset in redraw_sketch
+    }
+  }
   else{
     redraw_reason = "midi";
     redraw_sketch();
