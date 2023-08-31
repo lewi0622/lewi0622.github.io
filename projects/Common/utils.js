@@ -49,7 +49,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   over_ride_shuffle();
 
   //midi.js initiate connection
-  midiConnect();
+  update_devices();
 
   //check for different base size
   if(typeof sixteen_by_nine !== "undefined"){
@@ -627,8 +627,6 @@ function save_drawing(){
         stroke_colors[stroke_color] = primary_id;
         primary_id++;
       }
-      print(e);
-      print(stroke_colors[stroke_color])
       e.id = stroke_colors[stroke_color];
     });
 
@@ -934,6 +932,7 @@ function clear_gui(){
 
 function redraw_sketch(){
   redraw = true;
+  saved_file = false;
   setup();
   draw();
 }
