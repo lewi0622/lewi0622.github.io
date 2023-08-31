@@ -5,7 +5,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 //geo json data obtained from https://eric.clst.org/tech/usgeojson/
 let minnesota, bg_c;

@@ -6,7 +6,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 let x_fourth, y_fourth;
 suggested_palettes = [COTTONCANDY, SOUTHWEST, NURSERY, SIXTIES]
 

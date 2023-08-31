@@ -6,7 +6,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 suggested_palettes = [BIRDSOFPARADISE, NURSERY];
 
 function gui_values(){

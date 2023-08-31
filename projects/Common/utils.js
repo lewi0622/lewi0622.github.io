@@ -54,14 +54,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   //midi.js initiate connection
   update_devices();
 
-  //check for different base size
-  if(typeof sixteen_by_nine !== "undefined"){
-    if(sixteen_by_nine){
-      size_x = 450;
-      size_y = 800;
-    }
-  }
-
   //set up CCapture, override num_frames in setup/draw if necessary
   num_frames = capture_time*fr;
   capturer = new CCapture({format:'png', name:String(fr), framerate:fr});

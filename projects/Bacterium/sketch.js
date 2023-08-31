@@ -5,7 +5,7 @@ const animation = true;
 const fr = 30;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 let bg_c, weight, c_id, lines, sub_lines;
 suggested_palettes = [BEACHDAY, SOUTHWEST, SUPPERWARE];
 

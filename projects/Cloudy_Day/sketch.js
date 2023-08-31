@@ -5,7 +5,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 20;
-const sixteen_by_nine = false;
+
 suggested_palettes = [NURSERY, TOYBLOCKS];
 let cloud_color, cloud_back_color;
 let rain_dir; 

@@ -5,7 +5,7 @@ const animation = false;
 const fr = 5;
 const capture = false;
 const capture_time = 2;
-const sixteen_by_nine = false;
+
 let grid_bg_c;
 suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, OASIS];
 let x,y,prev_x, prev_y, vertical_step_num;

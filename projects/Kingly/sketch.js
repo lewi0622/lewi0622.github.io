@@ -5,7 +5,7 @@ const animation = true;
 const fr = 30;
 const capture = false;
 const capture_time = 15;
-const sixteen_by_nine = false;
+
 suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 //project variables

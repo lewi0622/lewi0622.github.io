@@ -5,7 +5,7 @@ const animation = true;
 const fr = 30;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 let grid_bg_c;
 suggested_palettes = [GAMEDAY, BIRDSOFPARADISE, NURSERY, SUPPERWARE];
 

@@ -5,7 +5,7 @@ const animation = false;
 const fr = 30;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 suggested_palettes = []
 
 function gui_values(){

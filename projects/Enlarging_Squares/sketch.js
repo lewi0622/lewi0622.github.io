@@ -5,7 +5,7 @@ const animation = true;
 const fr = 30;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 let bg_c, square_rate, symmetries, rot_inc, shape;
 suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE];
 //project variables

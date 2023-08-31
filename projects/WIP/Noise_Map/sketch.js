@@ -8,7 +8,7 @@ const animation = false;
 const fr = 30;
 const capture = true;
 const capture_time = 3;
-const sixteen_by_nine = false;
+
 suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 

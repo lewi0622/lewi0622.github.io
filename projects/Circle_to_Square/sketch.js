@@ -5,7 +5,7 @@ const animation = true;
 const fr = 30;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 suggested_palettes = [BEACHDAY, BUMBLEBEE, SIXTIES]
 let rotation_per_loop = 0;
 let rotation_inc;

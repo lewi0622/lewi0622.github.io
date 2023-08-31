@@ -6,7 +6,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 10;
-const sixteen_by_nine = false;
+
 
 function gui_values(){
   parameterize("line_steps", 100, 10, 1000, 1, true);

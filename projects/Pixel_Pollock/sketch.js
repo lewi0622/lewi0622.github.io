@@ -5,7 +5,7 @@ const animation = false;
 const fr = 5;
 const capture = false;
 const capture_time = 2;
-const sixteen_by_nine = false;
+
 suggested_palettes = [SAGEANDCITRUS, BIRDSOFPARADISE, SUMMERTIME, JAZZCUP];
 
 function gui_values(){
