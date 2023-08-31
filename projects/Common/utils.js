@@ -614,7 +614,26 @@ function save_drawing(){
   let scale_text = round(global_scale*1000)/1000; //round to nearest 1000th place
   scale_text = str(scale_text).replace(".", "_");
   const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(col_idx()) + '_scale_' + scale_text + bleed_name + dpi_name + cut_name;
-  if(type == 'svg')save(filename);
+  if(type == 'svg'){
+    //create ids for each color in the order they're drawn for use by vpype
+    let canvas_elem = document.getElementById("defaultCanvas0");
+    let path_elems = canvas_elem.getElementsByTagName("path");
+    let stroke_colors = {};
+    let primary_id = 0.01;
+    path_elems.forEach(e => {
+      const stroke_color = String(e.getAttribute("stroke"));
+      if(stroke_color in stroke_colors) stroke_colors[stroke_color] = stroke_colors[stroke_color] + 0.01;
+      else{
+        stroke_colors[stroke_color] = primary_id;
+        primary_id++;
+      }
+      print(e);
+      print(stroke_colors[stroke_color])
+      e.id = stroke_colors[stroke_color];
+    });
+
+    save(filename);
+  }
   else saveCanvas(filename, type);
 }
 

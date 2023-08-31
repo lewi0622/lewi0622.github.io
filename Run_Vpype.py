@@ -35,8 +35,8 @@ def build_vpypeline(filename, show):
     prefix = r"read "
 
     # conserve stroke colors\
-    if read_stroke.get():
-        prefix += r" -a stroke  "
+    if read_id.get():
+        prefix += r" -a id  "
 
     # alwasy no crop, and execute crop command separately
     prefix += r" --no-crop "
@@ -146,12 +146,12 @@ title.grid(row=current_row,column=0,columnspan=2)
 current_row +=1 
 dimensions = Label(window, text=f"Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
 current_row +=1 
-read_stroke_label = Label(window, text="Preserve Colors", fg="blue", cursor="hand2")
-read_stroke_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#preserve-color-or-other-attributes-when-reading-svg"))
-read_stroke_label.grid(row=current_row, column=0)
 
-read_stroke = IntVar(value=1)
-read_stroke_button = Checkbutton(window, text="--attr stroke", variable=read_stroke).grid(row=current_row, column=1)
+read_id_label = Label(window, text="Preserve Colors using ID")
+read_id_label.grid(row=current_row, column=0)
+
+read_id = IntVar(value=1)
+read_id_button = Checkbutton(window, text="--attr id", variable=read_id).grid(row=current_row, column=1)
 current_row +=1 
 
 occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
