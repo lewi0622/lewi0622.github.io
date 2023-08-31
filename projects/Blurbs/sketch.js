@@ -9,10 +9,10 @@ const sixteen_by_nine = false;
 suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 function gui_values(){
-  parameterize("Weight", 10, 0, 100, 0.1, true,false);
-  parameterize("Line_length", 60, 10, 100, 0.1, true, false);
-  parameterize("Rotation", random([0,90,180,270]), 0, 360, 90, false, true);  
-  parameterize("iterations", 1, 1, 100, 1, false, false);
+  parameterize("Weight", 10, 0, 100, 0.1, true,false, grid_slider_1);
+  parameterize("Line_length", 60, 10, 100, 0.1, true, false, grid_slider_2);
+  parameterize("Rotation", random([0,90,180,270]), 0, 360, 90, false, true, grid_slider_3);  
+  parameterize("iterations", 1, 1, 100, 1, false, false, grid_slider_4);
 }
 
 function setup() {
