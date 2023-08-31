@@ -1,6 +1,5 @@
 var channel, val, on, port_id;
 var grid_connected = false;
-var saved_file = false;
 
 //channels
 let grid_dial_1 = 32;
@@ -18,11 +17,8 @@ let grid_button_2 = 41;
 let grid_button_3 = 42;
 let grid_button_4 = 43;
 
-if (navigator.requestMIDIAccess) {
-  console.log('This browser supports WebMIDI!');
-} else {
-  console.log('WebMIDI is not supported in this browser.');
-}
+if (navigator.requestMIDIAccess) console.log('This browser supports WebMIDI!');
+else console.log('WebMIDI is not supported in this browser.');
 
 function midiConnect(){
   navigator.requestMIDIAccess()
@@ -51,23 +47,21 @@ function getMIDIMessage(midiMessage) {
   on = midiMessage.data[0];
   channel = midiMessage.data[1];
   val = midiMessage.data[2];
-  if(channel == 40){
+  if(channel == grid_button_1){
     if(val == 127) previous_seed();//previous
   }
-  else if(channel == 41){
+  else if(channel == grid_button_2){
     if(val == 127) next_seed();//next
   }
-  else if(channel == 42){
+  else if(channel == grid_button_3){
     if(val == 127) randomize_drawing();//randomize
   }
-  else if(channel == 43 ){
-    if(val == 127 && !saved_file){
-      save_drawing();//save
-      saved_file = true; //only one save allowed, reset in redraw_sketch
-    }
+  else if(channel == grid_button_4){
+    if(val == 127 && !file_saved) save_drawing();//save
   }
   else{
     redraw_reason = "midi";
+    //ideally we would check to see if the dials/sliders were actually being referenced somewhere
     redraw_sketch();
   }
 }

@@ -3,6 +3,7 @@
 const project_path = window.location.pathname.split('/')
 let project_name = project_path[project_path.length-2];
 let canvas_x, canvas_y, cnv;
+let file_saved;
 
 let num_frames, capturer, capture_state, seed;
 //control variables
@@ -45,6 +46,8 @@ const pickers = [];
 let modes;
 
 function common_setup(size_x=400, size_y=400, renderer=P2D){ 
+  file_saved = false;
+
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
 
@@ -633,6 +636,7 @@ function save_drawing(){
     save(filename);
   }
   else saveCanvas(filename, type);
+  file_saved = true;
 }
 
 function global_draw_start(clear_cnv=true){
@@ -932,7 +936,6 @@ function clear_gui(){
 
 function redraw_sketch(){
   redraw = true;
-  saved_file = false;
   setup();
   draw();
 }
