@@ -25,7 +25,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup();
+  common_setup(6*96, 8*96, SVG);
 }
 //***************************************************
 function draw() {
@@ -58,8 +58,7 @@ function draw() {
         out_or_back(pt1, pt2, 1);
         out_or_back(pt1, pt2, -1);
         if(shape_points.length>2){
-          fill(random(working_palette));
-          // noStroke();
+          fill("WHITE")
           strokeWeight(0.3*global_scale);
           if(debug){
             noFill();
