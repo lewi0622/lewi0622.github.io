@@ -9,10 +9,10 @@ const capture_time = 10;
 suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 function gui_values(){
-  parameterize("Weight", 10, 0, 100, 0.1, true, grid_slider_1);
+  parameterize("Weight", 10, 0.1, 100, 0.1, true, grid_slider_1);
   parameterize("Line_length", 60, 10, 100, 0.1, true, grid_slider_2);
   parameterize("Rotation", random([0,90,180,270]), 0, 270, 90, false, grid_slider_3);  
-  parameterize("iterations", 1, 1, 100, 1, false, grid_slider_4);
+  parameterize("iterations", 1, 1, 20, 1, false, grid_slider_4);
 }
 
 function setup() {
