@@ -85,7 +85,8 @@ function getMIDIMessage(midiMessage) {
     const new_val = round(map(val, 0,127, 0, select_options.length-1));
     select_elem.value = select_options[new_val].value;
 
-    set_seed();
+    if(col_idx()!=int(getParamValue('colors'))) set_seed();
+    protected_session_storage_set(give_grid_chanel_name(channel), val);
   }
   else{
     //capture dials and sliders in session memory
