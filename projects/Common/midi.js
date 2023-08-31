@@ -79,7 +79,7 @@ function getMIDIMessage(midiMessage) {
   }
   else{
     //capture dials and sliders in session memory
-    sessionStorage.setItem(give_grid_chanel_name(channel), val);
+    protected_session_storage_set(give_grid_chanel_name(channel), val);
 
     redraw_reason = "midi";
 

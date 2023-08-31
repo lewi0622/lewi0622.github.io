@@ -1114,6 +1114,15 @@ function protected_session_storage_get(name){
   }
 }
 
+function protected_session_storage_set(name, val){
+  try{
+    sessionStorage.setItem(name, val);
+  }
+  catch(err){
+    console.log("Cannot access session storage to set item, probably an ad blocker issue");
+  }
+}
+
 function parameterize(name, val, min, max, step, scale, midi_channel){
   if(scale == undefined || scale != true) scale=false;
   if(midi_channel == undefined) midi_channel = false;
@@ -1162,13 +1171,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
           stored_variable.max = max;
           stored_variable.step = step;
           stored_variable.scale = scale;
-          try{
-            sessionStorage.setItem(stored_name, JSON.stringify(stored_variable));
-          }
-          catch(err){
-            console.log("Cannot access session storage to set item, probably an ad blocker issue");
-          }
-
+          protected_session_storage_set(stored_name, JSON.stringify(stored_variable));
         }
       });
     }
@@ -1185,38 +1188,28 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       }
       else{
         // if not frozen store new values
-        try{
-          sessionStorage.setItem(stored_name, JSON.stringify({
-            name: name,
-            val: val,
-            min: min, 
-            max: max,
-            step: step,
-            scale: scale,
-            frozen: false
-          }));
-        }
-        catch(err){
-          console.log("Cannot access session storage to set item, probably an ad blocker issue");
-        }
+        protected_session_storage_set(stored_name, JSON.stringify({
+          name: name,
+          val: val,
+          min: min, 
+          max: max,
+          step: step,
+          scale: scale,
+          frozen: false
+        }));
       }
     }
   }
   else{
-    try{
-      sessionStorage.setItem(stored_name, JSON.stringify({
-        name: name,
-        val: val,
-        min: min, 
-        max: max,
-        step: step,
-        scale: scale,
-        frozen: false
-      }));
-    }
-    catch(err){
-      console.log("Cannot access session storage to set item, probably an ad blocker issue");
-    }
+    protected_session_storage_set(stored_name, JSON.stringify({
+      name: name,
+      val: val,
+      min: min, 
+      max: max,
+      step: step,
+      scale: scale,
+      frozen: false
+    }));
   }
 
   if(scale){
@@ -1278,14 +1271,8 @@ function attach_icons(){
     }
     let label_content = gui_label.textContent.split(": ");
     const stored_name = project_name + "_" + label_content[0];
-    let stored_variable
-    try{
-      stored_variable = sessionStorage.getItem(stored_name);
-    }
-    catch(err){
-      console.log("Cannot access session storage to get item, probably an ad blocker issue");
-      stored_variable = null;
-    }
+    let stored_variable = protected_session_storage_get(stored_name);
+
     if(stored_variable != null){
       let param = JSON.parse(stored_variable);
       let div = document.createElement('div');
@@ -1301,12 +1288,7 @@ function attach_icons(){
         let slash = create_slash(stored_name, param);
         e.target.parentElement.appendChild(slash);
         param.frozen = true;
-        try{
-          window.sessionStorage.setItem(stored_name, JSON.stringify(param));
-        }
-        catch(err){
-          console.log("Cannot access session storage to set item, probably an ad blocker issue");
-        }
+        protected_session_storage_set(stored_name, JSON.stringify(param));
       });
 
       div.appendChild(dice);
@@ -1330,12 +1312,7 @@ function create_slash(name, data){
   slash.addEventListener('click', (e)=>{
     e.target.remove();
     data.frozen = false;
-    try{
-      window.sessionStorage.setItem(name, JSON.stringify(data));
-    }
-    catch(err){
-      console.log("Cannot access session storage to set item, probably an ad blocker issue");
-    }
+    protected_session_storage_set(name, JSON.stringify(data))
   });
   return slash;
 }
@@ -1347,12 +1324,7 @@ function add_gui_event_handlers(){
     old_endDrag(event);
     const gui_container = document.getElementsByClassName("qs_main")[0];
     const rect = gui_container.getBoundingClientRect();
-    try{
-      sessionStorage.setItem("gui_loc", JSON.stringify(rect));
-    }
-    catch(err){
-      console.log("Cannot access session storage to set item, probably an ad blocker issue");
-    }
+    protected_session_storage_set("gui_loc", JSON.stringify(rect));
   }
   gui.prototype._endDrag = new_endDrag;
 
@@ -1363,34 +1335,21 @@ function add_gui_event_handlers(){
 function gui_dblclick(){
   //toggle gui collapsed status
   gui_collapsed = !gui_collapsed;
-  try{
-    sessionStorage.setItem("gui_collapsed", JSON.stringify(gui_collapsed));
-  }
-  catch(err){
-    console.log("Cannot access session storage to set item, probably an ad blocker issue");
-  }
+  protected_session_storage_set("gui_collapsed", JSON.stringify(gui_collapsed))
 }
 
 function retrieve_gui_settings(){
   // retrieve gui collapsed status and location
-  let stored_loc, collapsed;
-  try{
-    stored_loc = sessionStorage.getItem("gui_loc");
-    collapsed = sessionStorage.getItem("gui_collapsed");
-  }
-  catch(err){
-    console.log("Cannot access session storage to get item, probably an ad blocker issue");
-    return;
-  }
+  let stored_loc = protected_session_storage_get("gui_loc");
+  let collapsed = protected_session_storage_get("gui_collapsed");
+  if(stored_loc == null || collapsed == null) return;
   stored_loc = JSON.parse(stored_loc); 
-  // set position
-  if(stored_loc !== null){
-    gui.setPosition(stored_loc.x, stored_loc.y);
-  }
-
   collapsed = JSON.parse(collapsed);
+  // set position
+  if(stored_loc !== null) gui.setPosition(stored_loc.x, stored_loc.y);
+
   //recollapse new gui if previously collapsed
-  if(collapsed){
+  if(collapsed && redraw_reason != "midi"){
     gui.prototype._doubleClickTitle();
     gui_collapsed = true;
   }
