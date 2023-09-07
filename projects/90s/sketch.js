@@ -11,11 +11,11 @@ suggested_palettes = [BIRDSOFPARADISE, NURSERY, SIXTIES, JAZZCUP];
 
 
 function gui_values(){
-  parameterize("grid_size", 400, 50, 400, 10, true);
-  parameterize("wobble_x", 50, -400, 400, 5, true);
-  parameterize("wobble_y", 30, -400, 400 ,5, true);
-  parameterize("arc_size", 130, 1, 400, 1, true);
-  parameterize("weight", 20, 1, 100, 1, true);
+  parameterize("grid_size", 400, 50, 400, 10, true, grid_slider_1);
+  parameterize("wobble_x", 50, -400, 400, 5, true, grid_slider_2);
+  parameterize("wobble_y", 30, -400, 400 ,5, true, grid_slider_3);
+  parameterize("arc_size", 130, 1, 400, 1, true, grid_slider_4);
+  parameterize("weight", 20, 1, 100, 1, true, grid_dial_1);
 }
 
 function setup() {
