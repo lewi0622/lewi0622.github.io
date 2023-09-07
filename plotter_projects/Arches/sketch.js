@@ -10,11 +10,11 @@ suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
 
 
 function gui_values(){
-  parameterize("cols", 10, 1, 50, 1, false);
-  parameterize("rows", 20, 1, 50, 1, false);
-  parameterize("starting_arch_width", 100, 1, 1000, 1, true);
-  parameterize("starting_arch_height", 200, 1, 1000, 1, true);
-  parameterize("arch_step_size", random(5,20), 1, 100, 1, true);
+  parameterize("cols", 10, 1, 50, 1, false, grid_slider_1);
+  parameterize("rows", 20, 1, 50, 1, false, grid_slider_2);
+  parameterize("starting_arch_width", 100, 1, 1000, 1, true, grid_slider_3);
+  parameterize("starting_arch_height", 200, 1, 1000, 1, true, grid_slider_4);
+  parameterize("arch_step_size", random(5,20), 1, 100, 1, true, grid_dial_1);
 }
 
 function setup() {

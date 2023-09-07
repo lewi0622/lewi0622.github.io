@@ -8,11 +8,11 @@ const capture_time = 8
 
 
 function gui_values(){
-  parameterize("start_rad", 5, 1, 100, 1, true);
+  parameterize("start_rad", 5, 1, 100, 1, true, grid_slider_1);
   parameterize("rad_inc", 1, 1, 10, 1, true);
-  parameterize("thic", 1, 1, 10, 1, false);
-  parameterize("rot", 10, 0, 360, 1, false);
-  parameterize("num_hexes", 10, 1, 100, 1, false);
+  parameterize("thic", 1, 1, 10, 1, false, grid_slider_2);
+  parameterize("rot", 10, 0, 360, 1, false, grid_slider_3);
+  parameterize("num_hexes", 10, 1, 100, 1, false, grid_slider_4);
 }
 
 function setup() {
