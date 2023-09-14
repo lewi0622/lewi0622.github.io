@@ -105,16 +105,10 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(!svg_redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   
   //shift position to center canvas if base is different than 400
-  if(base_x<=400){
-    cnv.position((400*global_scale-canvas_x)/2, 0);
-  }
+  if(base_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   if(renderer != WEBGL) strokeCap(random([PROJECT,ROUND]));
-
-  if(gif || animation) loop(); 
-  //else necessary when redrawing timed pieces
-  else noLoop();
 
   //set palette
   change_default_palette();
@@ -122,7 +116,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   //add the palette colors here because the palette only just got defined 
   show_palette_colors();
 
-  if(!redraw){
+  if(!redraw || redraw_reason == "url"){
     //post details
     message_details();
 
@@ -132,6 +126,13 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
   //Assists with loading on phones and other pixel dense screens
   pixelDensity(1)
+
+  //store first url with full params even if they aren't provided
+  if(!redraw) window.history.replaceState({}, "", build_current_url()); 
+
+  if(gif || animation) loop(); 
+  //else necessary when redrawing timed pieces
+  else noLoop();
 }
 
 function over_ride_shuffle(){
@@ -251,7 +252,7 @@ function seed_scale_button(base_y){
     //START OF TOP ROW
     //left/right buttons for easy seed nav
     btLeft = createButton('<');
-    btLeft.mouseClicked(previous_seed);
+    btLeft.mouseClicked(set_seed);
     btLeft.id('Bt Left')
 
     //creates controls below canvas for displaying/setting seed
@@ -261,7 +262,7 @@ function seed_scale_button(base_y){
 
     //left/right buttons for easy seed nav
     btRight = createButton('>');
-    btRight.mouseClicked(next_seed);
+    btRight.mouseClicked(set_seed);
     btRight.id('Bt Right');
 
     //custom seed button
@@ -286,7 +287,7 @@ function seed_scale_button(base_y){
 
     //randomize button
     randomize = createButton("Randomize");
-    randomize.mouseClicked(randomize_drawing);
+    randomize.mouseClicked(set_seed);
     randomize.id('Randomize');
 
     //START OF SECOND ROW
@@ -310,17 +311,7 @@ function seed_scale_button(base_y){
     //START OF THIRD ROW
     //autoscale button calls url minus any scaler
     auto_scale = createButton('Autoscale');
-    auto_scale.mouseClicked(() => {
-      let base_url = "index.html?controls=full&colors=" + String(col_idx());
-      base_url+= "&seed=" + getParamValue("seed");
-      if(bleed){base_url+='&bleed=' + String(bleed_val)};
-      if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
-      if(cut){base_url += '&cut=' + String(cut)};
-
-      window.history.pushState({}, "", base_url);
-      redraw_reason = "url";
-      redraw_sketch();
-    })
+    auto_scale.mouseClicked(set_seed);
     auto_scale.id("Auto Scale");
 
     //scale text box
@@ -402,21 +393,6 @@ function seed_scale_button(base_y){
   show_hide_controls(full_ids, !full_controls);
 }
 
-function randomize_drawing(){
-  seed_input.value(Math.round(random()*1000000));
-  set_seed();
-}
-
-function next_seed(){
-  seed_input.value(int(seed_input.value())+1);
-  set_seed();
-}
-
-function previous_seed(){
-  seed_input.value(int(seed_input.value())-1);
-  set_seed();
-}
-
 function reset_drawing(seed, base_x, base_y){
   //call draw after this if manually refreshing canvas
   canvas_x = round(base_x*global_scale);
@@ -447,35 +423,48 @@ window.onpopstate = function(e){
   if(e.state) redraw_sketch();
 };
 
-function set_seed(){
-  //refreshes the drawing with new settings
-  //check if any changes have ocurred
-  const seed_same = seed_input.value()==getParamValue('seed');
-  const scale_same = scale_box.value()==find_cnv_mult();
-  const palette_same = col_idx()==int(getParamValue('colors'));
-  if(seed_same && scale_same && palette_same) return;
 
+function build_current_url(){
   let base_url = "index.html?colors=" + String(col_idx());
   base_url += "&controls=" + getParamValue("controls");
   base_url+= "&seed=" + seed_input.value();
   if(bleed){base_url+='&bleed=' + String(bleed_val)};
   if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
   if(cut){base_url += '&cut=' + String(cut)};
+  return base_url;
+}
 
-  //check if no scale in url, and if no change in scale
-  if(getParamValue('scale') !== undefined || !scale_same) base_url += "&scale=" + scale_box.value();
+
+function set_seed(e){
+  const event_id = e.srcElement.id;
+  if(event_id == "Bt Right") seed_input.value(int(seed_input.value())+1);
+  else if(event_id == "Bt Left") seed_input.value(int(seed_input.value())-1);
+  else if (event_id == "Randomize") seed_input.value(Math.round(random()*1000000));
+
+  //refreshes the drawing with new settings
+  //check if any changes have ocurred
+  const same_seed = seed_input.value()==getParamValue('seed');
+  const same_scale = scale_box.value()==find_cnv_mult();
+  const same_palette = col_idx()==int(getParamValue('colors'));
+  if(same_seed && same_scale && same_palette && event_id != "Auto Scale") return;
+
+  let base_url = build_current_url();
+
+  //check if no scale in url, and if no change in scale 
+  if((getParamValue('scale') !== undefined || !same_scale) && event_id != "Auto Scale") base_url += "&scale=" + scale_box.value();
   
   //using pushState allows for changing the url, and then redrawing without needing to reload the page
   window.history.pushState({}, "", base_url);
   redraw_reason = "url";
-  if(!palette_same) redraw_reason = "palette";
+  if(!same_palette) redraw_reason = "palette";
   redraw_sketch();
 }
 
-function keyTyped() {
+function keyTyped(e) {
   // user presses enter, it sends Custom seed and custom scale
-  if(keyCode === ENTER && getParamValue("controls") != undefined){
-    set_seed();
+  const event_id = e.srcElement.id;
+  if(keyCode === ENTER && (event_id == "Seed" || event_id == "Scale Box")){
+    set_seed(e); //pass thru event details
   }
 }
 
@@ -1244,7 +1233,11 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       if(max != undefined) eval(name +"Max =" + max);
       if(step != undefined) eval(name +"Step =" + step);
 
-      gui.prototype._controls[name].setValue(val); //force update the gui value
+      //force update gui with new values
+      gui.prototype._controls[name].control.min = String(min);
+      gui.prototype._controls[name].control.max = String(max);
+      gui.prototype._controls[name].control.step = String(step);
+      gui.prototype._controls[name].setValue(val);
     }
   }
 }
