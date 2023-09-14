@@ -1158,28 +1158,15 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
     stored_variable = JSON.parse(stored_variable);
     if(redraw_reason == 'gui' || redraw_reason == 'gif'){
       //retrieve gui values
-      const gui_containers = document.getElementsByClassName("qs_container");
-      gui_containers.forEach(container => {
-        let gui_label = container.getElementsByClassName("qs_label")[0];
-        if(gui_label == undefined){
-          //check if checkbox
-          gui_label = container.getElementsByClassName("qs_checkbox_label")[0];
-          
-          if(gui_label == undefined){
-            //otherwise post error with container
-            print("cannot find label in control: ", container);
-          }
-        }
-        gui_label = gui_label.textContent.split(": ");
-
-        //Check if current container matches given parameter name
-        if(gui_label[0]==name){
+      const my_controls = gui.prototype._controls;
+      for(const control_name in my_controls){
+        if(control_name == name){
           //save to storage
-          let new_value = gui_label[1];
+          let new_value = gui.prototype._controls[name].getValue();
           if(stored_variable.scale) new_value = new_value/global_scale;
-          if(!multiplier_changed || name == "base_x" || name == "base_y"){
+          if((!multiplier_changed || name == "base_x" || name == "base_y") && name != "blend_mode"){
             //don't freeze params that change due to multiplier changing. Multiplier changed only happens when base_x, base_y change
-            if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) stored_variable.frozen = true; 
+            if(new_value != stored_variable.val && abs(new_value - stored_variable.val) > stored_variable.step) stored_variable.frozen = true; 
           }
           stored_variable.val = new_value;
           stored_variable.min = min;
@@ -1188,7 +1175,8 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
           stored_variable.scale = scale;
           protected_session_storage_set(stored_name, JSON.stringify(stored_variable));
         }
-      });
+      // });
+      }
     }
     else{
       //if frozen take stored values, otherwise, use values as given
@@ -1257,9 +1245,12 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       if(min != undefined) eval(name + "Min =" + min);
       if(max != undefined) eval(name +"Max =" + max);
       if(step != undefined) eval(name +"Step =" + step);
+
+      gui.prototype._controls[name].setValue(val); //force update the gui value
     }
   }
 }
+
 
 function attach_icons(){
   // finds param gui and creates dice icon and slashes to indicate unfrozen/frozen/disabled
