@@ -128,7 +128,8 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   pixelDensity(1)
 
   //store first url with full params even if they aren't provided
-  if(!redraw) window.history.replaceState({}, "", build_current_url()); 
+  const auto = getParamValue('scale') == undefined;
+  if(!redraw) window.history.replaceState({}, "", build_current_url(auto)); 
 
   if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
@@ -424,13 +425,16 @@ window.onpopstate = function(e){
 };
 
 
-function build_current_url(){
+function build_current_url(auto){
   let base_url = "index.html?colors=" + String(col_idx());
   base_url += "&controls=" + getParamValue("controls");
   base_url+= "&seed=" + seed_input.value();
   if(bleed){base_url+='&bleed=' + String(bleed_val)};
   if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
   if(cut){base_url += '&cut=' + String(cut)};
+
+  if(!auto) base_url += "&scale=" + scale_box.value();
+
   return base_url;
 }
 
@@ -448,10 +452,8 @@ function set_seed(e){
   const same_palette = col_idx()==int(getParamValue('colors'));
   if(same_seed && same_scale && same_palette && event_id != "Auto Scale") return;
 
-  let base_url = build_current_url();
-
-  //check if no scale in url, and if no change in scale 
-  if((getParamValue('scale') !== undefined || !same_scale) && event_id != "Auto Scale") base_url += "&scale=" + scale_box.value();
+  const auto = event_id == "Auto Scale" || (getParamValue('scale') == undefined  && same_scale);
+  let base_url = build_current_url(auto);
   
   //using pushState allows for changing the url, and then redrawing without needing to reload the page
   window.history.pushState({}, "", base_url);
