@@ -1158,8 +1158,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
     stored_variable = JSON.parse(stored_variable);
     if(redraw_reason == 'gui' || redraw_reason == 'gif'){
       //retrieve gui values
-      const my_controls = gui.prototype._controls;
-      for(const control_name in my_controls){
+      for(const control_name in gui.prototype._controls){
         if(control_name == name){
           //save to storage
           let new_value = gui.prototype._controls[name].getValue();
