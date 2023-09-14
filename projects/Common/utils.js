@@ -1175,7 +1175,6 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
           stored_variable.scale = scale;
           protected_session_storage_set(stored_name, JSON.stringify(stored_variable));
         }
-      // });
       }
     }
     else{
