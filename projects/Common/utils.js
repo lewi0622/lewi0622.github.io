@@ -1006,11 +1006,8 @@ function find_cnv_mult(){
 
   let size_x = max(400, base_x); //because we center within a 400x400 canvas for things smaller than 400
   let size_y = base_y;
-  size_y += 40;
-  if(full_controls){
-    //space for second row of controls, the extra 3 is make sure no vertical scrollbar
-    size_y += 20;
-  }
+  if(!hidden_controls) size_y += 40;
+  if(full_controls) size_y += 20;//space for second row of controls, the extra 3 is make sure no vertical scrollbar
 
   const x_mult = Math.round((windowWidth/size_x)*1000)/1000; //find multiplier based on the x dimension  
   const y_mult = Math.round((windowHeight/size_y)*1000)/1000; //find multipler based on the y dimension
@@ -1255,7 +1252,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
   //if variables do exist, apply new values
   else{
     //if redraw reason is gui, let p5.gui handle the new values
-    if(redraw_reason == "window" || redraw_reason == "gif" || redraw_reason == "midi"){
+    if(redraw_reason == "window" || redraw_reason == "gif" || redraw_reason == "midi" || redraw_reason == "url"){
       eval(name + "=" + val);
       if(min != undefined) eval(name + "Min =" + min);
       if(max != undefined) eval(name +"Max =" + max);
