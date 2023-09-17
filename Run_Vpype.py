@@ -96,8 +96,7 @@ def build_vpypeline(filename, show):
             args += r" --color-mode stroke "
         return prefix + '"' + filename + '"' + args + '"' + output_file + '"'
 
-
-initial_dir = r"C:\Users\lewi0\Downloads"
+initial_dir = os.path.expandvars(R"C:\Users\$USERNAME\Downloads")
 list_of_files = glob.glob(initial_dir + r"\*.svg")
 latest_file = max(list_of_files, key=os.path.getctime)
 
