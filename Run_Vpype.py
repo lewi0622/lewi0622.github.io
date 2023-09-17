@@ -1,5 +1,6 @@
 import subprocess, os, glob
 from tkinter import *
+from tkinter import ttk
 from tkinter.filedialog import askopenfilenames
 import xml.etree.ElementTree as ET
 import webbrowser
@@ -95,6 +96,26 @@ def build_vpypeline(filename, show):
         if color_mode.get():
             args += r" --color-mode stroke "
         return prefix + '"' + filename + '"' + args + '"' + output_file + '"'
+
+def selection_changed(event):
+    ###Event from changing the layout dropdown box, sets the width and height accordingly
+    selection = layout_combobox.get()
+    layout_width_entry.delete(0,END)
+    layout_height_entry.delete(0,END)
+    if selection == "Letter":
+        layout_width_entry.insert(0,"8.5")
+        layout_height_entry.insert(0,"11")
+        layout.set(1)
+    elif selection == "A4":
+        layout_width_entry.insert(0,"8.3")
+        layout_height_entry.insert(0,"11.7")
+    elif selection == "A3":
+        layout_width_entry.insert(0,"11.7")
+        layout_height_entry.insert(0,"16.5")
+    elif selection == "A2":
+        layout_width_entry.insert(0,"16.5")
+        layout_height_entry.insert(0,"23.4")
+        layout.set(0)
 
 initial_dir = os.path.expandvars(R"C:\Users\$USERNAME\Downloads")
 list_of_files = glob.glob(initial_dir + r"\*.svg")
@@ -198,8 +219,8 @@ rotate_label = Label(window, text="Rotate Clockwise", fg="blue", cursor="hand2")
 rotate_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
 rotate_label.grid(row=current_row, column=0)
 rotate_entry = Entry(window)
-if svg_width_inches < svg_height_inches:
-    rotate_entry.insert(0, "90") 
+if float(svg_width_inches) < float(svg_height_inches) and float(svg_width_inches)<12:
+    rotate_entry.insert(0, "90") #autoroate for small axidraw designs where the width is the long side
 else:
     rotate_entry.insert(0, "0") 
 rotate_entry.grid(row=current_row, column=1)
@@ -207,11 +228,21 @@ current_row +=1
 
 layout_label = Label(text="Layout(centers scaled design in page size)", fg="blue", cursor="hand2")
 layout_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#layout"))
-layout_label.grid(row=current_row, column=0)
-layout = IntVar(value=1)
-layout_button = Checkbutton(window, text="Layout?", variable=layout).grid(row=current_row, column=1)
+layout_label.grid(row=current_row, column=0, columnspan=2)
 current_row +=1 
 
+layout_combobox = ttk.Combobox(
+    state="readonly",
+    values=["Letter", "A4", "A3", "A2"]
+)
+layout_combobox.current(0)
+layout_combobox.grid(row=current_row, column=0)
+layout_combobox.bind("<<ComboboxSelected>>", selection_changed)
+
+layout = IntVar(value=1)
+layout_button = Checkbutton(window, text="Layout?", variable=layout).grid(row=current_row, column=1)
+
+current_row +=1
 layout_width_label = Label(window, text="Page Layout Width(inches):").grid(row=current_row, column=0)
 layout_height_label = Label(window, text="Page Layout Height(inches):").grid(row=current_row, column=1)
 
