@@ -951,9 +951,8 @@ function change_default_palette(){
     if(suggested_palettes.length>0) suggested_palette_id = random(suggested_palettes);
   }
 
-  //if color is specified in URL, use that, otherwise use the provided palette_id
   if(redraw && redraw_reason != "palette"){
-    if(gif && suggested_palette_id !== undefined) palette_id = suggested_palette_id;
+    if(gif && capture) palette_id = suggested_palette_id; //if capturing an animation, and it's redrawing, get new palette
     else palette_id = global_palette_id;
   }
   //if not redraw, get palette from url
