@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 15;
 
-suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
+suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE];
 
 //project variables
 let xoff, yoff;
@@ -24,7 +24,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
-  print(global_palette_id)
+
   xoff = 0;
   yoff = 0;
 
