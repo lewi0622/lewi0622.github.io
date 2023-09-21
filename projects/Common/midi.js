@@ -66,13 +66,13 @@ function getMIDIMessage(midiMessage) {
   channel = midiMessage.data[1];
   val = midiMessage.data[2];
   if(channel == grid_button_1){
-    if(val == 127) previous_seed();//previous
+    if(val == 127) document.getElementById("Bt Left").click();//previous
   }
   else if(channel == grid_button_2){
-    if(val == 127) next_seed();//next
+    if(val == 127) document.getElementById("Bt Right").click();//next
   }
   else if(channel == grid_button_3){
-    if(val == 127) randomize_drawing();//randomize
+    if(val == 127) document.getElementById("Randomize").click();//randomize
   }
   else if(channel == grid_button_4){
     if(val == 127 && !file_saved) save_drawing();//save

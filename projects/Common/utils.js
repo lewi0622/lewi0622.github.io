@@ -195,13 +195,14 @@ function setParams(size_x, size_y){
   if(type != 'svg'){
     parameterize("blend_mode", 0, 0, 15, 1, false);
     //create parameters for base_x and base_y
+
     parameterize("base_x", size_x, 1, 1100, 1, false);
     parameterize("base_y", size_y, 1, 1100, 1, false);
   }
   else{
     //create parameters for base_x and base_y
-    parameterize("base_x", size_x, 1, 1056, 96/4, false);
-    parameterize("base_y", size_y, 1, 1056, 96/4, false);
+    parameterize("base_x", size_x, 96/4, 1056, 96/4, false);
+    parameterize("base_y", size_y, 96/4, 1056, 96/4, false);
   }
 
   if(img_scale != undefined){
@@ -440,7 +441,10 @@ function build_current_url(auto){
 
 
 function set_seed(e){
-  const event_id = e.srcElement.id;
+  let event_id;
+  if(e == undefined) event_id = "";
+  else event_id = e.srcElement.id;
+
   if(event_id == "Bt Right") seed_input.value(int(seed_input.value())+1);
   else if(event_id == "Bt Left") seed_input.value(int(seed_input.value())-1);
   else if (event_id == "Randomize") seed_input.value(Math.round(random()*1000000));
@@ -937,6 +941,11 @@ function clear_gui(){
 }
 
 function redraw_sketch(){
+  if(gif && animation && redraw_reason == "gui") return;
+  if(gif && animation && redraw_reason == "midi"){
+    gui_values();
+    return;
+  }
   redraw = true;
   frameCount = 1;
   setup();
