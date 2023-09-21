@@ -941,9 +941,9 @@ function clear_gui(){
 }
 
 function redraw_sketch(){
-  if(gif && animation && redraw_reason == "gui") return;
-  if(gif && animation && redraw_reason == "midi"){
+  if(gif && animation && (redraw_reason == "gui" || redraw_reason == "midi")){
     gui_values();
+    attach_icons();
     return;
   }
   redraw = true;
@@ -1165,7 +1165,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
           if(stored_variable.scale) new_value = new_value/global_scale;
           if((!multiplier_changed || name == "base_x" || name == "base_y") && name != "blend_mode"){
             //don't freeze params that change due to multiplier changing. Multiplier changed only happens when base_x, base_y change
-            if(new_value != stored_variable.val && abs(new_value - stored_variable.val) > stored_variable.step) stored_variable.frozen = true; 
+            if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) stored_variable.frozen = true; 
           }
           stored_variable.val = new_value;
           stored_variable.min = min;
