@@ -29,7 +29,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  global_draw_start(false);
+  global_draw_start();
 
   let rows = floor(canvas_y*2 / scl);
   let cols = floor(canvas_x*2 / scl);
@@ -44,6 +44,7 @@ function draw() {
     for(let y=0; y<rows; y++){
       let xoff=0;
       for(let x=0; x<cols; x++){
+        stroke(random(working_palette));
         let index = x + y * cols;
         let angle = noise(xoff, yoff, zoff) * 360;
         let v = p5.Vector.fromAngle(radians(angle));
