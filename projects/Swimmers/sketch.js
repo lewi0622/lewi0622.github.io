@@ -9,8 +9,7 @@ const capture_time = 10;
 let grid_bg_c;
 suggested_palettes = [GAMEDAY, BIRDSOFPARADISE, NURSERY, SUPPERWARE];
 
-let swimmers = [];
-let bg_c;
+let swimmers, bg_c;
 
 function gui_values(){
   parameterize("number_of_swimmers", floor(random(50,120)), 1, 1000, 1, false);
@@ -22,6 +21,12 @@ function gui_values(){
 
 function setup() {
   common_setup();
+
+  swimmers = [];
+  refresh_working_palette();
+  bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+
   noStroke();
 }
 //***************************************************
@@ -32,14 +37,7 @@ function draw() {
   push();
   let swimmers_to_remove = [];
 
-  //background stuff
-  if(frameCount==1){
-    refresh_working_palette();
-    bg_c = random(working_palette);
-    reduce_array(working_palette, bg_c);
-  }
   background(bg_c);
-
 
   //check to see which swimmers are fully offscreen
   swimmers.forEach((swimmer, swimmer_index) => {

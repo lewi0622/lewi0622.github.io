@@ -11,8 +11,7 @@ suggested_palettes = []
 //project variables
 const noise_off = 20;
 const inc = 0.3*60/fr;
-let xoff = 0;
-let sym_angs, line_segs, len, line_color;
+let xoff, sym_angs, line_segs, len, line_color;
 
 
 function gui_values(){
@@ -24,7 +23,6 @@ function setup() {
 
   //start drawing over if autoscaled
   xoff = 0;
-  frameCount = 0;
 
   //apply background
   sym_angs = floor(random(4,17));
@@ -39,6 +37,7 @@ function setup() {
   stroke(line_color);
   noFill();
   strokeWeight(1.5*global_scale);
+  loop();
 }
 //***************************************************
 function draw() {

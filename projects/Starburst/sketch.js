@@ -9,13 +9,9 @@ const capture_time = 10;
 suggested_palettes = [COTTONCANDY, SOUTHWEST, SIXTIES]
 
 //project variables
-const squares = [];
-let xoff = 0;
 const inc = 0.01*60/fr;   
 const square_rate = 5; //10 frames
-let square_inc = 3*global_scale;
-let rot_offset = 0;
-let bg_c, symmetries, rot_inc;
+let squares, xoff, rot_offset, square_inc, bg_c, symmetries, rot_inc;
 
 
 function gui_values(){
@@ -24,6 +20,11 @@ function gui_values(){
 
 function setup() {
   common_setup();
+
+  squares = [];
+  xoff = 0;
+  square_inc = 3*global_scale;
+  rot_offset = 0;
 
   palette = shuffle(palette, true);
   bg_c = color(random(palette));

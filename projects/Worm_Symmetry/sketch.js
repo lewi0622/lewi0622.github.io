@@ -10,9 +10,8 @@ suggested_palettes = []
 
 //project variables
 const noise_off = 20;
-let xoff = 0;
 const inc = 0.1*60/fr;
-let sym_angs, line_segs, line_color;
+let xoff, sym_angs, line_segs, line_color;
 
 
 function gui_values(){
@@ -22,6 +21,7 @@ function gui_values(){
 function setup() {
   common_setup();
   
+  xoff = 0;
   sym_angs = floor(random(6,49));
   line_segs = floor(random(20,51));
   line_color = color(random(palette));

@@ -20,6 +20,8 @@ function gui_values(){
 
 function setup() {
   common_setup();
+
+  grid_bg_c = random(working_palette);
 }
 //***************************************************
 function draw() {
@@ -39,9 +41,7 @@ function draw() {
   
   translate((canvas_x-grid_size*num_rows)/2, (canvas_y-grid_size*num_cols)/2);
   const num_arcs = 2;
-  if(frameCount==1){
-    grid_bg_c = random(working_palette);
-  }
+
   background(grid_bg_c);
   strokeWeight(weight);
   for(let col=0; col<num_cols; col++){

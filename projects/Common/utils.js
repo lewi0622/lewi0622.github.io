@@ -938,6 +938,7 @@ function clear_gui(){
 
 function redraw_sketch(){
   redraw = true;
+  frameCount = 1;
   setup();
   draw();
 }

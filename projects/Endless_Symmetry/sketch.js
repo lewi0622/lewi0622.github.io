@@ -10,9 +10,8 @@ suggested_palettes = []
 
 //project variables
 const noise_off = 20;
-let xoff = 0;
 const inc = 0.1*60/fr;
-let sym_angs, line_segs, line_color
+let xoff, sym_angs, line_segs, line_color
 
 
 function gui_values(){
@@ -22,11 +21,12 @@ function gui_values(){
 function setup() {
   common_setup();
 
+  xoff = 0;
+
   //apply background
   sym_angs = random([4,6,8,10,12,14,16]);
   line_segs = floor(random(5,20));
   line_color = color(random(palette));
-  // line_color = color(255, 227, 92);  //shadow/glow
   drawingContext.shadowBlur=3*global_scale;
   drawingContext.shadowColor = line_color;
   stroke(line_color);

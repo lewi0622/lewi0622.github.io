@@ -9,10 +9,9 @@ const capture_time = 10;
 suggested_palettes = [SUMMERTIME, SOUTHWEST, JAZZCUP]
 
 //project variables
-let xoff = 0;
 const inc = 0.005*60/fr;
 const offset = 50
-let bg_c;
+let xoff, bg_c;
 
 
 function gui_values(){
@@ -22,6 +21,7 @@ function gui_values(){
 function setup() {
   common_setup();
 
+  xoff = 0;
   bg_c = random(palette)
 }
 //***************************************************

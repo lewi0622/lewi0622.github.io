@@ -11,7 +11,7 @@ suggested_palettes = [BEACHDAY, SOUTHWEST, SUPPERWARE];
 
 //project variables
 const noiseMax = 1;
-let phase = 0;
+let phase;
 const phase_off = 20;
 const phase_inc = 1.5;
 
@@ -22,6 +22,8 @@ function gui_values(){
 
 function setup() {
   common_setup();
+
+  phase = 0;
 
   //styling
   palette = shuffle(palette, true);

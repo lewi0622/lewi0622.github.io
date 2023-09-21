@@ -9,8 +9,7 @@ const capture_time = 10;
 
 //project variables
 const noise_off = 50;
-let xoff = 0;
-let inc = 0.01*60/fr;
+let xoff, inc;
 const waves = 10;
 
 
@@ -29,7 +28,8 @@ function setup() {
     "#355C7D"
   ]
 
-
+  xoff = 0;
+  inc = 0.01*60/fr;
   
   const gradient = drawingContext.createLinearGradient(0, 0, 0, canvas_y*0.25);
   gradient.addColorStop(0,color(palette[0]));

@@ -7,8 +7,7 @@ const capture = false;
 const capture_time = 10;
 
 suggested_palettes = [BEACHDAY, BUMBLEBEE, SIXTIES]
-let rotation_per_loop = 0;
-let rotation_inc;
+let rotation_inc, rotation_per_loop;
 let bg_c, c, corner_radius_start, corner_radius_end;
 let drift_x_start, drift_x_end, drift_y_start, drift_y_end;
 let cornering_start, cornering_end;
@@ -20,7 +19,23 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  rotation_per_loop = 0;
   rotation_inc = map(num_circles, 20, 100, 0.2, 0.1);
+
+  bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+
+  c = random(working_palette);
+  bg_c = color(bg_c);
+  c = color(c);
+
+  drift_x_start = random(-canvas_x/2, 0);
+  drift_x_end = random(canvas_x/2);
+  drift_y_start = random(-canvas_y/2, 0);
+  drift_y_end = random(canvas_y/2);
+
+  cornering_start = constrain(random(), 0, 0.5);
+  cornering_end = random(-1, 0.25);
 }
 //***************************************************
 function draw() {
@@ -28,22 +43,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  if(frameCount == 1){
-    bg_c = random(working_palette);
-    reduce_array(working_palette, bg_c);
 
-    c = random(working_palette);
-    bg_c = color(bg_c);
-    c = color(c);
-
-    drift_x_start = random(-canvas_x/2, 0);
-    drift_x_end = random(canvas_x/2);
-    drift_y_start = random(-canvas_y/2, 0);
-    drift_y_end = random(canvas_y/2);
-
-    cornering_start = constrain(random(), 0, 0.5);
-    cornering_end = random(-1, 0.25);
-  }
   background(bg_c);
 
   rectMode(CENTER);
