@@ -144,7 +144,7 @@
     };
 //******************************************************************************************************************************************************************
     this.loop = function() {
-      qs.setGlobalChangeHandler(null);
+      qs.setGlobalChangeHandler(gui_changed);
     };
 
     // pass through ...
