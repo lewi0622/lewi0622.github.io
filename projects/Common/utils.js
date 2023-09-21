@@ -1235,10 +1235,12 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       if(step != undefined) eval(name +"Step =" + step);
 
       //force update gui with new values
-      gui.prototype._controls[name].control.min = String(min);
-      gui.prototype._controls[name].control.max = String(max);
-      gui.prototype._controls[name].control.step = String(step);
-      gui.prototype._controls[name].setValue(val);
+      if(gui !== undefined){
+        gui.prototype._controls[name].control.min = String(min);
+        gui.prototype._controls[name].control.max = String(max);
+        gui.prototype._controls[name].control.step = String(step);
+        gui.prototype._controls[name].setValue(val);
+      }
     }
   }
 }
