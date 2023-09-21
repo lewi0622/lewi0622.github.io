@@ -17,10 +17,10 @@ let bg_c, crown_c, hl_c, rot, upper_shape, lower_shape;
 
 
 function gui_values(){
-  parameterize("max_point_height", 800/3, 10, 400, 10, true);
-  parameterize("num_points", random([10,15,20, 25]), 1, 50, 1, false);
-  parameterize("flip",random([0,1]), 0, 1, 1, false);
-  parameterize("point_width", 15, 1, 100, 1, true);
+  parameterize("max_point_height", 800/3, 10, 400, 10, true, grid_slider_1);
+  parameterize("num_points", random([10,15,20, 25]), 1, 50, 1, false, grid_slider_2);
+  parameterize("flip",random([0,1]), 0, 1, 1, false, grid_slider_3);
+  parameterize("point_width", 15, 1, 100, 1, true, grid_slider_4);
 }
 
 function setup() {
@@ -50,14 +50,14 @@ function draw() {
   push();
   noStroke();
   fill(crown_c);
-  const point_height = max_point_height*map(noise(xoff/100), 0,1, 0.5,1);
+  const point_height = max_point_height*map(pnoise.simplex2(xoff/100, 0), -1,1, 0.5,1);
   const radius = point_width/2;
   translate((canvas_x-(num_points*point_width))/2, canvas_y-(canvas_y-max_point_height*1.1)/2);
   const upper_circle_coords = [];
   const lower_circle_coords = [];
-  const phase_mult = noise(xoff/1000)*20;
-  const upper_mult = noise(yoff)*5000;
-  const lower_mult = noise(yoff+1000)*5000;
+  const phase_mult = map(pnoise.simplex2(xoff/1000,0), -1,1, 0,20);
+  const upper_mult = map(pnoise.simplex2(yoff,0), -1,1, 0, 5000);
+  const lower_mult = map(pnoise.simplex2(yoff+1000,0), -1,1, 0, 5000);
   //crown
   beginShape();
   for(let i=0; i<=num_points; i++){
