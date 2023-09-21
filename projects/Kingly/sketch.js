@@ -9,9 +9,8 @@ const capture_time = 15;
 suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 //project variables
-let xoff = 0;
+let xoff, yoff;
 const inc = 1*60/fr;
-let yoff = 0;
 const y_inc =0.001*60/fr;
 let bg_c, crown_c, hl_c, rot, upper_shape, lower_shape;
 
@@ -25,6 +24,17 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  print(global_palette_id)
+  xoff = 0;
+  yoff = 0;
+
+  bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+  crown_c = random(working_palette);
+  reduce_array(working_palette, crown_c);
+  hl_c = random(working_palette);
+  upper_shape = random(["circle", "square", "triangle"]);
+  lower_shape = random(["circle", "square", "triangle"]);
 }
 //***************************************************
 function draw() {
@@ -33,16 +43,6 @@ function draw() {
   refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]));
 
-  //first time setup
-  if(frameCount == 1){
-    bg_c = random(working_palette);
-    reduce_array(working_palette, bg_c);
-    crown_c = random(working_palette);
-    reduce_array(working_palette, crown_c);
-    hl_c = random(working_palette);
-    upper_shape = random(["circle", "square", "triangle"]);
-    lower_shape = random(["circle", "square", "triangle"]);
-  }
   center_rotate(flip*180);
   background(bg_c)
 
