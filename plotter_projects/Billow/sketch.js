@@ -20,6 +20,7 @@ function gui_values(){
   parameterize("y_j_damp", 500, 1, 1000, 1, false);
   parameterize("y_sin_amp", 200, 0, 400, 1, true);
   parameterize("sin_range", random(180), 0, 720, 1, false);
+  parameterize("rotate_per_line", 0.5, -5, 5, 0.1, false);
 } 
 
 function setup() {
@@ -40,7 +41,7 @@ function draw() {
   const line_step_size = canvas_y/number_of_lines;
   // curveTightness(1);
   for(let j=0; j<number_of_lines; j++){
-    rotate(0.5);
+    rotate(rotate_per_line);
     beginShape();
     const y_base_loc = j*line_step_size;
     for(let i=0; i<line_segments; i++){
