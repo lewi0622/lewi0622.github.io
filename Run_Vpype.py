@@ -5,6 +5,12 @@ from tkinter.filedialog import askopenfilenames
 import xml.etree.ElementTree as ET
 import webbrowser
 import vpype_cli as vp
+import sys
+
+if sys.argv[0] == "Run_Vpype.py":
+    directory_name = os.getcwd()
+else:
+    directory_name = os.path.dirname(sys.argv[0])
 
 #Define a callback function
 def callback(url):
@@ -27,7 +33,7 @@ def run_vpypeline():
             print("Running: \n", command)
             vp.execute(command)
         if paint.get():
-            subprocess.run("python C:\\Users\\lewi0\\Desktop\\lewi0622.github.io\\Vpype_Paint.py")
+            subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
 
 def show_vpypeline():
     file_parts = os.path.splitext(input_files[0])
@@ -109,7 +115,7 @@ def build_vpypeline(input_filename, output_filename, show):
         return prefix + '"' + input_filename + '"' + args
     else:
         args += r" write "
-    
+
         return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
 
 def selection_changed(event):
