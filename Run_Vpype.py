@@ -10,54 +10,70 @@ import vpype_cli as vp
 def callback(url):
    webbrowser.open_new_tab(url)
 
-
 def run_vpypeline():
     window.quit()
     for filename in input_files:
-        command = build_vpypeline(filename=filename, show=False)
-        print("Running: \n", command)
-        vp.execute(command)
+        file_parts = os.path.splitext(filename)
+        output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
+        if occult.get():
+            command = build_occult_pypeline(input_filename=filename, output_filename=output_file)
+            print("Running: \n", command)
+            vp.execute(command)
+            command = build_vpypeline(input_filename=output_file, output_filename=output_file, show=False)
+            print("Running: \n", command)
+            vp.execute(command)
+        else:
+            command = build_vpypeline(input_filename=filename, output_filename=output_file, show=False)
+            print("Running: \n", command)
+            vp.execute(command)
         if paint.get():
             subprocess.run("python C:\\Users\\lewi0\\Desktop\\lewi0622.github.io\\Vpype_Paint.py")
 
 def show_vpypeline():
-    show=True
-    command = build_vpypeline(filename=input_files[0], show=show)
-    print("Showing: \n", command)
-    vp.execute(command)
-
-
-def build_vpypeline(filename, show):
-    #set output file
-    file_parts = os.path.splitext(filename)
+    file_parts = os.path.splitext(input_files[0])
     output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
+    if occult.get():
+        command = build_occult_pypeline(input_filename=input_files[0], output_filename=output_file)
+        print("Running: \n", command)
+        vp.execute(command)
+        command = build_vpypeline(input_filename=output_file, output_filename="", show=True)
+        print("Showing: \n", command)
+        vp.execute(command)
+        os.remove(output_file)
+    else:
+        command = build_vpypeline(input_filename=input_files[0], output_filename="", show=True)
+        print("Showing: \n", command)
+        vp.execute(command)
 
-    #read command
-    prefix = r"read "
 
-    # conserve stroke colors\
-    if read_id.get():
-        prefix += r" -a id  "
-
-    # alwasy no crop, and execute crop command separately
-    prefix += r" --no-crop "
-
-    args = ""
+def build_occult_pypeline(input_filename, output_filename):
+    #read command with flags
+    prefix = r"read -a id --no-crop "
 
     #occult function uses most recently drawn closed shapes to erase lines that are below the shape
     # the flag -i ignores layers and occults everything
-    if occult.get():
-        args += r" occult "
-        if occult_ignore.get():
-            args += r" -i "
-        elif occult_accross.get():
-            args += r" -a "
-        if occult_keep_lines.get():
-            args += r" -k "
+    args = r" occult "
+    if occult_ignore.get():
+        args += r" -i "
+    elif occult_accross.get():
+        args += r" -a "
+    if occult_keep_lines.get():
+        args += r" -k "
 
-    # read flag: doesn't crop incoming picture
-    if crop.get():
-        args += f" crop 0 0 {svg_width_inches}in {svg_height_inches}in"
+    #write to temp file
+    args += r" write "
+
+    return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
+
+
+def build_vpypeline(input_filename, output_filename, show):
+    #read command
+    prefix = r"read -a stroke "
+
+    if not crop.get():
+        prefix += r" --no-crop "
+
+    args = ""
 
     if scale_option.get():
         args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
@@ -90,12 +106,11 @@ def build_vpypeline(filename, show):
     if show:
         args += r" show "
 
-        return prefix + '"' + filename + '"' + args
+        return prefix + '"' + input_filename + '"' + args
     else:
         args += r" write "
-        if color_mode.get():
-            args += r" --color-mode stroke "
-        return prefix + '"' + filename + '"' + args + '"' + output_file + '"'
+    
+        return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
 
 def selection_changed(event):
     ###Event from changing the layout dropdown box, sets the width and height accordingly
@@ -165,13 +180,6 @@ title.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/lat
 title.grid(row=current_row,column=0,columnspan=2)
 current_row +=1 
 dimensions = Label(window, text=f"Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
-current_row +=1 
-
-read_id_label = Label(window, text="Preserve Colors using ID")
-read_id_label.grid(row=current_row, column=0)
-
-read_id = IntVar(value=1)
-read_id_button = Checkbutton(window, text="--attr id", variable=read_id).grid(row=current_row, column=1)
 current_row +=1 
 
 occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
@@ -299,10 +307,6 @@ linesimplify_tolerance_label = Label(window, text="Linesimplify tolerance (inche
 linesimplify_tolerance = Entry(window)
 linesimplify_tolerance.insert(0, "0.001968504")
 linesimplify_tolerance.grid(row=current_row, column=1)
-current_row +=1 
-
-color_mode = IntVar()
-color_mode_button = Checkbutton(window, text="Order by color (will overwrite colors)", variable=color_mode).grid(row=current_row, column=0, columnspan=2)
 current_row +=1 
 
 paint = IntVar(value=0)
