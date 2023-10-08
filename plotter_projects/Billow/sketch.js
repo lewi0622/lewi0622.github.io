@@ -11,7 +11,7 @@ suggested_palettes = []
 
 function gui_values(){
   parameterize("line_segments", round(0.043*canvas_x), 3, 400, 1, false); 
-  parameterize("number_of_lines", round(0.46*canvas_y), 1, 400, 1, false);
+  parameterize("number_of_lines", round(0.46*canvas_y), 1, 400, 1, false); //standard lines for fineline: 353; standard lines for angled pitt pen: 115?
   parameterize("x_amp", 280, 1, 500, 1, true);
   parameterize("y_amp", 60, 1, 500, 1, true);
   parameterize("x_i_damp", 500, 1, 1000, 1, false);
@@ -42,6 +42,7 @@ function draw() {
   // curveTightness(1);
   for(let j=0; j<number_of_lines; j++){
     rotate(rotate_per_line);
+    // stroke(random(working_palette));
     beginShape();
     const y_base_loc = j*line_step_size;
     for(let i=0; i<line_segments; i++){
