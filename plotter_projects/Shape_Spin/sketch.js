@@ -13,7 +13,10 @@ function gui_values(){
   parameterize("rotation_per_shape", round(random(-45,45)), -45, 45, 1, false);
   parameterize("starting_radius", 300, 0, 1000, 1, true);
   parameterize("fill_shape", round(random()), 0, 1, 1, false);
-  parameterize("polygon_n_sides", floor(random(3,13)), 3, 200, 1, false);
+  parameterize("polygon_n_sides", floor(random(3,13)), 3, 100, 1, false);
+  parameterize("number_of_passes", 1, 1, 20, 1, false);
+  parameterize("spacing_per_pass", 1, 1, 10, 0.1, true);
+  parameterize("negative_spacing", 1, 0, 1, 1, false);
 }
 
 function setup() {
@@ -30,7 +33,12 @@ function draw() {
   for(let i=0; i<number_of_shapes; i++){
     rotate(rotation_per_shape);
     const radius = lerp(starting_radius, 0, i/number_of_shapes);
-    polygon(0,0,radius,polygon_n_sides);
+    for(let j=0; j<number_of_passes; j++){
+      let pass_radius = radius - j*spacing_per_pass;
+      if(!negative_spacing && pass_radius<0) continue;
+      polygon(0,0,pass_radius,polygon_n_sides);
+    }
+
   }
 
   pop();
