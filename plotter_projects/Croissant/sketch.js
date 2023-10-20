@@ -14,16 +14,16 @@ function gui_values(){
   parameterize("n_points", random([3,4,5,6,7,8,9,10,11,12,100]), 3, 300, 1, false);
   parameterize("overall_rotation", random(360), 0, 360, 15, false);
   parameterize("rotation_per_shape", random(-5,5), -10, 10, 0.1, false);
-  parameterize("point_1_x", random(50, 650), -500, 1500, 1, true);
-  parameterize("point_2_x", random(50, 650), -500, 1500, 1, true);
-  parameterize("point_3_x", random(50, 650), -500, 1500, 1, true);
-  parameterize("point_4_x", random(50, 650), -500, 1500, 1, true);
-  parameterize("point_5_x", random(50, 650), -500, 1500, 1, true);
-  parameterize("point_1_y", random(50, 450), -500, 1500, 1, true);
-  parameterize("point_2_y", random(50, 450), -500, 1500, 1, true);
-  parameterize("point_3_y", random(50, 450), -500, 1500, 1, true);
-  parameterize("point_4_y", random(50, 450), -500, 1500, 1, true);
-  parameterize("point_5_y", random(50, 450), -500, 1500, 1, true);
+  parameterize("point_1_x", random(canvas_x), -500, canvas_x+500, 1, true);
+  parameterize("point_2_x", random(canvas_x), -500, canvas_x+500, 1, true);
+  parameterize("point_3_x", random(canvas_x), -500, canvas_x+500, 1, true);
+  parameterize("point_4_x", random(canvas_x), -500, canvas_x+500, 1, true);
+  parameterize("point_5_x", random(canvas_x), -500, canvas_x+500, 1, true);
+  parameterize("point_1_y", random(canvas_y), -500, canvas_y+500, 1, true);
+  parameterize("point_2_y", random(canvas_y), -500, canvas_y+500, 1, true);
+  parameterize("point_3_y", random(canvas_y), -500, canvas_y+500, 1, true);
+  parameterize("point_4_y", random(canvas_y), -500, canvas_y+500, 1, true);
+  parameterize("point_5_y", random(canvas_y), -500, canvas_y+500, 1, true);
   parameterize("radius_1", random(50), 0, 500, 1, true);
   parameterize("radius_2", random(250), 0, 500, 1, true);
   parameterize("radius_3", random(250), 0, 500, 1, true);
@@ -32,7 +32,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(7*96, 5*96, SVG);
+  common_setup(16.5*96, 23.4*96, SVG);
 }
 //***************************************************
 function draw() {
