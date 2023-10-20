@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = []
+suggested_palettes = [BIRDSOFPARADISE];
 
 
 function gui_values(){
@@ -18,7 +18,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(4*96, 8*96, SVG);
+  common_setup(8.5*96, 11*96, SVG);
 }
 //***************************************************
 function draw() {
@@ -57,6 +57,7 @@ function draw() {
   for(let z=0; z<horizontal_squares; z++){
     for(let j=0; j<vertical_squares; j++){
       push();
+      stroke(random(working_palette));
       translate(z*(square_size+horizontal_margin), j*(square_size+vertical_margin));
       points = shuffle(points);
       for(let i=0; i<points.length-1; i++){
