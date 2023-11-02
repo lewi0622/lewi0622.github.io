@@ -8,9 +8,6 @@ const capture_time = 8;
 
 
 function gui_values(){
-  parameterize("baseFrequency", 0.05, 0, 1, 0.01, false);
-  parameterize("numOctaves", 2, 1, 10, 1, false);
-  parameterize("filter_scale", 50, 1, 100, 1, false);
 }
 
 function setup() {
@@ -48,12 +45,12 @@ function draw() {
       }
       else{
         push();
-        stroke(colors[3]);
+        // stroke(colors[3]);
         circle(i,j, shape_rad*2);
         circle(i,j, shape_rad*2+global_scale);
         pop();
       }
-      // curveTightness(random(-5,5));
+      curveTightness(random(-5,5));
       strokeJoin(ROUND)
       translate(i, j);
       beginShape();
@@ -73,7 +70,6 @@ function draw() {
 
   pop();
 
-  feTurbulence(baseFrequency, numOctaves, filter_scale);
   global_draw_end();
 }
 //***************************************************
