@@ -11,11 +11,12 @@ suggested_palettes = []
 
 function gui_values(){
   parameterize("radius", 70, 1, 400, 1, true);
-  parameterize("number_of_tubes", floor(random(4,12)), 1, 100, 1, false);
+  parameterize("number_of_tubes", floor(random(4,12)), 1, 20, 1, false);
   parameterize("tube_steps", 200, 1, 1000, 1, false);
   parameterize("starting_tube_spacing", 1, 1, 30, 0.1, true);
-  parameterize("mid_tube_spacing", 10, 0, 30, 0.1, true);
+  // parameterize("mid_tube_spacing", 10, 0, 30, 0.1, true);
   parameterize("ending_tube_spacing", 1, 0, 30, 0.1, true);
+  parameterize("x_sin_amp", 10, 0, 50, 1, true);
 }
 
 function setup() {
@@ -39,11 +40,11 @@ function draw() {
   for(let i=0; i<number_of_tubes; i++){
     push();
     stroke(cs[i]);
-    if(i==odd_tube_out) translate(0, 50);
+    // if(i==odd_tube_out) translate(0, 50);
     for(let j=0; j<tube_steps; j++){
       const tube_y_spacing = lerp(starting_tube_spacing, ending_tube_spacing, j/tube_steps);
       push();
-      translate(tube_x_spacing*i, tube_y_spacing*j);
+      translate(x_sin_amp*sin(j) + tube_x_spacing*i, tube_y_spacing*j);
       circle(0,0, radius);
       pop();
     }
