@@ -1343,25 +1343,30 @@ function add_gui_event_handlers(){
 }
 
 function gui_dblclick(){
+  const prev_gui_collapsed_state = gui_collapsed;
   //toggle gui collapsed status
   gui_collapsed = !gui_collapsed;
-  protected_session_storage_set("gui_collapsed", JSON.stringify(gui_collapsed))
+  protected_session_storage_set("gui_collapsed", JSON.stringify(gui_collapsed));
+  if(prev_gui_collapsed_state && !gui_collapsed) attach_icons(); 
 }
 
 function retrieve_gui_settings(){
   // retrieve gui collapsed status and location
   let stored_loc = protected_session_storage_get("gui_loc");
   let collapsed = protected_session_storage_get("gui_collapsed");
-  if(stored_loc == null || collapsed == null) return;
-  stored_loc = JSON.parse(stored_loc); 
-  collapsed = JSON.parse(collapsed);
-  // set position
-  if(stored_loc !== null) gui.setPosition(stored_loc.x, stored_loc.y);
+  if(stored_loc == null && collapsed == null) return;
 
-  //recollapse new gui if previously collapsed
-  if(collapsed && !redraw){
-    gui.prototype._doubleClickTitle();
-    gui_collapsed = true;
+  if(stored_loc != null){
+    stored_loc = JSON.parse(stored_loc); 
+    gui.setPosition(stored_loc.x, stored_loc.y);
+  }
+  if(collapsed != null){
+    collapsed = JSON.parse(collapsed);
+    //recollapse new gui if previously collapsed
+    if(collapsed && !redraw){
+      gui.prototype._doubleClickTitle();
+      gui_collapsed = true;
+    }
   }
 }
 
@@ -1427,4 +1432,18 @@ function nTimes(func, arg, n) {
  }
 
   return returnValue;
+}
+
+function draw_open_type_js_path_p5_commands(path){  
+  //Draw a path from the opentype.js lib. expects path to be generated using func font.getpath
+  for (let cmd of path.commands) {
+    if (cmd.type === 'M') { //move to
+      beginShape();
+      vertex(cmd.x, cmd.y);
+    } 
+    else if (cmd.type === 'L')vertex(cmd.x, cmd.y); //line to
+    else if (cmd.type === 'C') bezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y); // bezier to 
+    else if (cmd.type === 'Q') quadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y); //quadratic to
+    else if (cmd.type === 'Z') endShape(CLOSE); // close shape
+  } 
 }
