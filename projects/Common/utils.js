@@ -628,15 +628,15 @@ function save_drawing(){
     let canvas_elem = document.getElementById("defaultCanvas0");
     let path_elems = canvas_elem.getElementsByTagName("path");
     let stroke_colors = {};
-    let primary_id = 0.01;
+    let primary_id = 0.00001; // up to 99,999 lines per color
     path_elems.forEach(e => {
       const stroke_color = String(e.getAttribute("stroke"));
-      if(stroke_color in stroke_colors) stroke_colors[stroke_color] = stroke_colors[stroke_color] + 0.01;
+      if(stroke_color in stroke_colors) stroke_colors[stroke_color] = stroke_colors[stroke_color] + 0.00001;
       else{
         stroke_colors[stroke_color] = primary_id;
         primary_id++;
       }
-      e.id = stroke_colors[stroke_color];
+      e.id = Math.round(100000 * stroke_colors[stroke_color])/100000;//round to avoid floating point addition errors
     });
 
     save(filename);
