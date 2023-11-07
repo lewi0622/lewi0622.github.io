@@ -46,8 +46,9 @@ let pickers = [];
 let modes;
 
 function common_setup(size_x=400, size_y=400, renderer=P2D){ 
+  //init globals
   file_saved = false;
-
+  capture_state = "init"
   //override shuffle with func that uses Math.random instead of p5.js random
   over_ride_shuffle();
 
@@ -56,6 +57,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
   //set up CCapture, override num_frames in setup/draw if necessary
   num_frames = capture_time*fr;
+
   capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
 
   //set framerate
@@ -647,9 +649,8 @@ function save_drawing(){
 
 function global_draw_start(clear_cnv=true){
   if(clear_cnv)clear(); //should be false for some animating pieces
-
   //called from top of Draw to start capturing, requires CCapture
-  if(!redraw && capture){
+  if(capture && capture_state == "init"){
     capturer.start();
     capture_state = "start";
   }
@@ -665,7 +666,6 @@ function global_draw_start(clear_cnv=true){
     redraw = true; //I believe these two lines exist to not prompt capturer.start() multiple times
     redraw_reason = "gif";
   }
-  
 
   if(type != 'svg') blendMode(modes[blend_mode]); // blend mode param for all designs
   
@@ -1246,6 +1246,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
 
       //force update gui with new values
       if(gui !== undefined){
+        print(gui.prototype._controls[name])
         gui.prototype._controls[name].control.min = String(min);
         gui.prototype._controls[name].control.max = String(max);
         gui.prototype._controls[name].control.step = String(step);
