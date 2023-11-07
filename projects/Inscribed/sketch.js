@@ -8,14 +8,14 @@ const capture_delay = false & capture;
 const capture_delay_seconds = 10;
 const capture_time = 10 + capture_delay_seconds;
 
-suggested_palettes = [];
+suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST];
 
 let pts, c;
 
 function gui_values(){
-  parameterize("max_pts", 20, 2, 100, 1, false);
-  parameterize("min_speed", 3, 0.01, 10, 0.01, true);
-  parameterize("max_speed", 6, 0.01, 10, 0.01, true);
+  parameterize("max_pts", 35, 2, 100, 1, false);
+  parameterize("min_speed", 1.5, 0.01, 10, 0.01, true);
+  parameterize("max_speed", 10, 0.01, 20, 0.01, true);
 }
 
 function setup() {
@@ -110,7 +110,7 @@ function draw() {
       drawingContext.shadowBlur=0;
       drawingContext.filter = "brightness(100%)";
       stroke("BLACK");
-      strokeWeight(weight*.75);
+      strokeWeight(map(sin(frameCount*10), -1,1, weight*0.5,weight*0.75));
     }
     beginShape();
     for(let i=0; i<pts.length; i++){
