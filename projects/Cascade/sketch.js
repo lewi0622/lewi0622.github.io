@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
+suggested_palettes = [BUMBLEBEE, SUMMERTIME, SOUTHWEST, SIXTIES, SUPPERWARE]
 
 let c1, c2, c3, c4, c5;
 
@@ -46,7 +46,7 @@ function draw() {
   c1 = color(working_palette[0]);
   c2 = color(working_palette[1]);
   c3 = color(working_palette[2]);
-  if(working_palette.length >= 5 && random()>0.5){
+  if(random()>0.5 && working_palette.length >= 5){
     c4 = color(working_palette[3]);
     c5 = color(working_palette[4]);
   }
@@ -54,7 +54,7 @@ function draw() {
   //gradient background
   const gradient = drawingContext.createLinearGradient(0,0,canvas_x, canvas_y);
   add_color_stops_and_fill(gradient);
-  center_rotate(random([0,90,180,270]));
+  center_rotate(random([0,180]));
   
   if(random()>0.5) square(0,0,max(canvas_x, canvas_y));
   rectMode(CENTER);
