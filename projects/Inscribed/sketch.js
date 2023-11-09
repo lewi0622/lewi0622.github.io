@@ -6,23 +6,30 @@ const fr = 30;
 let capture = false;
 const capture_delay = false & capture;
 const capture_delay_seconds = 10;
-const capture_time = 10 + capture_delay_seconds;
+let capture_time = 10;
+if(capture_delay) capture_time += capture_delay_seconds;
 
 suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST];
 
-let pts, c;
+let pts, c, new_c, old_c, color_count;
 
 function gui_values(){
-  parameterize("max_pts", 35, 2, 100, 1, false);
-  parameterize("min_speed", 1.5, 0.01, 10, 0.01, true);
-  parameterize("max_speed", 10, 0.01, 20, 0.01, true);
+  parameterize("max_pts", floor(random(4,100)), 2, 200, 1, false);
+  parameterize("min_speed", random(0.01, 2), 0.01, 10, 0.01, true);
+  parameterize("max_speed", random(10,20), 0.01, 20, 0.01, true);
 }
 
 function setup() {
   common_setup();
   pts = [];
+  //init colors
   c = color(random(working_palette));
+  new_c = c;
+  old_c = c;
+  color_count = 0;
+  noFill();
   strokeJoin(ROUND);
+  drawingContext.filter = "brightness(150%)";
 }
 //***************************************************
 function draw() {
@@ -30,19 +37,24 @@ function draw() {
   global_draw_start();
 
   push();
-  center_rotate(frameCount/2);
-  // blendMode(DIFFERENCE);
+  center_rotate(map(sin(frameCount*0.75), -1,1, -360,360));
   background("BLACK");
-  noFill();
-  let weight = 5*global_scale;
-  strokeWeight(weight);
 
-  if(frameCount%10==0) c = color(random(working_palette));
+  let weight = map(noise(frameCount/10), 0,1, 5,12)*global_scale;
+  strokeWeight(map(sin(frameCount*10), -1,1, weight,weight*1.5));
+
+  let color_frame_count = 40;
+  if(frameCount%color_frame_count==0){
+    color_count = 0;
+    old_c = new_c;
+    new_c = color(random(working_palette));
+  }
+  c = lerpColor(old_c, new_c, color_count*color_frame_count/1000);
+  color_count++;
   drawingContext.shadowBlur=map(sin(frameCount*10), -1,1, 2,5)*global_scale;
   drawingContext.shadowColor = c;
-  drawingContext.filter = "brightness(200%)";
+
   stroke(c);
-  curveTightness(sin(frameCount)*5);
 
   translate(canvas_x/4, canvas_y/4);
   const pta = {x:0, y:0};
@@ -81,14 +93,18 @@ function draw() {
     }
     else if(pt.dest == "a"){
       pt.y -= pt.speed;
-      if(pt.y < pta.y) to_remove.push(i);// hit point a, delete pt
+      if(pt.y < pta.y){
+        pts[i].y = pta.y;
+        pts[i].dest = "b";
+        pts[i].speed = random(min_speed, max_speed);//to_remove.push(i);// hit point a, delete pt
+      }
       else pts[i].y = pt.y; //continue towards d
     }
   }
 
-  for(let i=to_remove.length-1; i>=0; i--){
-    pts.splice(to_remove[i],1);
-  }
+  // for(let i=to_remove.length-1; i>=0; i--){
+  //   pts.splice(to_remove[i],1);
+  // }
 
   //create new pt if less than max
   if(pts.length<max_pts){
@@ -106,6 +122,7 @@ function draw() {
   //draw points
   let line_iterations = 3;
   for(let j=0; j<line_iterations; j++){
+    push();
     if(j+1==line_iterations){
       drawingContext.shadowBlur=0;
       drawingContext.filter = "brightness(100%)";
@@ -117,8 +134,10 @@ function draw() {
       vertex(pts[i].x, pts[i].y);
     }
     endShape(CLOSE);
+    pop();
   }
 
+  square(0,0,canvas_x/2);
     
   pop();
   global_draw_end();
