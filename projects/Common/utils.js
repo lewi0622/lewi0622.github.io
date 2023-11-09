@@ -962,7 +962,7 @@ function change_default_palette(){
   }
 
   if(redraw && redraw_reason != "palette"){
-    if(gif && !animation && capture) palette_id = suggested_palette_id; //if capturing a gif of still noLoop designs, and it's redrawing, get new palette
+    if(gif && !animation) palette_id = suggested_palette_id; //if capturing a gif of still noLoop designs, and it's redrawing, get new palette
     else palette_id = global_palette_id;
   }
   //if not redraw, get palette from url
