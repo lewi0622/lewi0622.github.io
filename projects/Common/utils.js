@@ -1246,7 +1246,6 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
 
       //force update gui with new values
       if(gui !== undefined){
-        print(gui.prototype._controls[name])
         gui.prototype._controls[name].control.min = String(min);
         gui.prototype._controls[name].control.max = String(max);
         gui.prototype._controls[name].control.step = String(step);
