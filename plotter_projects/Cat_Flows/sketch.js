@@ -13,7 +13,6 @@ let shape_points;
 function gui_values(){
   parameterize('inc', random(0.01,0.25), 0.01, 10, 0.01, false);
   parameterize("scl", random(20,50), 1, 100, 1, true);
-
   parameterize("debug", 0, 0, 1, 1, false);
   parameterize("density_multiplier", random(0.07,0.25), 0.001, 1, 0.01, false);
   parameterize("radius", 45, 1, 100, 1, true);
@@ -23,7 +22,7 @@ function gui_values(){
 }
 
 function setup() {
-  // common_setup(6*96, 8*96, SVG);
+  // common_setup(5*96, 7*96, SVG);
   common_setup();
 }
 //***************************************************
@@ -32,12 +31,12 @@ function draw() {
 
   let rows = floor(canvas_y*2 / scl);
   let cols = floor(canvas_x*2 / scl);
-  translate(-canvas_x/2, -canvas_y/2);
   //actual drawing stuff
 
-  //todo try adding pt in middle to constrain width
+  //todo remake the cat shape from scratch with a square base,, bezier curves with ear sharpness/roundess factors, and fill 
 
   push();
+  translate(-canvas_x/2, -canvas_y/2);
   let yoff=0;
   for(let y=0; y<rows; y++){
     let xoff=0;
