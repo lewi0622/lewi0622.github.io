@@ -152,7 +152,10 @@ with open(input_file, "r") as svg_file:
     root = tree.getroot()
     svg_width = root.attrib["width"] #size in pixels, css units are 96 px = 1 inch 
     svg_height = root.attrib["height"] 
-    svg_viewbox = root.attrib["viewBox"]
+    try:
+        svg_viewbox = root.attrib["viewBox"] #ran into a few svgs that don't give a viewBox
+    except:
+        svg_viewbox = f"[0 0 {svg_width} {svg_height}]" #set viewbox to use width and height
     svg_viewbox = svg_viewbox.split(" ")
 
 if "in" in svg_width:
