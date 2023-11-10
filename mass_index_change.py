@@ -32,7 +32,7 @@ for f in to_replace:
     <!-- p5.gui lib -->
     <script src="'''+rel_path.as_posix()+'''/p5.gui.js"></script>
     <script src="'''+rel_path.as_posix()+'''/quicksettings.js"></script>   
-    <script src="https://unpkg.com/p5.js-svg@1.3.3"></script>
+    <script src="'''+rel_path.as_posix()+'''/p5.svg.js"></script>   
     <!-- Pen Size Files for Plotting -->
     <script src="'''+rel_path.as_posix()+'''/pen_utils.js"></script>
     <!-- Perlin and Simplex Noise functions -->
