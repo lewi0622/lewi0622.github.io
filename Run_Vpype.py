@@ -117,9 +117,14 @@ def build_vpypeline(input_filename, output_filename, show):
 
         return prefix + '"' + input_filename + '"' + args
     else:
-        args += r" write "
+        if separate_files.get():
+            output_filename = output_filename.split(".svg")[0] + "%_lid%" +".svg"
+            args += f' forlayer write "{output_filename}" end '
+            return prefix + '"' + input_filename + '"' + args
+        else:
+            args += r" write "
 
-        return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
+            return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
 
 def selection_changed(event):
     ###Event from changing the layout dropdown box, sets the width and height accordingly
@@ -324,9 +329,16 @@ current_row +=1
 multipass_label = Label(window, text="Add multiple passes to all lines", fg="blue", cursor="hand2")
 multipass_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#multipass"))
 multipass_label.grid(row=current_row, column=0)
-multipass = IntVar(value=1)
+multipass = IntVar(value=0)
 multipass_button = Checkbutton(window, text="multipass", variable=multipass).grid(row=current_row, column=1)
 current_row +=1
+
+separate_files_label = Label(window, text="Seperate SVG Layers into individual files", fg="blue", cursor="hand2")
+separate_files_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file"))
+separate_files_label.grid(row=current_row, column=0)
+separate_files = IntVar(value=0)
+separate_files_button = Checkbutton(window, text="Separate Files", variable=separate_files).grid(row=current_row, column=1)
+current_row += 1
 
 paint = IntVar(value=0)
 if len(input_files) == 1:
