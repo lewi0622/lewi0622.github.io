@@ -109,6 +109,9 @@ def build_vpypeline(input_filename, output_filename, show):
         if linesimplify_tolerance.get() != "0.001968504":
             args += f" -t {linesimplify_tolerance.get()} "
 
+    if multipass.get():
+        args += f" multipass "
+
     if show:
         args += r" show "
 
@@ -317,6 +320,13 @@ linesimplify_tolerance = Entry(window)
 linesimplify_tolerance.insert(0, "0.001968504")
 linesimplify_tolerance.grid(row=current_row, column=1)
 current_row +=1 
+
+multipass_label = Label(window, text="Add multiple passes to all lines", fg="blue", cursor="hand2")
+multipass_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#multipass"))
+multipass_label.grid(row=current_row, column=0)
+multipass = IntVar(value=1)
+multipass_button = Checkbutton(window, text="multipass", variable=multipass).grid(row=current_row, column=1)
+current_row +=1
 
 paint = IntVar(value=0)
 if len(input_files) == 1:
