@@ -12,11 +12,12 @@ if sys.argv[0] == "Run_Vpype.py":
 else:
     directory_name = os.path.dirname(sys.argv[0])
 
-#Define a callback function
 def callback(url):
+   """callback function for weblinks"""
    webbrowser.open_new_tab(url)
 
 def run_vpypeline():
+    """calls vpype cli to process """
     window.quit()
     for filename in input_files:
         file_parts = os.path.splitext(filename)
@@ -36,6 +37,7 @@ def run_vpypeline():
             subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
 
 def show_vpypeline():
+    """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
     file_parts = os.path.splitext(input_files[0])
     output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
     if occult.get():
@@ -53,6 +55,7 @@ def show_vpypeline():
 
 
 def build_occult_pypeline(input_filename, output_filename):
+    """Loads file expecting ids for each line, in the order their drawn. Only performs Occult"""
     #read command with flags
     prefix = r"read -a id --no-crop "
 
@@ -73,6 +76,7 @@ def build_occult_pypeline(input_filename, output_filename):
 
 
 def build_vpypeline(input_filename, output_filename, show):
+    """Builds vpype command based on GUI selections"""
     #read command
     prefix = r"read -a stroke "
 
@@ -127,7 +131,7 @@ def build_vpypeline(input_filename, output_filename, show):
             return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
 
 def selection_changed(event):
-    ###Event from changing the layout dropdown box, sets the width and height accordingly
+    """Event from changing the layout dropdown box, sets the width and height accordingly"""
     selection = layout_combobox.get()
     layout_width_entry.delete(0,END)
     layout_height_entry.delete(0,END)
@@ -172,7 +176,7 @@ elif "px" in svg_width:
     svg_width_inches = float(svg_width.replace("px", ""))/96 
 elif "cm" in svg_width:
     svg_width_inches = float(svg_width.replace("cm", ""))/2.54
-elif "%" in svg_width:
+elif "%" in svg_width: #Expects that the viewbox is using 96DPI
     svg_width_inches = float(svg_viewbox[2])/96
 else:
     svg_width_inches = float(svg_width)/96 
@@ -183,7 +187,7 @@ elif "px" in svg_height:
     svg_height_inches = float(svg_height.replace("px", ""))/96 
 elif "cm" in svg_height:
     svg_height_inches = float(svg_height.replace("cm", ""))/2.54
-elif "%" in svg_height:
+elif "%" in svg_height: #Expects that the viewbox is using 96DPI
     svg_height_inches = float(svg_viewbox[3])/96
 else:   
     svg_height_inches = float(svg_height)/96
