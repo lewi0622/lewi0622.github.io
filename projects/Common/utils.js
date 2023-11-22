@@ -925,6 +925,7 @@ function color_changed(e){
 }
 
 function windowResized(e) {
+  snap_gui_to_window();
   if((getParamValue('scale') == undefined && find_cnv_mult() != global_scale)){
     redraw_reason = "window";
     clear_gui();
@@ -1327,14 +1328,29 @@ function create_slash(name, data){
   return slash;
 }
 
+function snap_gui_to_window(){
+  //checks if param is outside of window bounds, and brings it inside, also stores position
+  const gui_container = document.getElementsByClassName("qs_main")[0];
+  const rect = gui_container.getBoundingClientRect();
+
+  //snap GUI Params to inside window
+  if(rect.x < 0) rect.x = 0;
+  else if(rect.x + rect.width > window.innerWidth) rect.x = window.innerWidth - rect.width;
+  if(rect.y < 0) rect.y = 0;
+  else if(rect.y + rect.height > window.innerHeight) rect.y = window.innerHeight - rect.height;
+
+  gui.setPosition(rect.x, rect.y);
+
+  protected_session_storage_set("gui_loc", JSON.stringify(rect));
+}
+
 function add_gui_event_handlers(){
   //extend _endDrag function
   let old_endDrag = gui.prototype._endDrag;
   function new_endDrag(event){
     old_endDrag(event);
-    const gui_container = document.getElementsByClassName("qs_main")[0];
-    const rect = gui_container.getBoundingClientRect();
-    protected_session_storage_set("gui_loc", JSON.stringify(rect));
+    
+    snap_gui_to_window();
   }
   gui.prototype._endDrag = new_endDrag;
 
@@ -1360,6 +1376,9 @@ function retrieve_gui_settings(){
     stored_loc = JSON.parse(stored_loc); 
     gui.setPosition(stored_loc.x, stored_loc.y);
   }
+
+  snap_gui_to_window();
+
   if(collapsed != null){
     collapsed = JSON.parse(collapsed);
     //recollapse new gui if previously collapsed
