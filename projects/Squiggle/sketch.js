@@ -2,9 +2,9 @@
 //setup variables
 const gif = false;
 const animation = false;
-const fr = 30;
+const fr = 1;
 const capture = false;
-const capture_time = 2;
+const capture_time = 15;
 
 suggested_palettes = [COTTONCANDY, BIRDSOFPARADISE, SUMMERTIME, SOUTHWEST, SIXTIES, LASER];
 
@@ -18,7 +18,14 @@ function gui_values(){
 
 function setup() {
   common_setup();
+}
+//***************************************************
+function draw() {
+  global_draw_start();
 
+  refresh_working_palette();
+  //actual drawing stuff
+  push();
   working_palette = shuffle(working_palette, true);
   c_0 = color(working_palette[0]);
   c_1 = color(working_palette[1]);
@@ -29,27 +36,23 @@ function setup() {
   strokeWeight(1*global_scale);
 
   bg_c = color(random(working_palette));
-}
-//***************************************************
-function draw() {
-  global_draw_start();
 
-  refresh_working_palette();
-  //actual drawing stuff
-  push();
   background(bg_c);
   center_rotate(random(360));
   const circle_step_size = (canvas_y+circle_radius)/num_circles;
   translate(canvas_x/2, -circle_radius/2);
   for(let i=0; i<num_circles; i++){
     push();
-    refresh_gradient(
+    set_linear_gradient([
       lerpColor(c_0,c_00,i/num_circles),
       lerpColor(c_1,c_01,i/num_circles),
       lerpColor(c_2,c_02,i/num_circles),
+      ],
+      -circle_radius/2, 0, circle_radius/2, 0,
       "fill"
     );
-    refresh_gradient(lerpColor(c_2,c_02,i/num_circles), undefined, bg_c, "stroke");
+
+    set_linear_gradient([lerpColor(c_2,c_02,i/num_circles), bg_c], -circle_radius/2, 0, circle_radius/2, 0, "stroke");
     const x = sin(i*theta_multiplier)*canvas_x/3;
     push();
     translate(x, circle_step_size*i);
@@ -64,11 +67,3 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function refresh_gradient(c1, c2, c3, stroke_or_fill){
-  const gradient = drawingContext.createLinearGradient(-circle_radius/2, 0, circle_radius/2, 0);
-  if(c1 != undefined) gradient.addColorStop(0,c1);
-  if(c2 != undefined) gradient.addColorStop(0.5,c2);
-  if(c3 != undefined) gradient.addColorStop(1,c3);
-  if(stroke_or_fill == "fill") drawingContext.fillStyle = gradient;
-  else drawingContext.strokeStyle = gradient;
-}
