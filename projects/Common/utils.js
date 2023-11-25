@@ -1466,3 +1466,20 @@ function draw_open_type_js_path_p5_commands(path){
     else if (cmd.type === 'Z') endShape(CLOSE); // close shape
   } 
 }
+
+
+function set_linear_gradient(colors, start_x, start_y, end_x, end_y, style){
+  //equally add color stops for all provided colors, apply to fill or stroke style
+  const gradient = drawingContext.createLinearGradient(start_x, start_y, end_x, end_y);
+  const step_size = 1/(colors.length-1);
+  for(let i=0; i<colors.length; i++){
+    let c = colors[i];
+    if(c == undefined) continue; //can use an undefined 
+    //check if provided color is a color object or just an array
+    if(c["mode"] == undefined) c = color(c);
+    if(c["mode"] == undefined) continue; //if you can't convert it to a color, continue with the rest
+    gradient.addColorStop(i*step_size, c);
+  }
+  if(style == "fill") drawingContext.fillStyle = gradient;
+  else drawingContext.strokeStyle = gradient;
+}
