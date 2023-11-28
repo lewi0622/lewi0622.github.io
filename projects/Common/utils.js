@@ -1367,6 +1367,7 @@ function gui_dblclick(){
 }
 
 function retrieve_gui_settings(){
+  if(!full_controls) return;
   // retrieve gui collapsed status and location
   let stored_loc = protected_session_storage_get("gui_loc");
   let collapsed = protected_session_storage_get("gui_collapsed");
