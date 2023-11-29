@@ -8,7 +8,7 @@ let file_saved;
 let num_frames, capturer, capture_state, seed;
 //control variables
 let seed_input, scale_box, control_height, control_spacing, hidden_controls, color_sel, color_div;
-let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave;
+let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
 
@@ -64,10 +64,15 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(!capture) frameRate(fr);
 
   //init globals
-  if(renderer == P2D || renderer == WEBGL) type="png";
-  else if(renderer == SVG) type="svg";
-  hidden_controls = true;
+  type="png"; //default file type for P2D and WEBGL
+  const stored_file_type = protected_session_storage_get("fileType");
+  if(renderer == SVG || stored_file_type == "svg"){//override stored values by setting renderer
+    type = "svg";
+    renderer = SVG;
+    protected_session_storage_set("fileType", type);
+  }
 
+  hidden_controls = true;
 
   setParams(size_x, size_y); //base_x and base_y globals are init here
   seed_scale_button(base_y);
@@ -246,7 +251,7 @@ function getParamValue(paramName){
 
 function seed_scale_button(base_y){
   const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"]
-  const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "Save"]
+  const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "Save", "File Type"]
 
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
@@ -306,10 +311,18 @@ function seed_scale_button(base_y){
     color_sel.changed(set_seed);
     color_sel.id('Color Select');
 
-      //color boxes
+    //color boxes
     color_div = document.createElement("div");
     color_div.id = "Color Boxes";
     document.body.appendChild(color_div);
+
+    //radio control for png/svg
+    radio_filetype = createRadio();
+    radio_filetype.option("png");
+    radio_filetype.option("svg");
+    radio_filetype.selected(type);
+    radio_filetype.changed(set_file_type);
+    radio_filetype.id("File Type");
 
     //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
@@ -365,6 +378,10 @@ function seed_scale_button(base_y){
   //color palette select
   color_sel.position(0, base_y*global_scale+control_height);
   color_sel.size(120*global_scale, control_height);
+
+  //file type radio control
+  radio_filetype.size(80*global_scale, control_height);
+  radio_filetype.position(400*global_scale-radio_filetype.size().width, base_y*global_scale + control_height);
 
   //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
   //START OF THIRD ROW
@@ -475,6 +492,15 @@ function keyTyped(e) {
     set_seed(e); //pass thru event details
   }
 }
+
+function set_file_type(e){
+  //radio button changed
+  const val = radio_filetype.value();
+  protected_session_storage_set("fileType", val);
+  //hard refresh of window with current url values
+  window.location.href = window.location.href;
+}
+
 
 function show_palette_colors(){
   //can't be called in the seed_scale_button function because palette can be undefined at that point
