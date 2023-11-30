@@ -12,10 +12,15 @@ let rain_dir;
 function gui_values(){
   parameterize("cloud_min_radius", random(1,5), 0, 200, 1, true);
   parameterize("cloud_max_radius", random(3,10), 0, 200, 1, true);
+  parameterize("num_clouds", floor(random(1,3)), 1, 5, 1, false);
+  parameterize("rain", random([0,1]), 0, 1, 1, false);
+  parameterize("rain_spacing", floor(random(5,20)), 1, 30, 0.5, true);
+  parameterize("cloud_min_width", 10, 1, 100, 1, true);
+  parameterize("cloud_max_width", 60, 1, 200, 1, true);
 }
 
 function setup() {
-  common_setup(1056, 816, SVG);
+  common_setup(6*96, 6*96);
 }
 //***************************************************
 function draw() {
@@ -27,13 +32,13 @@ function draw() {
   cloud_color = "WHITE";
   cloud_back_color = "BLACK";
 
-  let num_clouds = round(random(1,10));
-  num_clouds = 1;
+  translate(0,-canvas_y/8);
+
   let circle_rad = random(cloud_min_radius,cloud_max_radius);
   rain_dir = random([-1,1]);
   let cloud_info = [];
   for(let i=0; i<num_clouds; i++){
-    let cloud_width = random(10,40)*global_scale;
+    let cloud_width = random(cloud_min_width,cloud_max_width);
     let cloud_height = random(cloud_width*1.5, cloud_width*6);
     let starting_x = canvas_x/2 +random(-cloud_width, cloud_width);
     let starting_y = canvas_y/2 + random(-cloud_height, cloud_height);
@@ -45,7 +50,7 @@ function draw() {
     push();
     let x_upper_limit = e[1];
     translate(e[2][0], e[2][1]);
-    // make_it_rain(x_upper_limit, rain_dir);
+    if(rain) make_it_rain(x_upper_limit, rain_dir);
     pop();
   });
   cloud_info.forEach(e => {
@@ -100,7 +105,7 @@ function draw_clouds(coords){
 
     push();
     translate(x,y);
-    stroke("BLACK");
+    stroke(cloud_back_color);
     const x_wiggle = random(-1,1)*(rad)/2;
     const y_wiggle = random(-1,1)*(rad)/2;
     circle(x_wiggle, y_wiggle, rad);
@@ -115,7 +120,7 @@ function draw_clouds(coords){
     push();
     translate(x,y);
     stroke(cloud_color);
-    rad *= random(0.1,random(0.5,0.9));
+    rad *= random(0.2, 0.5);
     const x_wiggle = random(-1,1)*(data[2]-rad)/8;
     const y_wiggle = random(-1,1)*(data[2]-rad)/8;
     circle(x_wiggle, y_wiggle, rad);
@@ -125,19 +130,17 @@ function draw_clouds(coords){
 
 function make_it_rain(max_width, dir){
   push();
-  stroke("BLACK");
-  strokeWeight(1.25*global_scale);
+  stroke(cloud_back_color);
   max_width *= 0.6;
-  let rain_spacing = 10*global_scale;
   let number_rain = max_width*2/rain_spacing;
-  let rain_length = canvas_y/4;
+  let rain_length = random(canvas_y/4, canvas_y/2);
   let rain_direction = dir * tan(30)*rain_length;
-  let min_dash = 5; 
-  let max_dash = 10;
   translate(-max_width,0);
   for(let i=0; i<number_rain; i++){
-    drawingContext.setLineDash([random(min_dash,max_dash)*global_scale, random(min_dash,max_dash)*global_scale, random(min_dash,max_dash)*global_scale, random(min_dash,max_dash)*global_scale, random(min_dash,max_dash)*global_scale]);
-    line(i*rain_spacing,0, i*rain_spacing + rain_direction, rain_length);
+    push();
+    translate(i*rain_spacing,0);
+    line(0,0, rain_direction, rain_length);
+    pop();
   }
   pop();
 }
