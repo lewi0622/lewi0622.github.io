@@ -16,7 +16,6 @@ const PALETTE_ID_DEFAULT = MUTEDEARTH;
 let global_palette_id = PALETTE_ID_DEFAULT;
 let global_palette, palette, working_palette, suggested_palettes;
 
-let base_x, base_y;
 let global_scale = 1;
 let multiplier_changed = false;
 let cut = false;
@@ -109,7 +108,8 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   angleMode(DEGREES);
 
   const svg_redraw = redraw && type == 'svg'
-  if(!svg_redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
+  if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
+  else resizeCanvas(canvas_x, canvas_y, false);
   
   //shift position to center canvas if base is different than 400
   if(base_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
@@ -199,20 +199,15 @@ function setParams(size_x, size_y){
     BURN, //14
     SUBTRACT //15
   ];
-  base_x = size_x;
-  base_y = size_y;
-  // if(type != 'svg'){
-  //   parameterize("blend_mode", 0, 0, 15, 1, false);
-  //   //create parameters for base_x and base_y
+  globalThis.base_x = size_x;
+  globalThis.base_y = size_y;
 
-  //   parameterize("base_x", size_x, 1, 1100, 1, false);
-  //   parameterize("base_y", size_y, 1, 1100, 1, false);
-  // }
-  // else{
-  //   //create parameters for base_x and base_y
-  //   parameterize("base_x", size_x, 96/4, 1056, 96/4, false);
-  //   parameterize("base_y", size_y, 96/4, 1056, 96/4, false);
-  // }
+  if(type == "svg"){
+    parameterize("svg_width", size_x/96, 1, 30, 0.1, false);
+    parameterize("svg_height", size_y/96, 1, 30, 0.1, false);
+    globalThis.base_x = svg_width*96;
+    globalThis.base_y = svg_height*96;
+  }
 
   if(img_scale != undefined){
     global_scale = float(img_scale);
