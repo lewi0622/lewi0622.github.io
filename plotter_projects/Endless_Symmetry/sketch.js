@@ -10,10 +10,10 @@ const capture = false;
 const capture_time = 5
 
 function gui_values(){
-  parameterize("sym_angs", 4, 3, 20, 1, false);
-  parameterize("line_segs", floor(random(5,20)), 3, 30, 1, false);
-  parameterize("xoff", 0, 0, 100, 0.1, false);
-  parameterize("tightness", 0, -5, 5, 0.1, false);
+  parameterize("sym_angs", round(random(2,8)), 3, 20, 1, false);
+  parameterize("line_segs", floor(random(10,30)), 3, 30, 1, false);
+  parameterize("xoff", 0, 0, 200, 0.1, false);
+  parameterize("tightness", random(-5,5), -5, 5, 0.1, false);
 }
 
 function setup() {
