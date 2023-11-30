@@ -10,18 +10,19 @@ suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
 
 
 function gui_values(){
-  parameterize("num_circles", 50, 1, 500, 1, false);
-  parameterize("starting_radius", 525, 1, 1000, 1, true);
-  parameterize("ending_radius", 0, 0, 500, 1, true);
+  parameterize("fill_in", 1, 0, 1, 1, false);
+  parameterize("num_circles", floor(random(15,150)), 1, 500, 1, false);
+  parameterize("starting_radius", random(canvas_x/2,canvas_x), 1, 1000, 1, true);
+  parameterize("ending_radius", 0, -500, 500, 1, true);
   parameterize("drift_x_per_loop", 0, -10, 10, 0.1, true);
   parameterize("drift_y_per_loop", 0, -10, 10, 0.1, true);
-  parameterize("cornering_end", 0, -4, 4, 0.1, false);
-  parameterize("cornering_start", 0.5, -4, 4, 0.1, false);
-  parameterize("rotation_per_loop", 0, -180, 180, 0.01, false);
+  parameterize("cornering_end", random(-1,1), -4, 4, 0.1, false);
+  parameterize("cornering_start", random(-1,1), -4, 4, 0.1, false);
+  parameterize("rotation_per_loop", random(-180,180), -180, 180, 0.01, false);
 }
 
 function setup() {
-  common_setup(6*96, 6*96, SVG);
+  common_setup(6*96, 6*96);
 }
 //***************************************************
 function draw() {
@@ -31,7 +32,7 @@ function draw() {
   push();
   rectMode(CENTER);
   translate(canvas_x/2, canvas_y/2);
-  
+  if(!fill_in) noFill();
   for(let i=0; i<num_circles; i++){ 
     push();
     const x = i*drift_x_per_loop;
