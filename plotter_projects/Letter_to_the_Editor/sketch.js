@@ -10,8 +10,8 @@ suggested_palettes = [BIRDSOFPARADISE, MUTEDEARTH, OASIS]
 
 function gui_values(){
   parameterize("tile_div", random(70, 300), 1, 400, 1, false);
-  parameterize("amp_start", random(15, 20), 10, 50, 0.1, true);
-  parameterize("tightness", random(4,5), -5, 5, 0.1, false);
+  parameterize("amp_start", random(10, 20), 10, 50, 0.1, true);
+  parameterize("tightness", random(0,5), -5, 5, 0.1, false);
 }
 
 function setup() {
