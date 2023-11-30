@@ -9,16 +9,16 @@ const capture_time = 10;
 suggested_palettes = []
 
 function gui_values(){
-  parameterize("circle_steps", 451, 1, 1000, 10, false);
-  parameterize("num_spirals", 55, 1, 100, 1, false);
-  parameterize("step_radius_per_circle", 4.14, 0.1, 20, 0.01, true);
-  parameterize("amp_sin", 0.7, 0, 20, 0.1, true);
+  parameterize("circle_steps", floor(random(30, 1000)), 1, 1500, 10, false);
+  parameterize("num_spirals", floor(random(30,100)), 1, 200, 1, false);
+  parameterize("step_radius_per_circle", random(2,10), 0.1, 20, 0.01, true);
+  parameterize("amp_sin", random(0.4,2), 0, 20, 0.1, true);
   parameterize("z_iterations", 3, 1, 10, 1, false);
-  parameterize("the_x_factor", 27, -50, 50, 1, false);
+  parameterize("the_x_factor", random(10,50) * random(-1,1), -500, 500, 1, false);
 } 
 
 function setup() {
-  common_setup(6*96, 6*96, SVG);
+  common_setup(7*96, 7*96);
 }
 //***************************************************
 function draw() {
@@ -28,7 +28,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-
+  // background("WHITE");
   noFill();
   stroke(0, 0, 0, 75);
   translate(canvas_x/2, canvas_y/2);
