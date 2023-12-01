@@ -203,8 +203,8 @@ function setParams(size_x, size_y){
   globalThis.base_y = size_y;
 
   if(type == "svg"){
-    parameterize("svg_width", size_x/96, 1, 30, 0.1, false);
-    parameterize("svg_height", size_y/96, 1, 30, 0.1, false);
+    parameterize("svg_width", size_x/96, 1, 30, 0.05, false);
+    parameterize("svg_height", size_y/96, 1, 30, 0.05, false);
     globalThis.base_x = svg_width*96;
     globalThis.base_y = svg_height*96;
   }
@@ -1311,7 +1311,6 @@ function attach_icons(){
       let param = JSON.parse(stored_variable);
       let div = document.createElement('div');
       div.className = "dice";
-      div.style = "display: inline-block; padding-left: 10px;"
 
       //append dice image
       let dice = document.createElement('img');
@@ -1331,7 +1330,7 @@ function attach_icons(){
         //append red slash
         div.appendChild(create_slash(stored_name, param));
       }
-
+      
       gui_label.appendChild(div);
     }
   })
