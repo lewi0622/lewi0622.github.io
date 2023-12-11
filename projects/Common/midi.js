@@ -34,6 +34,22 @@ function give_grid_chanel_name(ch){
   if(ch==43) return "grid_button_4";
 }
 
+function clearMIDIvalues(){
+  sessionStorage.removeItem(give_grid_chanel_name(grid_dial_1));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_dial_2));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_dial_3));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_dial_4));
+
+  sessionStorage.removeItem(give_grid_chanel_name(grid_slider_1));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_slider_2));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_slider_3));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_slider_4));
+
+  sessionStorage.removeItem(give_grid_chanel_name(grid_button_1));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_button_2));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_button_3));
+  sessionStorage.removeItem(give_grid_chanel_name(grid_button_4));
+}
 
 if (navigator.requestMIDIAccess) console.log('This browser supports WebMIDI!');
 else console.log('WebMIDI is not supported in this browser.');
