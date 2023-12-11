@@ -56,9 +56,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
   //set up CCapture, override num_frames in setup/draw if necessary
   num_frames = capture_time*fr;
-
   capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
-
   //set framerate
   if(!capture) frameRate(fr);
 
@@ -107,10 +105,12 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
   angleMode(DEGREES);
 
-  const svg_redraw = redraw && type == 'svg'
+  // const svg_redraw = redraw && type == 'svg'
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, false);
   
+  frameCount = 0; //with animations, this needs to be one of the last things changed
+
   //shift position to center canvas if base is different than 400
   if(base_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
   
@@ -685,10 +685,10 @@ function global_draw_start(clear_cnv=true){
     change_default_palette(); //redo suggested palettes
     gui_values(); //redo parameterizations
   }
-  if(gif || animation){
-    redraw = true; //I believe these two lines exist to not prompt capturer.start() multiple times
-    redraw_reason = "gif";
-  }
+  // if(gif || animation){
+  //   redraw = true; //I believe these two lines exist to not prompt capturer.start() multiple times
+  //   redraw_reason = "gif";
+  // }
 
   // if(type != 'svg') blendMode(modes[blend_mode]); // blend mode param for all designs
   
@@ -914,6 +914,9 @@ function clear_params(){
     let stored_variable = sessionStorage.getItem(stored_name);
     if(stored_variable != null) sessionStorage.removeItem(stored_name);
   });
+
+  clearMIDIvalues();
+
   redraw_reason = "window";
   clear_gui();
   redraw_sketch();
@@ -971,7 +974,6 @@ function redraw_sketch(){
     return;
   }
   redraw = true;
-  frameCount = 1;
   setup();
   draw();
 }
