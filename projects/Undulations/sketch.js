@@ -4,7 +4,7 @@ const gif = true;
 const animation = true;
 const fr = 30;
 const capture = false;
-const capture_time = 10;
+const capture_time = 20;
 
 suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST, NURSERY, SIXTIES, SUPPERWARE]
 
@@ -15,10 +15,10 @@ let offset_inc = 0.03*30/fr;
 let bg_c;
 let mt_colors;
 function gui_values(){
-  parameterize("i_damp", 10, 1, 200, 1, false);
-  parameterize("amp", 400, 0, 800, 1, true);
-  parameterize("mts", random([20, 22, 24, 26, 28]), 1, 200, 1, false);
-  parameterize("num_segments", round(random(10, 100)), 3, 400, 1, false);
+  parameterize("i_damp", 10, 1, 200, 1, false, grid_slider_1);
+  parameterize("amp", 400, 0, 800, 1, true, grid_slider_2);
+  parameterize("mts", random([20, 22, 24, 26, 28]), 1, 50, 1, false, grid_slider_3);
+  parameterize("num_segments", round(random(10, 100)), 3, 400, 1, false, grid_slider_4);
 }
 
 function setup() {
@@ -32,16 +32,15 @@ function draw() {
   refresh_working_palette();
 
   //apply background
-  if(frameCount ==1) bg_c = random(working_palette);
+  if(frameCount == 1) bg_c = random(working_palette);
   background(bg_c)
 
-  blendMode(MULTIPLY);
   //actual drawing stuff
   push();
-  // noStroke();
   strokeWeight(0.5*global_scale);
   translate(-canvas_x/2,canvas_y*3/4);
   for(let j=0; j<mts; j++){
+    blendMode(BLEND);
     translate(0,j*global_scale);
     let c;
     if(j%2==0){
@@ -51,7 +50,6 @@ function draw() {
     }
     else{
       c = random(working_palette);
-      blendMode(BLEND);
     }
     if(mt_colors.length < j+1) mt_colors.push(c);
     else c = mt_colors[j];
@@ -65,7 +63,8 @@ function draw() {
       curveVertex(x,y);
     }
     vertex(canvas_x*2,0);
-    vertex(canvas_x*2,0);
+    vertex(canvas_x*2,canvas_y);
+    vertex(0, canvas_y);
     endShape();
   }
 
