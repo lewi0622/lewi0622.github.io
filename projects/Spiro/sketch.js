@@ -13,9 +13,10 @@ suggested_palettes = [TOYBLOCKS];
 function gui_values(){
   parameterize("main_rad", random(10,150), 1, 300, 5, true);
   parameterize("sec_rad", random(10,150), 1, 300, 5, true);
-  parameterize("main_theta_per_loop", random(1,50), 0.01, 100, 0.01, false);
-  parameterize("sec_theta_per_loop", random(1,50), 0.01, 100, 0.01, false);
+  parameterize("main_theta_per_loop", random(1,50), 1, 100, 0.25, false);
+  parameterize("sec_theta_per_loop", random(1,50), 1, 100, 0.25, false);
   parameterize("loops_per_frame", 10, 1, 50, 1, false);
+  parameterize("glow", 1, 0, 1, 1, false);
 }
 
 function setup() {
@@ -53,6 +54,11 @@ function draw() {
   
     main += main_theta_per_loop;
     sec += sec_theta_per_loop;
+  }
+
+  if(glow){
+    drawingContext.shadowColor = color(stroke_c);
+    drawingContext.shadowBlur = 3*global_scale;
   }
 
   beginShape();
