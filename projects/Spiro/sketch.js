@@ -29,6 +29,8 @@ function setup() {
   stroke(stroke_c);
   curved = round(random());
   noFill();
+  paused = false;
+  if(document.getElementById("pt_slider") !=null)document.getElementById("pt_slider").remove();
 }
 //***************************************************
 function draw() {
