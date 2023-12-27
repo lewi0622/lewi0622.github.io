@@ -10,21 +10,27 @@ let x_fourth, y_fourth, copic_palette;
 suggested_palettes = []
 
 function gui_values(){
-  parameterize("line_segments", 150, 3, 400, 1, false); //250
-  parameterize("number_of_lines", 200, 1, 400, 1, false);//215
-  parameterize("curve_tightness", 0, -5, 5, 0.1, false);//0
-  parameterize("x_amp", 60, 1, 500, 1, true);//360
-  parameterize("y_amp", 75, 1, 500, 1, true);//193
-  parameterize("x_i_damp", 20, 1, 500, 1, false);//500
-  parameterize("x_j_damp", 40, 1, 500, 1, false);//480
-  parameterize("y_i_damp", 10, 1, 500, 1, false);//130
-  parameterize("y_j_damp", 100, 1, 500, 1, false);//500
-  parameterize("octaves", 4, 1, 8, 1, false);//5
-  parameterize("falloff", 0.5, 0.1, 1, 0.1, false);//0.7
+  const varieties = [
+    [150, 200, 0, 60, 75, 20, 40, 10, 100, 4, 0.5],
+    [250, 215, 0, 360, 193, 500, 480, 130, 500, 5, 0.7],
+    [round(random(10,100)), round(random(200,400)), 0, 60, 75, 193, 178, 8, 116, 8, 0.5]
+  ]
+  let variety = random(varieties);
+  parameterize("line_segments", variety[0], 3, 400, 1, false);
+  parameterize("number_of_lines", variety[1], 1, 400, 1, false);
+  parameterize("curve_tightness", variety[2], -5, 5, 0.1, false);
+  parameterize("x_amp", variety[3], 1, 500, 1, true);
+  parameterize("y_amp", variety[4], 1, 500, 1, true);
+  parameterize("x_i_damp", variety[5], 1, 500, 1, false);
+  parameterize("x_j_damp", variety[6], 1, 500, 1, false);
+  parameterize("y_i_damp", variety[7], 1, 500, 1, false);
+  parameterize("y_j_damp", variety[8], 1, 500, 1, false);
+  parameterize("octaves", variety[9], 1, 8, 1, false);
+  parameterize("falloff", variety[10], 0.1, 1, 0.1, false);
 } 
 
 function setup() {
-  common_setup(6*96, 8*96, SVG);
+  common_setup();
 }
 //***************************************************
 function draw() {
