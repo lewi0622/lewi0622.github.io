@@ -6,9 +6,10 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 let pts, stroke_c, bg_c, curved;
+let paused = false;
 let main = 0;
 let sec = 0;
-suggested_palettes = [TOYBLOCKS];
+suggested_palettes = [SIXTIES, TOYBLOCKS];
 
 function gui_values(){
   parameterize("main_rad", random(10,150), 1, 300, 5, true);
@@ -37,7 +38,6 @@ function draw() {
 
   //actual drawing stuff
   push();
-  background(bg_c);
 
   for(let i=0; i<loops_per_frame; i++){
     let x = canvas_x/2;
@@ -56,23 +56,51 @@ function draw() {
     sec += sec_theta_per_loop;
   }
 
-  if(glow){
-    drawingContext.shadowColor = color(stroke_c);
-    drawingContext.shadowBlur = 3*global_scale;
-  }
-
-  beginShape();
-  pts.forEach(pt => {
-    if(curved) curveVertex(pt.x, pt.y);
-    else vertex(pt.x, pt.y);
-  });
-  endShape();
+  draw_pts();
 
   pop();
   global_draw_end();
 }
 //***************************************************
 //custom funcs
+function draw_pts(pt_length){
+  background(bg_c);
+
+  if(glow){
+    drawingContext.shadowColor = color(stroke_c);
+    drawingContext.shadowBlur = 3*global_scale;
+  }
+
+  beginShape();
+  let iterations;
+  if(pt_length != undefined) iterations = pt_length;
+  else iterations = pts.length;
+  for(let i=0; i<iterations; i++){
+    const pt = pts[i];
+    if(curved) curveVertex(pt.x, pt.y);
+    else vertex(pt.x, pt.y);
+  }
+  endShape();
+}
 
 
+function keyPressed(){
+  if(keyCode == 70){ //70 is keycode F
+    if(paused){
+      loop();
+      document.getElementById("pt_slider").remove();
+    }
+    else{
+      noLoop();
+      const pt_slider = createSlider(0, pts.length, pts.length, 1);
+      pt_slider.position(canvas_x/2, canvas_y/2);
+      pt_slider.changed(()=>{
+        clear();
+        draw_pts(pt_slider.value());
+      });
+      pt_slider.id("pt_slider");
+    }
+    paused = !paused;
+  }
+}
 
