@@ -113,6 +113,13 @@ def build_vpypeline(input_filename, output_filename, show):
         if linesimplify_tolerance.get() != "0.001968504":
             args += f" -t {linesimplify_tolerance.get()} "
 
+    if squiggle.get():
+        args += f" squiggles "
+        if squiggle_amplitude.get() != "0.019685":
+            args += f" -a {squiggle_amplitude.get()} "
+        if squiggle_period.get() != "0.11811":
+            args += f" -p {squiggle_period.get()} "
+
     if multipass.get():
         args += f" multipass "
 
@@ -328,6 +335,25 @@ linesimplify_tolerance_label = Label(window, text="Linesimplify tolerance (inche
 linesimplify_tolerance = Entry(window)
 linesimplify_tolerance.insert(0, "0.001968504")
 linesimplify_tolerance.grid(row=current_row, column=1)
+current_row +=1 
+
+squiggle_label = Label(window, text="Add squiggle filter", fg="blue", cursor="hand2")
+squiggle_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#squiggles"))
+squiggle_label.grid(row=current_row, column=0)
+squiggle = IntVar(value=0)
+squiggle_button = Checkbutton(window, text="squiggle", variable=squiggle).grid(row=current_row, column=1)
+current_row +=1 
+
+squiggle_amplitude_label = Label(window, text="Amplitude of squiggle").grid(row=current_row, column=0)
+squiggle_amplitude = Entry(window)
+squiggle_amplitude.insert(0, "0.019685")
+squiggle_amplitude.grid(row=current_row, column=1)
+current_row +=1 
+
+squiggle_period_label = Label(window, text="Period of squiggle").grid(row=current_row, column=0)
+squiggle_period = Entry(window)
+squiggle_period.insert(0, "0.11811")
+squiggle_period.grid(row=current_row, column=1)
 current_row +=1 
 
 multipass_label = Label(window, text="Add multiple passes to all lines", fg="blue", cursor="hand2")
