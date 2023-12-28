@@ -18,7 +18,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(8*96, 6*96, SVG);
+  common_setup(10*96, 8*96, SVG);
 }
 //***************************************************
 function draw() {
@@ -53,7 +53,7 @@ function draw() {
 
   const noise_range = random(0.25,3) * canvas_x/(400*global_scale);
   for(let j=0; j<shape_number; j++){
-    if(j%10 == 0)stroke(random(colors));
+    // if(j%10 == 0)stroke(random(colors));
     push(); 
     let drift_offset = map(noise(j/noise_damp_drift), 0,1, -noise_range,noise_range);
     //drift less over time
