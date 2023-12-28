@@ -12,14 +12,14 @@ let z = 0;
 let z_inc = 0.1*30/fr;
 let offset = 0;
 let offset_inc = 0.03*30/fr;
-let bg_c;
+let bg_c, moon_c;
 let mts;
 let idx;
 let mode;
 function gui_values(){
   parameterize("i_damp", 10, 1, 200, 1, false, grid_slider_1);
   parameterize("mt_spacing", 10, 1, 100, 1, false);
-  parameterize("num_segments", round(random(10, 100)), 3, 400, 1, false, grid_slider_4);
+  parameterize("num_segments", round(random(10, 50)), 3, 400, 1, false, grid_slider_4);
 }
 
 function setup() {
@@ -44,7 +44,10 @@ function draw() {
   refresh_working_palette();
 
   //apply background
-  if(frameCount == 1) bg_c = random(working_palette);
+  if(frameCount == 1){
+    bg_c = random(working_palette);
+    moon_c = random(working_palette);
+  }
   background(bg_c);
 
   if(frameCount % mt_spacing == 0) create_mt();
@@ -52,7 +55,14 @@ function draw() {
   //actual drawing stuff
   push();
   strokeWeight(0.5*global_scale);
-  translate(-canvas_x/2,canvas_y/2);
+
+  fill(moon_c);
+  const moon_x = map(sin(z*50), -1,1, 0, canvas_x);
+  const moon_y = map(abs(sin(z*50)), 0, 1, 80, 200)*global_scale;
+  map(sin(z*200), -1,1, 150, 200) * global_scale;
+  circle(moon_x, moon_y, 100*global_scale);
+
+  translate(-canvas_x/2,canvas_y*3/4);
   for(let j = mts.length-1; j>=0; j--){
     push();
     let mt = mts[j];
@@ -106,14 +116,14 @@ function move_mt(mt){
   if(mt.dir == "up") mt.amp += amp_inc;
   else{
     mt.y += mt.y_speed;
-    mt.amp = map(mt.y, 0, canvas_y, 300, 100);
+    // mt.amp = map(mt.y, 0, canvas_y, 300, 100);
   }
   if(mt.amp>=300*global_scale) mt.dir = "down"
 }
 
 function remove_mt(){
   for(let i=mts.length-1; i>=0; i--){
-    if(mts[i].y>canvas_y){
+    if(mts[i].y>canvas_y*3/4){
       mts.splice(i,1);
     }
   }
