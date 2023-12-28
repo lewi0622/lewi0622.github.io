@@ -12,11 +12,11 @@ suggested_palettes = []
 function gui_values(){
   parameterize("petal_width", 10, 1, 50, 1, true);
   parameterize("petal_height", 30, 1, 50, 1, true);
-  // parameterize("starting_radius", 400, 100, 1000, 5, true);
+  parameterize("max_petal_iterations", 8, 1, 20, 1, false);
 }
 
 function setup() {
-  common_setup(10*96, 8*96, SVG);
+  common_setup(10*96, 8*96);
 }
 //***************************************************
 function draw() {
@@ -34,8 +34,8 @@ function draw() {
   while(ring_radius < -petal_height/2){
     rotate(random(360));
     ring_radius = -starting_radius+loop_count*petal_height/2;
-    //petal density = 0.5
-    let petals_per_ring = ceil(abs(ring_radius)*0.5);
+    let petal_density = 0.5
+    let petals_per_ring = ceil(abs(ring_radius)*petal_density * 10/petal_width);
     petals_per_ring = constrain(petals_per_ring, 8, 10000);
     for(let j=0; j<petals_per_ring; j++){
       push();
@@ -50,7 +50,8 @@ function draw() {
     loop_count++;
   }
 
-  circle(0,0, ring_radius*2);
+  circle(0,0, ring_radius*3);
+  circle(0,0, 50);
 
   pop();
   global_draw_end();
@@ -58,7 +59,7 @@ function draw() {
 //***************************************************
 //custom funcs
 function petal(){
-  let num_petals = ceil(random(4,8));
+  let num_petals = ceil(random(4,max_petal_iterations));
   for(let i=0; i<num_petals; i++){
     push();
     let working_width = lerp(petal_width, 0, i/num_petals) * random(0.9, 1.1);
