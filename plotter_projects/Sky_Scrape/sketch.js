@@ -10,13 +10,13 @@ function gui_values(){
   parameterize("buildings", 50, 1, 500,);
   parameterize("max_building_width", 50, 0, 1000, 1, true);
   parameterize("min_building_width", 10, 0, 1000, 1, true);
-  parameterize("max_building_height", 8*96, 0, 1000, 1, true);
+  parameterize("max_building_height", 8*96, 0, canvas_y, 1, true);
   parameterize("min_building_height", 2*96, 0, 1000, 1, true);
   parameterize("floor_height", 10, 0, 100, 1, true);
 }
 
 function setup() {
-  common_setup(6*96, 8*96, SVG);
+  common_setup(6*96, 10*96);
 }
 //***************************************************
 function draw() {
