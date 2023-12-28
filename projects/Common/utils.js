@@ -444,7 +444,10 @@ window.onpopstate = function(e){
 
 function build_current_url(auto){
   let base_url = "index.html?colors=" + String(col_idx());
-  base_url += "&controls=" + getParamValue("controls");
+  base_url += "&controls="
+  if(getParamValue("controls") != undefined) base_url += getParamValue("controls");
+  else if(full_controls) base_url += "full";
+  else base_url += "false";
   base_url+= "&seed=" + seed_input.value();
   if(bleed){base_url+='&bleed=' + String(bleed_val)};
   if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
