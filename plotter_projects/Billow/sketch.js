@@ -20,11 +20,11 @@ function gui_values(){
   parameterize("y_j_damp", 500, 1, 1000, 1, false);
   parameterize("y_sin_amp", 200, 0, 400, 1, true);
   parameterize("sin_range", random(180), 0, 720, 1, false);
-  parameterize("rotate_per_line", 0.5, -5, 5, 0.1, false);
+  parameterize("rotate_per_line", 0, -5, 5, 0.1, false);
 } 
 
 function setup() {
-  common_setup(6*96, 8*96, SVG);
+  common_setup(6*96, 8*96);
 }
 //***************************************************
 function draw() {
