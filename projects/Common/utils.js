@@ -107,8 +107,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
   // const svg_redraw = redraw && type == 'svg'
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
-  else resizeCanvas(canvas_x, canvas_y, false);
-  
+  else resizeCanvas(canvas_x, canvas_y, true);
   frameCount = 0; //with animations, this needs to be one of the last things changed
 
   //shift position to center canvas if base is different than 400
@@ -674,7 +673,7 @@ function save_drawing(){
 }
 
 function global_draw_start(clear_cnv=true){
-  if(clear_cnv)clear(); //should be false for some animating pieces
+  if(clear_cnv) clear(); //should be false for some animating pieces
   //called from top of Draw to start capturing, requires CCapture
   if(capture && capture_state == "init"){
     capturer.start();
