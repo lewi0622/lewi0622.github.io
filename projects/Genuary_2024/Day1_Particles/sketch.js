@@ -11,11 +11,11 @@ suggested_palettes = [SUMMERTIME]
 let particles;
 
 function gui_values(){
-  parameterize("num_particles", 100, 1, 1000, 1, false);
-  parameterize("x_speed", 10, 0.01, 50, 0.01, true);
-  parameterize("max_y_movement", 5, 0, 50, 1, true);
-  parameterize("max_weight", 5, 0, 50, 1, true);
-  parameterize("rot_option", 0, 0, 2, 1, false);
+  parameterize("num_particles", round(random(100, 800)), 1, 1000, 1, false);
+  parameterize("x_speed", random(10, 30), 0.01, 50, 0.01, true);
+  parameterize("max_y_movement", random(0,10), 0, 50, 1, true);
+  parameterize("max_weight", random(5, 10), 0, 50, 1, true);
+  parameterize("rot_option", random([0,1,2]), 0, 2, 1, false);
 }
 
 function setup() {
