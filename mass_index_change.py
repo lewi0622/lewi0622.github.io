@@ -1,10 +1,10 @@
 import os
 import pathlib
 
-path = r"C:\Users\lewi0\Desktop\lewi0622.github.io"
+path = os.getcwd()
 
 #absolute paths
-common = r"C:\Users\lewi0\Desktop\lewi0622.github.io\projects\Common"
+common = path + r"\projects\Common"
 
 to_replace = []
 
