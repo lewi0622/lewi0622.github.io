@@ -44,12 +44,27 @@ let pickers = [];
 //blend modes 
 let modes;
 
+window.onload = (event) => {
+  //to correct for palette lengths altering 'random' behavior 
+  var origShuffle = shuffle;
+  shuffle = function(array, standardize=false, len=50) {
+    //override p5js shuffle
+    if(standardize){
+      while(array.length<len){
+        array.push([""]);
+      }
+    }
+    //call original shuffle function
+    array = origShuffle(array);
+
+    return array.filter(a => !arrayEquals(a, [""]));
+  }
+};
+
 function common_setup(size_x=400, size_y=400, renderer=P2D){ 
   //init globals
   file_saved = false;
   capture_state = "init"
-  //override shuffle with func that uses Math.random instead of p5.js random
-  over_ride_shuffle();
 
   //midi.js initiate connection
   update_devices();
@@ -140,23 +155,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
   else noLoop();
-}
-
-function over_ride_shuffle(){
-  //to correct for palette lengths altering 'random' behavior 
-  var origShuffle = shuffle;
-  shuffle = function(array, standardize=false, len=50) {
-    //override p5js shuffle
-    if(standardize){
-      while(array.length<len){
-        array.push([""]);
-      }
-    }
-    //call original shuffle function
-    array = origShuffle(array);
-
-    return array.filter(a => !arrayEquals(a, [""]));
-  }
 }
 
 function setParams(size_x, size_y){
