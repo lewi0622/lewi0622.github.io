@@ -21,7 +21,7 @@ for f in to_replace:
     rel_path = pathlib.Path(rel_path)
     
     file_contents = '''<!DOCTYPE html><html lang="en"><head>
-    <script src="'''+rel_path.as_posix()+'''/p5.js"></script>
+    <script src="'''+rel_path.as_posix()+'''/p5.min.js"></script>
     <!-- Custom scripts -->
     <script src="'''+rel_path.as_posix()+'''/palettes.js"></script>
     <script src="'''+rel_path.as_posix()+'''/utils.js"></script>
