@@ -2,20 +2,20 @@ var channel, val, on, port_id;
 var grid_connected = false;
 
 //channels
-let grid_dial_1 = 32;
-let grid_dial_2 = 33;
-let grid_dial_3 = 34;
-let grid_dial_4 = 35;
+const grid_dial_1 = 32;
+const grid_dial_2 = 33;
+const grid_dial_3 = 34;
+const grid_dial_4 = 35;
 
-let grid_slider_1 = 36;
-let grid_slider_2 = 37;
-let grid_slider_3 = 38;
-let grid_slider_4 = 39;
+const grid_slider_1 = 36;
+const grid_slider_2 = 37;
+const grid_slider_3 = 38;
+const grid_slider_4 = 39;
 
-let grid_button_1 = 40;
-let grid_button_2 = 41;
-let grid_button_3 = 42;
-let grid_button_4 = 43;
+const grid_button_1 = 40;
+const grid_button_2 = 41;
+const grid_button_3 = 42;
+const grid_button_4 = 43;
 
 function give_grid_chanel_name(ch){
   if(ch==32) return "grid_dial_1";
