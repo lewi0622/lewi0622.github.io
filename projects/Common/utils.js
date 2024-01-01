@@ -7,7 +7,8 @@ let file_saved;
 
 let num_frames, capturer, capture_state, seed;
 //control variables
-let seed_input, scale_box, control_height, control_spacing, hidden_controls, color_sel, color_div;
+let hidden_controls = true;
+let seed_input, scale_box, control_height, control_spacing, color_sel, color_div;
 let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
@@ -83,8 +84,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     renderer = SVG;
     protected_session_storage_set("fileType", type);
   }
-
-  hidden_controls = true;
 
   setParams(size_x, size_y); //base_x and base_y globals are init here
   seed_scale_button(base_y);
