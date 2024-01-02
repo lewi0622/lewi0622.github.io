@@ -48,7 +48,7 @@ function draw() {
   center_rotate(360/sym_angs*ceil(random(sym_angs)));
 
   let cloud_c = [];
-  working_palette = shuffle(working_palette, true);
+  working_palette = controlled_shuffle(working_palette, true);
   for(let i=0; i<3; i++){
     const col = color(random(working_palette));
     col.setAlpha(floor(random(3,10)));

@@ -26,7 +26,7 @@ function draw() {
   refresh_working_palette();
   //actual drawing stuff
   push();
-  working_palette = shuffle(working_palette, true);
+  working_palette = controlled_shuffle(working_palette, true);
   c_0 = color(working_palette[0]);
   c_1 = color(working_palette[1]);
   c_2 = color(working_palette[2]);

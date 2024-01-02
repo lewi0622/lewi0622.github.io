@@ -42,7 +42,7 @@ function draw() {
     };
   });
 
-  palette = shuffle(palette, true);
+  palette = controlled_shuffle(palette, true);
 
   pipes.forEach(pipe => {
     //set color

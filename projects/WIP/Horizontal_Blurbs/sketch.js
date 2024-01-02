@@ -20,9 +20,9 @@ function gui_values(){
 function setup() {
   common_setup();
 
-  palette = JSON.parse(JSON.stringify(shuffle(palette, true))).slice(0,5);
+  palette = JSON.parse(JSON.stringify(controlled_shuffle(palette, true))).slice(0,5);
   bg_c = bg(true);
-  palette_reset = JSON.parse(JSON.stringify(shuffle(palette, true)));
+  palette_reset = JSON.parse(JSON.stringify(controlled_shuffle(palette, true)));
 }
 //***************************************************
 function draw() {

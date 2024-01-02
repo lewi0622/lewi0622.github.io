@@ -21,7 +21,7 @@ function setup() {
 
   //apply background
   bg_c = bg(true);
-  palette_reset = JSON.parse(JSON.stringify(shuffle(palette, true)));
+  palette_reset = JSON.parse(JSON.stringify(controlled_shuffle(palette, true)));
   theta_offset = random(180);
 }
 //***************************************************

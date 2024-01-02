@@ -4,24 +4,24 @@ const gif = true;
 const animation = true;
 const fr = 30;
 const capture = false;
-const capture_time = 2;
+const capture_time = 15;
 
-suggested_palettes = [];
+suggested_palettes = [SUMMERTIME, LASER];
 
 let c_0, c_1, c_2, c_00, c_01, c_02, bg_c;
 let theta_offset = 0;
 let theta_inc;
 
 function gui_values(){
-  parameterize("num_circles", round(random(20, 150)), 1, 1500, 1, false);
-  parameterize("circle_radius", round(random(60, 200)), 1, 300, 1, true);
-  parameterize("theta_multiplier", random(2,8), 0, 10, 0.1, false);
+  parameterize("num_circles", round(random(20, 150)), 1, 300, 1, false, grid_slider_1);
+  parameterize("circle_radius", round(random(60, 200)), 1, 300, 1, true, grid_slider_2);
+  parameterize("theta_multiplier", random(2,8), 0, 10, 0.1, false, grid_slider_3);
 }
 
 function setup() {
   common_setup();
 
-  working_palette = shuffle(working_palette, true);
+  working_palette = controlled_shuffle(working_palette, true);
   c_0 = color(working_palette[0]);
   c_1 = color(working_palette[1]);
   c_2 = color(working_palette[2]);

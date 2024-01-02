@@ -22,7 +22,7 @@ function draw() {
 
   refresh_working_palette();
   
-  working_palette = shuffle(working_palette, true);
+  working_palette = controlled_shuffle(working_palette, true);
   //apply background
   random([bg_horizontal_strips,bg_vertical_strips])(2);
 

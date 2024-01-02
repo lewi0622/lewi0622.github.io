@@ -140,7 +140,7 @@ function draw() {
   noFill();
 
   while(z<iterations || draw_paths){
-    tiles = shuffle(tiles,true, max_cols+max_rows);
+    tiles = controlled_shuffle(tiles,true, max_cols+max_rows);
     for(let i =0; i<tiles.length; i++){
       push();
 

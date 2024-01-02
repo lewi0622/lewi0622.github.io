@@ -20,7 +20,7 @@ function setup() {
   rad = 50*global_scale;
   steps = 60;
   step_size = 360/steps;
-  palette = shuffle(palette, true);
+  palette = controlled_shuffle(palette, true);
   bg_c = random(palette);
 }
 //***************************************************

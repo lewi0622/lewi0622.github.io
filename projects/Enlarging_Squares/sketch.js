@@ -23,7 +23,7 @@ function setup() {
   squares = [];
   rot_offset = 0;
 
-  palette = shuffle(palette, true);
+  palette = controlled_shuffle(palette, true);
   bg_c = color(random(palette));
   noStroke();
   square_rate = 5; //10 frames

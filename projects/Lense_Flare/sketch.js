@@ -29,7 +29,7 @@ function draw() {
   //actual drawing stuff
   push();
   noStroke();
-  working_palette = shuffle(working_palette, true);
+  working_palette = controlled_shuffle(working_palette, true);
   set_linear_gradient(working_palette.slice(0,round(random(2,working_palette.length))), 0, 0, canvas_x, canvas_y, "fill");
   center_rotate(random([0,90,180,270]));
   rect(0,0, canvas_x, canvas_y);
@@ -88,7 +88,7 @@ function draw() {
 
     if(original_pt_dist<dist(pt1.x, pt1.y, pt2.x, pt2.y)) continue;
     if(original_pt_sign != Math.sign(pt2.y-pt1.y)) continue;
-    working_palette = shuffle(working_palette, true);
+    working_palette = controlled_shuffle(working_palette, true);
     // set_linear_gradient([working_palette[0], working_palette[1]], pt1.x, pt1.y, pt2.x, pt2.y, "stroke");
     let c_stroke = color(random(working_palette));
     stroke(c_stroke);

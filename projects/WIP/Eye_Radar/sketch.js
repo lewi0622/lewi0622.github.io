@@ -16,7 +16,7 @@ function gui_values(){
 function setup() {
   common_setup();
 
-  palette = shuffle(palette, true);
+  palette = controlled_shuffle(palette, true);
   bg_c = random(palette)
   reduce_array(palette, bg_c)
   bg_c = color(bg_c);

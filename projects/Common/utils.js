@@ -42,25 +42,6 @@ let picker, picker_popper;
 let swatches = [];
 let pickers = [];
 
-window.onload = (event) => {
-  //p5js startup changes
-
-  //to correct for palette lengths altering 'random' behavior 
-  var origShuffle = shuffle;
-  shuffle = function(array, standardize=false, len=50) {
-    //override p5js shuffle
-    if(standardize){
-      while(array.length<len){
-        array.push([""]);
-      }
-    }
-    //call original shuffle function
-    array = origShuffle(array);
-
-    return array.filter(a => !arrayEquals(a, [""]));
-  }
-};
-
 function common_setup(size_x=400, size_y=400, renderer=P2D){
   //init globals
   file_saved = false;
@@ -141,7 +122,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     catch_save_message();
   }
 
-
   if(!redraw){
     angleMode(DEGREES);
 
@@ -153,9 +133,9 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
     window.history.replaceState({}, "", build_current_url(auto)); 
   }
-    if(gif || animation) loop(); 
-    //else necessary when redrawing timed pieces
-    else noLoop();
+  if(gif || animation) loop(); 
+  //else necessary when redrawing timed pieces
+  else noLoop();
 }
 
 function setParams(size_x, size_y){
@@ -398,7 +378,7 @@ function reset_drawing(seed, base_x, base_y){
   //if no seed supplied, set random seed and pass it
   if(isNaN(seed)) seed = Math.round(random()*1000000);
   else seed = int(seed);
-  
+
   randomSeed(seed);
   noiseSeed(seed);
   seed_input.value(str(seed));
@@ -1483,4 +1463,18 @@ function set_linear_gradient(colors, start_x, start_y, end_x, end_y, style){
   }
   if(style == "fill") drawingContext.fillStyle = gradient;
   else drawingContext.strokeStyle = gradient;
+}
+
+function controlled_shuffle(array, standardize=false, len=50) {
+  //shuffle algorithm that can standardize the size of the array so 
+  //it won't cause seed issues using different palette lengths.
+  if(standardize){
+    while(array.length<len){
+      array.push([""]);
+    }
+  }
+  //call original shuffle function
+  array = shuffle(array);
+
+  return array.filter(a => !arrayEquals(a, [""]));
 }

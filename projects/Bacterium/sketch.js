@@ -26,7 +26,7 @@ function setup() {
   phase = 0;
 
   //styling
-  palette = shuffle(palette, true);
+  palette = controlled_shuffle(palette, true);
   bg_c = bg(true);
   weight = 2*global_scale;
   strokeWeight(weight);

@@ -26,7 +26,7 @@ function setup() {
   square_inc = 3*global_scale;
   rot_offset = 0;
 
-  palette = shuffle(palette, true);
+  palette = controlled_shuffle(palette, true);
   bg_c = color(random(palette));
   noStroke();
 

@@ -31,7 +31,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  working_palette = shuffle(working_palette, true);
+  working_palette = controlled_shuffle(working_palette, true);
   let bg_c = random(working_palette);
   background(bg_c);
 
