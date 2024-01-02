@@ -152,11 +152,10 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     const auto = getParamValue('scale') == undefined;
 
     window.history.replaceState({}, "", build_current_url(auto)); 
-
+  }
     if(gif || animation) loop(); 
     //else necessary when redrawing timed pieces
     else noLoop();
-  }
 }
 
 function setParams(size_x, size_y){
