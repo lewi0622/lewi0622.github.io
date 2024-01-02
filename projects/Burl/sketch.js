@@ -183,19 +183,6 @@ function mouseClicked(){
   print(JSON.stringify(mouse_coords));
 }
 
-function draw_open_type_js_path_p5_commands(path){  
-  for (let cmd of path.commands) {
-    if (cmd.type === 'M') { //move to
-      beginShape();
-      vertex(cmd.x, cmd.y);
-    } 
-    else if (cmd.type === 'L')vertex(cmd.x, cmd.y); //line to
-    else if (cmd.type === 'C') bezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y); // bezier to 
-    else if (cmd.type === 'Q') quadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y); //quadratic to
-    else if (cmd.type === 'Z') endShape(CLOSE); // close shape
-  } 
-}
-
 function draw_open_type_js_path_canvas_commands(path){  
   for (let cmd of path.commands) {
     if (cmd.type === 'M') { //move to
