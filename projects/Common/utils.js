@@ -7,7 +7,8 @@ let file_saved;
 
 let num_frames, capturer, capture_state, seed;
 //control variables
-let seed_input, scale_box, control_height, control_spacing, hidden_controls, color_sel, color_div;
+let hidden_controls = true;
+let seed_input, scale_box, control_height, control_spacing, color_sel, color_div;
 let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
@@ -41,15 +42,29 @@ let picker, picker_popper;
 let swatches = [];
 let pickers = [];
 
-//blend modes 
-let modes;
+window.onload = (event) => {
+  //p5js startup changes
 
-function common_setup(size_x=400, size_y=400, renderer=P2D){ 
+  //to correct for palette lengths altering 'random' behavior 
+  var origShuffle = shuffle;
+  shuffle = function(array, standardize=false, len=50) {
+    //override p5js shuffle
+    if(standardize){
+      while(array.length<len){
+        array.push([""]);
+      }
+    }
+    //call original shuffle function
+    array = origShuffle(array);
+
+    return array.filter(a => !arrayEquals(a, [""]));
+  }
+};
+
+function common_setup(size_x=400, size_y=400, renderer=P2D){
   //init globals
   file_saved = false;
   capture_state = "init"
-  //override shuffle with func that uses Math.random instead of p5.js random
-  over_ride_shuffle();
 
   //midi.js initiate connection
   update_devices();
@@ -68,8 +83,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     renderer = SVG;
     protected_session_storage_set("fileType", type);
   }
-
-  hidden_controls = true;
 
   setParams(size_x, size_y); //base_x and base_y globals are init here
   seed_scale_button(base_y);
@@ -103,8 +116,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   // collapse or reposition param
   retrieve_gui_settings();
 
-  angleMode(DEGREES);
-
   // const svg_redraw = redraw && type == 'svg'
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
@@ -123,39 +134,28 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   show_palette_colors();
 
   if(!redraw || redraw_reason == "url"){
-    //post details
+     //post details
     message_details();
 
     //add listener for save messgae
     catch_save_message();
   }
 
-  //Assists with loading on phones and other pixel dense screens
-  pixelDensity(1)
 
-  //store first url with full params even if they aren't provided
-  const auto = getParamValue('scale') == undefined;
-  if(!redraw) window.history.replaceState({}, "", build_current_url(auto)); 
+  if(!redraw){
+    angleMode(DEGREES);
 
-  if(gif || animation) loop(); 
-  //else necessary when redrawing timed pieces
-  else noLoop();
-}
+    //Assists with loading on phones and other pixel dense screens
+    pixelDensity(1)
 
-function over_ride_shuffle(){
-  //to correct for palette lengths altering 'random' behavior 
-  var origShuffle = shuffle;
-  shuffle = function(array, standardize=false, len=50) {
-    //override p5js shuffle
-    if(standardize){
-      while(array.length<len){
-        array.push([""]);
-      }
-    }
-    //call original shuffle function
-    array = origShuffle(array);
+    //store first url with full params even if they aren't provided
+    const auto = getParamValue('scale') == undefined;
 
-    return array.filter(a => !arrayEquals(a, [""]));
+    window.history.replaceState({}, "", build_current_url(auto)); 
+
+    if(gif || animation) loop(); 
+    //else necessary when redrawing timed pieces
+    else noLoop();
   }
 }
 
@@ -178,26 +178,6 @@ function setParams(size_x, size_y){
     hidden_controls = false;
   }
 
-  //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
-  //https://p5js.org/reference/#/p5/blendMode
-  modes = [
-    BLEND, //0
-    ADD, //1
-    DARKEST, //2 
-    LIGHTEST, //3
-    DIFFERENCE, //4
-    EXCLUSION, //5
-    MULTIPLY, //6
-    SCREEN, //7
-    REPLACE, //8
-    REMOVE, //9
-    OVERLAY, //10
-    HARD_LIGHT, //11
-    SOFT_LIGHT, //12
-    DODGE, //13
-    BURN, //14
-    SUBTRACT //15
-  ];
   globalThis.base_x = size_x;
   globalThis.base_y = size_y;
 
@@ -246,8 +226,8 @@ function getParamValue(paramName){
 }
 
 function seed_scale_button(base_y){
-  const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"]
-  const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "Save", "File Type"]
+  const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"];
+  const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "Save", "File Type"];
 
   control_height = 20*global_scale;
   control_spacing = 5*global_scale;
@@ -342,86 +322,84 @@ function seed_scale_button(base_y){
     btSave.id("Save")
   }
 
-  //resize for given global scale
-  //START OF TOP ROW
-  //left/right buttons for easy seed nav
-  btLeft.size(20*global_scale, control_height);
-  btLeft.position(0, base_y*global_scale);
+  if(!redraw || redraw_reason == "window" || redraw_reason == "url"){
+    //resize for given global scale
+    //START OF TOP ROW
+    //left/right buttons for easy seed nav
+    btLeft.size(20*global_scale, control_height);
+    btLeft.position(0, base_y*global_scale);
 
-  //creates controls below canvas for displaying/setting seed
-  seed_input.size(55*global_scale, control_height-6);
-  seed_input.position(btLeft.size().width,base_y*global_scale);
+    //creates controls below canvas for displaying/setting seed
+    seed_input.size(55*global_scale, control_height-6);
+    seed_input.position(btLeft.size().width,base_y*global_scale);
 
-  //left/right buttons for easy seed nav
-  btRight.size(20*global_scale, control_height);
-  btRight.position(seed_input.size().width + seed_input.position().x, base_y*global_scale);
+    //left/right buttons for easy seed nav
+    btRight.size(20*global_scale, control_height);
+    btRight.position(seed_input.size().width + seed_input.position().x, base_y*global_scale);
 
-  //custom seed button
-  button.size(90*global_scale, control_height)
-  button.position(btRight.size().width + btRight.position().x + control_spacing, base_y*global_scale);
+    //custom seed button
+    button.size(90*global_scale, control_height)
+    button.position(btRight.size().width + btRight.position().x + control_spacing, base_y*global_scale);
 
-  if(!in_iframe){
-    //reset palette button
-    reset_palette.size(90*global_scale, control_height)
-    reset_palette.position(button.size().width + button.position().x + control_spacing, base_y*global_scale);
-  }
-
-  //randomize button
-  randomize.size(80*global_scale, control_height);
-  randomize.position(400*global_scale-randomize.size().width, base_y*global_scale);
-
-  //START OF SECOND ROW
-  //color palette select
-  color_sel.position(0, base_y*global_scale+control_height);
-  color_sel.size(120*global_scale, control_height);
-
-  //file type radio control
-  radio_filetype.size(80*global_scale, control_height);
-  radio_filetype.position(400*global_scale-radio_filetype.size().width, base_y*global_scale + control_height);
-
-  //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
-  //START OF THIRD ROW
-  //autoscale button calls url minus any scaler
-  auto_scale.position(0, base_y*global_scale + control_height*2);
-  auto_scale.size(70*global_scale, control_height)
-
-  //scale text box
-  scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height*2)
-  scale_box.size(30*global_scale, 18*global_scale);
-  scale_box.value(global_scale);
-
-  //reset parameters button
-  reset_parameters.position(scale_box.position().x+scale_box.size().width+control_spacing, base_y*global_scale+control_height*2);
-  reset_parameters.size(130*global_scale, control_height);
-
-  //save button
-  btSave.size(70*global_scale, control_height);
-  btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height*2);
-
-  //style all ctrls
-  ids.concat(full_ids).forEach(id => {
-    const elem = document.getElementById(id)
-    if(elem){
-      elem.style.fontSize = str(12*global_scale) + 'px';
+    if(!in_iframe){
+      //reset palette button
+      reset_palette.size(90*global_scale, control_height)
+      reset_palette.position(button.size().width + button.position().x + control_spacing, base_y*global_scale);
     }
-  });
 
-  show_hide_controls(ids, hidden_controls);
-  show_hide_controls(full_ids, !full_controls);
+    //randomize button
+    randomize.size(80*global_scale, control_height);
+    randomize.position(400*global_scale-randomize.size().width, base_y*global_scale);
+
+    //START OF SECOND ROW
+    //color palette select
+    color_sel.position(0, base_y*global_scale+control_height);
+    color_sel.size(120*global_scale, control_height);
+
+    //file type radio control
+    radio_filetype.size(80*global_scale, control_height);
+    radio_filetype.position(400*global_scale-radio_filetype.size().width, base_y*global_scale + control_height);
+
+    //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
+    //START OF THIRD ROW
+    //autoscale button calls url minus any scaler
+    auto_scale.position(0, base_y*global_scale + control_height*2);
+    auto_scale.size(70*global_scale, control_height)
+
+    //scale text box
+    scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height*2)
+    scale_box.size(30*global_scale, 18*global_scale);
+    scale_box.value(global_scale);
+
+    //reset parameters button
+    reset_parameters.position(scale_box.position().x+scale_box.size().width+control_spacing, base_y*global_scale+control_height*2);
+    reset_parameters.size(130*global_scale, control_height);
+
+    //save button
+    btSave.size(70*global_scale, control_height);
+    btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height*2);
+
+    //style all ctrls
+    ids.concat(full_ids).forEach(id => {
+      const elem = document.getElementById(id)
+      if(elem){
+        elem.style.fontSize = str(12*global_scale) + 'px';
+      }
+    });
+
+    show_hide_controls(ids, hidden_controls);
+    show_hide_controls(full_ids, !full_controls);
+  }
 }
 
 function reset_drawing(seed, base_x, base_y){
-  //call draw after this if manually refreshing canvas
   canvas_x = round(base_x*global_scale);
   canvas_y = round(base_y*global_scale);
 
   //if no seed supplied, set random seed and pass it
-  if(isNaN(seed)){
-    seed = Math.round(random()*1000000);
-  }
-  else{
-    seed = int(seed);
-  }
+  if(isNaN(seed)) seed = Math.round(random()*1000000);
+  else seed = int(seed);
+  
   randomSeed(seed);
   noiseSeed(seed);
   seed_input.value(str(seed));
@@ -442,11 +420,14 @@ window.onpopstate = function(e){
 
 
 function build_current_url(auto){
-  let base_url = "index.html?colors=" + String(col_idx());
-  base_url += "&controls="
+  let base_url = "index.html?";
+  base_url += "controls="
   if(getParamValue("controls") != undefined) base_url += getParamValue("controls");
   else if(full_controls) base_url += "full";
   else base_url += "false";
+
+  base_url += "&colors=" + String(col_idx());
+
   base_url+= "&seed=" + seed_input.value();
   if(bleed){base_url+='&bleed=' + String(bleed_val)};
   if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
@@ -687,12 +668,6 @@ function global_draw_start(clear_cnv=true){
     change_default_palette(); //redo suggested palettes
     gui_values(); //redo parameterizations
   }
-  // if(gif || animation){
-  //   redraw = true; //I believe these two lines exist to not prompt capturer.start() multiple times
-  //   redraw_reason = "gif";
-  // }
-
-  // if(type != 'svg') blendMode(modes[blend_mode]); // blend mode param for all designs
   
   bleed_border = apply_bleed();
 }

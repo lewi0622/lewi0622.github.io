@@ -13,7 +13,7 @@ function gui_values(){
   parameterize("num_lines", floor(random(30,200)), 1, 500, 1, false);
   parameterize("radius", 400, 1, 400, 5, true);
   parameterize("pct_variation", 1, 0, 1, 0.01, false);
-  parameterize("pct_line_skip", random(0.15), 0, 1, 0.01, false);
+  parameterize("pct_line_skip", random(0.5), 0, 1, 0.01, false);
   parameterize("corner_radius", random(0.1), 0, 1, 0.01, false);
 } 
 
@@ -29,7 +29,6 @@ function draw() {
   //actual drawing stuff
   push();
   noStroke();
-  strokeCap(ROUND);
   working_palette = shuffle(working_palette, true);
   set_linear_gradient(working_palette.slice(0,round(random(2,working_palette.length))), 0, 0, canvas_x, canvas_y, "fill");
   center_rotate(random([0,90,180,270]));
@@ -40,7 +39,8 @@ function draw() {
   stroke("BLACK");
   for(let i=0; i<num_lines; i++){
     if(random()<pct_line_skip) continue;
-    if(random()>0.5) drawingContext.setLineDash([floor(random(0,10))*global_scale, floor(random(10,20))*global_scale]);
+    // strokeCap(random([ROUND, SQUARE]));
+    if(random()>0.5) drawingContext.setLineDash([floor(random(0,30))*global_scale, floor(random(10,50))*global_scale]);
     else drawingContext.setLineDash([]);
     let weight = random(0.1,10)*global_scale;
     strokeWeight(weight);
