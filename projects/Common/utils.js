@@ -137,23 +137,27 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   show_palette_colors();
 
   if(!redraw || redraw_reason == "url"){
-    //post details
+     //post details
     message_details();
 
     //add listener for save messgae
     catch_save_message();
   }
 
-  //Assists with loading on phones and other pixel dense screens
-  pixelDensity(1)
 
-  //store first url with full params even if they aren't provided
-  const auto = getParamValue('scale') == undefined;
-  if(!redraw) window.history.replaceState({}, "", build_current_url(auto)); 
+  if(!redraw){
+    //Assists with loading on phones and other pixel dense screens
+    pixelDensity(1)
 
-  if(gif || animation) loop(); 
-  //else necessary when redrawing timed pieces
-  else noLoop();
+    //store first url with full params even if they aren't provided
+    const auto = getParamValue('scale') == undefined;
+
+    window.history.replaceState({}, "", build_current_url(auto)); 
+
+    if(gif || animation) loop(); 
+    //else necessary when redrawing timed pieces
+    else noLoop();
+  }
 }
 
 function setParams(size_x, size_y){
@@ -439,11 +443,14 @@ window.onpopstate = function(e){
 
 
 function build_current_url(auto){
-  let base_url = "index.html?colors=" + String(col_idx());
-  base_url += "&controls="
+  let base_url = "index.html?";
+  base_url += "controls="
   if(getParamValue("controls") != undefined) base_url += getParamValue("controls");
   else if(full_controls) base_url += "full";
   else base_url += "false";
+
+  base_url += "&colors=" + String(col_idx());
+
   base_url+= "&seed=" + seed_input.value();
   if(bleed){base_url+='&bleed=' + String(bleed_val)};
   if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
