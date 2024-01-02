@@ -115,7 +115,7 @@ function draw() {
     stroke(c_primary);
     strokeWeight(weight);
     noFill();
-    tiles = shuffle(tiles,true, max_cols+max_rows);
+    tiles = controlled_shuffle(tiles,true, max_cols+max_rows);
     for(let i =0; i<tiles.length; i++){
       push();
       const tile = tiles[i];
