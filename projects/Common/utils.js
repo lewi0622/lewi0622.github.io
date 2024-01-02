@@ -43,6 +43,8 @@ let swatches = [];
 let pickers = [];
 
 window.onload = (event) => {
+  //p5js startup changes
+
   //to correct for palette lengths altering 'random' behavior 
   var origShuffle = shuffle;
   shuffle = function(array, standardize=false, len=50) {
@@ -59,7 +61,7 @@ window.onload = (event) => {
   }
 };
 
-function common_setup(size_x=400, size_y=400, renderer=P2D){ 
+function common_setup(size_x=400, size_y=400, renderer=P2D){
   //init globals
   file_saved = false;
   capture_state = "init"
@@ -114,8 +116,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   // collapse or reposition param
   retrieve_gui_settings();
 
-  angleMode(DEGREES);
-
   // const svg_redraw = redraw && type == 'svg'
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
@@ -143,6 +143,8 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
 
   if(!redraw){
+    angleMode(DEGREES);
+
     //Assists with loading on phones and other pixel dense screens
     pixelDensity(1)
 
@@ -391,17 +393,13 @@ function seed_scale_button(base_y){
 }
 
 function reset_drawing(seed, base_x, base_y){
-  //call draw after this if manually refreshing canvas
   canvas_x = round(base_x*global_scale);
   canvas_y = round(base_y*global_scale);
 
   //if no seed supplied, set random seed and pass it
-  if(isNaN(seed)){
-    seed = Math.round(random()*1000000);
-  }
-  else{
-    seed = int(seed);
-  }
+  if(isNaN(seed)) seed = Math.round(random()*1000000);
+  else seed = int(seed);
+  
   randomSeed(seed);
   noiseSeed(seed);
   seed_input.value(str(seed));
