@@ -42,9 +42,6 @@ let picker, picker_popper;
 let swatches = [];
 let pickers = [];
 
-//blend modes 
-let modes;
-
 window.onload = (event) => {
   //to correct for palette lengths altering 'random' behavior 
   var origShuffle = shuffle;
@@ -179,26 +176,6 @@ function setParams(size_x, size_y){
     hidden_controls = false;
   }
 
-  //add param for blend mode, add blendMode(modes[blend_mode]); to draw code
-  //https://p5js.org/reference/#/p5/blendMode
-  modes = [
-    BLEND, //0
-    ADD, //1
-    DARKEST, //2 
-    LIGHTEST, //3
-    DIFFERENCE, //4
-    EXCLUSION, //5
-    MULTIPLY, //6
-    SCREEN, //7
-    REPLACE, //8
-    REMOVE, //9
-    OVERLAY, //10
-    HARD_LIGHT, //11
-    SOFT_LIGHT, //12
-    DODGE, //13
-    BURN, //14
-    SUBTRACT //15
-  ];
   globalThis.base_x = size_x;
   globalThis.base_y = size_y;
 
@@ -693,12 +670,6 @@ function global_draw_start(clear_cnv=true){
     change_default_palette(); //redo suggested palettes
     gui_values(); //redo parameterizations
   }
-  // if(gif || animation){
-  //   redraw = true; //I believe these two lines exist to not prompt capturer.start() multiple times
-  //   redraw_reason = "gif";
-  // }
-
-  // if(type != 'svg') blendMode(modes[blend_mode]); // blend mode param for all designs
   
   bleed_border = apply_bleed();
 }

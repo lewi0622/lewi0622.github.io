@@ -16,7 +16,6 @@ function gui_values(){
   parameterize('number_of_lines', random(30, 100), 1, 500, 1, false);
   parameterize("x_noise_amp", 1350, 0, 500, 1, true);
   parameterize("x_noise_damp", 135, 1, 1000, 1, false);
-  blend_mode = 6; //multiply
 }
 
 function setup() {
@@ -29,7 +28,7 @@ function draw() {
   //actual drawing stuff
   push();
   noFill();
-
+  blendMode(MULTIPLY);
 
   //limit background colors to be bright enough
   let working_brightness = [];
