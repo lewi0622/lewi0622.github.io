@@ -6,14 +6,13 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SOUTHWEST];
+suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, SOUTHWEST, SIXTIES];
 
 function gui_values(){
   parameterize("num_rings", round(random(40,150)), 1, 200, 1, false);
   parameterize("ring_steps", round(random(3,100)), 3, 300, 1, false);
-  parameterize("opacity", 220,0,255,1,false);
-  parameterize("radius_start", random(75,150), 1, 400, 5, true);
-  parameterize("max_noise", random(1,10), 1, 50, 0.1, false);
+  parameterize("radius_start", random(50,150), 1, 400, 5, true);
+  parameterize("max_noise", random(1,7), 1, 50, 0.1, false);
   parameterize("num_blobs", round(random(20,30)), 1, 200, 1, false);
 }
 
@@ -36,12 +35,11 @@ function draw() {
   if(random()>0.5) noStroke();
 
   working_palette = controlled_shuffle(working_palette,true);
-  print(random());
+
   for(let z=0; z<num_blobs; z++){
     push();
 
     const c = color(working_palette[z%working_palette.length]);
-    c.setAlpha(opacity);
     fill(c);
 
     translate(random(canvas_x), random(canvas_y));
@@ -57,7 +55,7 @@ function draw() {
         const theta = j/ring_steps*360;
         const xoff = map(cos(theta),-1,1,0,max_noise);
         const yoff = map(sin(theta),-1,1,0,max_noise);
-        const r = map(noise(xoff,yoff, z*i/10),0,1,radius/2,radius);
+        const r = map(noise(xoff,yoff, (z+10)*i/10),0,1,radius/2,radius);
         const x = r * sin(theta);
         const y = r * cos(theta);
         vertex(x,y);
