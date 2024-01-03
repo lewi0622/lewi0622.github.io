@@ -11,13 +11,13 @@ suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, SOUTHWEST, SIXTIES];
 function gui_values(){
   parameterize("num_rings", round(random(40,150)), 1, 200, 1, false);
   parameterize("ring_steps", round(random(3,100)), 3, 300, 1, false);
-  parameterize("radius_start", random(50,150), 1, 400, 5, true);
+  parameterize("max_radius", canvas_x/2.5, 1, canvas_x, 10, false);
   parameterize("max_noise", random(1,7), 1, 50, 0.1, false);
   parameterize("num_blobs", round(random(20,30)), 1, 200, 1, false);
 }
 
 function setup() {
-  common_setup();
+  common_setup(); //540,960 x2 for reel
 }
 //***************************************************
 function draw() {
@@ -44,7 +44,7 @@ function draw() {
 
     translate(random(canvas_x), random(canvas_y));
     rotate(random(360));
-    let radius = radius_start;
+    let radius = map(noise(z/10), 0,1, canvas_x/8,max_radius);
     for(let i=0; i<num_rings; i++){
       push();
       if(i%2==0) blendMode(MULTIPLY);
