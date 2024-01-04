@@ -15,7 +15,7 @@ const PALETTE_ID_DEFAULT = MUTEDEARTH;
 
 //if a project doesn't supply an array of suggested palettes, we use the default
 let global_palette_id = PALETTE_ID_DEFAULT;
-let global_palette, palette, working_palette, suggested_palettes;
+let palette, working_palette, suggested_palettes;
 
 let global_scale = 1;
 let multiplier_changed = false;
@@ -476,7 +476,7 @@ function show_palette_colors(){
   }
   if(!redraw || redraw_reason == "palette"){
     for(let i=0; i<palette.length; i++){
-      swatches.push('rgb(' + global_palette[i][0] + ',' + global_palette[i][1] + ',' + global_palette[i][2] + ',' + map(global_palette[i][3],0,255, 0,1) + ')');
+      swatches.push('rgb(' + palette[i][0] + ',' + palette[i][1] + ',' + palette[i][2] + ',' + map(palette[i][3],0,255, 0,1) + ')');
     }
   }
   else{
@@ -679,13 +679,10 @@ function bg(remove, force){
   if(force !== undefined){
     c = force;
   }
-  else{
-    c = random(palette);
-  }
+  else c = random(working_palette);
+  
   background(c);
-  if(remove == true){
-    reduce_array(palette, c);
-  };
+  if(remove == true) reduce_array(working_palette, c);
   return c;
 };
 function bg_vertical_strips(strips){
@@ -693,11 +690,9 @@ function bg_vertical_strips(strips){
   noStroke();
   translate(-canvas_x/2, -canvas_y/2)
   for(let i=0; i<strips; i++){
-    fill(random(palette));
+    fill(random(working_palette));
     rect(0, 0, canvas_x*2, canvas_y*2);
-    if(i==0){
-      translate(canvas_x/2,0);
-    }
+    if(i==0) translate(canvas_x/2,0);
     translate(floor(canvas_x/strips), 0);
   }
   pop();
@@ -708,11 +703,9 @@ function bg_horizontal_strips(strips){
   noStroke();
   translate(-canvas_x/2, -canvas_y/2)
   for(let i=0; i<strips; i++){
-    fill(random(palette));
+    fill(random(working_palette));
     rect(0, 0, canvas_x*2, canvas_y*2);
-    if(i==0){
-      translate(0,canvas_y/2);
-    }
+    if(i==0) translate(0,canvas_y/2);
     translate(0, floor(canvas_y/strips));
   }
   pop();
@@ -722,7 +715,7 @@ function bg_center_ellipse(){
   bg();
   push();
   noStroke();
-  fill(random(palette));
+  fill(random(working_palette));
   ellipse(canvas_x/2, canvas_y/2, canvas_x, canvas_y);
   pop();
 }
@@ -935,44 +928,21 @@ function redraw_sketch(){
 }
 
 function change_default_palette(){
-  //if no suggested palette, use the default palette
-  let palette_id= PALETTE_ID_DEFAULT;
-  let colors = getParamValue('colors');
-  let suggested_palette_id;
-  if(suggested_palettes !== undefined){
-    if(suggested_palettes.length>0) suggested_palette_id = random(suggested_palettes);
-  }
-
-  if(redraw && redraw_reason != "palette"){
-    if(gif && !animation) palette_id = suggested_palette_id; //if capturing a gif of still noLoop designs, and it's redrawing, get new palette
-    else palette_id = global_palette_id;
-  }
-  //if not redraw, get palette from url
-  else if(colors != undefined){
-    //is the color given within the palettes range
-    if(!isPositiveIntegerOrZero(colors) || parseInt(colors)>palettes.length){
-      colors = PALETTE_ID_DEFAULT;
+  const color_param = getParamValue('colors');
+  if(color_param == undefined || (gif && !animation)){
+    if(suggested_palettes != undefined){
+      if(suggested_palettes.length > 0) global_palette_id = random(suggested_palettes);
     }
-    palette_id = parseInt(colors);
   }
-  //if no url palette, grab the suggested palette
-  else if(suggested_palette_id !== undefined){
-    palette_id = suggested_palette_id;
+  else if(isPositiveIntegerOrZero(color_param) && parseInt(color_param)<palettes.length){
+    global_palette_id = parseInt(color_param);
   }
 
-  global_palette_id = palette_id;
-  global_palette = palettes[global_palette_id];
+  palette = palettes[global_palette_id];
   //check if local storage
-  let stored_palette;
-  try{
-    stored_palette = window.localStorage.getItem(palette_names[global_palette_id]);
-  }
-  catch(err){
-    console.log("Local storage is being blocked by a 3rd party application");
-    stored_palette = undefined;
-  }
-  if(stored_palette != undefined) palette = JSON.parse(stored_palette);
-  else palette = JSON.parse(JSON.stringify(global_palette));
+  let stored_palette = protected_local_storage_get(palette_names[global_palette_id])
+  if(stored_palette != null) palette = JSON.parse(stored_palette);
+
   color_sel.selected(palette_names[global_palette_id]);
 
   refresh_working_palette();
@@ -1114,6 +1084,23 @@ function protected_session_storage_get(name){
 function protected_session_storage_set(name, val){
   try{
     sessionStorage.setItem(name, val);
+  }
+  catch(err){
+    console.log("Cannot access session storage to set item, probably an ad blocker issue");
+  }
+}
+
+function protected_local_storage_get(name){
+  try{ return localStorage.getItem(name); }
+  catch(err){
+    console.log("Cannot access session storage to get item, probably an ad blocker issue");
+    return null;
+  }
+}
+
+function protected_local_storage_set(name, val){
+  try{
+    localStorage.setItem(name, val);
   }
   catch(err){
     console.log("Cannot access session storage to set item, probably an ad blocker issue");
