@@ -23,10 +23,10 @@ for f in to_replace:
     file_contents = '''<!DOCTYPE html><html lang="en"><head>
     <script src="'''+rel_path.as_posix()+'''/p5.min.js"></script>
     <!-- Custom scripts -->
+    <script src="'''+rel_path.as_posix()+'''/midi.js"></script>
     <script src="'''+rel_path.as_posix()+'''/palettes.js"></script>
     <script src="'''+rel_path.as_posix()+'''/utils.js"></script>
     <script src="'''+rel_path.as_posix()+'''/shapes.js"></script>
-    <script src="'''+rel_path.as_posix()+'''/midi.js"></script>
     <!-- Frame capture lib for gifs/vids -->
     <script src="'''+rel_path.as_posix()+'''/CCapture.all.min.js"></script>
     <!-- p5.gui lib -->
