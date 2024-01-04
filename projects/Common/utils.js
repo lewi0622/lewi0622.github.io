@@ -42,6 +42,41 @@ let picker, picker_popper;
 let swatches = [];
 let pickers = [];
 
+
+//url parameters
+let controls_param, seed_param, colors_param, scale_param;
+if(getParamValue("controls") == undefined) controls_param = build_controls();
+else controls_param = verify_controls(getParamValue("controls"));
+
+if(getParamValue("seed") == undefined) seed_param = build_seed();
+else seed_param = verify_seed(getParamValue("seed"));
+
+if(getParamValue("colors") == undefined) colors_param = build_colors();
+// else colors_param = verify_colors(getParamValue("colors"));
+
+if(getParamValue("scale") == undefined) scale_param = "auto";
+else scale_param = verify_scale(getParamValue("scale"));
+
+function build_controls(){
+  if(location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "127.0.0.2") return "full";
+  else return "false";
+}
+
+function verify_controls(val){
+  if(val == "false" || val == "true" || val == "full") return val;
+  else return build_controls();
+}
+
+function build_seed(){
+  return Math.round(Math.random()*1000000);
+}
+
+function verify_seed(val){
+  if(!isNaN(val) && Number.isInteger(parseInt(val))) return parseInt(val);
+  else return build_seed();
+}
+
+
 function common_setup(size_x=400, size_y=400, renderer=P2D){
   //init globals
   file_saved = false;
