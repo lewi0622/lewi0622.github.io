@@ -1107,7 +1107,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
           //save to storage
           let new_value = gui.prototype._controls[name].getValue();
           if(stored_variable.scale) new_value = new_value/global_scale;
-          if((!multiplier_changed || name == "base_x" || name == "base_y") && name != "blend_mode"){
+          if(!multiplier_changed){
             //don't freeze params that change due to multiplier changing. Multiplier changed only happens when base_x, base_y change
             if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) stored_variable.frozen = true; 
           }
