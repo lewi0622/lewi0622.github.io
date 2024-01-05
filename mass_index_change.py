@@ -24,6 +24,7 @@ for f in to_replace:
     <script src="'''+rel_path.as_posix()+'''/p5.min.js"></script>
     <!-- Custom scripts -->
     <script src="'''+rel_path.as_posix()+'''/palettes.js"></script>
+    <script src="sketch.js"></script>
     <script src="'''+rel_path.as_posix()+'''/utils.js"></script>
     <script src="'''+rel_path.as_posix()+'''/shapes.js"></script>
     <script src="'''+rel_path.as_posix()+'''/midi.js"></script>
@@ -48,7 +49,6 @@ for f in to_replace:
 
     </head>
     <body>
-    <script src="sketch.js"></script>
     </body>
     </html>'''
 
