@@ -169,13 +169,12 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
       add_gui_event_handlers();
       gui_created = true;
     }
+    // add dice and slashes if necessary
+    attach_icons();
+    // collapse or reposition param
+    retrieve_gui_settings();
   }
-  // add dice and slashes if necessary
-  attach_icons();
-  // collapse or reposition param
-  retrieve_gui_settings();
 
-  // const svg_redraw = redraw && type == 'svg'
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
   frameCount = 0; //with animations, this needs to be one of the last things changed
