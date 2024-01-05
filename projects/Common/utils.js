@@ -19,12 +19,6 @@ let palette_changed = false;
 
 let global_scale = 1;
 let multiplier_changed = false;
-let cut = false;
-let bleed = false;
-let bleed_val = 0.25; //quarter inch bleed
-let bleed_border;
-const DPI_DEFAULT = 300;
-let dpi = DPI_DEFAULT;
 let controls_param, seed_param, colors_param, scale_param;
 let in_iframe = window.location !== window.parent.location;
 let type = 'png';
@@ -596,19 +590,9 @@ function reduce_array(arr, remove){
 
 function save_drawing(){
   //get project name
-  let bleed_name = '';
-  let dpi_name = '';
-  let cut_name = '';
-  if(bleed != false){
-    bleed_name = '_bleed_' + str(bleed_val);
-    if(cut != false){
-      cut_name = '_cut_true';
-    }
-  };
-  if(dpi != DPI_DEFAULT) dpi_name = "_dpi_"+str(dpi);
   let scale_text = round(global_scale*1000)/1000; //round to nearest 1000th place
   scale_text = str(scale_text).replace(".", "_");
-  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(current_palette_index()) + '_scale_' + scale_text + bleed_name + dpi_name + cut_name;
+  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(current_palette_index()) + '_scale_' + scale_text;
   if(type == 'svg'){
     //create ids for each color in the order they're drawn for use by vpype
     let canvas_elem = document.getElementById("defaultCanvas0");
@@ -649,7 +633,6 @@ function global_draw_start(clear_cnv=true){
 }
 
 function global_draw_end(){
-  apply_cutlines(bleed_border);
   capture_frame();
 }
 
@@ -744,38 +727,6 @@ function get_invert_stroke(x, y){
   }
 
   stroke(c);
-}
-
-function apply_cutlines(bleed_border){
-  //draw cutlines, pop before this is called
-  if(bleed_border != undefined && cut){
-    push();
-    strokeWeight(1*global_scale);
-    //move coords back to upper left because get function uses absolute coords
-    translate(-bleed_border, -bleed_border)
-    //upper left going clockwise.
-    get_invert_stroke(0, bleed_border);
-    line(0, bleed_border, bleed_border/2, bleed_border);
-    get_invert_stroke(bleed_border, 0);
-    line(bleed_border, 0, bleed_border, bleed_border/2);
-    //upper right
-    get_invert_stroke(width-bleed_border, 0);
-    line(width-bleed_border, 0, width-bleed_border, bleed_border/2);
-    get_invert_stroke(width-1, bleed_border);
-    line(width-1, bleed_border, width-bleed_border/2, bleed_border);
-    //lower right
-    get_invert_stroke(width-1, height- bleed_border);
-    line(width-1, height- bleed_border, width-bleed_border/2, height-bleed_border);
-    get_invert_stroke(width-bleed_border, height-1);
-    line(width-bleed_border, height-1, width-bleed_border, height-bleed_border/2);
-    //lower left
-    get_invert_stroke(bleed_border, height-1);
-    line(bleed_border, height-1, bleed_border, height-bleed_border/2);
-    get_invert_stroke(0, height-bleed_border);
-    line(0, height-bleed_border, bleed_border/2, height-bleed_border);
-
-    pop();
-  }
 }
 
 function gen_n_colors(n){
