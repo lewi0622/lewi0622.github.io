@@ -17,6 +17,11 @@ const grid_button_2 = 41;
 const grid_button_3 = 42;
 const grid_button_4 = 43;
 
+let grid_button_1_pushed = false;
+let grid_button_2_pushed = false;
+let grid_button_3_pushed = false;
+let grid_button_4_pushed = false;
+
 function give_grid_chanel_name(ch){
   if(ch==32) return "grid_dial_1";
   if(ch==33) return "grid_dial_2";
@@ -51,7 +56,10 @@ function clearMIDIvalues(){
   sessionStorage.removeItem(give_grid_chanel_name(grid_button_4));
 }
 
-if (navigator.requestMIDIAccess) console.log('This browser supports WebMIDI!');
+if (navigator.requestMIDIAccess){
+  midiConnect();
+  console.log('This browser supports WebMIDI!');
+}
 else console.log('WebMIDI is not supported in this browser.');
 
 function midiConnect(){
@@ -82,16 +90,32 @@ function getMIDIMessage(midiMessage) {
   channel = midiMessage.data[1];
   val = midiMessage.data[2];
   if(channel == grid_button_1){
-    if(val == 127) document.getElementById("Bt Left").click();//previous
+    if(val == 127 && !grid_button_1_pushed){
+      document.getElementById("Bt Left").click();//previous
+      grid_button_1_pushed = true;
+    }
+    else grid_button_1_pushed = false;
   }
   else if(channel == grid_button_2){
-    if(val == 127) document.getElementById("Bt Right").click();//next
+    if(val == 127 && !grid_button_2_pushed){
+      document.getElementById("Bt Right").click();//next
+      grid_button_2_pushed = true;
+    }
+    else grid_button_2_pushed = false;
   }
   else if(channel == grid_button_3){
-    if(val == 127) document.getElementById("Randomize").click();//randomize
+    if(val == 127 && !grid_button_3_pushed){
+      document.getElementById("Randomize").click();//randomize
+      grid_button_3_pushed = true;
+    }
+    else grid_button_3_pushed = false;
   }
   else if(channel == grid_button_4){
-    if(val == 127 && !file_saved) save_drawing();//save
+    if(val == 127 && !file_saved && !grid_button_4_pushed){
+      save_drawing();//save
+      grid_button_4_pushed = true;
+    }
+    else grid_button_4_pushed = false;
   }
   else if(channel == grid_dial_4 && type != "svg"){
     //scroll through colors
@@ -101,7 +125,7 @@ function getMIDIMessage(midiMessage) {
     const new_val = round(map(val, 0,127, 0, select_options.length-1));
     select_elem.value = select_options[new_val].value;
 
-    if(col_idx()!=int(getParamValue('colors'))) set_seed();
+    if(current_palette_index()!=int(getParamValue('colors'))) set_seed();
     protected_session_storage_set(give_grid_chanel_name(channel), val);
   }
   else{
