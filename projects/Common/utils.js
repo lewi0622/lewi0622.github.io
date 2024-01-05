@@ -3,11 +3,11 @@
 const project_path = window.location.pathname.split('/')
 let project_name = project_path[project_path.length-2];
 let canvas_x, canvas_y, cnv;
+let base_x, base_y;
 let file_saved;
 
-let num_frames, capturer, capture_state, seed;
+let num_frames, capturer, capture_state;
 //control variables
-let hidden_controls = true;
 let seed_input, scale_box, control_height, control_spacing, color_sel, color_div;
 let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype;
 
@@ -15,7 +15,8 @@ const PALETTE_ID_DEFAULT = MUTEDEARTH;
 
 //if a project doesn't supply an array of suggested palettes, we use the default
 let global_palette_id = PALETTE_ID_DEFAULT;
-let palette, working_palette, suggested_palettes;
+let palette, working_palette;
+let palette_changed = false;
 
 let global_scale = 1;
 let multiplier_changed = false;
@@ -25,9 +26,9 @@ let bleed_val = 0.25; //quarter inch bleed
 let bleed_border;
 const DPI_DEFAULT = 300;
 let dpi = DPI_DEFAULT;
-let full_controls = false;
+let controls_param, seed_param, colors_param, scale_param;
 let in_iframe = window.location !== window.parent.location;
-let type;
+let type = 'png';
 let redraw = false;
 
 //gui vars
@@ -42,20 +43,26 @@ let picker, picker_popper;
 let swatches = [];
 let pickers = [];
 
+first_time_setup();
 
-//url parameters
-let controls_param, seed_param, colors_param, scale_param;
-if(getParamValue("controls") == undefined) controls_param = build_controls();
-else controls_param = verify_controls(getParamValue("controls"));
+function first_time_setup(){
+  //url parameters
+  if(getParamValue("controls") == undefined) controls_param = build_controls();
+  else controls_param = verify_controls(getParamValue("controls"));
 
-if(getParamValue("seed") == undefined) seed_param = build_seed();
-else seed_param = verify_seed(getParamValue("seed"));
+  if(getParamValue("seed") == undefined) seed_param = build_seed();
+  else seed_param = verify_seed(getParamValue("seed"));
 
-if(getParamValue("colors") == undefined) colors_param = build_colors();
-// else colors_param = verify_colors(getParamValue("colors"));
+  if(getParamValue("colors") == undefined) colors_param = build_colors();
+  else colors_param = verify_colors(getParamValue("colors"));
 
-if(getParamValue("scale") == undefined) scale_param = "auto";
-else scale_param = verify_scale(getParamValue("scale"));
+  if(getParamValue("scale") == undefined) scale_param = build_scale();
+  else scale_param = verify_scale(getParamValue("scale"));
+
+  //replace initial url with one with full params 
+  const url = build_url();
+  window.history.replaceState({}, "", url); 
+}
 
 function build_controls(){
   if(location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "127.0.0.2") return "full";
@@ -68,12 +75,47 @@ function verify_controls(val){
 }
 
 function build_seed(){
-  return Math.round(Math.random()*1000000);
+  return String(Math.round(Math.random()*1000000));
 }
 
 function verify_seed(val){
-  if(!isNaN(val) && Number.isInteger(parseInt(val))) return parseInt(val);
+  if(!isNaN(val) && Number.isInteger(parseInt(val))) return val;
   else return build_seed();
+}
+
+function build_colors(){
+  if(typeof suggested_palettes !== 'undefined'){
+    if(suggested_palettes.length > 0){
+      return String(suggested_palettes[Math.floor(Math.random()*suggested_palettes.length)]); //select random val in suggested palettes
+    }
+  }
+  else return String(PALETTE_ID_DEFAULT);
+}
+
+function verify_colors(val){
+  if(isPositiveIntegerOrZero(val) && parseInt(val)<palettes.length){
+     return val;
+  }
+  else return build_colors();
+}
+
+function build_scale(){
+  return "auto";
+}
+
+function verify_scale(val){
+  if(!isNaN(val) && parseFloat(val) > 0) return val;
+  else return build_scale();
+}
+
+function build_url(){
+  let base_url = "index.html?";
+  base_url += "controls=" + controls_param;
+  base_url += "&seed=" + seed_param;
+  base_url += "&colors=" + colors_param;
+  base_url += "&scale=" + scale_param;
+
+  return base_url;
 }
 
 
@@ -82,9 +124,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   file_saved = false;
   capture_state = "init"
 
-  //midi.js initiate connection
-  update_devices();
-
   //set up CCapture, override num_frames in setup/draw if necessary
   num_frames = capture_time*fr;
   capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
@@ -92,23 +131,33 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(!capture) frameRate(fr);
 
   //init globals
-  type="png"; //default file type for P2D and WEBGL
   const stored_file_type = protected_session_storage_get("fileType");
   if(renderer == SVG || stored_file_type == "svg"){//override stored values by setting renderer
     type = "svg";
     renderer = SVG;
     protected_session_storage_set("fileType", type);
+
+    parameterize("svg_width", size_x/96, 1, 30, 0.05, false);
+    parameterize("svg_height", size_y/96, 1, 30, 0.05, false);
+    base_x = svg_width*96;
+    base_y = svg_height*96;
+  }
+  else{
+    base_x = size_x;
+    base_y = size_y;
   }
 
-  setParams(size_x, size_y); //base_x and base_y globals are init here
-  seed_scale_button(base_y);
-  seed = reset_drawing(seed, base_x, base_y);
+  setParams();
+  if(scale_param == "auto") global_scale = find_cnv_mult();
+  else global_scale = parseFloat(scale_param);
+  seed_scale_button();
+  reset_drawing();
 
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
   gui_values();
 
-  if(!full_controls){
+  if(controls_param != "full"){
     // disable right clicks 
     document.oncontextmenu = function() { 
       return false; 
@@ -149,7 +198,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   //add the palette colors here because the palette only just got defined 
   show_palette_colors();
 
-  if(!redraw || redraw_reason == "url"){
+  if(!redraw){
      //post details
     message_details();
 
@@ -162,72 +211,20 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
     //Assists with loading on phones and other pixel dense screens
     pixelDensity(1)
-
-    //store first url with full params even if they aren't provided
-    const auto = getParamValue('scale') == undefined;
-
-    window.history.replaceState({}, "", build_current_url(auto)); 
   }
+  palette_changed = false; //reset before draw happens
+  redraw_reason = "";
   if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
   else noLoop();
 }
-
-function setParams(size_x, size_y){
-  //get params from url and set necessary globals
-  const controls = getParamValue('controls');
-  seed = getParamValue('seed');
-  const img_scale = getParamValue('scale');
-  const add_bleed = getParamValue('bleed');
-  const add_cut = getParamValue('cut');
-  const set_dpi = getParamValue('dpi');
-
-  //If seed isn't specified, but one exists in the box, resize w/same seed
-  if(seed == undefined && document.getElementById("Seed")){
-    seed = document.getElementById("Seed").value;
-  }
-
-  full_controls = (controls == "full" || location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.hostname === "127.0.0.2") && (controls!="false");
-  if((controls != undefined && controls != "false") || full_controls){
-    hidden_controls = false;
-  }
-
-  globalThis.base_x = size_x;
-  globalThis.base_y = size_y;
-
-  if(type == "svg"){
-    parameterize("svg_width", size_x/96, 1, 30, 0.05, false);
-    parameterize("svg_height", size_y/96, 1, 30, 0.05, false);
-    globalThis.base_x = svg_width*96;
-    globalThis.base_y = svg_height*96;
-  }
-
-  if(img_scale != undefined){
-    global_scale = float(img_scale);
-  }
-  else{
-    //get scale based on window size
-    global_scale = find_cnv_mult();
-  }
-
-  if(add_bleed != undefined){
-    if(add_bleed.toLowerCase() != 'false'){
-      bleed = true;
-      if(!isNaN(add_bleed)){
-        bleed_val = float(add_bleed);
-      }
-    }
-  };
-  if(add_cut != undefined){
-    if(add_cut.toLowerCase() != 'false'){
-      cut = true;
-    }
-  };
-  if(set_dpi != undefined && !isNaN(set_dpi)){
-    dpi = int(set_dpi);
-  };
+function setParams(){
+  seed_param = verify_seed(getParamValue("seed"));
+  palette_changed = palette_changed || colors_param != getParamValue("colors");
+  colors_param = verify_colors(getParamValue("colors"));
+  multiplier_changed = multiplier_changed || scale_param != getParamValue("scale");
+  scale_param = verify_scale(getParamValue("scale"));
 }
-
 function getParamValue(paramName){
     var url = window.location.search.substring(1); //get rid of "?" in querystring
     var qArray = url.split('&'); //get key-value pairs
@@ -239,7 +236,7 @@ function getParamValue(paramName){
     }
 }
 
-function seed_scale_button(base_y){
+function seed_scale_button(){
   const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"];
   const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "Save", "File Type"];
 
@@ -277,7 +274,7 @@ function seed_scale_button(base_y){
       const pal = window.localStorage.getItem(palette_names[global_palette_id]);
       if(pal != null){
         window.localStorage.removeItem(palette_names[global_palette_id]);
-        redraw_reason = "picker";
+        palette_changed = true;
         redraw_sketch();
       }
     });
@@ -293,11 +290,11 @@ function seed_scale_button(base_y){
     //color palette select
     color_sel = createSelect();
     palette_names.forEach(name => {
-      if(!exclude_palette.includes(name) || full_controls){
+      if(!exclude_palette.includes(name) || controls_param == "full"){
         color_sel.option(name);
       }
     });
-    color_sel.selected(palette_names[col_idx()]);
+    color_sel.selected(palette_names[current_palette_index()]);
     color_sel.changed(set_seed);
     color_sel.id('Color Select');
 
@@ -336,7 +333,7 @@ function seed_scale_button(base_y){
     btSave.id("Save")
   }
 
-  if(!redraw || redraw_reason == "window" || redraw_reason == "url"){
+  if(!redraw || multiplier_changed || redraw_reason == "window"){
     //resize for given global scale
     //START OF TOP ROW
     //left/right buttons for easy seed nav
@@ -401,57 +398,43 @@ function seed_scale_button(base_y){
       }
     });
 
-    show_hide_controls(ids, hidden_controls);
-    show_hide_controls(full_ids, !full_controls);
+    show_hide_controls(ids, controls_param == "false");
+    show_hide_controls(full_ids, controls_param != "full");
   }
 }
 
-function reset_drawing(seed, base_x, base_y){
+function show_hide_controls(arr, hide){
+  arr.forEach(ctrl => {
+    const elem = document.getElementById(ctrl)
+    if(elem){
+      if(hide){
+        elem.style.visibility = "hidden"
+      }
+      else{
+        elem.style.visibility = "visible"
+      }
+    }
+  });
+}
+
+function reset_drawing(){
   canvas_x = round(base_x*global_scale);
   canvas_y = round(base_y*global_scale);
 
-  //if no seed supplied, set random seed and pass it
-  if(isNaN(seed)) seed = Math.round(random()*1000000);
-  else seed = int(seed);
-
-  randomSeed(seed);
-  noiseSeed(seed);
-  seed_input.value(str(seed));
-
-  return seed;
+  randomSeed(parseInt(seed_param));
+  noiseSeed(parseInt(seed_param));
+  seed_input.value(seed_param);
 }
 
-function col_idx(){
+function current_palette_index(){
   //returns the integer value of the current palette
   return palette_names.indexOf(color_sel.value());
 }
 
 window.onpopstate = function(e){
   //captures the back/forward browser buttons to move between history states without reloading the page
-  redraw_reason = "url";
   if(e.state) redraw_sketch();
 };
-
-
-function build_current_url(auto){
-  let base_url = "index.html?";
-  base_url += "controls="
-  if(getParamValue("controls") != undefined) base_url += getParamValue("controls");
-  else if(full_controls) base_url += "full";
-  else base_url += "false";
-
-  base_url += "&colors=" + String(col_idx());
-
-  base_url+= "&seed=" + seed_input.value();
-  if(bleed){base_url+='&bleed=' + String(bleed_val)};
-  if(dpi != DPI_DEFAULT){base_url+= "&dpi="+String(dpi)};
-  if(cut){base_url += '&cut=' + String(cut)};
-
-  if(!auto) base_url += "&scale=" + scale_box.value();
-
-  return base_url;
-}
-
 
 function set_seed(e){
   let event_id;
@@ -462,20 +445,22 @@ function set_seed(e){
   else if(event_id == "Bt Left") seed_input.value(int(seed_input.value())-1);
   else if (event_id == "Randomize") seed_input.value(Math.round(random()*1000000));
 
-  //refreshes the drawing with new settings
-  //check if any changes have ocurred
-  const same_seed = seed_input.value()==getParamValue('seed');
-  const same_scale = scale_box.value()==find_cnv_mult();
-  const same_palette = col_idx()==int(getParamValue('colors'));
-  if(same_seed && same_scale && same_palette && event_id != "Auto Scale") return;
+  seed_param = String(seed_input.value());
+  colors_param = String(current_palette_index());
+  palette_changed = current_palette_index() != int(getParamValue('colors'));
+  multiplier_changed = scale_box.value() != find_cnv_mult();
+  const auto = event_id == "Auto Scale" || (scale_param == "auto"  && !multiplier_changed);
+  
+  if(auto) scale_param = build_scale(); 
+  else scale_param = scale_box.value();
 
-  const auto = event_id == "Auto Scale" || (getParamValue('scale') == undefined  && same_scale);
-  let base_url = build_current_url(auto);
+  const url = build_url();
   
   //using pushState allows for changing the url, and then redrawing without needing to reload the page
-  window.history.pushState({}, "", base_url);
-  redraw_reason = "url";
-  if(!same_palette) redraw_reason = "palette";
+  window.history.pushState({}, "", url);
+
+  if(event_id == "Color Select") palette_changed = true; //color picker was used
+
   redraw_sketch();
 }
 
@@ -498,7 +483,7 @@ function set_file_type(e){
 
 function show_palette_colors(){
   //can't be called in the seed_scale_button function because palette can be undefined at that point
-  if(redraw_reason == "palette"){
+  if(palette_changed){
     //delete existing 
     let existing_pickers = document.getElementsByClassName("lw-ref");
     for(let i=existing_pickers.length-1; i>=0; i--) existing_pickers[i].remove();
@@ -509,7 +494,7 @@ function show_palette_colors(){
     swatches = [];
     pickers = [];
   }
-  if(!redraw || redraw_reason == "palette"){
+  if(!redraw || palette_changed){
     for(let i=0; i<palette.length; i++){
       swatches.push('rgb(' + palette[i][0] + ',' + palette[i][1] + ',' + palette[i][2] + ',' + map(palette[i][3],0,255, 0,1) + ')');
     }
@@ -523,7 +508,7 @@ function show_palette_colors(){
 
   let start_pos = color_sel.position().x + color_sel.size().width;
   palette.forEach((c, idx) => {
-    if(!redraw || redraw_reason == "palette"){
+    if(!redraw || palette_changed){
       let color_picker = document.createElement("div");
       color_picker.id = "color_picker" + idx;
       color_div.appendChild(color_picker);
@@ -535,7 +520,7 @@ function show_palette_colors(){
     color_div.style.width = control_height+"px";
     color_div.style.height = control_height+"px";
 
-    if(!redraw || redraw_reason == "palette"){
+    if(!redraw || palette_changed){
       //color picker code, ref https://github.com/SofianChouaib/alwan
       const alwan = new Alwan('#color_picker'+idx, {
         id: "picker_"+idx,
@@ -612,22 +597,8 @@ function reduce_array(arr, remove){
     arr.splice(rm_idx, 1);
   }
   else{
-    print("Unable to reduce array. Arr: ", arr, "Item to Remove: ", remove);
+    console.log("Unable to reduce array. Arr: ", arr, "Item to Remove: ", remove);
   }
-}
-
-function show_hide_controls(arr, hide){
-  arr.forEach(ctrl => {
-    const elem = document.getElementById(ctrl)
-    if(elem){
-      if(hide){
-        elem.style.visibility = "hidden"
-      }
-      else{
-        elem.style.visibility = "visible"
-      }
-    }
-  });
 }
 
 function save_drawing(){
@@ -644,7 +615,7 @@ function save_drawing(){
   if(dpi != DPI_DEFAULT) dpi_name = "_dpi_"+str(dpi);
   let scale_text = round(global_scale*1000)/1000; //round to nearest 1000th place
   scale_text = str(scale_text).replace(".", "_");
-  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(col_idx()) + '_scale_' + scale_text + bleed_name + dpi_name + cut_name;
+  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(current_palette_index()) + '_scale_' + scale_text + bleed_name + dpi_name + cut_name;
   if(type == 'svg'){
     //create ids for each color in the order they're drawn for use by vpype
     let canvas_elem = document.getElementById("defaultCanvas0");
@@ -682,8 +653,6 @@ function global_draw_start(clear_cnv=true){
     change_default_palette(); //redo suggested palettes
     gui_values(); //redo parameterizations
   }
-  
-  bleed_border = apply_bleed();
 }
 
 function global_draw_end(){
@@ -763,25 +732,6 @@ function cutoutCircle(r){
   const offset = canvas_y/r - 1;
   strokeWeight(offset*r);
   arc(canvas_x/2, canvas_y/2, canvas_y+(offset-1)*r, canvas_y+(offset-1)*r, 0, 360);
-}
-
-
-//bleed and cutline related functions
-function apply_bleed(){
-  // at vital print, bleed should be 0.25"
-  //if bleed, resize based on size and dpi params, translate
-  if(bleed){
-    let bleed_border = dpi*bleed_val;
-    
-    const total_canvas_x = canvas_x + bleed_border*2;
-    const total_canvas_y = canvas_y + bleed_border*2;
-    resizeCanvas(total_canvas_x, total_canvas_y);
-
-    //move origin to within bleed lines
-    translate((total_canvas_x-canvas_x)/2, (total_canvas_y-canvas_y)/2);
-
-    return bleed_border;
-  }
 }
 
 function get_invert_stroke(x, y){
@@ -928,15 +878,15 @@ function color_changed(e){
     if(!arrayEquals(picker_color, palette[picker_id])){
       palette[picker_id] = picker_color;
       window.localStorage.setItem(palette_names[global_palette_id], JSON.stringify(palette));
-      redraw_reason = "picker";
+      palette_changed = true;
       redraw_sketch();
     }
   }, 10)
 }
 
 function windowResized(e) {
-  snap_gui_to_window();
-  if((getParamValue('scale') == undefined && find_cnv_mult() != global_scale)){
+  if(controls_param == "full") snap_gui_to_window();
+  if((getParamValue('scale') == "auto" && find_cnv_mult() != global_scale)){
     redraw_reason = "window";
     clear_gui();
     redraw_sketch();
@@ -963,21 +913,11 @@ function redraw_sketch(){
 }
 
 function change_default_palette(){
-  const color_param = getParamValue('colors');
-  if(color_param == undefined || (gif && !animation)){
-    if(suggested_palettes != undefined){
-      if(suggested_palettes.length > 0) global_palette_id = random(suggested_palettes);
-    }
-  }
-  else if(isPositiveIntegerOrZero(color_param) && parseInt(color_param)<palettes.length){
-    global_palette_id = parseInt(color_param);
-  }
-
-  palette = palettes[global_palette_id];
+  global_palette_id = parseInt(colors_param);
   //check if local storage
-  let stored_palette = protected_local_storage_get(palette_names[global_palette_id])
+  const stored_palette = protected_local_storage_get(palette_names[global_palette_id])
   if(stored_palette != null) palette = JSON.parse(stored_palette);
-
+  else palette = JSON.parse(JSON.stringify(palettes[global_palette_id]));
   color_sel.selected(palette_names[global_palette_id]);
 
   refresh_working_palette();
@@ -993,8 +933,8 @@ function find_cnv_mult(){
 
   let size_x = max(400, base_x); //because we center within a 400x400 canvas for things smaller than 400
   let size_y = base_y;
-  if(!hidden_controls) size_y += 40;
-  if(full_controls) size_y += 20;//space for second row of controls, the extra 3 is make sure no vertical scrollbar
+  if(controls_param != "false") size_y += 40;
+  if(controls_param == "full") size_y += 20;//space for second row of controls, the extra 3 is make sure no vertical scrollbar
 
   const x_mult = Math.round((windowWidth/size_x)*1000)/1000; //find multiplier based on the x dimension  
   const y_mult = Math.round((windowHeight/size_y)*1000)/1000; //find multipler based on the y dimension
@@ -1010,7 +950,7 @@ function find_cnv_mult(){
   //canvas_x and canvas_y rounded later on
 
   //check for change in multiplier due to gui param changes
-  multiplier_changed = redraw_reason == 'gui' && smaller_multiplier != global_scale
+  multiplier_changed = smaller_multiplier != global_scale
 
   return smaller_multiplier;
 }
@@ -1056,7 +996,7 @@ function message_details(){
   const dir = loc.substring(0, loc.lastIndexOf('/'));
   const message = JSON.stringify({
     design: dir,
-    seed: seed,
+    seed: seed_param,
     palette: palette_names[global_palette_id]
   })
   window.parent.postMessage(message, '*')
@@ -1070,7 +1010,7 @@ function catch_save_message(){
       var palette = palette_names[global_palette_id];
       //send message back to parent with data URL and name
       window.parent.postMessage(JSON.stringify({
-        key:[dir,seed,palette].join("_"),
+        key:[dir,seed_param,palette].join("_"),
         imgURL: cnv.elt.toDataURL()
       }), '*');
     }
@@ -1182,7 +1122,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
     }
     else{
       //if frozen take stored values, otherwise, use values as given
-      if(full_controls && stored_variable.frozen){
+      if(controls_param == "full" && stored_variable.frozen){
         //retrieve locally stored values
         name = stored_variable.name;
         val = stored_variable.val;
@@ -1242,7 +1182,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
   //if variables do exist, apply new values
   else{
     //if redraw reason is gui, let p5.gui handle the new values
-    if(redraw_reason == "window" || redraw_reason == "gif" || redraw_reason == "midi" || redraw_reason == "url"){
+    if(redraw_reason != "gui"){
       eval(name + "=" + val);
       if(min != undefined) eval(name + "Min =" + min);
       if(max != undefined) eval(name +"Max =" + max);
@@ -1280,7 +1220,7 @@ function attach_icons(){
       
       if(gui_label == undefined){
         //otherwise post error with container
-        print("cannot find label in control: ", container);
+        console.log("cannot find label in control: ", container);
       }
     }
     let label_content = gui_label.textContent.split(": ");
@@ -1369,7 +1309,7 @@ function gui_dblclick(){
 }
 
 function retrieve_gui_settings(){
-  if(!full_controls) return;
+  if(controls_param != "full") return;
   // retrieve gui collapsed status and location
   let stored_loc = protected_session_storage_get("gui_loc");
   let collapsed = protected_session_storage_get("gui_collapsed");
