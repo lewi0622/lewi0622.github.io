@@ -55,6 +55,13 @@ function first_time_setup(){
   //replace initial url with one with full params 
   const url = build_url();
   window.history.replaceState({}, "", url); 
+
+  if(controls_param != "full"){
+    // disable right clicks 
+    document.oncontextmenu = function() { 
+      return false; 
+    };
+  }
 }
 
 function build_controls(){
@@ -152,15 +159,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
   gui_values();
 
-  if(controls_param != "full"){
-    // disable right clicks 
-    document.oncontextmenu = function() { 
-      return false; 
-    };
-    //suppress unnecessary errors and speed up drawing time
-    p5.disableFriendlyErrors = true; // disables FES
-  }
-  else{
+  if(controls_param == "full"){
     //declare gui before noLoop is extended in p5.gui.js
     if(!gui_created){
       gui = createGui('Parameters');
