@@ -6,7 +6,9 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = []
+const suggested_palettes = []
+
+let font;
 
 function gui_values(){
   parameterize('inc', 0.1, 0.01, 10, 0.01, false);
@@ -16,11 +18,28 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(8*96, 6*96, SVG);
+  common_setup(11*96, 8.5*96, SVG);
+
+  opentype.load('..\\..\\fonts\\SquarePeg-Regular.ttf', function (err, f) {
+    if (err) {
+      alert('Font could not be loaded: ' + err);
+    } else {
+      font = f
+      console.log('font ready')
+      draw();
+    }
+  })
 }
 //***************************************************
 function draw() {
-  global_draw_start(false);
+  global_draw_start();
+  if(font == undefined) return;
+  const letters = "SUNNY".split("");
+  let fSize = 20*global_scale;
+  const letter_paths = [];
+  letters.forEach(letter => {
+    letter_paths.push(font.getPath(letter, 0,0, fSize));
+  });
 
   let rows = floor(canvas_y / scl);
   let cols = floor(canvas_x / scl);
@@ -31,6 +50,7 @@ function draw() {
   c1.setAlpha(100);
   c2.setAlpha(100);
   stroke(c1);
+
   push();
   let zoff=0;
   for(let z=0; z<z_iterations; z++){
@@ -46,7 +66,9 @@ function draw() {
         push();
         translate(x*scl, y*scl);
         rotate(degrees(v.heading()));
-        line(0,0,scl,0);
+        // line(0,0,scl,0);
+        const letter_path = letter_paths[(x+y)%letter_paths.length];
+        draw_open_type_js_path_p5_commands(letter_path);
         pop();
       }
       yoff += inc;
