@@ -5,52 +5,51 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 8;
-suggested_palettes = []
+const suggested_palettes = []
 
 //project variables
 let c_leaf_primary, branch_weight;
 
 
 function gui_values(){
-
+  parameterize("num_trees", 2, 1, 10, 1, false);
 }
 
 function setup() {
   //looks good in 300x400
-  common_setup(3*96, 4*96, SVG);
+  common_setup(6*96, 8*96, SVG);
 }
 //***************************************************
 function draw() {
   global_draw_start();
 
-  const colors = gen_n_colors(6);
+  const colors = gen_n_colors(num_trees*4);
 
   //apply background
   // background("#abada0")
 
   //actual drawing stuff
   push();
-
   translate(0, canvas_y);
-  let trunk_max=40;
-  for(let z=0; z<2; z++){
+  for(let z=0; z<num_trees; z++){
+    let trunk_max=floor(random(30,80));
     stroke(colors[z])
     c_leaf_primary = colors[z+3];
     //trunk
-    strokeCap(ROUND);
     let trunk_weight = 3*global_scale;
     branch_weight = 2*global_scale;
     let trunk_seg_len = -10*global_scale;
     const trunk_num = floor(random(trunk_max-12, trunk_max));
     trunk_max=trunk_num;
-    let prev_x = canvas_x/3 * (z+1);
+    //starting x,y values for trunk
+    let prev_x = canvas_x/(num_trees+1) * (z+1);
     let prev_y = 0;
+
     for(let i=0; i<trunk_num; i++){
       if(i+5>=trunk_num){
         trunk_weight -= 0.5*global_scale;
         branch_weight = trunk_weight-0.5*global_scale;
       }
-      strokeWeight(1*global_scale);
 
       // new_x = prev_x + random(-5,5)*global_scale;
       const new_x = prev_x + map(noise((i+z)/2), 0,1, -5,5)*global_scale;
@@ -100,7 +99,6 @@ function branch(branch_num, start_x, start_y, start_weight){
       leaves(prev_branch_x, prev_branch_y);
       break;
     }
-    strokeWeight(1*global_scale);
     line(prev_branch_x, prev_branch_y, branch_x, branch_y);
     if(j/branch_num>0.5){
       leaves(prev_branch_x, prev_branch_y);
