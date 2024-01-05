@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
+const suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 let noise_factor = 0;
 let noise_inc = 0.01;

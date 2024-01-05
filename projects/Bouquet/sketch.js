@@ -6,12 +6,12 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, SOUTHWEST, SIXTIES];
+const suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, SOUTHWEST, SIXTIES];
 
 function gui_values(){
   parameterize("num_rings", round(random(40,150)), 1, 200, 1, false);
   parameterize("ring_steps", round(random(3,100)), 3, 300, 1, false);
-  parameterize("max_radius", canvas_x/2.5, 1, canvas_x, 10, false);
+  parameterize("max_radius", canvas_x/global_scale/2.5, 1, canvas_x/global_scale, 10, true);
   parameterize("max_noise", random(1,7), 1, 50, 0.1, false);
   parameterize("num_blobs", round(random(20,30)), 1, 200, 1, false);
 }

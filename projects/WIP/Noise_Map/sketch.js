@@ -9,7 +9,7 @@ const fr = 30;
 const capture = true;
 const capture_time = 3;
 
-suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
+const suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 
 function gui_values(){

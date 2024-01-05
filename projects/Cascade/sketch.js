@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BUMBLEBEE, SUMMERTIME, SOUTHWEST, SIXTIES, SUPPERWARE]
+const suggested_palettes = [BUMBLEBEE, SUMMERTIME, SOUTHWEST, SIXTIES, SUPPERWARE]
 
 let c1, c2, c3, c4, c5;
 

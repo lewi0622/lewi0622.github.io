@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SOUTHWEST, SIXTIES]
+const suggested_palettes = [SOUTHWEST, SIXTIES]
 
 
 function gui_values(){

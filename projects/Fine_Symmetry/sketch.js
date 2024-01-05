@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = []
+const suggested_palettes = []
 
 //project variables
 const noise_off = 20;

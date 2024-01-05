@@ -8,7 +8,7 @@ const capture = false;
 const capture_time = 10;
 
 let x_fourth, y_fourth;
-suggested_palettes = [COTTONCANDY, SOUTHWEST, NURSERY, SIXTIES]
+const suggested_palettes = [COTTONCANDY, SOUTHWEST, NURSERY, SIXTIES]
 
 function gui_values(){
   parameterize("grid_num_col", floor(random(1, 100)), 1, 150, 1, false);

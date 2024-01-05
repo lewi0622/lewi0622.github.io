@@ -6,7 +6,7 @@ const fr = 10;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, BEACHDAY, SOUTHWEST]
+const suggested_palettes = [SAGEANDCITRUS, BEACHDAY, SOUTHWEST]
 
 let bg_c;
 let xoff = 0;

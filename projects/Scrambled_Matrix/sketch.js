@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [COTTONCANDY, SOUTHWEST, MUTEDEARTH]
+const suggested_palettes = [COTTONCANDY, SOUTHWEST, MUTEDEARTH]
 
 
 function gui_values(){

@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 10;
 
 let x_fourth, y_fourth, copic_palette;
-suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME];
+const suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME];
 
 function gui_values(){
   parameterize("num_lines", floor(random(30,200)), 1, 500, 1, false);

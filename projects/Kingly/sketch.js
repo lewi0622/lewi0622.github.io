@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 15;
 
-suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE];
+const suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE];
 
 //project variables
 let xoff, yoff;

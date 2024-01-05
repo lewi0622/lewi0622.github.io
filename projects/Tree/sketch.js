@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BIRDSOFPARADISE]
+const suggested_palettes = [BIRDSOFPARADISE]
 
 //project variables
 let c_leaf_primary, branch_weight;

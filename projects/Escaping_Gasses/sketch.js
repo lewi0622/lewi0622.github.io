@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [COTTONCANDY, BIRDSOFPARADISE, SOUTHWEST, SUPPERWARE]
+const suggested_palettes = [COTTONCANDY, BIRDSOFPARADISE, SOUTHWEST, SUPPERWARE]
 let min_bubble_rot, max_bubble_rot;
 
 function gui_values(){

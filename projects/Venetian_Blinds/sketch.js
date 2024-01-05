@@ -7,7 +7,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SOUTHWEST, NURSERY];
+const suggested_palettes = [SOUTHWEST, NURSERY];
 
 function gui_values(){
   parameterize("weight", random(6,20), 0.1, 50, 0.1, true);

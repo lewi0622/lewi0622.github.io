@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BEACHDAY, COTTONCANDY, SOUTHWEST]
+const suggested_palettes = [BEACHDAY, COTTONCANDY, SOUTHWEST]
 
 
 function gui_values(){

@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 10;
 
 let bg_c, square_rate, symmetries, rot_inc, shape;
-suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE];
+const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE];
 //project variables
 let xoff, squares, rot_offset;
 const inc = 0.01*60/fr;

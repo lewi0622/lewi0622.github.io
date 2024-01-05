@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BEACHDAY, BUMBLEBEE, SIXTIES]
+const suggested_palettes = [BEACHDAY, BUMBLEBEE, SIXTIES]
 let rotation_inc, rotation_per_loop;
 let bg_c, c, corner_radius_start, corner_radius_end;
 let drift_x_start, drift_x_end, drift_y_start, drift_y_end;

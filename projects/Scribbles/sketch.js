@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BIRDSOFPARADISE, MUTEDEARTH, OASIS]
+const suggested_palettes = [BIRDSOFPARADISE, MUTEDEARTH, OASIS]
 
 //project variables
 let amp;

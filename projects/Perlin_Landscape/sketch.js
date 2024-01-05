@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, SUPPERWARE];
+const suggested_palettes = [SAGEANDCITRUS, SUPPERWARE];
 
 function gui_values(){
   parameterize("step_number", 200, 10, 1000, 1, false);

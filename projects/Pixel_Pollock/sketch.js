@@ -6,7 +6,7 @@ const fr = 5;
 const capture = false;
 const capture_time = 2;
 
-suggested_palettes = [SAGEANDCITRUS, BIRDSOFPARADISE, SUMMERTIME, JAZZCUP];
+const suggested_palettes = [SAGEANDCITRUS, BIRDSOFPARADISE, SUMMERTIME, JAZZCUP];
 
 function gui_values(){
   parameterize("grid_size", 1, 1, 400, 0.5, true);

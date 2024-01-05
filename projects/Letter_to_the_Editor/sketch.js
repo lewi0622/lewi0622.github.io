@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BIRDSOFPARADISE, SIXTIES, SUPPERWARE]
+const suggested_palettes = [BIRDSOFPARADISE, SIXTIES, SUPPERWARE]
 
 function gui_values(){
   parameterize("tile_div", random(70, 300), 1, 400, 1, false);

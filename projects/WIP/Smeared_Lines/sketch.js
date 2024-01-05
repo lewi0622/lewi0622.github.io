@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 2;
 
 let grid_bg_c;
-suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, OASIS];
+const suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, OASIS];
 let x,y,prev_x, prev_y, vertical_step_num;
 
 function gui_values(){

@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 2;
 
 let grid_bg_c;
-suggested_palettes = [BIRDSOFPARADISE, NURSERY, SIXTIES, JAZZCUP];
+const suggested_palettes = [BIRDSOFPARADISE, NURSERY, SIXTIES, JAZZCUP];
 
 
 function gui_values(){

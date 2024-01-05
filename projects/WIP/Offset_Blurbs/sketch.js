@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SUMMERTIME]
+const suggested_palettes = [SUMMERTIME]
 
 function gui_values(){
   parameterize("num_rows", 10, 1, 100, 1, false);

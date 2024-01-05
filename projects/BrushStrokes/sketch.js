@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [COTTONCANDY, NURSERY, SUPPERWARE]
+const suggested_palettes = [COTTONCANDY, NURSERY, SUPPERWARE]
 
 
 function gui_values(){

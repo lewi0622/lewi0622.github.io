@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [OASIS,SUPPERWARE,TOYBLOCKS]
+const suggested_palettes = [OASIS,SUPPERWARE,TOYBLOCKS]
 
 function gui_values(){
   parameterize("num_circles", round(random(2,15)), 1, 50, 1, false);

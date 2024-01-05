@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BEACHDAY, COTTONCANDY, NURSERY]
+const suggested_palettes = [BEACHDAY, COTTONCANDY, NURSERY]
 
 //project variables
 let bg_c, size_buildings;

@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
+const suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 //geo json data obtained from https://eric.clst.org/tech/usgeojson/
 let minnesota, bg_c;
 

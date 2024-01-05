@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [GAMEDAY,SOUTHWEST, SIXTIES];
+const suggested_palettes = [GAMEDAY,SOUTHWEST, SIXTIES];
 
 function gui_values(){
   parameterize("number_scribbles", floor(random(2,4)), 1, 20, 1, false);

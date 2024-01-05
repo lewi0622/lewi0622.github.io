@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, SOUTHWEST, NURSERY]
+const suggested_palettes = [SAGEANDCITRUS, SOUTHWEST, NURSERY]
 
 
 function gui_values(){

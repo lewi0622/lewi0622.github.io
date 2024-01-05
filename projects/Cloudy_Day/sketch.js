@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 20;
 
-suggested_palettes = [NURSERY, TOYBLOCKS];
+const suggested_palettes = [NURSERY, TOYBLOCKS];
 let cloud_color, cloud_back_color;
 let rain_dir; 
 function gui_values(){

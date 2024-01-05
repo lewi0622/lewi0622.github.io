@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, BIRDSOFPARADISE]
+const suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, BIRDSOFPARADISE]
 
 
 function gui_values(){

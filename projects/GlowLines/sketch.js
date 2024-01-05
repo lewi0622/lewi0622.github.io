@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SUMMERTIME, SOUTHWEST, JAZZCUP]
+const suggested_palettes = [SUMMERTIME, SOUTHWEST, JAZZCUP]
 
 //project variables
 const inc = 0.005*60/fr;

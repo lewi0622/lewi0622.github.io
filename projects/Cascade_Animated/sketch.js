@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
+const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
 let rot = 0;
 let rot_inc = 0.25;
 let bg_c;

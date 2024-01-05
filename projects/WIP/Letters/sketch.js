@@ -7,7 +7,7 @@ gif = false;
 fr = 2;
 capture = false;
 capture_time = 10;
-suggested_palettes = [COTTONCANDY, BIRDSOFPARADISE, SUPPERWARE];
+const suggested_palettes = [COTTONCANDY, BIRDSOFPARADISE, SUPPERWARE];
 
 function gui_values(){
 

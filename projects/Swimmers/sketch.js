@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 10;
 
 let grid_bg_c;
-suggested_palettes = [GAMEDAY, BIRDSOFPARADISE, NURSERY, SUPPERWARE];
+const suggested_palettes = [GAMEDAY, BIRDSOFPARADISE, NURSERY, SUPPERWARE];
 
 let swimmers, bg_c;
 

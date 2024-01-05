@@ -9,7 +9,7 @@ const capture_delay_seconds = 10;
 let capture_time = 10;
 if(capture_delay) capture_time += capture_delay_seconds;
 
-suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST];
+const suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST];
 
 let pts, c, new_c, old_c, color_count;
 

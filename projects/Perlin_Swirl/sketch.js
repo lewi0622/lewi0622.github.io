@@ -7,7 +7,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, BIRDSOFPARADISE];
+const suggested_palettes = [SAGEANDCITRUS, BIRDSOFPARADISE];
 
 function gui_values(){
   parameterize("number_of_swirls", ceil(random(1,3)), 1, 5, 1, false);

@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [COTTONCANDY, SOUTHWEST, SIXTIES]
+const suggested_palettes = [COTTONCANDY, SOUTHWEST, SIXTIES]
 
 //project variables
 const inc = 0.01*60/fr;   

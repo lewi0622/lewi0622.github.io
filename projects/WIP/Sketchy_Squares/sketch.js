@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BEACHDAY, GAMEDAY, SOUTHWEST]
+const suggested_palettes = [BEACHDAY, GAMEDAY, SOUTHWEST]
 
 function gui_values(){
   parameterize("number_squares", random(10,100), 1, 100, 1, false);

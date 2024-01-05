@@ -7,7 +7,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BIRDSOFPARADISE, NURSERY];
+const suggested_palettes = [BIRDSOFPARADISE, NURSERY];
 
 function gui_values(){
   parameterize("cols", round(random(3,20)), 1, 50, 1, false);

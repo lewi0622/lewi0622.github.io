@@ -7,7 +7,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, BUMBLEBEE, BIRDSOFPARADISE, SOUTHWEST, NURSERY];
+const suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, BUMBLEBEE, BIRDSOFPARADISE, SOUTHWEST, NURSERY];
 
 function gui_values(){
   parameterize("num_lines", 500, 1, 500, 1, false);

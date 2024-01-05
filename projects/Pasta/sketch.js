@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, GAMEDAY, BIRDSOFPARADISE]
+const suggested_palettes = [SAGEANDCITRUS, GAMEDAY, BIRDSOFPARADISE]
 
 //project variables
 let grid_size, line_padding, num_arcs, c_arr;

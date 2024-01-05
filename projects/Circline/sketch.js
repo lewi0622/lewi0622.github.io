@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SUMMERTIME, MUTEDEARTH, SIXTIES]
+const suggested_palettes = [SUMMERTIME, MUTEDEARTH, SIXTIES]
 
 
 function gui_values(){

@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 20;
 
-suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST, NURSERY, SIXTIES, SUPPERWARE]
+const suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST, NURSERY, SIXTIES, SUPPERWARE]
 
 let z = 0;
 let z_inc = 0.05*30/fr;

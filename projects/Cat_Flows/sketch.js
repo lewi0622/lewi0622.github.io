@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BIRDSOFPARADISE, SOUTHWEST, NURSERY, SIXTIES]
+const suggested_palettes = [BIRDSOFPARADISE, SOUTHWEST, NURSERY, SIXTIES]
 
 let shape_points;
 

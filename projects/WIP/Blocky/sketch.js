@@ -6,7 +6,7 @@ const fr = 4;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
+const suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, SUPPERWARE]
 
 let xoff = 0;
 const inc = 0.1*60/fr;

@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 15;
 
-suggested_palettes = [COTTONCANDY, BIRDSOFPARADISE, SUMMERTIME, SOUTHWEST, SIXTIES, LASER];
+const suggested_palettes = [COTTONCANDY, BIRDSOFPARADISE, SUMMERTIME, SOUTHWEST, SIXTIES, LASER];
 
 let c_0, c_1, c_2, c_00, c_01, c_02, bg_c;
 

@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = []
+const suggested_palettes = []
 
 function gui_values(){
   parameterize("points_number", 100, 1, 1000, 1, false);

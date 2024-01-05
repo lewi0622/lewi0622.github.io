@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [COTTONCANDY, BUMBLEBEE, SOUTHWEST]
+const suggested_palettes = [COTTONCANDY, BUMBLEBEE, SOUTHWEST]
 
 
 function gui_values(){

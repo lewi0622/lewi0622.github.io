@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 10;
 
 let bg_c, weight, c_id, lines, sub_lines;
-suggested_palettes = [BEACHDAY, SOUTHWEST, SUPPERWARE];
+const suggested_palettes = [BEACHDAY, SOUTHWEST, SUPPERWARE];
 
 //project variables
 const noiseMax = 1;

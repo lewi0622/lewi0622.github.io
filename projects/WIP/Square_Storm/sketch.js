@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SUMMERTIME, SOUTHWEST, NURSERY, JAZZCUP]
+const suggested_palettes = [SUMMERTIME, SOUTHWEST, NURSERY, JAZZCUP]
 
 //project variables
 const squares = [];

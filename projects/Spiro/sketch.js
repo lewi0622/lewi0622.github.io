@@ -9,7 +9,7 @@ let pts, stroke_c, bg_c, curved;
 let paused = false;
 let main = 0;
 let sec = 0;
-suggested_palettes = [SIXTIES, TOYBLOCKS];
+const suggested_palettes = [SIXTIES, TOYBLOCKS];
 
 function gui_values(){
   parameterize("main_rad", random(10,150), 1, 300, 5, true);

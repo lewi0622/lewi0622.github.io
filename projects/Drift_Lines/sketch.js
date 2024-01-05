@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BUMBLEBEE, SIXTIES, SUPPERWARE]
+const suggested_palettes = [BUMBLEBEE, SIXTIES, SUPPERWARE]
 
 
 function gui_values(){

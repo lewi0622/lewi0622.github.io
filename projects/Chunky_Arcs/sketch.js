@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, SIXTIES]
+const suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME, SIXTIES]
 
 
 function gui_values(){
