@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BIRDSOFPARADISE, SOUTHWEST, NURSERY, SIXTIES]
+const suggested_palettes = [BIRDSOFPARADISE, SOUTHWEST, NURSERY, SIXTIES]
 
 let shape_points;
 
@@ -22,8 +22,7 @@ function gui_values(){
 }
 
 function setup() {
-  // common_setup(5*96, 7*96, SVG);
-  common_setup();
+  common_setup(8.5*96, 11*96);
 }
 //***************************************************
 function draw() {

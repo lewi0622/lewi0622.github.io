@@ -5,7 +5,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 8
-suggested_palettes = [BUMBLEBEE, SIXTIES, SUPPERWARE]
+const suggested_palettes = [BUMBLEBEE, SIXTIES, SUPPERWARE]
 
 
 function gui_values(){

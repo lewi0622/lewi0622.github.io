@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [LASER]
+const suggested_palettes = [LASER]
 
 
 function gui_values(){

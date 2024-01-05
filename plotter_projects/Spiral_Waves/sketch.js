@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = []
+const suggested_palettes = []
 
 function gui_values(){
   parameterize("circle_steps", floor(random(30, 1000)), 1, 1500, 10, false);
@@ -15,6 +15,7 @@ function gui_values(){
   parameterize("amp_sin", random(0.4,2), 0, 20, 0.1, true);
   parameterize("z_iterations", 3, 1, 10, 1, false);
   parameterize("the_x_factor", random(10,50) * random(-1,1), -500, 500, 1, false);
+  parameterize("tightness", 0, -5, 5, 0.1, false);
 } 
 
 function setup() {
@@ -28,9 +29,10 @@ function draw() {
 
   //actual drawing stuff
   push();
-  // background("WHITE");
+  if(type == "png") background("WHITE");
   noFill();
   stroke(0, 0, 0, 75);
+  curveTightness(tightness);
   translate(canvas_x/2, canvas_y/2);
 
   for(let z=0; z<z_iterations; z++){

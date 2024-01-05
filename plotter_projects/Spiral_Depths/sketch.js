@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [BEACHDAY, GAMEDAY, NURSERY]
+const suggested_palettes = [BEACHDAY, GAMEDAY, NURSERY]
 
 
 function gui_values(){

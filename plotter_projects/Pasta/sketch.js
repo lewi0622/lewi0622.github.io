@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [LASER]
+const suggested_palettes = [LASER]
 
 //project variables
 let grid_size, line_padding, num_arcs, c_arr;
@@ -124,7 +124,7 @@ function draw() {
   fill(working_palette[working_palette.length-1]);
 
   while(z<iterations || draw_paths){
-    tiles = shuffle(tiles,true, max_cols+max_rows);
+    tiles = controlled_shuffle(tiles,true, max_cols+max_rows);
     for(let i =0; i<tiles.length; i++){
       push();
 

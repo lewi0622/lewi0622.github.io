@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 10;
 
 let x_fourth, y_fourth, copic_palette;
-suggested_palettes = []
+const suggested_palettes = []
 
 function gui_values(){
   parameterize("num_lines", floor(random(50,300)), 1, 500, 1, false);

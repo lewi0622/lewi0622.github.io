@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = [SIXTIES]
+const suggested_palettes = [SIXTIES]
 
 function gui_values(){
 }

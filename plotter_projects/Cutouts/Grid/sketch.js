@@ -5,7 +5,7 @@ const animation = false;
 const fr = 1;
 const capture = false;
 const capture_time = 8
-suggested_palettes = []
+const suggested_palettes = []
 
 function gui_values(){
   parameterize("cols", 10, 1, 100, 1, false);

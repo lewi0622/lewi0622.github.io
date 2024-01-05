@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-suggested_palettes = []
+const suggested_palettes = []
 
 
 function gui_values(){
@@ -32,7 +32,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(16.5*96, 23.4*96, SVG);
+  common_setup(8*96, 8*96);
 }
 //***************************************************
 function draw() {
