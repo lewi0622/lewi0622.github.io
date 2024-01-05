@@ -3,7 +3,6 @@
 const project_path = window.location.pathname.split('/')
 let project_name = project_path[project_path.length-2];
 let canvas_x, canvas_y, cnv;
-let base_x, base_y;
 let file_saved;
 
 let num_frames, capturer, capture_state;
@@ -139,19 +138,21 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
     parameterize("svg_width", size_x/96, 1, 30, 0.05, false);
     parameterize("svg_height", size_y/96, 1, 30, 0.05, false);
-    base_x = svg_width*96;
-    base_y = svg_height*96;
-  }
-  else{
-    base_x = size_x;
-    base_y = size_y;
+    size_x = svg_width*96;
+    size_y = svg_height*96;
   }
 
   setParams();
-  if(scale_param == "auto") global_scale = find_cnv_mult();
+  if(scale_param == "auto") global_scale = find_cnv_mult(size_x, size_y);
   else global_scale = parseFloat(scale_param);
+
+  canvas_x = floor(size_x*global_scale);
+  canvas_y = floor(size_y*global_scale);
+
+  randomSeed(parseInt(seed_param));
+  noiseSeed(parseInt(seed_param));
+
   seed_scale_button();
-  reset_drawing();
 
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
@@ -187,7 +188,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   frameCount = 0; //with animations, this needs to be one of the last things changed
 
   //shift position to center canvas if base is different than 400
-  if(base_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
+  if(size_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   if(renderer != WEBGL) strokeCap(random([PROJECT,ROUND]));
@@ -255,6 +256,7 @@ function seed_scale_button(){
     seed_input = createInput("seed");
     seed_input.style("text-align", "right");
     seed_input.id('Seed');
+    seed_input.value(seed_param);
 
     //left/right buttons for easy seed nav
     btRight = createButton('>');
@@ -338,57 +340,57 @@ function seed_scale_button(){
     //START OF TOP ROW
     //left/right buttons for easy seed nav
     btLeft.size(20*global_scale, control_height);
-    btLeft.position(0, base_y*global_scale);
+    btLeft.position(0, canvas_y);
 
     //creates controls below canvas for displaying/setting seed
     seed_input.size(55*global_scale, control_height-6);
-    seed_input.position(btLeft.size().width,base_y*global_scale);
+    seed_input.position(btLeft.size().width,canvas_y);
 
     //left/right buttons for easy seed nav
     btRight.size(20*global_scale, control_height);
-    btRight.position(seed_input.size().width + seed_input.position().x, base_y*global_scale);
+    btRight.position(seed_input.size().width + seed_input.position().x, canvas_y);
 
     //custom seed button
     button.size(90*global_scale, control_height)
-    button.position(btRight.size().width + btRight.position().x + control_spacing, base_y*global_scale);
+    button.position(btRight.size().width + btRight.position().x + control_spacing, canvas_y);
 
     if(!in_iframe){
       //reset palette button
       reset_palette.size(90*global_scale, control_height)
-      reset_palette.position(button.size().width + button.position().x + control_spacing, base_y*global_scale);
+      reset_palette.position(button.size().width + button.position().x + control_spacing, canvas_y);
     }
 
     //randomize button
     randomize.size(80*global_scale, control_height);
-    randomize.position(400*global_scale-randomize.size().width, base_y*global_scale);
+    randomize.position(400*global_scale-randomize.size().width, canvas_y);
 
     //START OF SECOND ROW
     //color palette select
-    color_sel.position(0, base_y*global_scale+control_height);
+    color_sel.position(0, canvas_y+control_height);
     color_sel.size(120*global_scale, control_height);
 
     //file type radio control
     radio_filetype.size(80*global_scale, control_height);
-    radio_filetype.position(400*global_scale-radio_filetype.size().width, base_y*global_scale + control_height);
+    radio_filetype.position(400*global_scale-radio_filetype.size().width, canvas_y + control_height);
 
     //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
     //autoscale button calls url minus any scaler
-    auto_scale.position(0, base_y*global_scale + control_height*2);
+    auto_scale.position(0, canvas_y + control_height*2);
     auto_scale.size(70*global_scale, control_height)
 
     //scale text box
-    scale_box.position(auto_scale.size().width+control_spacing, base_y*global_scale+control_height*2)
+    scale_box.position(auto_scale.size().width+control_spacing, canvas_y+control_height*2)
     scale_box.size(30*global_scale, 18*global_scale);
     scale_box.value(global_scale);
 
     //reset parameters button
-    reset_parameters.position(scale_box.position().x+scale_box.size().width+control_spacing, base_y*global_scale+control_height*2);
+    reset_parameters.position(scale_box.position().x+scale_box.size().width+control_spacing, canvas_y+control_height*2);
     reset_parameters.size(130*global_scale, control_height);
 
     //save button
     btSave.size(70*global_scale, control_height);
-    btSave.position(400*global_scale-70*global_scale, base_y*global_scale+control_height*2);
+    btSave.position(400*global_scale-70*global_scale, canvas_y+control_height*2);
 
     //style all ctrls
     ids.concat(full_ids).forEach(id => {
@@ -417,15 +419,6 @@ function show_hide_controls(arr, hide){
   });
 }
 
-function reset_drawing(){
-  canvas_x = round(base_x*global_scale);
-  canvas_y = round(base_y*global_scale);
-
-  randomSeed(parseInt(seed_param));
-  noiseSeed(parseInt(seed_param));
-  seed_input.value(seed_param);
-}
-
 function current_palette_index(){
   //returns the integer value of the current palette
   return palette_names.indexOf(color_sel.value());
@@ -448,7 +441,7 @@ function set_seed(e){
   seed_param = String(seed_input.value());
   colors_param = String(current_palette_index());
   palette_changed = current_palette_index() != int(getParamValue('colors'));
-  multiplier_changed = scale_box.value() != find_cnv_mult();
+  multiplier_changed = scale_box.value() != find_cnv_mult(canvas_x/global_scale, canvas_y/global_scale);
   const auto = event_id == "Auto Scale" || (scale_param == "auto"  && !multiplier_changed);
   
   if(auto) scale_param = build_scale(); 
@@ -886,7 +879,7 @@ function color_changed(e){
 
 function windowResized(e) {
   if(controls_param == "full") snap_gui_to_window();
-  if((getParamValue('scale') == "auto" && find_cnv_mult() != global_scale)){
+  if((getParamValue('scale') == "auto" && find_cnv_mult(canvas_x/global_scale, canvas_y/global_scale) != global_scale)){
     redraw_reason = "window";
     clear_gui();
     redraw_sketch();
@@ -927,12 +920,11 @@ function refresh_working_palette(){
   working_palette = JSON.parse(JSON.stringify(palette));
 }
 
-function find_cnv_mult(){
+function find_cnv_mult(size_x, size_y){
   //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
   if(type == "svg") return 1;
+  size_x = max(400, size_x); //because we center within a 400x400 canvas for things smaller than 400
 
-  let size_x = max(400, base_x); //because we center within a 400x400 canvas for things smaller than 400
-  let size_y = base_y;
   if(controls_param != "false") size_y += 40;
   if(controls_param == "full") size_y += 20;//space for second row of controls, the extra 3 is make sure no vertical scrollbar
 
@@ -1108,7 +1100,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
           let new_value = gui.prototype._controls[name].getValue();
           if(stored_variable.scale) new_value = new_value/global_scale;
           if(!multiplier_changed){
-            //don't freeze params that change due to multiplier changing. Multiplier changed only happens when base_x, base_y change
+            //don't freeze params that change due to multiplier changing. Multiplier changed only happens when size_x, size_y change
             if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) stored_variable.frozen = true; 
           }
           stored_variable.val = new_value;
