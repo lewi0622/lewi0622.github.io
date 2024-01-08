@@ -5,9 +5,10 @@ let project_name = project_path[project_path.length-2];
 let canvas_x, canvas_y, cnv;
 let file_saved;
 
-let num_frames, capturer, capture_state;
+const num_frames = capture_time*fr;
+let capturer, capture_state;
 //control variables
-let seed_input, scale_box, control_height, control_spacing, color_sel, color_div;
+let seed_input, scale_box, control_height, control_spacing, color_sel;
 let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
@@ -15,10 +16,10 @@ const PALETTE_ID_DEFAULT = MUTEDEARTH;
 //if a project doesn't supply an array of suggested palettes, we use the default
 let global_palette_id = PALETTE_ID_DEFAULT;
 let palette, working_palette;
-let palette_changed = false;
+let palette_changed = true;
 
 let global_scale = 1;
-let multiplier_changed = false;
+let multiplier_changed = true;
 let controls_param, seed_param, colors_param, scale_param;
 let in_iframe = window.location !== window.parent.location;
 let type = 'png';
@@ -32,9 +33,90 @@ let gui_params = [];
 let gui_collapsed = false;
 
 //color picker vars
-let picker, picker_popper;
-let swatches = [];
-let pickers = [];
+let color_div;
+const picker_parents = [];
+const pickers = [];
+function create_pickers(){
+  //create all pickers before setup
+  color_div = document.createElement("div");
+  color_div.id = "Color Boxes";
+  color_div.style.position = "absolute";
+  color_div.style.visibility = "hidden";
+  document.body.appendChild(color_div);
+
+  const picker_parent = document.createElement("div");
+  for(let i=0; i<longest_palette_length; i++){
+    picker_parent.id = "picker_parent_" + i;
+    color_div.appendChild(picker_parent);
+    if(in_iframe) picker_parent.forEach(btn => btn.disabled = true);
+    picker_parents.push();
+
+    const alwan = new Alwan("#picker_parent_" + i, {
+      id: "picker_"+i
+    });
+    alwan.on("change", color_changed);
+    pickers.push(alwan);
+  }
+};
+
+function show_hide_pickers(){
+  for(let i=0; i<pickers.length; i++){
+    if(i < palette.length) document.getElementById("picker_parent_" + i).style.visibility = "visible";
+    else  document.getElementById("picker_parent_" + i).style.visibility = "hidden";
+  }
+}
+
+function size_pickers(){
+  //after seed_scale_button, resize and position color pickers
+  const start_pos = color_sel.position().x + color_sel.size().width;
+  color_div.style.left = start_pos+control_spacing+"px";
+  color_div.style.top = color_sel.position().y+"px"
+  color_div.style.width = control_height+"px";
+  color_div.style.height = control_height+"px";
+
+  pickers.forEach((p, idx) => {
+    let picker = document.getElementById("picker_parent_"+idx);
+    picker.style.position = "absolute";
+    picker.style.left = control_height*idx*1.1 + "px";
+    picker.style.top = control_height*.05+"px"
+    picker.style.width = control_height*.9+"px";
+    picker.style.height = control_height*.9+"px";
+  });
+}
+
+function color_pickers(){
+  //set color picker colors and swatches
+  const swatches = [];
+  for(let i=0; i<palette.length; i++){
+    swatches.push('rgb(' + palette[i][0] + ',' + palette[i][1] + ',' + palette[i][2] + ',' + palette[i][3]/255 + ')');
+  }
+  for(let i=0; i<swatches.length; i++){
+    const picker = pickers[i];
+    picker.setOptions({swatches:swatches});
+    if(palette_changed) picker.setColor(swatches[i]);
+  }
+}
+
+function color_changed(e){
+  //event for color pickers changing
+  const source_id = e.source.config.id;
+  const picker_id = source_id.charAt(source_id.length-1);
+
+  const picker_color = [
+    e.source.getColor().r,
+    e.source.getColor().g,
+    e.source.getColor().b,
+    e.source.getColor().a*255
+  ];
+
+  //check if picker color is different from existing color
+  palette[picker_id] = picker_color;
+  protected_local_storage_set(palette_names[global_palette_id], JSON.stringify(palette));
+  redraw_sketch();
+}
+
+if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", create_pickers);  // Loading hasn't finished yet
+else create_pickers(); // `DOMContentLoaded` has already fired
 
 first_time_setup();
 
@@ -125,7 +207,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   capture_state = "init"
 
   //set up CCapture, override num_frames in setup/draw if necessary
-  num_frames = capture_time*fr;
   capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
   //set framerate
   if(!capture) frameRate(fr);
@@ -186,10 +267,12 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(renderer != WEBGL) strokeCap(random([PROJECT,ROUND]));
 
   //set palette
-  change_default_palette();
-
-  //add the palette colors here because the palette only just got defined 
-  show_palette_colors();
+  if(palette_changed){
+    change_default_palette();
+    show_hide_pickers();
+    color_pickers();
+  }
+  if(multiplier_changed) size_pickers();
 
   if(!redraw){
      //post details
@@ -291,11 +374,6 @@ function seed_scale_button(){
     color_sel.selected(palette_names[current_palette_index()]);
     color_sel.changed(set_seed);
     color_sel.id('Color Select');
-
-    //color boxes
-    color_div = document.createElement("div");
-    color_div.id = "Color Boxes";
-    document.body.appendChild(color_div);
 
     //radio control for png/svg
     radio_filetype = createRadio();
@@ -457,97 +535,12 @@ function keyTyped(e) {
   }
 }
 
-function set_file_type(e){
+function set_file_type(){
   //radio button changed
   const val = radio_filetype.value();
   protected_session_storage_set("fileType", val);
   //hard refresh of window with current url values
   window.location.href = window.location.href;
-}
-
-
-function show_palette_colors(){
-  //can't be called in the seed_scale_button function because palette can be undefined at that point
-  if(palette_changed){
-    //delete existing 
-    let existing_pickers = document.getElementsByClassName("lw-ref");
-    for(let i=existing_pickers.length-1; i>=0; i--) existing_pickers[i].remove();
-  
-    let existing_poppers = document.getElementsByClassName("alwan lw-popper");
-    for(let i=existing_poppers.length-1; i>=0; i--) existing_poppers[i].remove();
-    //generate swatches for current palette
-    swatches = [];
-    pickers = [];
-  }
-  if(!redraw || palette_changed){
-    for(let i=0; i<palette.length; i++){
-      swatches.push('rgb(' + palette[i][0] + ',' + palette[i][1] + ',' + palette[i][2] + ',' + map(palette[i][3],0,255, 0,1) + ')');
-    }
-  }
-  else{
-    palette.forEach((c,idx) => {
-      //set button colors to match palette after initial draw
-      pickers[idx].setColor('rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + map(c[3],0,255, 0,1) + ')');
-    });
-  }
-
-  let start_pos = color_sel.position().x + color_sel.size().width;
-  palette.forEach((c, idx) => {
-    if(!redraw || palette_changed){
-      let color_picker = document.createElement("div");
-      color_picker.id = "color_picker" + idx;
-      color_div.appendChild(color_picker);
-    }
-
-    color_div.style.position = "absolute";
-    color_div.style.left = start_pos+control_spacing+"px";
-    color_div.style.top = color_sel.position().y+"px"
-    color_div.style.width = control_height+"px";
-    color_div.style.height = control_height+"px";
-
-    if(!redraw || palette_changed){
-      //color picker code, ref https://github.com/SofianChouaib/alwan
-      const alwan = new Alwan('#color_picker'+idx, {
-        id: "picker_"+idx,
-        theme: 'light',
-        toggle: true,
-        popover: true,
-        preset: true,
-        color: 'rgb(' + palette[idx][0] + ',' + palette[idx][1] + ',' + palette[idx][2] + ',' + map(palette[idx][3],0,255, 0,1) + ')',
-        format: 'rgb',
-        singleInput: false,
-        inputs: {
-          rgb: true,
-          hex: true,
-          hsl: true,
-        },
-        opacity: true,
-        preview: true,
-        copy: true,
-        swatches: swatches
-      });
-      pickers.push(alwan);
-
-      picker_popper = document.getElementById("picker_"+idx);
-      //custom event listener because the colorpicker events are shit
-      picker_popper.addEventListener("mouseup", color_changed);
-      picker_popper.addEventListener("touchend", color_changed);
-
-    }
-    picker = document.getElementById("color_picker"+idx);
-    picker.style.position = "absolute";
-    picker.style.left = control_height*idx*1.1 + "px";
-    picker.style.top = control_height*.05+"px"
-    picker.style.width = control_height*.9+"px";
-    picker.style.height = control_height*.9+"px";
-    picker.style.border = floor(1.5*global_scale) + 'px solid black' //rgb(' + 0 + ',' + 0 + ',' + 0 + ')'
-  });
-
-  //disable color picker buttons if in iframe
-  if(in_iframe){
-    const color_buttons = document.getElementsByClassName("lw-ref");
-    color_buttons.forEach(btn => btn.disabled = true);
-  }
 }
 
 function reduce_array(arr, remove){
@@ -796,34 +789,6 @@ function clear_params(){
   redraw_reason = "window";
   clear_gui();
   redraw_sketch();
-}
-
-function color_changed(e){
-  setTimeout(() =>{
-    // search for nearest element with id = 'picker_*' wildcard
-    const picker = e.target.closest("[id^='picker_']");
-    let picker_id = picker.id;
-
-    //check to see if the color has changed
-    const picker_values = picker.getElementsByClassName("lw-label")
-    const picker_color = [];
-    for(let i=0; i<picker_values.length; i++){
-      let val = picker_values[i].getElementsByClassName("alwan__input")[0].value;
-      if(i==3) val = map(val, 0,1, 0,255);
-      picker_color.push(parseInt(val));
-    }
-   
-    picker_id = picker_id.replace("picker_","");
-    picker_id = parseInt(picker_id);
-
-    //check if picker color is different from existing color
-    if(!arrayEquals(picker_color, palette[picker_id])){
-      palette[picker_id] = picker_color;
-      window.localStorage.setItem(palette_names[global_palette_id], JSON.stringify(palette));
-      palette_changed = true;
-      redraw_sketch();
-    }
-  }, 10)
 }
 
 function windowResized(e) {
