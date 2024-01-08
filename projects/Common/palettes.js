@@ -160,3 +160,13 @@ const palettes=[
     [255,255,0,255] //Yellow
     ]
 ];
+
+function get_longest_palette_length(){
+    let max = -Infinity;
+    palettes.forEach(function(a){
+    if (a.length > max) max = a.length;
+    });
+    return max;
+}
+
+const longest_palette_length = get_longest_palette_length();
