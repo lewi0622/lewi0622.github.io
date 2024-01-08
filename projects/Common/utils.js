@@ -265,7 +265,7 @@ function seed_scale_button(){
     reset_palette = createButton("Reset Palette");
     reset_palette.mouseClicked(()=>{
       //check if stored_palette exists
-      const pal = window.localStorage.getItem(palette_names[global_palette_id]);
+      const pal = protected_local_storage_get(palette_names[global_palette_id]);
       if(pal != null){
         window.localStorage.removeItem(palette_names[global_palette_id]);
         palette_changed = true;
@@ -416,9 +416,9 @@ function current_palette_index(){
   return palette_names.indexOf(color_sel.value());
 }
 
-window.onpopstate = function(e){
+window.onpopstate = function(){
   //captures the back/forward browser buttons to move between history states without reloading the page
-  if(e.state) redraw_sketch();
+  redraw_sketch();
 };
 
 function set_seed(e){
