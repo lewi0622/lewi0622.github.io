@@ -1,9 +1,9 @@
 "use strict";
 // globals
 const project_path = window.location.pathname.split('/')
-let project_name = project_path[project_path.length-2];
+const project_name = project_path[project_path.length-2];
 let canvas_x, canvas_y, cnv;
-let file_saved;
+let file_saved = false;
 
 const num_frames = capture_time*fr;
 let capturer, capture_state;
@@ -20,8 +20,8 @@ let palette_changed = true;
 
 let global_scale = 1;
 let multiplier_changed = true;
-let controls_param, seed_param, colors_param, scale_param;
-let in_iframe = window.location !== window.parent.location;
+let controls_param, seed_param, colors_param, scale_param; //global url parameters
+const in_iframe = window.location !== window.parent.location;
 let type = 'png';
 let redraw = false;
 
@@ -33,12 +33,10 @@ let gui_params = [];
 let gui_collapsed = false;
 
 //color picker vars
-let color_div;
-const picker_parents = [];
 const pickers = [];
 function create_pickers(){
   //create all pickers before setup
-  color_div = document.createElement("div");
+  const color_div = document.createElement("div");
   color_div.id = "Color Boxes";
   color_div.style.position = "absolute";
   color_div.style.visibility = "hidden";
@@ -49,7 +47,6 @@ function create_pickers(){
     picker_parent.id = "picker_parent_" + i;
     color_div.appendChild(picker_parent);
     if(in_iframe) picker_parent.forEach(btn => btn.disabled = true);
-    picker_parents.push();
 
     const alwan = new Alwan("#picker_parent_" + i, {
       id: "picker_"+i
@@ -60,7 +57,7 @@ function create_pickers(){
 };
 
 function show_hide_pickers(){
-  for(let i=0; i<pickers.length; i++){
+  for(let i=0; i<longest_palette_length; i++){
     if(i < palette.length) document.getElementById("picker_parent_" + i).style.visibility = "visible";
     else  document.getElementById("picker_parent_" + i).style.visibility = "hidden";
   }
@@ -69,19 +66,20 @@ function show_hide_pickers(){
 function size_pickers(){
   //after seed_scale_button, resize and position color pickers
   const start_pos = color_sel.position().x + color_sel.size().width;
+  const color_div = document.getElementById("Color Boxes");
   color_div.style.left = start_pos+control_spacing+"px";
   color_div.style.top = color_sel.position().y+"px"
   color_div.style.width = control_height+"px";
   color_div.style.height = control_height+"px";
 
-  pickers.forEach((p, idx) => {
-    let picker = document.getElementById("picker_parent_"+idx);
+  for(let i=0; i<longest_palette_length; i++){
+    const picker = document.getElementById("picker_parent_"+i);
     picker.style.position = "absolute";
-    picker.style.left = control_height*idx*1.1 + "px";
+    picker.style.left = control_height*i*1.1 + "px";
     picker.style.top = control_height*.05+"px"
     picker.style.width = control_height*.9+"px";
     picker.style.height = control_height*.9+"px";
-  });
+  }
 }
 
 function color_pickers(){
@@ -199,7 +197,6 @@ function build_url(){
 
   return base_url;
 }
-
 
 function common_setup(size_x=400, size_y=400, renderer=P2D){
   //init globals
@@ -516,11 +513,9 @@ function set_seed(e){
   
   if(auto) scale_param = build_scale(); 
   else scale_param = scale_box.value();
-
-  const url = build_url();
   
   //using pushState allows for changing the url, and then redrawing without needing to reload the page
-  window.history.pushState({}, "", url);
+  window.history.pushState({}, "", build_url());
 
   if(event_id == "Color Select") palette_changed = true; //color picker was used
 
