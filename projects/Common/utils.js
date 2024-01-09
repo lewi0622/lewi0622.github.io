@@ -46,7 +46,7 @@ function create_pickers(){
   for(let i=0; i<longest_palette_length; i++){
     picker_parent.id = "picker_parent_" + i;
     color_div.appendChild(picker_parent);
-    if(in_iframe) picker_parent.forEach(btn => btn.disabled = true);
+    if(in_iframe) picker_parent.disabled = true;
 
     const alwan = new Alwan("#picker_parent_" + i, {
       id: "picker_"+i
