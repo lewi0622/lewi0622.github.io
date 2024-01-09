@@ -46,10 +46,10 @@ function create_pickers(){
   for(let i=0; i<longest_palette_length; i++){
     picker_parent.id = "picker_parent_" + i;
     color_div.appendChild(picker_parent);
-    if(in_iframe) picker_parent.disabled = true;
 
     const alwan = new Alwan("#picker_parent_" + i, {
-      id: "picker_"+i
+      id: "picker_"+i,
+      disabled: in_iframe
     });
     alwan.on("change", color_changed);
     pickers.push(alwan);
@@ -169,7 +169,7 @@ function build_colors(){
       return String(suggested_palettes[Math.floor(Math.random()*suggested_palettes.length)]); //select random val in suggested palettes
     }
   }
-  else return String(PALETTE_ID_DEFAULT);
+  return String(PALETTE_ID_DEFAULT);
 }
 
 function verify_colors(val){
@@ -264,12 +264,12 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(renderer != WEBGL) strokeCap(random([PROJECT,ROUND]));
 
   //set palette
-  if(palette_changed){
-    change_default_palette();
+  change_default_palette();
+  if(!redraw || palette_changed){
     show_hide_pickers();
     color_pickers();
   }
-  if(multiplier_changed) size_pickers();
+  if(!redraw || multiplier_changed) size_pickers();
 
   if(!redraw){
      //post details
@@ -285,12 +285,14 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     //Assists with loading on phones and other pixel dense screens
     pixelDensity(1)
   }
+  multiplier_changed = false;
   palette_changed = false; //reset before draw happens
   redraw_reason = "";
   if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
   else noLoop();
 }
+
 function setParams(){
   seed_param = verify_seed(getParamValue("seed"));
   palette_changed = palette_changed || colors_param != getParamValue("colors");
@@ -298,6 +300,7 @@ function setParams(){
   multiplier_changed = multiplier_changed || scale_param != getParamValue("scale");
   scale_param = verify_scale(getParamValue("scale"));
 }
+
 function getParamValue(paramName){
     var url = window.location.search.substring(1); //get rid of "?" in querystring
     var qArray = url.split('&'); //get key-value pairs
