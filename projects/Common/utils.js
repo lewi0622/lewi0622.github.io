@@ -14,8 +14,6 @@ let seed_input, scale_box, color_sel;
 let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
-
-//if a project doesn't supply an array of suggested palettes, we use the default
 let global_palette_id = PALETTE_ID_DEFAULT;
 let palette, working_palette;
 let palette_changed = true;
@@ -1006,16 +1004,12 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
           //save to storage
           let new_value = gui.prototype._controls[name].getValue();
           if(stored_variable.scale) new_value = new_value/global_scale;
+          let frozen = stored_variable.frozen;
           if(!multiplier_changed){
             //don't freeze params that change due to multiplier changing. Multiplier changed only happens when size_x, size_y change
-            if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) stored_variable.frozen = true; 
+            if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) frozen = true; 
           }
-          stored_variable.val = new_value;
-          stored_variable.min = min;
-          stored_variable.max = max;
-          stored_variable.step = step;
-          stored_variable.scale = scale;
-          protected_session_storage_set(stored_name, JSON.stringify(stored_variable));
+          write_parameter(stored_name, name, new_value, min, max, step, scale, frozen);
         }
       }
     }
@@ -1032,28 +1026,12 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       }
       else{
         // if not frozen store new values
-        protected_session_storage_set(stored_name, JSON.stringify({
-          name: name,
-          val: val,
-          min: min, 
-          max: max,
-          step: step,
-          scale: scale,
-          frozen: false
-        }));
+        write_parameter(stored_name, name, val, min, max, step, scale, false);
       }
     }
   }
   else{
-    protected_session_storage_set(stored_name, JSON.stringify({
-      name: name,
-      val: val,
-      min: min, 
-      max: max,
-      step: step,
-      scale: scale,
-      frozen: false
-    }));
+    write_parameter(stored_name, name, val, min, max, step, scale, false)
   }
 
   if(scale){
@@ -1098,6 +1076,17 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
   }
 }
 
+function write_parameter(stored_name, name, val, min, max, step, scale, frozen){
+  protected_session_storage_set(stored_name, JSON.stringify({
+    name: name,
+    val: val,
+    min: min, 
+    max: max,
+    step: step,
+    scale: scale,
+    frozen: frozen
+  }));
+}
 
 function attach_icons(){
   // finds param gui and creates dice icon and slashes to indicate unfrozen/frozen/disabled
@@ -1230,7 +1219,6 @@ function retrieve_gui_settings(){
     }
   }
 }
-
 
 //SVG feTurbulence filter
 function feTurbulence(baseFrequency, numOctaves, filter_scale){
