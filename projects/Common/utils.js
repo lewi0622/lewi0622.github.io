@@ -8,7 +8,9 @@ let file_saved = false;
 const num_frames = capture_time*fr;
 let capturer, capture_state;
 //control variables
-let seed_input, scale_box, control_height, control_spacing, color_sel;
+const control_height_base = 20;
+const control_spacing_base = 5;
+let seed_input, scale_box, color_sel;
 let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
@@ -64,7 +66,7 @@ function show_hide_pickers(){
   }
 }
 
-function size_pickers(){
+function size_pickers(control_height, control_spacing){
   //after seed_scale_button, resize and position color pickers
   const start_pos = color_sel.position().x + color_sel.size().width;
   const color_div = document.getElementById("Color Boxes");
@@ -226,13 +228,16 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(scale_param == "auto") global_scale = find_cnv_mult(size_x, size_y);
   else global_scale = parseFloat(scale_param);
 
+  const control_height = control_height_base * global_scale;
+  const control_spacing = control_spacing_base * global_scale;
+
   canvas_x = floor(size_x*global_scale);
   canvas_y = floor(size_y*global_scale);
 
   randomSeed(parseInt(seed_param));
   noiseSeed(parseInt(seed_param));
 
-  seed_scale_button();
+  seed_scale_button(control_height, control_spacing);
 
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
@@ -270,7 +275,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     show_hide_pickers();
     color_pickers();
   }
-  if(!redraw || multiplier_changed) size_pickers();
+  if(!redraw || multiplier_changed) size_pickers(control_height, control_spacing);
 
   if(!redraw){
      //post details
@@ -315,12 +320,9 @@ function getParamValue(paramName){
     }
 }
 
-function seed_scale_button(){
+function seed_scale_button(control_height, control_spacing){
   const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"];
   const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "Save", "File Type"];
-
-  control_height = 20*global_scale;
-  control_spacing = 5*global_scale;
 
   if(!redraw){
     //declare unchanging properties
