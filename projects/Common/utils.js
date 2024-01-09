@@ -1040,10 +1040,10 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
     max = max*global_scale;
     step = step*global_scale;
   }
-  //create parameters for gui creation, not supposed to use eval for security reasons, but it's just soo much easier in this case
-  //if variables don't already exist, create them
-  if(!eval("typeof " + name + "!== 'undefined'")){
-    //build string if array
+
+  //if gui is reason for redrawing, let p5.gui handle the values directly
+  if(redraw_reason != "gui"){
+    //create or overwrite all globals
     if(Array.isArray(val)){
       let val_string = JSON.stringify(val);
       eval('globalThis.' + name +" = " + val_string);
@@ -1054,24 +1054,13 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
     if(max != undefined) eval('globalThis.' + name +"Max =" + max);
     if(step != undefined) eval('globalThis.' + name +"Step =" + step);
 
-    gui_params.push(name);
-  }
-  //if variables do exist, apply new values
-  else{
-    //if redraw reason is gui, let p5.gui handle the new values
-    if(redraw_reason != "gui"){
-      eval(name + "=" + val);
-      if(min != undefined) eval(name + "Min =" + min);
-      if(max != undefined) eval(name +"Max =" + max);
-      if(step != undefined) eval(name +"Step =" + step);
-
-      //force update gui with new values
-      if(gui !== undefined){
-        gui.prototype._controls[name].control.min = String(min);
-        gui.prototype._controls[name].control.max = String(max);
-        gui.prototype._controls[name].control.step = String(step);
-        gui.prototype._controls[name].setValue(val);
-      }
+    if(!redraw) gui_params.push(name);
+    else{
+      //force gui to update shown values
+      gui.prototype._controls[name].control.min = String(min);
+      gui.prototype._controls[name].control.max = String(max);
+      gui.prototype._controls[name].control.step = String(step);
+      gui.prototype._controls[name].setValue(val);
     }
   }
 }
