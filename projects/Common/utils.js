@@ -17,6 +17,7 @@ const PALETTE_ID_DEFAULT = MUTEDEARTH;
 let global_palette_id = PALETTE_ID_DEFAULT;
 let palette, working_palette;
 let palette_changed = true;
+let picker_changed = false;
 
 let global_scale = 1;
 let multiplier_changed = true;
@@ -107,7 +108,7 @@ function color_changed(e){
     e.source.getColor().a*255
   ];
 
-  //check if picker color is different from existing color
+  picker_changed = true;
   palette[picker_id] = picker_color;
   protected_local_storage_set(palette_names[global_palette_id], JSON.stringify(palette));
   redraw_sketch();
@@ -264,7 +265,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(renderer != WEBGL) strokeCap(random([PROJECT,ROUND]));
 
   //set palette
-  change_default_palette();
+  if(!redraw || palette_changed || picker_changed) change_default_palette();
   if(!redraw || palette_changed){
     show_hide_pickers();
     color_pickers();
@@ -285,8 +286,10 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     //Assists with loading on phones and other pixel dense screens
     pixelDensity(1)
   }
+  //reset changed flags
   multiplier_changed = false;
-  palette_changed = false; //reset before draw happens
+  palette_changed = false;
+  picker_changed = false;
   redraw_reason = "";
   if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
