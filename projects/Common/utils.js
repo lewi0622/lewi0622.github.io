@@ -29,7 +29,6 @@ let type = 'png';
 let redraw = false;
 
 //gui vars
-let gui_created = false;
 let redraw_reason;
 var gui;
 let gui_params = [];
@@ -245,13 +244,12 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
 
   if(controls_param == "full"){
     //declare gui before noLoop is extended in p5.gui.js
-    if(!gui_created){
+    if(!redraw){
       gui = createGui('Parameters');
       if(redraw_reason != "gui" || redraw==false){
         gui.addGlobals(...gui_params);
       }
       add_gui_event_handlers();
-      gui_created = true;
     }
     // add dice and slashes if necessary
     attach_icons();
@@ -783,14 +781,15 @@ function clear_params(){
     let gui_label = container.getElementsByClassName("qs_label")[0];
     gui_label = gui_label.textContent.split(": ");
     const stored_name = project_name + "_" + gui_label[0];
-    let stored_variable = sessionStorage.getItem(stored_name);
-    if(stored_variable != null) sessionStorage.removeItem(stored_name);
+    let stored_variable = protected_session_storage_get(stored_name);
+    if(stored_variable != null) stored_variable = JSON.parse(stored_variable);
+    stored_variable.frozen = false;
+    protected_session_storage_set(stored_name, JSON.stringify(stored_variable));
   });
 
   clearMIDIvalues();
 
   redraw_reason = "window";
-  clear_gui();
   redraw_sketch();
 }
 
@@ -798,17 +797,8 @@ function windowResized(e) {
   if(controls_param == "full") snap_gui_to_window();
   if((getParamValue('scale') == "auto" && find_cnv_mult(canvas_x/global_scale, canvas_y/global_scale) != global_scale)){
     redraw_reason = "window";
-    clear_gui();
     redraw_sketch();
   }
-}
-
-function clear_gui(){
-  let gui_elem = document.getElementsByClassName("qs_main")[0];
-  if(gui_elem !== undefined){
-    gui_elem.remove();
-  }
-  gui_created = false;
 }
 
 function redraw_sketch(){
