@@ -771,19 +771,14 @@ function gui_changed(){
 }
 
 function clear_params(){
-  //deletes all parameter values from session storage and calls redraw
   //retrieve gui values
-  const gui_containers = document.getElementsByClassName("qs_container");
-  gui_containers.forEach(container => {
-      //check if variable exists in local storage
-    let gui_label = container.getElementsByClassName("qs_label")[0];
-    gui_label = gui_label.textContent.split(": ");
-    const stored_name = project_name + "_" + gui_label[0];
+  for(let i=0; i<gui_params.length; i++){
+    const stored_name = project_name + "_" + gui_params[i];
     let stored_variable = protected_session_storage_get(stored_name);
     if(stored_variable != null) stored_variable = JSON.parse(stored_variable);
     stored_variable.frozen = false;
     protected_session_storage_set(stored_name, JSON.stringify(stored_variable));
-  });
+  }
 
   clearMIDIvalues();
 
@@ -991,49 +986,44 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       val = round(val/step)*step; //coerce to nearest step val
     }
   }
-  //check if variable exists in local storage
-  const stored_name = project_name + "_" + name;
-  let stored_variable = protected_session_storage_get(stored_name);
 
-  if(stored_variable != null){
-    stored_variable = JSON.parse(stored_variable);
-    if(redraw_reason == 'gui' || redraw_reason == 'gif'){
-      //retrieve gui values
-      for(const control_name in gui.prototype._controls){
-        if(control_name == name){
-          //save to storage
-          let new_value = gui.prototype._controls[name].getValue();
-          if(stored_variable.scale) new_value = new_value/global_scale;
-          let frozen = stored_variable.frozen;
-          if(!multiplier_changed){
-            //don't freeze params that change due to multiplier changing. Multiplier changed only happens when size_x, size_y change
-            if(new_value != stored_variable.val && abs(new_value - stored_variable.val) >= stored_variable.step) frozen = true; 
+  if(controls_param == "full"){
+    //check if variable exists in local storage
+    const stored_name = project_name + "_" + name;
+    let stored_variable = protected_session_storage_get(stored_name);
+    let frozen = false;
+    if(stored_variable != null){
+      stored_variable = JSON.parse(stored_variable);
+      // if(redraw_reason == 'gui' || redraw_reason == 'gif'){
+      if(redraw){
+        //retrieve gui values
+        for(const control_name in gui.prototype._controls){
+          if(control_name == name){
+            frozen = stored_variable.frozen;
+            //save to storage
+            if(redraw_reason == "gui"){
+              val = gui.prototype._controls[name].getValue();
+              if(stored_variable.scale) val = val/global_scale;
+            }
+            if(frozen){
+              //retrieve locally stored values
+              name = stored_variable.name;
+              if(redraw_reason != "gui") val = stored_variable.val;
+              min = stored_variable.min;
+              max = stored_variable.max;
+              step = stored_variable.step;
+              scale = stored_variable.scale;
+            }
+            else if(!multiplier_changed){
+              //don't freeze params that change due to multiplier changing or rounding errors. Multiplier changed only happens when size_x, size_y change
+              if(val != stored_variable.val && abs(val - stored_variable.val) >= stored_variable.step) frozen = true; 
+            }
           }
-          write_parameter(stored_name, name, new_value, min, max, step, scale, frozen);
         }
       }
     }
-    else{
-      //if frozen take stored values, otherwise, use values as given
-      if(controls_param == "full" && stored_variable.frozen){
-        //retrieve locally stored values
-        name = stored_variable.name;
-        val = stored_variable.val;
-        min = stored_variable.min;
-        max = stored_variable.max;
-        step = stored_variable.step;
-        scale = stored_variable.scale;
-      }
-      else{
-        // if not frozen store new values
-        write_parameter(stored_name, name, val, min, max, step, scale, false);
-      }
-    }
+    write_parameter(stored_name, name, val, min, max, step, scale, frozen);
   }
-  else{
-    write_parameter(stored_name, name, val, min, max, step, scale, false)
-  }
-
   if(scale){
     val = val*global_scale;
     min = min*global_scale;
@@ -1041,6 +1031,11 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
     step = step*global_scale;
   }
 
+  //writes/overwrites global params for p5.gui to use
+  create_global_parameters(name, val, min, max, step);
+}
+
+function create_global_parameters(name, val, min, max, step){
   //if gui is reason for redrawing, let p5.gui handle the values directly
   if(redraw_reason != "gui"){
     //create or overwrite all globals
