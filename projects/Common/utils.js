@@ -29,7 +29,8 @@ let redraw = false;
 //gui vars
 let redraw_reason;
 var gui;
-let gui_params = [];
+const gui_params = [];
+const gui_params_frozen = {};
 let gui_collapsed = false;
 
 //color picker vars
@@ -771,18 +772,13 @@ function gui_changed(){
 }
 
 function clear_params(){
-  //retrieve gui values
   for(let i=0; i<gui_params.length; i++){
-    const stored_name = project_name + "_" + gui_params[i];
-    let stored_variable = protected_session_storage_get(stored_name);
-    if(stored_variable != null) stored_variable = JSON.parse(stored_variable);
-    stored_variable.frozen = false;
-    protected_session_storage_set(stored_name, JSON.stringify(stored_variable));
+    gui_params_frozen[gui_params[i]] = false;
   }
 
   clearMIDIvalues();
 
-  redraw_reason = "window";
+  redraw_reason = "reset_parameters";
   redraw_sketch();
 }
 
@@ -986,44 +982,24 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       val = round(val/step)*step; //coerce to nearest step val
     }
   }
-
-  if(controls_param == "full"){
-    //check if variable exists in local storage
-    const stored_name = project_name + "_" + name;
-    let stored_variable = protected_session_storage_get(stored_name);
-    let frozen = false;
-    if(stored_variable != null){
-      stored_variable = JSON.parse(stored_variable);
-      // if(redraw_reason == 'gui' || redraw_reason == 'gif'){
-      if(redraw){
-        //retrieve gui values
-        for(const control_name in gui.prototype._controls){
-          if(control_name == name){
-            frozen = stored_variable.frozen;
-            //save to storage
-            if(redraw_reason == "gui"){
-              val = gui.prototype._controls[name].getValue();
-              if(stored_variable.scale) val = val/global_scale;
-            }
-            if(frozen){
-              //retrieve locally stored values
-              name = stored_variable.name;
-              if(redraw_reason != "gui") val = stored_variable.val;
-              min = stored_variable.min;
-              max = stored_variable.max;
-              step = stored_variable.step;
-              scale = stored_variable.scale;
-            }
-            else if(!multiplier_changed){
-              //don't freeze params that change due to multiplier changing or rounding errors. Multiplier changed only happens when size_x, size_y change
-              if(val != stored_variable.val && abs(val - stored_variable.val) >= stored_variable.step) frozen = true; 
-            }
-          }
+  if(redraw){
+    for(const control_name in gui.prototype._controls){
+      if(control_name != name) continue;
+  
+      if(redraw_reason == "gui"){
+        const gui_val = gui.prototype._controls[name].getValue();
+        if(!multiplier_changed){
+          //don't freeze params that change due to multiplier changing or rounding errors. Multiplier changed only happens when size_x, size_y change
+          if(val != gui_val && abs(val - gui_val) >= step) gui_params_frozen[name] = true;
         }
       }
+      else{
+        if(gui_params_frozen[name]) val = gui.prototype._controls[name].getValue();
+      }
+      if(scale) val = val/global_scale;
     }
-    write_parameter(stored_name, name, val, min, max, step, scale, frozen);
   }
+
   if(scale){
     val = val*global_scale;
     min = min*global_scale;
@@ -1049,27 +1025,18 @@ function create_global_parameters(name, val, min, max, step){
     if(max != undefined) eval('globalThis.' + name +"Max =" + max);
     if(step != undefined) eval('globalThis.' + name +"Step =" + step);
 
-    if(!redraw) gui_params.push(name);
-    else{
-      //force gui to update shown values
-      gui.prototype._controls[name].control.min = String(min);
-      gui.prototype._controls[name].control.max = String(max);
-      gui.prototype._controls[name].control.step = String(step);
-      gui.prototype._controls[name].setValue(val);
+    if(!redraw){
+      gui_params.push(name);
+      gui_params_frozen[name] = false;
     }
+    else if(redraw_reason = "reset_parameters"){
+        //force gui to update shown values
+        gui.prototype._controls[name].control.min = String(min);
+        gui.prototype._controls[name].control.max = String(max);
+        gui.prototype._controls[name].control.step = String(step);
+        gui.prototype._controls[name].setValue(val);
+    }    
   }
-}
-
-function write_parameter(stored_name, name, val, min, max, step, scale, frozen){
-  protected_session_storage_set(stored_name, JSON.stringify({
-    name: name,
-    val: val,
-    min: min, 
-    max: max,
-    step: step,
-    scale: scale,
-    frozen: frozen
-  }));
 }
 
 function attach_icons(){
