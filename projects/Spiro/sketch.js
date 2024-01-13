@@ -66,7 +66,9 @@ function draw() {
 //***************************************************
 //custom funcs
 function draw_pts(pt_length){
-  background(bg_c);
+  if(frameCount/fr > 7) set_seed({srcElement: {id: "Randomize"}});
+  
+  if(type == "png") background(bg_c);
 
   if(glow){
     drawingContext.shadowColor = color(stroke_c);
