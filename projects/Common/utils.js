@@ -20,6 +20,7 @@ let palette_changed = true;
 let picker_changed = false;
 
 let global_scale = 1;
+let previous_scale = global_scale;
 let multiplier_changed = true;
 let controls_param, seed_param, colors_param, scale_param; //global url parameters
 const in_iframe = window.location !== window.parent.location;
@@ -59,7 +60,7 @@ function create_pickers(){
 
 function show_hide_pickers(){
   for(let i=0; i<longest_palette_length; i++){
-    if(i < palette.length) document.getElementById("picker_parent_" + i).style.visibility = "visible";
+    if(i < palette.length && controls_param != "false") document.getElementById("picker_parent_" + i).style.visibility = "visible";
     else  document.getElementById("picker_parent_" + i).style.visibility = "hidden";
   }
 }
@@ -249,12 +250,12 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
         gui.addGlobals(...gui_params);
       }
       add_gui_event_handlers();
+      // collapse or reposition param
+      retrieve_gui_settings();
     }
-    // add dice and slashes if necessary
-    attach_icons();
-    // collapse or reposition param
-    retrieve_gui_settings();
   }
+
+  attach_icons(); //attach icons decides whether to add dice and slash or not
 
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
@@ -479,7 +480,7 @@ function seed_scale_button(control_height, control_spacing){
 
 function show_hide_controls(arr, hide){
   arr.forEach(ctrl => {
-    const elem = document.getElementById(ctrl)
+    const elem = document.getElementById(ctrl);
     if(elem){
       if(hide){
         elem.style.visibility = "hidden"
@@ -793,7 +794,6 @@ function windowResized(e) {
 function redraw_sketch(){
   if(gif && animation && (redraw_reason == "gui" || redraw_reason == "midi")){
     gui_values();
-    attach_icons();
     return;
   }
   redraw = true;
@@ -821,8 +821,10 @@ function find_cnv_mult(size_x, size_y){
   if(type == "svg") return 1;
   size_x = max(400, size_x); //because we center within a 400x400 canvas for things smaller than 400
 
-  if(controls_param != "false") size_y += 40;
-  if(controls_param == "full") size_y += 20;//space for second row of controls, the extra 3 is make sure no vertical scrollbar
+  if(controls_param == "true") size_y += 40;
+  else if(controls_param == "full") size_y += 60;
+
+  size_y += 3; //extra 3 is make sure no vertical scrollbar in all window conifgurations
 
   const x_mult = Math.round((windowWidth/size_x)*1000)/1000; //find multiplier based on the x dimension  
   const y_mult = Math.round((windowHeight/size_y)*1000)/1000; //find multipler based on the y dimension
@@ -839,7 +841,7 @@ function find_cnv_mult(size_x, size_y){
 
   //check for change in multiplier due to gui param changes
   multiplier_changed = smaller_multiplier != global_scale
-
+  if(multiplier_changed) previous_scale = global_scale;
   return smaller_multiplier;
 }
 
@@ -982,21 +984,23 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       val = round(val/step)*step; //coerce to nearest step val
     }
   }
-  if(redraw){
+  if(redraw && controls_param == "full"){
     for(const control_name in gui.prototype._controls){
       if(control_name != name) continue;
   
+      let gui_val = gui.prototype._controls[name].getValue();
       if(redraw_reason == "gui"){
-        const gui_val = gui.prototype._controls[name].getValue();
         if(!multiplier_changed){
+          if(scale) gui_val = gui_val/global_scale;
           //don't freeze params that change due to multiplier changing or rounding errors. Multiplier changed only happens when size_x, size_y change
           if(val != gui_val && abs(val - gui_val) >= step) gui_params_frozen[name] = true;
         }
       }
-      else{
-        if(gui_params_frozen[name]) val = gui.prototype._controls[name].getValue();
+      else if(gui_params_frozen[name]){
+        val = gui_val;
+        if(scale && multiplier_changed) val = val/previous_scale;
+        else if(scale && !multiplier_changed) val = val/global_scale;
       }
-      if(scale) val = val/global_scale;
     }
   }
 
@@ -1029,7 +1033,7 @@ function create_global_parameters(name, val, min, max, step){
       gui_params.push(name);
       gui_params_frozen[name] = false;
     }
-    else if(redraw_reason = "reset_parameters"){
+    else if(redraw_reason == "reset_parameters"){
         //force gui to update shown values
         gui.prototype._controls[name].control.min = String(min);
         gui.prototype._controls[name].control.max = String(max);
@@ -1044,12 +1048,6 @@ function attach_icons(){
   //Dice icon attribution
   //<a href="https://www.flaticon.com/free-icons/dice" title="dice icons">Dice icons created by Freepik - Flaticon</a>
 
-  //find div class dice and remove them and re-add them
-  let to_remove = document.getElementsByClassName("dice");
-  for (let i = to_remove.length - 1; i >= 0; --i) {
-    to_remove[i].remove();
-  }
-
   const gui_containers = document.getElementsByClassName("qs_container");
   gui_containers.forEach(container => {
     let gui_label = container.getElementsByClassName("qs_label")[0];
@@ -1062,40 +1060,38 @@ function attach_icons(){
         console.log("cannot find label in control: ", container);
       }
     }
-    let label_content = gui_label.textContent.split(": ");
-    const stored_name = project_name + "_" + label_content[0];
-    let stored_variable = protected_session_storage_get(stored_name);
 
-    if(stored_variable != null){
-      let param = JSON.parse(stored_variable);
-      let div = document.createElement('div');
-      div.className = "dice";
+    //after initial creation, the only one that needs dice is the edited gui param
+    if(gui_label.querySelector('.dice') != null) return; //only create dice if necessary
 
-      //append dice image
-      let dice = document.createElement('img');
-      dice.src = "/images/dice.png";
-      dice.style = "height: 25px; position: relative; z-index: 0;";
-      //if dice clicked, apply slash
-      dice.addEventListener('click', (e)=>{
-        let slash = create_slash(stored_name, param);
-        e.target.parentElement.appendChild(slash);
-        param.frozen = true;
-        protected_session_storage_set(stored_name, JSON.stringify(param));
-      });
+    let parameter_label_name = gui_label.textContent.split(": ")[0];
 
-      div.appendChild(dice);
+    let div = document.createElement('div');
+    div.className = "dice";
 
-      if(param.frozen){
-        //append red slash
-        div.appendChild(create_slash(stored_name, param));
-      }
-      
-      gui_label.appendChild(div);
+    //append dice image
+    let dice = document.createElement('img');
+    dice.src = "/images/dice.png";
+    dice.style = "height: 25px; position: relative; z-index: 0;";
+    //if dice clicked, apply slash
+    dice.addEventListener('click', (e)=>{
+      let slash = create_slash(stored_name, param);
+      e.target.parentElement.appendChild(slash);
+      gui_params_frozen[parameter_label_name] = true;
+    });
+
+    div.appendChild(dice);
+
+    if(gui_params_frozen[parameter_label_name]){
+      //append red slash
+      div.appendChild(create_slash(parameter_label_name));
     }
+    
+    gui_label.appendChild(div);
   })
 }
 
-function create_slash(name, data){
+function create_slash(parameter_label_name){
   let slash = document.createElement('img');
   slash.id = "slash";
   slash.src = "/images/red_slash_up.svg";
@@ -1103,8 +1099,7 @@ function create_slash(name, data){
   //if slash clicked, remove slash
   slash.addEventListener('click', (e)=>{
     e.target.remove();
-    data.frozen = false;
-    protected_session_storage_set(name, JSON.stringify(data))
+    gui_params_frozen[parameter_label_name] = false;
   });
   return slash;
 }
@@ -1140,11 +1135,10 @@ function add_gui_event_handlers(){
 }
 
 function gui_dblclick(){
-  const prev_gui_collapsed_state = gui_collapsed;
+  if(gui_collapsed) attach_icons(); 
   //toggle gui collapsed status
   gui_collapsed = !gui_collapsed;
   protected_session_storage_set("gui_collapsed", JSON.stringify(gui_collapsed));
-  if(prev_gui_collapsed_state && !gui_collapsed) attach_icons(); 
 }
 
 function retrieve_gui_settings(){
