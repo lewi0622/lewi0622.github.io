@@ -2,7 +2,7 @@
 //setup variables
 const gif = false;
 const animation = false;
-const fr = 1;
+const fr = 0.5;
 const capture = false;
 const capture_time = 10;
 
@@ -27,7 +27,7 @@ function draw() {
 
   //apply background
   let bg_c = random(working_palette);
-  background(bg_c);
+  if(type == "png") background(bg_c);
 
   //actual drawing stuff
   push();
@@ -41,7 +41,6 @@ function draw() {
 
     const c = color(working_palette[z%working_palette.length]);
     fill(c);
-
     translate(random(canvas_x), random(canvas_y));
     rotate(random(360));
     let radius = map(noise(z/10), 0,1, canvas_x/8,max_radius);
