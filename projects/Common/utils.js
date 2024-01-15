@@ -1033,7 +1033,7 @@ function create_global_parameters(name, val, min, max, step){
       gui_params.push(name);
       gui_params_frozen[name] = false;
     }
-    else{
+    else if(controls_param == "full"){
         //force gui to update shown values
         gui.prototype._controls[name].control.min = String(min);
         gui.prototype._controls[name].control.max = String(max);
