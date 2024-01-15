@@ -22,6 +22,8 @@ for f in to_replace:
     
     file_contents = '''<!DOCTYPE html><html lang="en"><head>
     <script src="'''+rel_path.as_posix()+'''/p5.min.js"></script>
+    <!-- Perlin and Simplex Noise functions -->
+    <script src="'''+rel_path.as_posix()+'''/perlin.js"></script>
     <!-- Custom scripts -->
     <script src="'''+rel_path.as_posix()+'''/palettes.js"></script>
     <script src="sketch.js"></script>
@@ -36,8 +38,6 @@ for f in to_replace:
     <script src="'''+rel_path.as_posix()+'''/p5.svg.js"></script>   
     <!-- Pen Size Files for Plotting -->
     <script src="'''+rel_path.as_posix()+'''/pen_utils.js"></script>
-    <!-- Perlin and Simplex Noise functions -->
-    <script src="'''+rel_path.as_posix()+'''/perlin.js"></script>
     <!-- Color Picker lib -->
     <link rel="stylesheet" href="'''+rel_path.as_posix()+'''/Alwan_Color_Picker/css/alwan.min.css">
     <script src="'''+rel_path.as_posix()+'''/Alwan_Color_Picker/js/alwan.min.js"></script>
