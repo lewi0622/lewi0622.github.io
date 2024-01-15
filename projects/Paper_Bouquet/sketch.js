@@ -19,7 +19,6 @@ function gui_values(){
   parameterize("offset", 20, 0, 200, 1, false);
   parameterize("tightness", random(random(-5,0), random(0,5)), -5, 5, 0.01, false);
   parameterize("rotation", random(360), 0,360, 1, false);
-  blend_mode = 6;
 }
 
 function setup() {
@@ -32,6 +31,7 @@ function draw() {
   refresh_working_palette();
   //actual drawing stuff
   push();
+  blendMode(MULTIPLY);
   center_rotate(rotation);
   noStroke();
   curveTightness(tightness);
