@@ -233,8 +233,10 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   canvas_x = floor(size_x*global_scale);
   canvas_y = floor(size_y*global_scale);
 
-  randomSeed(parseInt(seed_param));
-  noiseSeed(parseInt(seed_param));
+  const int_seed = parseInt(seed_param);
+  randomSeed(int_seed);
+  noiseSeed(int_seed);
+  pnoise.seed(int_seed);
 
   seed_scale_button(control_height, control_spacing);
 
