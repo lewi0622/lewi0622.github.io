@@ -19,7 +19,6 @@ function gui_values(){
   parameterize("growth", random(0.3), 0, 1, 0.01, true);
   parameterize("layers", round(random(10,70)), 1, 200, 1, false);
   parameterize("blur_size", random(0.5,2), 0, 20, 0.1, true);
-  blend_mode = random([0, 11]);
 }
 
 function setup() {
@@ -31,6 +30,8 @@ function draw() {
 
   //actual drawing stuff
   push();
+  if(random()>0.5) blendMode(HARD_LIGHT);
+
   let bg_c = color("BLACK");
   background(bg_c);
 
