@@ -111,7 +111,7 @@ function color_changed(e){
 
   picker_changed = true;
   palette[picker_id] = picker_color;
-  protected_local_storage_set(palette_names[global_palette_id], JSON.stringify(palette));
+  protected_storage_set(palette_names[global_palette_id], JSON.stringify(palette), "local");
   redraw_sketch();
 }
 
@@ -211,11 +211,11 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   if(!capture) frameRate(fr);
 
   //init globals
-  const stored_file_type = protected_session_storage_get("fileType");
+  const stored_file_type = protected_storage_get("fileType", "session");
   if(renderer == SVG || stored_file_type == "svg"){//override stored values by setting renderer
     type = "svg";
     renderer = SVG;
-    protected_session_storage_set("fileType", type);
+    protected_storage_set("fileType", type, "session");
 
     parameterize("svg_width", size_x/96, 1, 30, 0.05, false);
     parameterize("svg_height", size_y/96, 1, 30, 0.05, false);
@@ -345,18 +345,18 @@ function seed_scale_button(control_height, control_spacing){
     button.id('Custom Seed')
 
     if(!in_iframe){
-    //reset palette button
-    reset_palette = createButton("Reset Palette");
-    reset_palette.mouseClicked(()=>{
-      //check if stored_palette exists
-      const pal = protected_local_storage_get(palette_names[global_palette_id]);
-      if(pal != null){
-        window.localStorage.removeItem(palette_names[global_palette_id]);
-        palette_changed = true;
-        redraw_sketch();
-      }
-    });
-    reset_palette.id('Reset Palette');
+      //reset palette button
+      reset_palette = createButton("Reset Palette");
+      reset_palette.mouseClicked(()=>{
+        //check if stored_palette exists
+        const pal = protected_storage_get(palette_names[global_palette_id], "local");
+        if(pal != null){
+          protected_storage_remove(palette_names[global_palette_id], "local");
+          palette_changed = true;
+          redraw_sketch();
+        }
+      });
+      reset_palette.id('Reset Palette');
     }
 
     //randomize button
@@ -537,7 +537,7 @@ function keyTyped(e) {
 function set_file_type(){
   //radio button changed
   const val = radio_filetype.value();
-  protected_session_storage_set("fileType", val);
+  protected_storage_set("fileType", val, "session");
   //hard refresh of window with current url values
   window.location.href = window.location.href;
 }
@@ -804,7 +804,7 @@ function redraw_sketch(){
 function change_default_palette(){
   global_palette_id = parseInt(colors_param);
   //check if local storage
-  const stored_palette = protected_local_storage_get(palette_names[global_palette_id])
+  const stored_palette = protected_storage_get(palette_names[global_palette_id], "local")
   if(stored_palette != null) palette = JSON.parse(stored_palette);
   else palette = JSON.parse(JSON.stringify(palettes[global_palette_id]));
   color_sel.selected(palette_names[global_palette_id]);
@@ -938,37 +938,37 @@ function arrayRotate(arr, count) {
   return arr;
 }
 
-function protected_session_storage_get(name){
-  try{ return sessionStorage.getItem(name); }
+function protected_storage_get(name, type){
+  try{ 
+    if(type == "session") return sessionStorage.getItem(name);
+    else if(type == "local") return localStorage.getItem(name); 
+    else console.log("storage type not properly specified");
+  }
   catch(err){
-    console.log("Cannot access session storage to get item, probably an ad blocker issue");
+    console.log("Cannot access " + type + " storage to set item, probably an ad blocker issue");
     return null;
   }
 }
 
-function protected_session_storage_set(name, val){
+function protected_storage_set(name, val, type){
   try{
-    sessionStorage.setItem(name, val);
+    if(type == "session") sessionStorage.setItem(name, val);
+    else if(type == "local") localStorage.setItem(name, val);
+    else console.log("storage type not properly specified");
   }
   catch(err){
-    console.log("Cannot access session storage to set item, probably an ad blocker issue");
+    console.log("Cannot access " + type + " storage to set item, probably an ad blocker issue");
   }
 }
 
-function protected_local_storage_get(name){
-  try{ return localStorage.getItem(name); }
-  catch(err){
-    console.log("Cannot access session storage to get item, probably an ad blocker issue");
-    return null;
-  }
-}
-
-function protected_local_storage_set(name, val){
+function protected_storage_remove(name, type){
   try{
-    localStorage.setItem(name, val);
+    if(type == "session") sessionStorage.removeItem(name);
+    else if(type == "local") localStorage.removeItem(name);
+    else console.log("storage type not properly specified");
   }
   catch(err){
-    console.log("Cannot access session storage to set item, probably an ad blocker issue");
+    console.log("Cannot access " + type + " storage to set item, probably an ad blocker issue");
   }
 }
 
@@ -978,7 +978,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
 
   if(midi_channel){
     const channel_name = give_grid_chanel_name(midi_channel);
-    const channel_value = protected_session_storage_get(channel_name);
+    const channel_value = protected_storage_get(channel_name, "session");
     if(channel_value != null){
       val = map(channel_value, 0, 127, min, max); //midi vals go from 0 to 127
       val = round(val/step)*step; //coerce to nearest step val
@@ -1117,7 +1117,7 @@ function snap_gui_to_window(){
 
   gui.setPosition(rect.x, rect.y);
 
-  protected_session_storage_set("gui_loc", JSON.stringify(rect));
+  protected_storage_set("gui_loc", JSON.stringify(rect), "session");
 }
 
 function add_gui_event_handlers(){
@@ -1138,14 +1138,14 @@ function gui_dblclick(){
   if(gui_collapsed) attach_icons(); 
   //toggle gui collapsed status
   gui_collapsed = !gui_collapsed;
-  protected_session_storage_set("gui_collapsed", JSON.stringify(gui_collapsed));
+  protected_storage_set("gui_collapsed", JSON.stringify(gui_collapsed), "session");
 }
 
 function retrieve_gui_settings(){
   if(controls_param != "full") return;
   // retrieve gui collapsed status and location
-  let stored_loc = protected_session_storage_get("gui_loc");
-  let collapsed = protected_session_storage_get("gui_collapsed");
+  let stored_loc = protected_storage_get("gui_loc", "session");
+  let collapsed = protected_storage_get("gui_collapsed", "session");
   if(stored_loc == null && collapsed == null) return;
 
   if(stored_loc != null){
