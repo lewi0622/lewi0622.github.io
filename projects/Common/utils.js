@@ -255,8 +255,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     }
   }
 
-  attach_icons(); //attach icons decides whether to add dice and slash or not
-
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
   frameCount = 0; //with animations, this needs to be one of the last things changed
@@ -608,6 +606,8 @@ function save_drawing(){
 }
 
 function global_draw_start(clear_cnv=true){
+  attach_icons(); //attach icons decides whether to add dice and slash or not
+
   if(clear_cnv) clear(); //should be false for some animating pieces
   //called from top of Draw to start capturing, requires CCapture
   if(capture && capture_state == "init"){
@@ -792,11 +792,11 @@ function windowResized(e) {
 }
 
 function redraw_sketch(){
+  redraw = true;
   if(gif && animation && (redraw_reason == "gui" || redraw_reason == "midi")){
     gui_values();
     return;
   }
-  redraw = true;
   setup();
   draw();
 }
@@ -1033,7 +1033,7 @@ function create_global_parameters(name, val, min, max, step){
       gui_params.push(name);
       gui_params_frozen[name] = false;
     }
-    else if(redraw_reason == "reset_parameters"){
+    else{
         //force gui to update shown values
         gui.prototype._controls[name].control.min = String(min);
         gui.prototype._controls[name].control.max = String(max);
