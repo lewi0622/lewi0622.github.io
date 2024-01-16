@@ -1261,7 +1261,7 @@ function set_linear_gradient(colors, start_x, start_y, end_x, end_y, style){
   else drawingContext.strokeStyle = gradient;
 }
 
-function controlled_shuffle(array, standardize=false, len=50) {
+function controlled_shuffle(array, standardize=false, len=longest_palette_length) {
   //shuffle algorithm that can standardize the size of the array so 
   //it won't cause seed issues using different palette lengths.
   if(standardize){
