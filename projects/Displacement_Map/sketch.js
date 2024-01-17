@@ -11,12 +11,12 @@ const suggested_palettes = [BEACHDAY, COTTONCANDY, BIRDSOFPARADISE, SOUTHWEST]
 function gui_values(){
   parameterize("num_rows", 200, 1, 1000, 1, false);
   parameterize("num_cols", 200, 1, 1000, 1, false);
-  parameterize("amp_noise", random(0.5,1.25), 0, 5, 0.1, true);
+  parameterize("amp_noise", random(0.5,1.5), 0, 5, 0.1, false);
   parameterize("num_warps", 50, 0, 100, 1, false);
-  parameterize("x_damp", random(50,200), 1, 500, 1, false);
-  parameterize("y_damp", random(50,200), 1, 500, 1, false);
-  parameterize("x_color_damp", random(200,600), 200, 1000, 1, false);
-  parameterize("y_color_damp", random(200,600), 200, 1000, 1, false);
+  parameterize("x_damp", random(15,40), 1, 100, 1, false);
+  parameterize("y_damp", random(15,40), 1, 100, 1, false);
+  parameterize("x_color_damp", random(50,150), 0, 500, 1, false);
+  parameterize("y_color_damp", random(50,150), 0, 500, 1, false);
   parameterize("falloff", 1, 0, 1, 0.1, false);
 }
 
@@ -49,23 +49,25 @@ function draw() {
   for(let i=0; i<num_rows; i++){
     for(let j=0; j<num_cols; j++){
       push();
-      let x = j * col_step;
-      let y = i * row_step;
+      let x = j;
+      let y = i;
       let amp = amp_noise;
       const c_index = map(pnoise.simplex2(x / x_color_damp, y / y_color_damp), -1,1, 0,1);
       const c_fill = color_map(c_index);
 
       for(let k=0; k<num_warps; k++){
-        x += amp * pnoise.simplex2(x / x_damp,y / y_damp);
+        x += amp * pnoise.simplex2(x / x_damp, y / y_damp);
         y += amp * pnoise.simplex2(y_offset + x / x_damp, y_offset + y / y_damp);
 
         c_fill.setAlpha(lerp(100, 10, k / num_warps));
 
         fill(c_fill);
 
-        let size_x = lerp(col_step*4, 0, k / num_warps);
-        let size_y = lerp(row_step*4, 0, k / num_warps);
-        ellipse(x, y, size_x, size_y);
+        //values past this point are scaled
+        const size_x = lerp(col_step*4, 0, k / num_warps);
+        const size_y = lerp(row_step*4, 0, k / num_warps);
+        
+        ellipse(x * col_step, y * row_step, size_x, size_y);
 
         amp *= falloff;
       }
