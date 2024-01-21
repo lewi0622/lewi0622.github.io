@@ -2,6 +2,7 @@
 // globals
 const project_path = window.location.pathname.split('/')
 const project_name = project_path[project_path.length-2];
+const parameter_storage_name = project_name + "_gui_params";
 let canvas_x, canvas_y, cnv;
 let file_saved = false;
 
@@ -30,8 +31,7 @@ let redraw = false;
 //gui vars
 let redraw_reason;
 var gui;
-const gui_params = [];
-const gui_params_frozen = {};
+const gui_params = {};
 let gui_collapsed = false;
 
 //color picker vars
@@ -144,6 +144,16 @@ function first_time_setup(){
       return false; 
     };
   }
+
+  //retrieve stored gui_params
+  let stored_params = protected_storage_get(parameter_storage_name, "session");
+  if(stored_params != null){
+    stored_params = JSON.parse(stored_params);
+    for(const key in stored_params){
+      gui_params[key] = stored_params[key];
+    }
+  }
+
 }
 
 function build_controls(){
@@ -244,17 +254,15 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
   gui_values();
 
-  if(controls_param == "full"){
+  if(controls_param == "full" && !redraw){
     //declare gui before noLoop is extended in p5.gui.js
-    if(!redraw){
-      gui = createGui('Parameters');
-      if(redraw_reason != "gui" || redraw==false){
-        gui.addGlobals(...gui_params);
-      }
-      add_gui_event_handlers();
-      // collapse or reposition param
-      retrieve_gui_settings();
+    gui = createGui('Parameters');
+    for(const key in gui_params){
+      gui.addGlobals(key);
     }
+    add_gui_event_handlers();
+    // collapse or reposition param
+    retrieve_gui_settings();
   }
 
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
@@ -327,18 +335,17 @@ function seed_scale_button(control_height, control_spacing){
     //START OF TOP ROW
     //left/right buttons for easy seed nav
     btLeft = createButton('<');
-    btLeft.mouseClicked(set_seed);
+    btLeft.mouseClicked(previous_seed);
     btLeft.id('Bt Left')
 
     //creates controls below canvas for displaying/setting seed
     seed_input = createInput("seed");
     seed_input.style("text-align", "right");
     seed_input.id('Seed');
-    seed_input.value(seed_param);
 
     //left/right buttons for easy seed nav
     btRight = createButton('>');
-    btRight.mouseClicked(set_seed);
+    btRight.mouseClicked(next_seed);
     btRight.id('Bt Right');
 
     //custom seed button
@@ -363,7 +370,7 @@ function seed_scale_button(control_height, control_spacing){
 
     //randomize button
     randomize = createButton("Randomize");
-    randomize.mouseClicked(set_seed);
+    randomize.mouseClicked(randomize_seed);
     randomize.id('Randomize');
 
     //START OF SECOND ROW
@@ -405,7 +412,7 @@ function seed_scale_button(control_height, control_spacing){
     //save button
     btSave = createButton("Save");
     btSave.mouseClicked(save_drawing);
-    btSave.id("Save")
+    btSave.id("Save");
   }
 
   if(!redraw || multiplier_changed || redraw_reason == "window"){
@@ -476,18 +483,30 @@ function seed_scale_button(control_height, control_spacing){
     show_hide_controls(ids, controls_param == "false");
     show_hide_controls(full_ids, controls_param != "full");
   }
+  seed_input.value(seed_param); //needs to be set every time
+}
+
+function randomize_seed(){
+  seed_input.value(build_seed());
+  set_seed();
+}
+
+function next_seed(){
+  seed_input.value(int(seed_input.value())+1);
+  set_seed();
+}
+
+function previous_seed(){
+  seed_input.value(int(seed_input.value())-1);
+  set_seed();
 }
 
 function show_hide_controls(arr, hide){
   arr.forEach(ctrl => {
     const elem = document.getElementById(ctrl);
     if(elem){
-      if(hide){
-        elem.style.visibility = "hidden"
-      }
-      else{
-        elem.style.visibility = "visible"
-      }
+      if(hide) elem.style.visibility = "hidden";
+      else elem.style.visibility = "visible";
     }
   });
 }
@@ -506,10 +525,6 @@ function set_seed(e){
   let event_id;
   if(e == undefined) event_id = "";
   else event_id = e.srcElement.id;
-
-  if(event_id == "Bt Right") seed_input.value(int(seed_input.value())+1);
-  else if(event_id == "Bt Left") seed_input.value(int(seed_input.value())-1);
-  else if (event_id == "Randomize") seed_input.value(Math.round(random()*1000000));
 
   seed_param = String(seed_input.value());
   colors_param = String(current_palette_index());
@@ -534,6 +549,9 @@ function keyTyped(e) {
   if(keyCode === ENTER && (event_id == "Seed" || event_id == "Scale Box")){
     set_seed(e); //pass thru event details
   }
+  else if(keyCode == 65) previous_seed(); //A key
+  else if(keyCode == 83) randomize_seed();//S key
+  else if(keyCode == 68) next_seed();     //D key
 }
 
 function set_file_type(){
@@ -775,11 +793,12 @@ function gui_changed(){
 }
 
 function clear_params(){
-  for(let i=0; i<gui_params.length; i++){
-    gui_params_frozen[gui_params[i]] = false;
+  for(const key in gui_params){
+    gui_params[key].frozen = false;
   }
 
   clearMIDIvalues();
+  remove_parameters();
 
   redraw_reason = "reset_parameters";
   redraw_sketch();
@@ -974,6 +993,21 @@ function protected_storage_remove(name, type){
   }
 }
 
+window.onunload = function(){save_parameters()}
+
+//create separate overwrite gui function
+
+function save_parameters(){
+  //called from onunload event when the page changes
+  protected_storage_set(parameter_storage_name, JSON.stringify(gui_params), "session");
+}
+
+function remove_parameters(){
+  //when Reset Parameters
+  protected_storage_remove(parameter_storage_name, "session");
+}
+
+
 function parameterize(name, val, min, max, step, scale, midi_channel){
   if(scale == undefined || scale != true) scale=false;
   if(midi_channel == undefined) midi_channel = false;
@@ -995,15 +1029,35 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
         if(!multiplier_changed){
           if(scale) gui_val = gui_val/global_scale;
           //don't freeze params that change due to multiplier changing or rounding errors. Multiplier changed only happens when size_x, size_y change
-          if(val != gui_val && abs(val - gui_val) >= step) gui_params_frozen[name] = true;
+          if(val != gui_val && abs(val - gui_val) >= step) gui_params[name].frozen = true;
         }
+        if(gui_params[name].frozen) val = gui_val;
       }
-      else if(gui_params_frozen[name]){
+      else if(gui_params[name].frozen){
         val = gui_val;
         if(scale && multiplier_changed) val = val/previous_scale;
         else if(scale && !multiplier_changed) val = val/global_scale;
       }
     }
+  }
+
+  if(gui_params[name] == undefined){
+    gui_params[name] = { //store pre-scaled value if it doesn't exist
+      value:val,
+      min:min,
+      max:max,
+      step:step,
+      scale:scale,
+      frozen:false
+    };
+  }
+  else{
+    if(!redraw && gui_params[name].frozen) val = gui_params[name].value; //retrieve stored value
+    gui_params[name].value = val;
+    gui_params[name].min = min;
+    gui_params[name].max = max;
+    gui_params[name].step = step;
+    gui_params[name].scale = scale;
   }
 
   if(scale){
@@ -1031,18 +1085,16 @@ function create_global_parameters(name, val, min, max, step){
     if(max != undefined) eval('globalThis.' + name +"Max =" + max);
     if(step != undefined) eval('globalThis.' + name +"Step =" + step);
 
-    if(!redraw){
-      gui_params.push(name);
-      gui_params_frozen[name] = false;
-    }
-    else if(controls_param == "full"){
-        //force gui to update shown values
-        gui.prototype._controls[name].control.min = String(min);
-        gui.prototype._controls[name].control.max = String(max);
-        gui.prototype._controls[name].control.step = String(step);
-        gui.prototype._controls[name].setValue(val);
-    }    
+    if(redraw && controls_param == "full") gui_force_update(name, val, min, max, step);
   }
+}
+
+function gui_force_update(name, val, min, max, step){
+  //force gui to update shown values
+  gui.prototype._controls[name].control.min = String(min);
+  gui.prototype._controls[name].control.max = String(max);
+  gui.prototype._controls[name].control.step = String(step);
+  gui.prototype._controls[name].setValue(val);
 }
 
 function attach_icons(){
@@ -1077,14 +1129,14 @@ function attach_icons(){
     dice.style = "height: 25px; position: relative; z-index: 0;";
     //if dice clicked, apply slash
     dice.addEventListener('click', (e)=>{
-      let slash = create_slash(stored_name, param);
+      let slash = create_slash(parameter_label_name);
       e.target.parentElement.appendChild(slash);
-      gui_params_frozen[parameter_label_name] = true;
+      gui_params[parameter_label_name].frozen = true;
     });
 
     div.appendChild(dice);
 
-    if(gui_params_frozen[parameter_label_name]){
+    if(gui_params[parameter_label_name].frozen){
       //append red slash
       div.appendChild(create_slash(parameter_label_name));
     }
@@ -1101,7 +1153,7 @@ function create_slash(parameter_label_name){
   //if slash clicked, remove slash
   slash.addEventListener('click', (e)=>{
     e.target.remove();
-    gui_params_frozen[parameter_label_name] = false;
+    gui_params[parameter_label_name].frozen = false;
   });
   return slash;
 }
