@@ -538,7 +538,10 @@ function set_seed(e){
   //using pushState allows for changing the url, and then redrawing without needing to reload the page
   window.history.pushState({}, "", build_url());
 
-  if(event_id == "Color Select") palette_changed = true; //color picker was used
+  if(event_id == "Color Select"){
+    palette_changed = true; //color picker was used
+    document.getElementById("Color Select").blur(); //un-focus color select 
+  }
 
   redraw_sketch();
 }
