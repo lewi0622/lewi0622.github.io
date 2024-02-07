@@ -200,13 +200,17 @@ else:
     svg_height_inches = float(svg_height)/96
 
 #tk widgets and window
-current_row = 0#helper row var, inced every time used;
+current_row = 0#helper row var, inc-ed every time used;
 
 window = Tk()
 title = Label(window, text="Vpype Options", fg="blue", cursor="hand2")
 title.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/index.html"))
 title.grid(row=current_row,column=0,columnspan=2)
 current_row +=1 
+
+Label(window, text=f"{len(input_files)} file(s) selected").grid(row=current_row, column=0, columnspan=2)
+current_row +=1 
+
 Label(window, text=f"Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
 current_row +=1 
 
