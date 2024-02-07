@@ -207,7 +207,7 @@ title = Label(window, text="Vpype Options", fg="blue", cursor="hand2")
 title.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/index.html"))
 title.grid(row=current_row,column=0,columnspan=2)
 current_row +=1 
-dimensions = Label(window, text=f"Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
+Label(window, text=f"Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
 current_row +=1 
 
 occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
@@ -215,31 +215,31 @@ occult_label.bind("<Button-1>", lambda e: callback("https://github.com/LoicGoule
 occult_label.grid(row=current_row, column=0, columnspan=2)
 current_row += 1 
 occult = IntVar(value=0)
-occult_button = Checkbutton(window, text="Occult", variable=occult).grid(row=current_row, column=0)
+Checkbutton(window, text="Occult", variable=occult).grid(row=current_row, column=0)
 occult_keep_lines = IntVar(value=0)
-occult_keep_lines_button = Checkbutton(window, text="Keep occulted lines", variable=occult_keep_lines).grid(row=current_row, column=1)
+Checkbutton(window, text="Keep occulted lines", variable=occult_keep_lines).grid(row=current_row, column=1)
 current_row +=1 
 occult_ignore = IntVar(value=1)
-occult_ignore_button = Checkbutton(window, text="Occult ignores Layers", variable=occult_ignore).grid(row=current_row, column=0)
+Checkbutton(window, text="Occult ignores Layers", variable=occult_ignore).grid(row=current_row, column=0)
 occult_accross = IntVar(value=0)
-occult_accross_button = Checkbutton(window, text="Occult accross layers, not within", variable=occult_accross).grid(row=current_row, column=1)
+Checkbutton(window, text="Occult accross layers, not within", variable=occult_accross).grid(row=current_row, column=1)
 current_row +=1 
 
 crop_label = Label(window, text="Crop to above dimensions on read", fg="blue", cursor="hand2")
 crop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#cmdoption-read-c"))
 crop_label.grid(row=current_row,column=0)
 crop = IntVar(value=1)
-crop_button = Checkbutton(window, text="Crop input", variable=crop).grid(row=current_row,column=1)
+Checkbutton(window, text="Crop input", variable=crop).grid(row=current_row,column=1)
 current_row +=1 
 
 scale_label = Label(window, text="Scale options (default: input file size)", fg="blue", cursor="hand2")
 scale_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#scaleto"))
 scale_label.grid(row=current_row, column=0)
 scale_option = IntVar(value=1)
-scale_button = Checkbutton(window, text="Scale?", variable=scale_option).grid(row=current_row,column=1)
+Checkbutton(window, text="Scale?", variable=scale_option).grid(row=current_row,column=1)
 current_row +=1 
-scale_width_label = Label(window, text="Width Scale to (inches):").grid(row=current_row, column=0)
-scale_height_label = Label(window, text="Height Scale to (inches):").grid(row=current_row, column=1)
+Label(window, text="Width Scale to (inches):").grid(row=current_row, column=0)
+Label(window, text="Height Scale to (inches):").grid(row=current_row, column=1)
 
 current_row +=1 
 scale_width_entry = Entry(window)
@@ -276,11 +276,11 @@ layout_combobox.grid(row=current_row, column=0)
 layout_combobox.bind("<<ComboboxSelected>>", selection_changed)
 
 layout = IntVar(value=1)
-layout_button = Checkbutton(window, text="Layout?", variable=layout).grid(row=current_row, column=1)
+Checkbutton(window, text="Layout?", variable=layout).grid(row=current_row, column=1)
 
 current_row +=1
-layout_width_label = Label(window, text="Page Layout Width(inches):").grid(row=current_row, column=0)
-layout_height_label = Label(window, text="Page Layout Height(inches):").grid(row=current_row, column=1)
+Label(window, text="Page Layout Width(inches):").grid(row=current_row, column=0)
+Label(window, text="Page Layout Height(inches):").grid(row=current_row, column=1)
 
 current_row +=1 
 layout_width_entry = Entry(window)
@@ -295,15 +295,14 @@ current_row +=1
 layout_landscape_label = Label(window, text="By default, the larger layout size is assumed to\n be the height Landscape flips the orientation")
 layout_landscape_label.grid(row=current_row, column=0)
 layout_landscape = IntVar(value=1)
-layout_landscape_button = Checkbutton(window, text="Landscape", variable=layout_landscape)
-layout_landscape_button.grid(row=current_row, column=1)
+Checkbutton(window, text="Landscape", variable=layout_landscape).grid(row=current_row, column=1)
 current_row +=1 
 
 linemerge_label = Label(window, text="Merge Lines with overlapping line endings", fg="blue", cursor="hand2")
 linemerge_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linemerge"))
 linemerge_label.grid(row=current_row, column=0)
 linemerge = IntVar(value=1)
-linemerge_button = Checkbutton(window, text="linemerge", variable=linemerge).grid(row=current_row, column=1)
+Checkbutton(window, text="linemerge", variable=linemerge).grid(row=current_row, column=1)
 current_row +=1 
 linemerge_tolerance_label = Label(window, text="Linemerge tolerance (inches) to merge lines").grid(row=current_row, column=0)
 linemerge_tolerance = Entry(window)
@@ -315,23 +314,23 @@ linesort_label = Label(window, text="Sort Lines", fg="blue", cursor="hand2")
 linesort_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linesort"))
 linesort_label.grid(row=current_row, column=0)
 linesort = IntVar(value=1)
-linesort_button = Checkbutton(window, text="linesort", variable=linesort).grid(row=current_row, column=1)
+Checkbutton(window, text="linesort", variable=linesort).grid(row=current_row, column=1)
 current_row +=1 
 
 reloop_label = Label(window, text="Randomize seam location on closed paths", fg="blue", cursor="hand2")
 reloop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#reloop"))
 reloop_label.grid(row=current_row, column=0)
 reloop = IntVar(value=1)
-reloop_button = Checkbutton(window, text="reloop", variable=reloop).grid(row=current_row, column=1)
+Checkbutton(window, text="reloop", variable=reloop).grid(row=current_row, column=1)
 current_row +=1 
 
 linesimplify_label = Label(window, text="Reduce geometry complexity", fg="blue", cursor="hand2")
 linesimplify_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linesimplify"))
 linesimplify_label.grid(row=current_row, column=0)
 linesimplify = IntVar(value=1)
-linesimplify_button = Checkbutton(window, text="linesimplify", variable=linesimplify).grid(row=current_row, column=1)
+Checkbutton(window, text="linesimplify", variable=linesimplify).grid(row=current_row, column=1)
 current_row +=1 
-linesimplify_tolerance_label = Label(window, text="Linesimplify tolerance (inches) to simplify geometries").grid(row=current_row, column=0)
+Label(window, text="Linesimplify tolerance (inches) to simplify geometries").grid(row=current_row, column=0)
 linesimplify_tolerance = Entry(window)
 linesimplify_tolerance.insert(0, "0.001968504")
 linesimplify_tolerance.grid(row=current_row, column=1)
@@ -341,16 +340,16 @@ squiggle_label = Label(window, text="Add squiggle filter", fg="blue", cursor="ha
 squiggle_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#squiggles"))
 squiggle_label.grid(row=current_row, column=0)
 squiggle = IntVar(value=0)
-squiggle_button = Checkbutton(window, text="squiggle", variable=squiggle).grid(row=current_row, column=1)
+Checkbutton(window, text="squiggle", variable=squiggle).grid(row=current_row, column=1)
 current_row +=1 
 
-squiggle_amplitude_label = Label(window, text="Amplitude of squiggle").grid(row=current_row, column=0)
+Label(window, text="Amplitude of squiggle").grid(row=current_row, column=0)
 squiggle_amplitude = Entry(window)
 squiggle_amplitude.insert(0, "0.019685")
 squiggle_amplitude.grid(row=current_row, column=1)
 current_row +=1 
 
-squiggle_period_label = Label(window, text="Period of squiggle").grid(row=current_row, column=0)
+Label(window, text="Period of squiggle").grid(row=current_row, column=0)
 squiggle_period = Entry(window)
 squiggle_period.insert(0, "0.11811")
 squiggle_period.grid(row=current_row, column=1)
@@ -360,27 +359,27 @@ multipass_label = Label(window, text="Add multiple passes to all lines", fg="blu
 multipass_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#multipass"))
 multipass_label.grid(row=current_row, column=0)
 multipass = IntVar(value=0)
-multipass_button = Checkbutton(window, text="multipass", variable=multipass).grid(row=current_row, column=1)
+Checkbutton(window, text="multipass", variable=multipass).grid(row=current_row, column=1)
 current_row +=1
 
 separate_files_label = Label(window, text="Seperate SVG Layers into individual files", fg="blue", cursor="hand2")
 separate_files_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file"))
 separate_files_label.grid(row=current_row, column=0)
 separate_files = IntVar(value=0)
-separate_files_button = Checkbutton(window, text="Separate Files", variable=separate_files).grid(row=current_row, column=1)
+Checkbutton(window, text="Separate Files", variable=separate_files).grid(row=current_row, column=1)
 current_row += 1
 
 paint = IntVar(value=0)
 if len(input_files) == 1:
-    paint_label = Label(window, text="Run Paint after").grid(row=current_row, column=0)
-    paint_button = Checkbutton(window, text="Paint", variable=paint).grid(row=current_row, column=1)
+    Label(window, text="Run Paint after").grid(row=current_row, column=0)
+    Checkbutton(window, text="Paint", variable=paint).grid(row=current_row, column=1)
     current_row +=1
 
-show_button = Button(window, text="Show Output", command=show_vpypeline).grid(row=current_row, column=0)
+Button(window, text="Show Output", command=show_vpypeline).grid(row=current_row, column=0)
 if len(input_files)>1:
-    confirm_button = Button(window, text="Apply to All", command=run_vpypeline).grid(row=current_row, column=1)
+    Button(window, text="Apply to All", command=run_vpypeline).grid(row=current_row, column=1)
 else:
-    confirm_button = Button(window, text="Confirm", command=run_vpypeline).grid(row=current_row, column=1)
+    Button(window, text="Confirm", command=run_vpypeline).grid(row=current_row, column=1)
 
 window.mainloop()
 
