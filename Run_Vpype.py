@@ -241,186 +241,178 @@ else:
     svg_height_inches = float(svg_height)/96
 
 #tk widgets and window
-current_row = 0#helper row var, inc-ed every time used;
+current_row = 0 #helper row var, inc-ed every time used;
 
 window = Tk()
 title = Label(window, text="Vpype Options", fg="blue", cursor="hand2")
 title.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/index.html"))
-title.grid(row=current_row,column=0,columnspan=2)
+title.grid(row=current_row,column=0)
+
+Label(window, text=f"{len(input_files)} file(s) selected, Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=1, columnspan=3)
 current_row +=1 
 
-Label(window, text=f"{len(input_files)} file(s) selected").grid(row=current_row, column=0, columnspan=2)
-current_row +=1 
-
-Label(window, text=f"Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
-current_row +=1 
-
-ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=2)
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
 current_row += 1
 
 occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
 occult_label.bind("<Button-1>", lambda e: callback("https://github.com/LoicGoulefert/occult"))
-occult_label.grid(row=current_row, column=0, columnspan=2)
-current_row += 1 
+occult_label.grid(row=current_row, column=0)
 occult = IntVar(value=0)
-Checkbutton(window, text="Occult", variable=occult).grid(row=current_row, column=0)
+Checkbutton(window, text="Occult", variable=occult).grid(sticky="w", row=current_row, column=1)
 occult_keep_lines = IntVar(value=0)
-Checkbutton(window, text="Keep occulted lines", variable=occult_keep_lines).grid(row=current_row, column=1)
-current_row +=1 
+Checkbutton(window, text="Keep occulted lines", variable=occult_keep_lines).grid(sticky="w", row=current_row, column=2)
+current_row += 1 
+
 occult_ignore = IntVar(value=1)
-Checkbutton(window, text="Occult ignores Layers", variable=occult_ignore).grid(row=current_row, column=0)
+Checkbutton(window, text="Ignores Layers", variable=occult_ignore).grid(sticky="w", row=current_row, column=1)
 occult_accross = IntVar(value=0)
-Checkbutton(window, text="Occult accross layers, not within", variable=occult_accross).grid(row=current_row, column=1)
+Checkbutton(window, text="Occult accross layers,\nnot within", variable=occult_accross).grid(sticky="w", row=current_row, column=2)
 current_row +=1 
 
-ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=2)
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
 current_row += 1
 
 crop_label = Label(window, text="Crop to above dimensions on read", fg="blue", cursor="hand2")
 crop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#cmdoption-read-c"))
 crop_label.grid(row=current_row,column=0)
 crop = IntVar(value=1)
-Checkbutton(window, text="Crop input", variable=crop).grid(row=current_row,column=1)
-current_row +=1 
+Checkbutton(window, text="Crop input", variable=crop).grid(sticky="w", row=current_row,column=1)
 
-scale_label = Label(window, text="Scale options (default: input file size)", fg="blue", cursor="hand2")
+scale_label = Label(window, text="Scale options\n(default: input file size)", fg="blue", cursor="hand2")
 scale_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#scaleto"))
-scale_label.grid(row=current_row, column=0)
+scale_label.grid(row=current_row, column=2)
 scale_option = IntVar(value=1)
-Checkbutton(window, text="Scale?", variable=scale_option).grid(row=current_row,column=1)
+Checkbutton(window, text="Scale?", variable=scale_option).grid(sticky="w", row=current_row,column=3)
 current_row +=1 
-Label(window, text="Width Scale to (inches):").grid(row=current_row, column=0)
-Label(window, text="Height Scale to (inches):").grid(row=current_row, column=1)
-
-current_row +=1 
-scale_width_entry = Entry(window)
-scale_width_entry.insert(0,f"{svg_width_inches}")
-scale_width_entry.grid(row=current_row, column=0)
-
-scale_height_entry = Entry(window)
-scale_height_entry.insert(0,f"{svg_height_inches}")
-scale_height_entry.grid(row=current_row, column=1)
-current_row +=1 
-
 rotate_label = Label(window, text="Rotate Clockwise", fg="blue", cursor="hand2")
 rotate_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
 rotate_label.grid(row=current_row, column=0)
-rotate_entry = Entry(window)
+rotate_entry = Entry(window, width=7)
 if float(svg_width_inches) < float(svg_height_inches) and float(svg_width_inches)<12:
     rotate_entry.insert(0, "90") #autoroate for small axidraw designs where the width is the long side
 else:
     rotate_entry.insert(0, "0") 
-rotate_entry.grid(row=current_row, column=1)
+rotate_entry.grid(sticky="w", row=current_row, column=1)
+
+Label(window, text="Width Scale to (in):").grid(row=current_row, column=2)
+scale_width_entry = Entry(window, width=7)
+scale_width_entry.insert(0,f"{svg_width_inches}")
+scale_width_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
-layout_label = Label(text="Layout(centers scaled design in page size)", fg="blue", cursor="hand2")
+Label(window, text="Height Scale to (in):").grid(row=current_row, column=2)
+scale_height_entry = Entry(window, width=7)
+scale_height_entry.insert(0,f"{svg_height_inches}")
+scale_height_entry.grid(sticky="w", row=current_row, column=3)
+current_row +=1 
+
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
+current_row += 1
+
+layout_label = Label(text="Layout centers scaled\ndesign in page size)", fg="blue", cursor="hand2")
 layout_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#layout"))
-layout_label.grid(row=current_row, column=0, columnspan=2)
+layout_label.grid(row=current_row, column=0)
+layout = IntVar(value=1)
+Checkbutton(window, text="Layout?", variable=layout).grid(sticky="w", row=current_row, column=1)
+
+Label(window, text="Page Layout Width(in):").grid(row=current_row, column=2)
+layout_width_entry = Entry(window, width=7)
+layout_width_entry.insert(0,f"8.5")
+layout_width_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
+Label(window, text="Page Size").grid(row=current_row, column=0)
 layout_combobox = ttk.Combobox(
+    width=7,
     state="readonly",
     values=["Letter", "A4", "A3", "A2"]
 )
 layout_combobox.current(0)
-layout_combobox.grid(row=current_row, column=0)
+layout_combobox.grid(sticky="w", row=current_row, column=1)
 layout_combobox.bind("<<ComboboxSelected>>", layout_selection_changed)
 
-layout = IntVar(value=1)
-Checkbutton(window, text="Layout?", variable=layout).grid(row=current_row, column=1)
-
-current_row +=1
-Label(window, text="Page Layout Width(inches):").grid(row=current_row, column=0)
-Label(window, text="Page Layout Height(inches):").grid(row=current_row, column=1)
-
-current_row +=1 
-layout_width_entry = Entry(window)
-layout_width_entry.insert(0,f"8.5")
-layout_width_entry.grid(row=current_row, column=0)
-
-layout_height_entry = Entry(window)
+Label(window, text="Page Layout Height(in):").grid(row=current_row, column=2)
+layout_height_entry = Entry(window, width=7)
 layout_height_entry.insert(0,f"11")
-layout_height_entry.grid(row=current_row, column=1)
-current_row +=1 
+layout_height_entry.grid(sticky="w", row=current_row, column=3)
+current_row +=1
 
-layout_landscape_label = Label(window, text="By default, the larger layout size is assumed to\n be the height, Landscape flips the orientation")
-layout_landscape_label.grid(row=current_row, column=0)
+layout_landscape_label = Label(window, text="By default, the larger layout size is the height,\nLandscape flips the orientation")
+layout_landscape_label.grid(row=current_row, column=0, columnspan=2)
 layout_landscape = IntVar(value=1)
-Checkbutton(window, text="Landscape", variable=layout_landscape).grid(row=current_row, column=1)
+Checkbutton(window, text="Landscape", variable=layout_landscape).grid(sticky="w", row=current_row, column=2)
 current_row +=1 
 
-linemerge_label = Label(window, text="Merge Lines with overlapping line endings", fg="blue", cursor="hand2")
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
+current_row += 1
+
+linemerge_label = Label(window, text="Merge Lines with\noverlapping line endings", fg="blue", cursor="hand2")
 linemerge_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linemerge"))
 linemerge_label.grid(row=current_row, column=0)
 linemerge = IntVar(value=1)
-Checkbutton(window, text="linemerge", variable=linemerge).grid(row=current_row, column=1)
-current_row +=1 
-linemerge_tolerance_label = Label(window, text="Linemerge tolerance (inches) to merge lines").grid(row=current_row, column=0)
-linemerge_tolerance = Entry(window)
-linemerge_tolerance.insert(0, "0.001968504")
-linemerge_tolerance.grid(row=current_row, column=1)
+Checkbutton(window, text="linemerge", variable=linemerge).grid(sticky="w", row=current_row, column=1)
+linemerge_tolerance_label = Label(window, text="Linemerge tolerance (in)").grid(row=current_row, column=2)
+linemerge_tolerance_entry = Entry(window, width=7)
+linemerge_tolerance_entry.insert(0, "0.0019")
+linemerge_tolerance_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 linesort_label = Label(window, text="Sort Lines", fg="blue", cursor="hand2")
 linesort_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linesort"))
 linesort_label.grid(row=current_row, column=0)
 linesort = IntVar(value=1)
-Checkbutton(window, text="linesort", variable=linesort).grid(row=current_row, column=1)
-current_row +=1 
+Checkbutton(window, text="linesort", variable=linesort).grid(sticky="w", row=current_row, column=1)
 
-reloop_label = Label(window, text="Randomize seam location on closed paths", fg="blue", cursor="hand2")
+reloop_label = Label(window, text="Randomize seam location\non closed paths", fg="blue", cursor="hand2")
 reloop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#reloop"))
-reloop_label.grid(row=current_row, column=0)
+reloop_label.grid(row=current_row, column=2)
 reloop = IntVar(value=1)
-Checkbutton(window, text="reloop", variable=reloop).grid(row=current_row, column=1)
+Checkbutton(window, text="reloop", variable=reloop).grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 linesimplify_label = Label(window, text="Reduce geometry complexity", fg="blue", cursor="hand2")
 linesimplify_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linesimplify"))
 linesimplify_label.grid(row=current_row, column=0)
 linesimplify = IntVar(value=1)
-Checkbutton(window, text="linesimplify", variable=linesimplify).grid(row=current_row, column=1)
-current_row +=1 
-Label(window, text="Linesimplify tolerance (inches) to simplify geometries").grid(row=current_row, column=0)
-linesimplify_tolerance = Entry(window)
-linesimplify_tolerance.insert(0, "0.001968504")
-linesimplify_tolerance.grid(row=current_row, column=1)
+Checkbutton(window, text="linesimplify", variable=linesimplify).grid(sticky="w", row=current_row, column=1)
+Label(window, text="Linesimplify tolerance (in)").grid(row=current_row, column=2)
+linesimplify_tolerance_entry = Entry(window, width=7)
+linesimplify_tolerance_entry.insert(0, "0.0019")
+linesimplify_tolerance_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 squiggle_label = Label(window, text="Add squiggle filter", fg="blue", cursor="hand2")
 squiggle_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#squiggles"))
 squiggle_label.grid(row=current_row, column=0)
 squiggle = IntVar(value=0)
-Checkbutton(window, text="squiggle", variable=squiggle).grid(row=current_row, column=1)
+Checkbutton(window, text="squiggle", variable=squiggle).grid(sticky="w", row=current_row, column=1)
+
+Label(window, text="Amplitude of squiggle(in)").grid(row=current_row, column=2)
+squiggle_amplitude_entry = Entry(window, width=7)
+squiggle_amplitude_entry.insert(0, "0.0196")
+squiggle_amplitude_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
-Label(window, text="Amplitude of squiggle").grid(row=current_row, column=0)
-squiggle_amplitude = Entry(window)
-squiggle_amplitude.insert(0, "0.019685")
-squiggle_amplitude.grid(row=current_row, column=1)
-current_row +=1 
-
-Label(window, text="Period of squiggle").grid(row=current_row, column=0)
-squiggle_period = Entry(window)
-squiggle_period.insert(0, "0.11811")
-squiggle_period.grid(row=current_row, column=1)
+Label(window, text="Period of squiggle(in)").grid(row=current_row, column=2)
+squiggle_period_entry = Entry(window, width=7)
+squiggle_period_entry.insert(0, "0.1181")
+squiggle_period_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 multipass_label = Label(window, text="Add multiple passes to all lines", fg="blue", cursor="hand2")
 multipass_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#multipass"))
 multipass_label.grid(row=current_row, column=0)
 multipass = IntVar(value=0)
-Checkbutton(window, text="multipass", variable=multipass).grid(row=current_row, column=1)
-current_row +=1
+Checkbutton(window, text="multipass", variable=multipass).grid(sticky="w", row=current_row, column=1)
 
-separate_files_label = Label(window, text="Seperate SVG Layers into individual files", fg="blue", cursor="hand2")
+separate_files_label = Label(window, text="Separate SVG Layers\ninto individual files", fg="blue", cursor="hand2")
 separate_files_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file"))
-separate_files_label.grid(row=current_row, column=0)
+separate_files_label.grid(row=current_row, column=2)
 separate_files = IntVar(value=0)
-Checkbutton(window, text="Separate Files", variable=separate_files).grid(row=current_row, column=1)
+Checkbutton(window, text="Separate Files", variable=separate_files).grid(sticky="w", row=current_row, column=3)
 current_row += 1
 
-ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=2)
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
 current_row += 1
 
 grid_label = Label(window, text="Merge Multiple SVGs into Grid", fg="blue", cursor="hand2")
@@ -428,72 +420,65 @@ grid_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/e
 grid_label.grid(row=current_row, column=0)
 
 grid = IntVar(value=0)
-Checkbutton(window, text="Grid", variable=grid).grid(row=current_row, column=1)
-current_row += 1
+Checkbutton(window, text="Grid", variable=grid).grid(sticky="w", row=current_row, column=1)
 
-Label(window, text="Grid Page Size").grid(row=current_row, column=0)
+Label(window, text="Grid Page Size").grid(row=current_row, column=2)
 grid_page_size_combobox = ttk.Combobox(
+    width=7,
     state="readonly",
     values=["Letter", "A4", "A3", "A2"]
 )
 grid_page_size_combobox.current(0)
-grid_page_size_combobox.grid(row=current_row, column=1)
+grid_page_size_combobox.grid(sticky="w", row=current_row, column=3)
 grid_page_size_combobox.bind("<<ComboboxSelected>>", grid_page_size_selection_changed)
 current_row +=1
 
-Label(window, text="Grid Page Size Width(inches):").grid(row=current_row, column=0)
-Label(window, text="Grid Page Size Height(inches):").grid(row=current_row, column=1)
-current_row +=1 
-
-grid_page_width_entry = Entry(window)
+Label(window, text="Grid Page Size Width(in):").grid(row=current_row, column=0)
+grid_page_width_entry = Entry(window, width=7)
 grid_page_width_entry.insert(0, "8.5")
-grid_page_width_entry.grid(row=current_row, column=0)
+grid_page_width_entry.grid(sticky="w", row=current_row, column=1)
 
-grid_page_height_entry = Entry(window)
+Label(window, text="Grid Page Size Height(in):").grid(row=current_row, column=2)
+grid_page_height_entry = Entry(window, width=7)
 grid_page_height_entry.insert(0, "11")
-grid_page_height_entry.grid(row=current_row, column=1)
+grid_page_height_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 Label(window, text="Grid Columns:").grid(row=current_row, column=0)
-Label(window, text="Grid Rows:").grid(row=current_row, column=1)
-current_row +=1 
-
-grid_col_entry = Entry(window, validate="focusout", validatecommand=grid_row_col_changed)
+grid_col_entry = Entry(window, width=7, validate="focusout", validatecommand=grid_row_col_changed)
 grid_col_entry.insert(0, "1")
-grid_col_entry.grid(row=current_row, column=0)
+grid_col_entry.grid(sticky="w", row=current_row, column=1)
 
-grid_row_entry = Entry(window, validate="focusout", validatecommand=grid_row_col_changed)
+Label(window, text="Grid Rows:").grid(row=current_row, column=2)
+grid_row_entry = Entry(window, width=7, validate="focusout", validatecommand=grid_row_col_changed)
 grid_row_entry.insert(0, "1")
-grid_row_entry.grid(row=current_row, column=1)
+grid_row_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
-Label(window, text="Column Size (inches):").grid(row=current_row, column=0)
-Label(window, text="Row Size (inches):").grid(row=current_row, column=1)
-current_row +=1 
-
-grid_col_size_entry = Entry(window)
+Label(window, text="Column Size (in):").grid(row=current_row, column=0)
+grid_col_size_entry = Entry(window, width=7)
 grid_col_size_entry.insert(0, "8.5")
-grid_col_size_entry.grid(row=current_row, column=0)
+grid_col_size_entry.grid(sticky="w", row=current_row, column=1)
 
-grid_row_size_entry = Entry(window)
+Label(window, text="Row Size (in):").grid(row=current_row, column=2)
+grid_row_size_entry = Entry(window, width=7)
 grid_row_size_entry.insert(0, "11")
-grid_row_size_entry.grid(row=current_row, column=1)
+grid_row_size_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
-ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=2)
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
 current_row += 1
 
 paint = IntVar(value=0)
 if len(input_files) == 1:
     Label(window, text="Run Paint after").grid(row=current_row, column=0)
-    Checkbutton(window, text="Paint", variable=paint).grid(row=current_row, column=1)
-    current_row +=1
+    Checkbutton(window, text="Paint", variable=paint).grid(sticky="w", row=current_row, column=1)
 
-Button(window, text="Show Output", command=show_vpypeline).grid(row=current_row, column=0)
+Button(window, text="Show Output", command=show_vpypeline).grid(row=current_row, column=2)
 if len(input_files)>1:
-    Button(window, text="Apply to All", command=run_vpypeline).grid(row=current_row, column=1)
+    Button(window, text="Apply to All", command=run_vpypeline).grid(row=current_row, column=3)
 else:
-    Button(window, text="Confirm", command=run_vpypeline).grid(row=current_row, column=1)
+    Button(window, text="Confirm", command=run_vpypeline).grid(row=current_row, column=3)
 
 window.mainloop()
 
