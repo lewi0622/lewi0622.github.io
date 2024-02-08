@@ -190,14 +190,18 @@ def grid_row_col_changed(_1, _2, _3): #unused arguments from change event
     except ValueError:
         return
 
-    col_size = width/cols
-    row_size = height/rows
+    try:
+        col_size = width/cols
+        row_size = height/rows
+    except ZeroDivisionError:
+        return
+    
+    col_size = round((col_size * 100)) / 100
+    row_size = round((row_size * 100)) / 100
 
-    grid_col_size_entry.delete(0, END)
-    grid_row_size_entry.delete(0, END)
+    grid_col_size.config(text=str(col_size))
+    grid_row_size.config(text=str(row_size))
 
-    grid_col_size_entry.insert(0, str(col_size))
-    grid_row_size_entry.insert(0, str(row_size))
 
 initial_dir = os.path.expandvars(R"C:\Users\$USERNAME\Downloads")
 list_of_files = glob.glob(initial_dir + r"\*.svg")
@@ -461,12 +465,12 @@ grid_row_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 Label(window, text="Column Size (in):").grid(row=current_row, column=0)
-grid_col_size_entry = Entry(window, width=7)
-grid_col_size_entry.grid(sticky="w", row=current_row, column=1)
+grid_col_size = Label(window, text="default")
+grid_col_size.grid(sticky="w", row=current_row, column=1)
 
 Label(window, text="Row Size (in):").grid(row=current_row, column=2)
-grid_row_size_entry = Entry(window, width=7)
-grid_row_size_entry.grid(sticky="w", row=current_row, column=3)
+grid_row_size = Label(window, text="default")
+grid_row_size.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 # insert after creation of the size entries so
