@@ -174,20 +174,21 @@ def grid_page_size_selection_changed(event):
     elif selection == "A2":
         grid_page_width_entry.insert(0,"16.5")
         grid_page_height_entry.insert(0,"23.4")
-    #make sure to update the col/row sizes
-    grid_row_col_changed()
 
-def grid_row_col_changed():
+def grid_row_col_changed(_1, _2, _3): #unused arguments from change event
     """Event from changing the number of rows or columns in the Grid section. Sets the Column and Row size accordingly"""
     cols = grid_col_entry.get()
     rows = grid_row_entry.get()
     width = grid_page_width_entry.get()
     height = grid_page_height_entry.get()
 
-    cols = int(cols)
-    rows = int(rows)
-    width = float(width)
-    height = float(height)
+    try:
+        cols = int(cols)
+        rows = int(rows)
+        width = float(width)
+        height = float(height)
+    except ValueError:
+        return
 
     col_size = width/cols
     row_size = height/rows
@@ -409,7 +410,7 @@ separate_files_label = Label(window, text="Separate SVG Layers\ninto individual 
 separate_files_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file"))
 separate_files_label.grid(row=current_row, column=2)
 separate_files = IntVar(value=0)
-Checkbutton(window, text="Separate Files", variable=separate_files).grid(sticky="w", row=current_row, column=3)
+Checkbutton(window, text="forlayer", variable=separate_files).grid(sticky="w", row=current_row, column=3)
 current_row += 1
 
 ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
@@ -434,37 +435,45 @@ grid_page_size_combobox.bind("<<ComboboxSelected>>", grid_page_size_selection_ch
 current_row +=1
 
 Label(window, text="Grid Page Size Width(in):").grid(row=current_row, column=0)
-grid_page_width_entry = Entry(window, width=7)
-grid_page_width_entry.insert(0, "8.5")
+grid_page_width_SV = StringVar()
+grid_page_width_SV.trace_add("write", grid_row_col_changed)
+grid_page_width_entry = Entry(window, textvariable=grid_page_width_SV, width=7)
 grid_page_width_entry.grid(sticky="w", row=current_row, column=1)
 
 Label(window, text="Grid Page Size Height(in):").grid(row=current_row, column=2)
-grid_page_height_entry = Entry(window, width=7)
-grid_page_height_entry.insert(0, "11")
+grid_page_height_SV = StringVar()
+grid_page_height_SV.trace_add("write", grid_row_col_changed)
+grid_page_height_entry = Entry(window, textvariable=grid_page_height_SV, width=7)
 grid_page_height_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 Label(window, text="Grid Columns:").grid(row=current_row, column=0)
-grid_col_entry = Entry(window, width=7, validate="focusout", validatecommand=grid_row_col_changed)
-grid_col_entry.insert(0, "1")
+grid_col_SV = StringVar()
+grid_col_SV.trace_add("write", grid_row_col_changed)
+grid_col_entry = Entry(window, textvariable=grid_col_SV, width=7)
 grid_col_entry.grid(sticky="w", row=current_row, column=1)
 
 Label(window, text="Grid Rows:").grid(row=current_row, column=2)
-grid_row_entry = Entry(window, width=7, validate="focusout", validatecommand=grid_row_col_changed)
-grid_row_entry.insert(0, "1")
+grid_row_SV = StringVar()
+grid_row_SV.trace_add("write", grid_row_col_changed)
+grid_row_entry = Entry(window, textvariable=grid_row_SV, width=7)
 grid_row_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 Label(window, text="Column Size (in):").grid(row=current_row, column=0)
 grid_col_size_entry = Entry(window, width=7)
-grid_col_size_entry.insert(0, "8.5")
 grid_col_size_entry.grid(sticky="w", row=current_row, column=1)
 
 Label(window, text="Row Size (in):").grid(row=current_row, column=2)
 grid_row_size_entry = Entry(window, width=7)
-grid_row_size_entry.insert(0, "11")
 grid_row_size_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
+
+# insert after creation of the size entries so
+grid_page_width_entry.insert(0, "8.5")
+grid_page_height_entry.insert(0, "11") 
+grid_col_entry.insert(0, "1")
+grid_row_entry.insert(0, "1")
 
 ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
 current_row += 1
