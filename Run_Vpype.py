@@ -137,7 +137,7 @@ def build_vpypeline(input_filename, output_filename, show):
 
             return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
 
-def selection_changed(event):
+def layout_selection_changed(event):
     """Event from changing the layout dropdown box, sets the width and height accordingly"""
     selection = layout_combobox.get()
     layout_width_entry.delete(0,END)
@@ -156,6 +156,47 @@ def selection_changed(event):
         layout_width_entry.insert(0,"16.5")
         layout_height_entry.insert(0,"23.4")
         layout.set(0)
+
+def grid_page_size_selection_changed(event):
+    """Event from changing the grid_page_size dropdown box, sets the width and height accordingly"""
+    selection = grid_page_size_combobox.get()
+    grid_page_width_entry.delete(0,END)
+    grid_page_height_entry.delete(0,END)
+    if selection == "Letter":
+        grid_page_width_entry.insert(0,"8.5")
+        grid_page_height_entry.insert(0,"11")
+    elif selection == "A4":
+        grid_page_width_entry.insert(0,"8.3")
+        grid_page_height_entry.insert(0,"11.7")
+    elif selection == "A3":
+        grid_page_width_entry.insert(0,"11.7")
+        grid_page_height_entry.insert(0,"16.5")
+    elif selection == "A2":
+        grid_page_width_entry.insert(0,"16.5")
+        grid_page_height_entry.insert(0,"23.4")
+    #make sure to update the col/row sizes
+    grid_row_col_changed()
+
+def grid_row_col_changed():
+    """Event from changing the number of rows or columns in the Grid section. Sets the Column and Row size accordingly"""
+    cols = grid_col_entry.get()
+    rows = grid_row_entry.get()
+    width = grid_page_width_entry.get()
+    height = grid_page_height_entry.get()
+
+    cols = int(cols)
+    rows = int(rows)
+    width = float(width)
+    height = float(height)
+
+    col_size = width/cols
+    row_size = height/rows
+
+    grid_col_size_entry.delete(0, END)
+    grid_row_size_entry.delete(0, END)
+
+    grid_col_size_entry.insert(0, str(col_size))
+    grid_row_size_entry.insert(0, str(row_size))
 
 initial_dir = os.path.expandvars(R"C:\Users\$USERNAME\Downloads")
 list_of_files = glob.glob(initial_dir + r"\*.svg")
@@ -214,6 +255,9 @@ current_row +=1
 Label(window, text=f"Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
 current_row +=1 
 
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=2)
+current_row += 1
+
 occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
 occult_label.bind("<Button-1>", lambda e: callback("https://github.com/LoicGoulefert/occult"))
 occult_label.grid(row=current_row, column=0, columnspan=2)
@@ -228,6 +272,9 @@ Checkbutton(window, text="Occult ignores Layers", variable=occult_ignore).grid(r
 occult_accross = IntVar(value=0)
 Checkbutton(window, text="Occult accross layers, not within", variable=occult_accross).grid(row=current_row, column=1)
 current_row +=1 
+
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=2)
+current_row += 1
 
 crop_label = Label(window, text="Crop to above dimensions on read", fg="blue", cursor="hand2")
 crop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#cmdoption-read-c"))
@@ -277,7 +324,7 @@ layout_combobox = ttk.Combobox(
 )
 layout_combobox.current(0)
 layout_combobox.grid(row=current_row, column=0)
-layout_combobox.bind("<<ComboboxSelected>>", selection_changed)
+layout_combobox.bind("<<ComboboxSelected>>", layout_selection_changed)
 
 layout = IntVar(value=1)
 Checkbutton(window, text="Layout?", variable=layout).grid(row=current_row, column=1)
@@ -296,7 +343,7 @@ layout_height_entry.insert(0,f"11")
 layout_height_entry.grid(row=current_row, column=1)
 current_row +=1 
 
-layout_landscape_label = Label(window, text="By default, the larger layout size is assumed to\n be the height Landscape flips the orientation")
+layout_landscape_label = Label(window, text="By default, the larger layout size is assumed to\n be the height, Landscape flips the orientation")
 layout_landscape_label.grid(row=current_row, column=0)
 layout_landscape = IntVar(value=1)
 Checkbutton(window, text="Landscape", variable=layout_landscape).grid(row=current_row, column=1)
@@ -371,6 +418,69 @@ separate_files_label.bind("<Button-1>", lambda e: callback("https://vpype.readth
 separate_files_label.grid(row=current_row, column=0)
 separate_files = IntVar(value=0)
 Checkbutton(window, text="Separate Files", variable=separate_files).grid(row=current_row, column=1)
+current_row += 1
+
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=2)
+current_row += 1
+
+grid_label = Label(window, text="Merge Multiple SVGs into Grid", fg="blue", cursor="hand2")
+grid_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#faq-merge-to-grid"))
+grid_label.grid(row=current_row, column=0)
+
+grid = IntVar(value=0)
+Checkbutton(window, text="Grid", variable=grid).grid(row=current_row, column=1)
+current_row += 1
+
+Label(window, text="Grid Page Size").grid(row=current_row, column=0)
+grid_page_size_combobox = ttk.Combobox(
+    state="readonly",
+    values=["Letter", "A4", "A3", "A2"]
+)
+grid_page_size_combobox.current(0)
+grid_page_size_combobox.grid(row=current_row, column=1)
+grid_page_size_combobox.bind("<<ComboboxSelected>>", grid_page_size_selection_changed)
+current_row +=1
+
+Label(window, text="Grid Page Size Width(inches):").grid(row=current_row, column=0)
+Label(window, text="Grid Page Size Height(inches):").grid(row=current_row, column=1)
+current_row +=1 
+
+grid_page_width_entry = Entry(window)
+grid_page_width_entry.insert(0, "8.5")
+grid_page_width_entry.grid(row=current_row, column=0)
+
+grid_page_height_entry = Entry(window)
+grid_page_height_entry.insert(0, "11")
+grid_page_height_entry.grid(row=current_row, column=1)
+current_row +=1 
+
+Label(window, text="Grid Columns:").grid(row=current_row, column=0)
+Label(window, text="Grid Rows:").grid(row=current_row, column=1)
+current_row +=1 
+
+grid_col_entry = Entry(window, validate="focusout", validatecommand=grid_row_col_changed)
+grid_col_entry.insert(0, "1")
+grid_col_entry.grid(row=current_row, column=0)
+
+grid_row_entry = Entry(window, validate="focusout", validatecommand=grid_row_col_changed)
+grid_row_entry.insert(0, "1")
+grid_row_entry.grid(row=current_row, column=1)
+current_row +=1 
+
+Label(window, text="Column Size (inches):").grid(row=current_row, column=0)
+Label(window, text="Row Size (inches):").grid(row=current_row, column=1)
+current_row +=1 
+
+grid_col_size_entry = Entry(window)
+grid_col_size_entry.insert(0, "8.5")
+grid_col_size_entry.grid(row=current_row, column=0)
+
+grid_row_size_entry = Entry(window)
+grid_row_size_entry.insert(0, "11")
+grid_row_size_entry.grid(row=current_row, column=1)
+current_row +=1 
+
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=2)
 current_row += 1
 
 paint = IntVar(value=0)
