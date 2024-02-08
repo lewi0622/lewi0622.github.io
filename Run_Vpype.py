@@ -99,8 +99,8 @@ def build_vpypeline(input_filename, output_filename, show):
 
     if linemerge.get():
         args += f" linemerge "
-        if linemerge_tolerance.get() != "0.001968504":
-            args += f" -t {linemerge_tolerance.get()} "
+        if linemerge_tolerance_entry.get() != "0.001968504":
+            args += f" -t {linemerge_tolerance_entry.get()} "
 
     if linesort.get():
         args += r" linesort "
@@ -110,15 +110,15 @@ def build_vpypeline(input_filename, output_filename, show):
 
     if linesimplify.get():
         args += f" linesimplify "
-        if linesimplify_tolerance.get() != "0.001968504":
-            args += f" -t {linesimplify_tolerance.get()} "
+        if linesimplify_tolerance_entry.get() != "0.001968504":
+            args += f" -t {linesimplify_tolerance_entry.get()} "
 
     if squiggle.get():
         args += f" squiggles "
-        if squiggle_amplitude.get() != "0.019685":
-            args += f" -a {squiggle_amplitude.get()} "
-        if squiggle_period.get() != "0.11811":
-            args += f" -p {squiggle_period.get()} "
+        if squiggle_amplitude_entry.get() != "0.019685":
+            args += f" -a {squiggle_amplitude_entry.get()} "
+        if squiggle_period_entry.get() != "0.11811":
+            args += f" -p {squiggle_period_entry.get()} "
 
     if multipass.get():
         args += f" multipass "
