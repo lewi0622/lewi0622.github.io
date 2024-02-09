@@ -449,7 +449,7 @@ grid_page_height_SV = StringVar()
 grid_page_height_SV.trace_add("write", grid_row_col_changed)
 grid_page_height_entry = Entry(window, textvariable=grid_page_height_SV, width=7)
 grid_page_height_entry.grid(sticky="w", row=current_row, column=3)
-current_row +=1 
+current_row += 1 
 
 Label(window, text="Grid Columns:").grid(row=current_row, column=0)
 grid_col_SV = StringVar()
@@ -462,7 +462,7 @@ grid_row_SV = StringVar()
 grid_row_SV.trace_add("write", grid_row_col_changed)
 grid_row_entry = Entry(window, textvariable=grid_row_SV, width=7)
 grid_row_entry.grid(sticky="w", row=current_row, column=3)
-current_row +=1 
+current_row += 1 
 
 Label(window, text="Column Size (in):").grid(row=current_row, column=0)
 grid_col_size = Label(window, text="default")
@@ -471,7 +471,12 @@ grid_col_size.grid(sticky="w", row=current_row, column=1)
 Label(window, text="Row Size (in):").grid(row=current_row, column=2)
 grid_row_size = Label(window, text="default")
 grid_row_size.grid(sticky="w", row=current_row, column=3)
-current_row +=1 
+current_row += 1 
+
+Label(window, text="Override colors per layer").grid(row=current_row, column=0)
+override_colors = IntVar(value=0)
+Checkbutton(window, text="-m layer", variable=override_colors).grid(sticky="w", row=current_row, column=1)
+current_row += 1
 
 # insert after creation of the size entries so
 grid_page_width_entry.insert(0, "8.5")
