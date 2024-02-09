@@ -22,68 +22,46 @@ def run_vpypeline():
     for filename in input_files:
         file_parts = os.path.splitext(filename)
         output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
-        if occult.get():
-            command = build_occult_pypeline(input_filename=filename, output_filename=output_file)
-            print("Running: \n", command)
-            vp.execute(command)
-            command = build_vpypeline(input_filename=output_file, output_filename=output_file, show=False)
-            print("Running: \n", command)
-            vp.execute(command)
-        else:
-            command = build_vpypeline(input_filename=filename, output_filename=output_file, show=False)
-            print("Running: \n", command)
-            vp.execute(command)
+
+        command = build_vpypeline(input_filename=filename, output_filename=output_file, show=False)
+        print("Running: \n", command)
+        subprocess.run(command, capture_output=True, shell=True)
         if paint.get():
             subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
 
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
-    file_parts = os.path.splitext(input_files[0])
-    output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
-    if occult.get():
-        command = build_occult_pypeline(input_filename=input_files[0], output_filename=output_file)
-        print("Running: \n", command)
-        vp.execute(command)
-        command = build_vpypeline(input_filename=output_file, output_filename="", show=True)
-        print("Showing: \n", command)
-        vp.execute(command)
-        os.remove(output_file)
-    else:
-        command = build_vpypeline(input_filename=input_files[0], output_filename="", show=True)
-        print("Showing: \n", command)
-        vp.execute(command)
-
-
-def build_occult_pypeline(input_filename, output_filename):
-    """Loads file expecting ids for each line, in the order their drawn. Only performs Occult"""
-    #read command with flags
-    prefix = r"read -a id --no-crop "
-
-    #occult function uses most recently drawn closed shapes to erase lines that are below the shape
-    # the flag -i ignores layers and occults everything
-    args = r" occult "
-    if occult_ignore.get():
-        args += r" -i "
-    elif occult_accross.get():
-        args += r" -a "
-    if occult_keep_lines.get():
-        args += r" -k "
-
-    #write to temp file
-    args += r" write "
-
-    return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
+    command = build_vpypeline(input_filename=input_files[0], output_filename="", show=True)
+    print("Showing: \n", command)
+    subprocess.run(command, capture_output=True, shell=True)
 
 
 def build_vpypeline(input_filename, output_filename, show):
     """Builds vpype command based on GUI selections"""
     #read command
-    prefix = r"read -a stroke "
+    args = r"vpype read "
+
+    if occult.get():
+        args += r" -a id --no-crop " + '"' + input_filename + '"'
+
+        #occult function uses most recently drawn closed shapes to erase lines that are below the shape
+        # the flag -i ignores layers and occults everything
+        args += r" occult "
+        if occult_ignore.get():
+            args += r" -i "
+        elif occult_accross.get():
+            args += r" -a "
+        if occult_keep_lines.get():
+            args += r" -k "
+        #write to stdout using "-" with a pipe operator to give output to input of next line and "-" as input
+        args += r" write --format SVG - | vpype read -a stroke - "
+    else:
+        #read command
+        args += r" -a stroke " + '"' + input_filename + '"'
 
     if not crop.get():
-        prefix += r" --no-crop "
+        args += r" --no-crop "
 
-    args = ""
 
     if scale_option.get():
         args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
@@ -126,16 +104,16 @@ def build_vpypeline(input_filename, output_filename, show):
     if show:
         args += r" show "
 
-        return prefix + '"' + input_filename + '"' + args
+        return args
     else:
         if separate_files.get():
             output_filename = output_filename.split(".svg")[0] + "%_lid%" +".svg"
             args += f' forlayer write "{output_filename}" end '
-            return prefix + '"' + input_filename + '"' + args
+            return args
         else:
             args += r" write "
 
-            return prefix + '"' + input_filename + '"' + args + '"' + output_filename + '"'
+            return args + '"' + output_filename + '"'
 
 def layout_selection_changed(event):
     """Event from changing the layout dropdown box, sets the width and height accordingly"""
