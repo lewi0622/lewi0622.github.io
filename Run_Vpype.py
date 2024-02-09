@@ -267,7 +267,7 @@ scale_label.grid(row=current_row, column=2)
 scale_option = IntVar(value=1)
 Checkbutton(window, text="Scale?", variable=scale_option).grid(sticky="w", row=current_row,column=3)
 current_row +=1 
-rotate_label = Label(window, text="Rotate Clockwise", fg="blue", cursor="hand2")
+rotate_label = Label(window, text="Rotate Clockwise (deg):", fg="blue", cursor="hand2")
 rotate_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
 rotate_label.grid(row=current_row, column=0)
 rotate_entry = Entry(window, width=7)
@@ -334,7 +334,7 @@ linemerge_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs
 linemerge_label.grid(row=current_row, column=0)
 linemerge = IntVar(value=1)
 Checkbutton(window, text="linemerge", variable=linemerge).grid(sticky="w", row=current_row, column=1)
-linemerge_tolerance_label = Label(window, text="Linemerge tolerance (in)").grid(row=current_row, column=2)
+linemerge_tolerance_label = Label(window, text="Linemerge tolerance (in):").grid(row=current_row, column=2)
 linemerge_tolerance_entry = Entry(window, width=7)
 linemerge_tolerance_entry.insert(0, "0.0019")
 linemerge_tolerance_entry.grid(sticky="w", row=current_row, column=3)
@@ -358,7 +358,7 @@ linesimplify_label.bind("<Button-1>", lambda e: callback("https://vpype.readthed
 linesimplify_label.grid(row=current_row, column=0)
 linesimplify = IntVar(value=1)
 Checkbutton(window, text="linesimplify", variable=linesimplify).grid(sticky="w", row=current_row, column=1)
-Label(window, text="Linesimplify tolerance (in)").grid(row=current_row, column=2)
+Label(window, text="Linesimplify tolerance (in):").grid(row=current_row, column=2)
 linesimplify_tolerance_entry = Entry(window, width=7)
 linesimplify_tolerance_entry.insert(0, "0.0019")
 linesimplify_tolerance_entry.grid(sticky="w", row=current_row, column=3)
@@ -370,13 +370,13 @@ squiggle_label.grid(row=current_row, column=0)
 squiggle = IntVar(value=0)
 Checkbutton(window, text="squiggle", variable=squiggle).grid(sticky="w", row=current_row, column=1)
 
-Label(window, text="Amplitude of squiggle(in)").grid(row=current_row, column=2)
+Label(window, text="Amplitude of squiggle(in):").grid(row=current_row, column=2)
 squiggle_amplitude_entry = Entry(window, width=7)
 squiggle_amplitude_entry.insert(0, "0.0196")
 squiggle_amplitude_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
-Label(window, text="Period of squiggle(in)").grid(row=current_row, column=2)
+Label(window, text="Period of squiggle(in):").grid(row=current_row, column=2)
 squiggle_period_entry = Entry(window, width=7)
 squiggle_period_entry.insert(0, "0.1181")
 squiggle_period_entry.grid(sticky="w", row=current_row, column=3)
@@ -451,10 +451,15 @@ grid_row_size = Label(window, text="default")
 grid_row_size.grid(sticky="w", row=current_row, column=3)
 current_row += 1 
 
-Label(window, text="Override colors per layer").grid(row=current_row, column=0)
-override_colors = IntVar(value=0)
-Checkbutton(window, text="-m layer", variable=override_colors).grid(sticky="w", row=current_row, column=1)
-current_row += 1
+Label(window, text="Color Options:").grid(row=current_row, column=0)
+grid_color_options_combobox = ttk.Combobox(
+    width=20,
+    state="readonly",
+    values=["Keep Original Colors", "Different Color Per File", "All One Color"]
+)
+grid_color_options_combobox.current(0)
+grid_color_options_combobox.grid(sticky="w", row=current_row, column=1, columnspan=2)
+current_row +=1
 
 # insert after creation of the size entries so
 grid_page_width_entry.insert(0, "8.5")
