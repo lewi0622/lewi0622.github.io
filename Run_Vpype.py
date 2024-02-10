@@ -19,15 +19,20 @@ def callback(url):
 def run_vpypeline():
     """calls vpype cli to process """
     window.quit()
-    for filename in input_files:
-        file_parts = os.path.splitext(filename)
-        output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
+    command = build_vpypeline("", "", show=False)
+    print("Running: \n", command)
+    subprocess.run(command, capture_output=True, shell=True)
+    if paint.get():
+        subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
+    # for filename in input_files:
+    #     file_parts = os.path.splitext(filename)
+    #     output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
 
-        command = build_vpypeline(input_filename=filename, output_filename=output_file, show=False)
-        print("Running: \n", command)
-        subprocess.run(command, capture_output=True, shell=True)
-        if paint.get():
-            subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
+    #     command = build_vpypeline(input_filename=filename, output_filename=output_file, show=False)
+    #     print("Running: \n", command)
+    #     subprocess.run(command, capture_output=True, shell=True)
+    #     if paint.get():
+    #         subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
 
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
@@ -38,11 +43,41 @@ def show_vpypeline():
 
 def build_vpypeline(input_filename, output_filename, show):
     """Builds vpype command based on GUI selections"""
-    #read command
-    args = r"vpype read "
+    args = r'vpype eval "files_in=' + f"{input_files}" + '"'
+
+    #build output files list
+    output_files = []
+    for filename in input_files:
+        file_parts = os.path.splitext(filename)
+        output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
+        output_files.append(output_file)
+
+    args += r' eval "files_out=' + f"{output_files}" + '"'
+
+    if grid.get():
+        cols = grid_col_entry.get()
+        rows = grid_row_entry.get()
+        width = grid_page_width_entry.get()
+        height = grid_page_height_entry.get()
+
+        cols = int(cols)
+        rows = int(rows)
+        width = float(width)
+        height = float(height)
+
+        col_size = width/cols
+        row_size = height/rows
+
+        slots = cols * rows
+
+        args += f" grid -o {col_size}in {row_size}in {cols} {rows} "
+
+
+    else: #repeat for both single and batch operations
+        args += f" repeat {len(input_files)} "
 
     if occult.get():
-        args += r" -a id --no-crop " + '"' + input_filename + '"'
+        args += r" read -a id --no-crop %files_in[_i]% "
 
         #occult function uses most recently drawn closed shapes to erase lines that are below the shape
         # the flag -i ignores layers and occults everything
@@ -57,7 +92,7 @@ def build_vpypeline(input_filename, output_filename, show):
         args += r" write --format SVG - | vpype read -a stroke - "
     else:
         #read command
-        args += r" -a stroke " + '"' + input_filename + '"'
+        args += r" read -a stroke %files_in[_i]% "
 
     if not crop.get():
         args += r" --no-crop "
@@ -111,9 +146,9 @@ def build_vpypeline(input_filename, output_filename, show):
             args += f' forlayer write "{output_filename}" end '
             return args
         else:
-            args += r" write "
+            args += r" write %files_out[_i]% end"
 
-            return args + '"' + output_filename + '"'
+            return args
 
 def layout_selection_changed(event):
     """Event from changing the layout dropdown box, sets the width and height accordingly"""
