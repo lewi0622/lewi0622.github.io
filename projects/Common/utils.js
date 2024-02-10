@@ -24,6 +24,8 @@ let global_scale = 1;
 let previous_scale = global_scale;
 let multiplier_changed = true;
 let controls_param, seed_param, colors_param, scale_param; //global url parameters
+let randomize_time_param; //optional url parameters
+let timeout_set = false;
 const in_iframe = window.location !== window.parent.location;
 let type = 'png';
 let redraw = false;
@@ -134,6 +136,9 @@ function first_time_setup(){
   if(getParamValue("scale") == undefined) scale_param = build_scale();
   else scale_param = verify_scale(getParamValue("scale"));
 
+  if(getParamValue("randomize_time") == undefined) randomize_time_param =  build_randomize_time();
+  else randomize_time_param = verify_randomize_time(getParamValue("randomize_time"));
+
   //replace initial url with one with full params 
   const url = build_url();
   window.history.replaceState({}, "", url); 
@@ -200,12 +205,25 @@ function verify_scale(val){
   else return build_scale();
 }
 
+function build_randomize_time(){
+  return -1;
+}
+
+function verify_randomize_time(val){
+  if(!isNaN(val) && parseFloat(val) > 0) return val;
+  else return build_randomize_time();
+}
+
 function build_url(){
   let base_url = "index.html?";
+  //required
   base_url += "controls=" + controls_param;
   base_url += "&seed=" + seed_param;
   base_url += "&colors=" + colors_param;
   base_url += "&scale=" + scale_param;
+
+  //optional
+  if(randomize_time_param > 0) base_url += "&randomize_time=" + randomize_time_param;
 
   return base_url;
 }
@@ -297,6 +315,16 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     //Assists with loading on phones and other pixel dense screens
     pixelDensity(1)
   }
+
+  //set randomize timeout function
+  if(randomize_time_param > 0 && !timeout_set){
+    timeout_set = true;
+    setTimeout(function(){
+      timeout_set = false;
+      randomize_seed();
+    }, randomize_time_param * 1000);
+  }
+
   //reset changed flags
   multiplier_changed = false;
   palette_changed = false;
