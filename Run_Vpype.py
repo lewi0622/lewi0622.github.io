@@ -17,6 +17,12 @@ def callback(url):
    """callback function for weblinks"""
    webbrowser.open_new_tab(url)
 
+def delete_temp_file():
+    try:
+        os.remove(temp_file) #created by occult, and not used when separate files are called for
+    except FileNotFoundError:
+        return
+
 def run_vpypeline():
     """calls vpype cli to process """
     window.quit()
@@ -24,8 +30,7 @@ def run_vpypeline():
     print("Running: \n", command)
     subprocess.run(command, capture_output=True, shell=True)
 
-    if separate_files.get() and temp_file != '':
-        os.remove(temp_file) #created by occult, and not used when separate files are called for
+    delete_temp_file()
 
     if paint.get():
         subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
@@ -35,18 +40,19 @@ def show_vpypeline():
     command = build_vpypeline(show=True)
     print("Showing: \n", command)
     subprocess.run(command, capture_output=True, shell=True)
-    if temp_file != '':
-        os.remove(temp_file)
+    delete_temp_file()
 
 
 def build_vpypeline(show):
     """Builds vpype command based on GUI selections"""
     global input_files
+    global temp_file
     #build output files list
     input_file_list = list(input_files)
     output_file_list = []
     for filename in input_file_list:
         file_parts = os.path.splitext(filename)
+        temp_file = file_parts[0] + "temp_file.svg"
         output_file = file_parts[0] + "_PROCESSED" #file extension is not appended at this time
         output_file_list.append(output_file)
 
@@ -96,9 +102,7 @@ def build_vpypeline(show):
         if occult_keep_lines.get():
             args += r" -k "
         #write to temp file
-        args += r" write %files_out[_i]+file_ext% "
-        global temp_file
-        temp_file = output_file_list[0] + ".svg"
+        args += f" write {temp_file} "
 
     args += r" read -a stroke "
 
@@ -106,7 +110,7 @@ def build_vpypeline(show):
         args += r" --no-crop "
 
     if occult.get():
-        args += r" %files_out[_i]+file_ext% "
+        args += f" {temp_file} "
     else:
         args += r" %files_in[_i]% "
 
@@ -166,9 +170,10 @@ def build_vpypeline(show):
 
             return args
         else:
-            args += r' write %files_out[_i]+file_ext% '
-            if not grid:
-                args += r" end "
+            if grid:
+                args += r' write %files_out[0]+file_ext% '
+            else:
+                args += r' write %files_out[_i]+file_ext% end'
 
             return args
 
