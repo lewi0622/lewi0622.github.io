@@ -19,7 +19,7 @@ def callback(url):
 def run_vpypeline():
     """calls vpype cli to process """
     window.quit()
-    command = build_vpypeline("", "", show=False)
+    command = build_vpypeline(show=False)
     print("Running: \n", command)
     subprocess.run(command, capture_output=True, shell=True)
     if paint.get():
@@ -36,13 +36,14 @@ def run_vpypeline():
 
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
-    command = build_vpypeline(input_filename=input_files[0], output_filename="", show=True)
+    command = build_vpypeline(show=True)
     print("Showing: \n", command)
     subprocess.run(command, capture_output=True, shell=True)
 
 
-def build_vpypeline(input_filename, output_filename, show):
+def build_vpypeline(show):
     """Builds vpype command based on GUI selections"""
+    global input_files
     args = r'vpype eval "files_in=' + f"{input_files}" + '"'
 
     #build output files list
@@ -69,12 +70,19 @@ def build_vpypeline(input_filename, output_filename, show):
         row_size = height/rows
 
         slots = cols * rows
+        while len(input_files) < slots: #crude way to make sure there's enough files per grid slot
+            input_files = input_files + input_files
+            output_files = output_files + output_files
 
         args += f" grid -o {col_size}in {row_size}in {cols} {rows} "
 
 
     else: #repeat for both single and batch operations
-        args += f" repeat {len(input_files)} "
+        if show:
+            repeat_num = 1
+        else:
+            repeat_num = len(input_files)
+        args += f" repeat {repeat_num} "
 
     if occult.get():
         args += r" read -a id --no-crop %files_in[_i]% "
@@ -88,15 +96,18 @@ def build_vpypeline(input_filename, output_filename, show):
             args += r" -a "
         if occult_keep_lines.get():
             args += r" -k "
-        #write to stdout using "-" with a pipe operator to give output to input of next line and "-" as input
-        args += r" write --format SVG - | vpype read -a stroke - "
-    else:
-        #read command
-        args += r" read -a stroke %files_in[_i]% "
+        #write to temp file
+        args += r" write %files_out[_i]% "
+
+    args += r" read -a stroke "
 
     if not crop.get():
         args += r" --no-crop "
 
+    if occult.get():
+        args += r" %files_out[_i]% "
+    else:
+        args += r" %files_in[_i]% "
 
     if scale_option.get():
         args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
@@ -137,7 +148,7 @@ def build_vpypeline(input_filename, output_filename, show):
         args += f" multipass "
 
     if show:
-        args += r" show "
+        args += r" end show "
 
         return args
     else:
