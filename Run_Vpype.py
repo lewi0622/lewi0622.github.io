@@ -4,10 +4,9 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilenames
 import xml.etree.ElementTree as ET
 import webbrowser
-import vpype_cli as vp
 import sys
 
-showed_file = ""
+temp_file = ""
 
 if sys.argv[0] == "Run_Vpype.py":
     directory_name = os.getcwd()
@@ -24,6 +23,10 @@ def run_vpypeline():
     command = build_vpypeline(show=False)
     print("Running: \n", command)
     subprocess.run(command, capture_output=True, shell=True)
+
+    if separate_files.get() and temp_file != '':
+        os.remove(temp_file) #created by occult, and not used when separate files are called for
+
     if paint.get():
         subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
 
@@ -32,7 +35,8 @@ def show_vpypeline():
     command = build_vpypeline(show=True)
     print("Showing: \n", command)
     subprocess.run(command, capture_output=True, shell=True)
-    os.remove(showed_file)
+    if temp_file != '':
+        os.remove(temp_file)
 
 
 def build_vpypeline(show):
@@ -43,7 +47,7 @@ def build_vpypeline(show):
     output_file_list = []
     for filename in input_file_list:
         file_parts = os.path.splitext(filename)
-        output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
+        output_file = file_parts[0] + "_PROCESSED" #file extension is not appended at this time
         output_file_list.append(output_file)
 
     args = r"vpype "
@@ -77,6 +81,7 @@ def build_vpypeline(show):
 
     args += r' eval "files_in=' + f"{input_file_list}" + '"'
     args += r' eval "files_out=' + f"{output_file_list}" + '"'
+    args += r' eval "file_ext=' + r"'.svg'" + '"'
 
     if occult.get():
         args += r" read -a id --no-crop %files_in[_i]% "
@@ -91,9 +96,9 @@ def build_vpypeline(show):
         if occult_keep_lines.get():
             args += r" -k "
         #write to temp file
-        args += r" write %files_out[_i]% "
-        global showed_file
-        showed_file = output_file_list[0]
+        args += r" write %files_out[_i]+file_ext% "
+        global temp_file
+        temp_file = output_file_list[0] + ".svg"
 
     args += r" read -a stroke "
 
@@ -101,7 +106,7 @@ def build_vpypeline(show):
         args += r" --no-crop "
 
     if occult.get():
-        args += r" %files_out[_i]% "
+        args += r" %files_out[_i]+file_ext% "
     else:
         args += r" %files_in[_i]% "
 
@@ -112,7 +117,7 @@ def build_vpypeline(show):
 
     if linemerge.get():
         args += f" linemerge "
-        if linemerge_tolerance_entry.get() != "0.001968504":
+        if linemerge_tolerance_entry.get() != "0.0019685":
             args += f" -t {linemerge_tolerance_entry.get()} "
 
     if linesort.get():
@@ -123,7 +128,7 @@ def build_vpypeline(show):
 
     if linesimplify.get():
         args += f" linesimplify "
-        if linesimplify_tolerance_entry.get() != "0.001968504":
+        if linesimplify_tolerance_entry.get() != "0.0019685":
             args += f" -t {linesimplify_tolerance_entry.get()} "
 
     if squiggle.get():
@@ -154,11 +159,14 @@ def build_vpypeline(show):
         return args
     else:
         if separate_files.get():
-            output_filename = output_filename.split(".svg")[0] + "%_lid%" +".svg"
-            args += f' forlayer write "{output_filename}" end '
+            args += r' eval "k=_i" '
+            args += r" forlayer write " 
+            args += r' %files_out[k]+str(_i)+file_ext% '
+            args += r" end end"
+
             return args
         else:
-            args += r" write %files_out[_i]% "
+            args += r' write %files_out[_i]+file_ext% '
             if not grid:
                 args += r" end "
 
