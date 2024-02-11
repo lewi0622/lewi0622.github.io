@@ -24,15 +24,6 @@ def run_vpypeline():
     subprocess.run(command, capture_output=True, shell=True)
     if paint.get():
         subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
-    # for filename in input_files:
-    #     file_parts = os.path.splitext(filename)
-    #     output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
-
-    #     command = build_vpypeline(input_filename=filename, output_filename=output_file, show=False)
-    #     print("Running: \n", command)
-    #     subprocess.run(command, capture_output=True, shell=True)
-    #     if paint.get():
-    #         subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
 
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
@@ -44,16 +35,15 @@ def show_vpypeline():
 def build_vpypeline(show):
     """Builds vpype command based on GUI selections"""
     global input_files
-    args = r'vpype eval "files_in=' + f"{input_files}" + '"'
-
     #build output files list
-    output_files = []
-    for filename in input_files:
+    input_file_list = input_files.copy()
+    output_file_list = []
+    for filename in input_file_list:
         file_parts = os.path.splitext(filename)
         output_file = file_parts[0] + "_PROCESSED" + file_parts[1]
-        output_files.append(output_file)
+        output_file_list.append(output_file)
 
-    args += r' eval "files_out=' + f"{output_files}" + '"'
+    args = r"vpype "
 
     if grid.get():
         cols = grid_col_entry.get()
@@ -70,9 +60,9 @@ def build_vpypeline(show):
         row_size = height/rows
 
         slots = cols * rows
-        while len(input_files) < slots: #crude way to make sure there's enough files per grid slot
-            input_files = input_files + input_files
-            output_files = output_files + output_files
+        while len(input_file_list) < slots: #crude way to make sure there's enough files per grid slot
+            input_file_list = input_file_list + input_file_list
+            output_file_list = output_file_list + output_file_list
 
         args += f" grid -o {col_size}in {row_size}in {cols} {rows} "
 
@@ -81,8 +71,11 @@ def build_vpypeline(show):
         if show:
             repeat_num = 1
         else:
-            repeat_num = len(input_files)
+            repeat_num = len(input_file_list)
         args += f" repeat {repeat_num} "
+
+    args += r' eval "files_in=' + f"{input_file_list}" + '"'
+    args += r' eval "files_out=' + f"{output_file_list}" + '"'
 
     if occult.get():
         args += r" read -a id --no-crop %files_in[_i]% "
@@ -147,8 +140,14 @@ def build_vpypeline(show):
     if multipass.get():
         args += f" multipass "
 
+    if grid.get(): 
+        args += r' eval "j=_i" forlayer lmove %_lid% %j*100+_lid% end '# moves each layer onto it's own unique layer so that there's no merging of layers/colors later
+        args += f" end layout -l {grid_page_width_entry.get()}x{grid_page_height_entry.get()}in "
+
     if show:
-        args += r" end show "
+        if not grid.get():
+            args += r" end "
+        args += r" show "
 
         return args
     else:
@@ -157,7 +156,9 @@ def build_vpypeline(show):
             args += f' forlayer write "{output_filename}" end '
             return args
         else:
-            args += r" write %files_out[_i]% end"
+            args += r" write %files_out[_i]% "
+            if not grid.get():
+                args += r" end "
 
             return args
 
