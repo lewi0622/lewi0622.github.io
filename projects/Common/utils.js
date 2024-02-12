@@ -634,24 +634,7 @@ function save_drawing(){
   let scale_text = round(global_scale*1000)/1000; //round to nearest 1000th place
   scale_text = str(scale_text).replace(".", "_");
   const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(current_palette_index()) + '_scale_' + scale_text;
-  if(type == 'svg'){
-    //create ids for each color in the order they're drawn for use by vpype
-    let canvas_elem = document.getElementById("defaultCanvas0");
-    let path_elems = canvas_elem.getElementsByTagName("path");
-    let stroke_colors = {};
-    let primary_id = 0.00001; // up to 99,999 lines per color
-    path_elems.forEach(e => {
-      const stroke_color = String(e.getAttribute("stroke"));
-      if(stroke_color in stroke_colors) stroke_colors[stroke_color] = stroke_colors[stroke_color] + 0.00001;
-      else{
-        stroke_colors[stroke_color] = primary_id;
-        primary_id++;
-      }
-      e.id = Math.round(100000 * stroke_colors[stroke_color])/100000;//round to avoid floating point addition errors
-    });
-
-    save(filename);
-  }
+  if(type == 'svg')save(filename);
   else saveCanvas(filename, type);
   file_saved = true;
 }

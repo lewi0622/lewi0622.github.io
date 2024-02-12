@@ -25,7 +25,16 @@ def delete_temp_file():
     
 def add_unique_ids():
     """For each file selected, add unique ids so occult maintains draw order and color info"""
-    pass
+    path_id = 0
+    for input_file in input_files:
+        with open(input_file, "r+") as svg_file:
+            tree = ET.parse(svg_file)
+            for child in tree.iter():
+                if "path" in child.tag:
+                    child.set("id", str(path_id))
+                    path_id += 1
+            tree.write(input_file)
+            
 
 def run_vpypeline():
     """calls vpype cli to process """
