@@ -22,6 +22,10 @@ def delete_temp_file():
         os.remove(temp_file) #created by occult, and not used when separate files are called for
     except FileNotFoundError:
         return
+    
+def add_unique_ids():
+    """For each file selected, add unique ids so occult maintains draw order and color info"""
+    pass
 
 def run_vpypeline():
     """calls vpype cli to process """
@@ -90,6 +94,9 @@ def build_vpypeline(show):
     args += r' eval "file_ext=' + r"'.svg'" + '"'
 
     if occult.get():
+        #Edit file to place a unique id for each path so that the draw order is maintained when performing occult
+        add_unique_ids()
+
         args += r" read -a id --no-crop %files_in[_i]% "
 
         #occult function uses most recently drawn closed shapes to erase lines that are below the shape
@@ -104,6 +111,8 @@ def build_vpypeline(show):
         #write to temp file
         args += f" write {temp_file} "
 
+        #delete all layers to avoid extra data hanging around
+        args += r" ldelete all "
     args += r" read -a stroke "
 
     if not crop.get():
