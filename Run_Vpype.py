@@ -135,9 +135,6 @@ def build_vpypeline(show):
     if scale_option.get():
         args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
 
-    # if crop.get():
-    #     args += f" crop {start_crop_x}in {start_crop_y}in {end_crop_x}in {end_crop_y}in "
-
     if center_geometries.get():
         args += f" layout {svg_width_inches}x{svg_height_inches}in "
 
