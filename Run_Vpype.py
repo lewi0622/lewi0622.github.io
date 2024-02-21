@@ -124,7 +124,7 @@ def build_vpypeline(show):
         args += r" ldelete all "
     args += r" read -a stroke "
 
-    if not crop.get():
+    if not crop_input.get():
         args += r" --no-crop "
 
     if occult.get():
@@ -134,6 +134,18 @@ def build_vpypeline(show):
 
     if scale_option.get():
         args += f" scaleto {scale_width_entry.get()}in {scale_height_entry.get()}in "
+
+    # if crop.get():
+    #     args += f" crop {start_crop_x}in {start_crop_y}in {end_crop_x}in {end_crop_y}in "
+
+    if center_geometries.get():
+        args += f" layout {svg_width_inches}x{svg_height_inches}in "
+
+    crop_x_end = float(crop_x_end_entry.get())
+    crop_y_end = float(crop_y_end_entry.get())
+    if crop_x_end > 0 or crop_y_end > 0:
+        args += f" crop 0 0 {crop_x_end_entry.get()}in {crop_y_end_entry.get()}in "
+
     if rotate_entry.get() != 0:
         args += f" rotate {rotate_entry.get()} "
 
@@ -173,6 +185,11 @@ def build_vpypeline(show):
             args += r" -l "
         args += f" {layout_width_entry.get()}x{layout_height_entry.get()}in "
 
+        if crop_to_page_size.get():
+            if layout_landscape.get():
+                args += f" crop 0 0 {layout_height_entry.get()}in {layout_width_entry.get()}in "
+            else:
+                args += f" crop 0 0 {layout_width_entry.get()}in {layout_height_entry.get()}in "
     if show:
         if not grid:
             args += r" end "
@@ -263,9 +280,15 @@ current_row = 0 #helper row var, inc-ed every time used;
 window = Tk()
 title = Label(window, text="Vpype Options", fg="blue", cursor="hand2")
 title.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/index.html"))
-title.grid(row=current_row,column=0)
+title.grid(row=current_row,column=0, columnspan=4)
+current_row += 1
 
-Label(window, text=f"{len(input_files)} file(s) selected, Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=1, columnspan=3)
+Label(window, text=f"{len(input_files)} file(s) selected,\nInput file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
+crop_input_label = Label(window, text="Crop to input\ndimensions on read", fg="blue", cursor="hand2")
+crop_input_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#cmdoption-read-c"))
+crop_input_label.grid(row=current_row,column=2)
+crop_input = IntVar(value=0)
+Checkbutton(window, text="Crop input", variable=crop_input).grid(sticky="w", row=current_row,column=3)
 current_row +=1 
 
 ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
@@ -291,7 +314,7 @@ current_row += 1
 
 grid_label = Label(window, text="Merge Multiple SVGs into Grid", fg="blue", cursor="hand2")
 grid_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#faq-merge-to-grid"))
-grid_label.grid(row=current_row, column=0)
+grid_label.grid(row=current_row, column=0, columnspan=4)
 # Label(window, text="Color Options:").grid(row=current_row, column=1)
 # grid_color_options_combobox = ttk.Combobox(
 #     width=20,
@@ -329,27 +352,11 @@ grid_row_entry.insert(0, "1")
 ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
 current_row += 1
 
-crop_label = Label(window, text="Crop to above\ndimensions on read", fg="blue", cursor="hand2")
-crop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#cmdoption-read-c"))
-crop_label.grid(row=current_row,column=0)
-crop = IntVar(value=1)
-Checkbutton(window, text="Crop input", variable=crop).grid(sticky="w", row=current_row,column=1)
-
 scale_label = Label(window, text="Scale options\n(default: input file size)", fg="blue", cursor="hand2")
 scale_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#scaleto"))
-scale_label.grid(row=current_row, column=2)
+scale_label.grid(row=current_row, column=0)
 scale_option = IntVar(value=1)
-Checkbutton(window, text="Scale?", variable=scale_option).grid(sticky="w", row=current_row,column=3)
-current_row +=1 
-rotate_label = Label(window, text="Rotate Clockwise (deg):", fg="blue", cursor="hand2")
-rotate_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
-rotate_label.grid(row=current_row, column=0)
-rotate_entry = Entry(window, width=7)
-if float(svg_width_inches) < float(svg_height_inches) and float(svg_width_inches)<12:
-    rotate_entry.insert(0, "90") #autoroate for small axidraw designs where the width is the long side
-else:
-    rotate_entry.insert(0, "0") 
-rotate_entry.grid(sticky="w", row=current_row, column=1)
+Checkbutton(window, text="Scale?", variable=scale_option).grid(sticky="w", row=current_row,column=1)
 
 Label(window, text="Width Scale to (in):").grid(row=current_row, column=2)
 scale_width_entry = Entry(window, width=7)
@@ -361,6 +368,36 @@ Label(window, text="Height Scale to (in):").grid(row=current_row, column=2)
 scale_height_entry = Entry(window, width=7)
 scale_height_entry.insert(0,f"{svg_height_inches}")
 scale_height_entry.grid(sticky="w", row=current_row, column=3)
+current_row +=1 
+
+ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
+current_row += 1
+
+center_geometries = IntVar(value=1)
+Checkbutton(window, text="Center Geometries to Input File Size", variable=center_geometries).grid(row=current_row, column=0, columnspan=2)
+
+crop_label = Label(window, text="Crop X (in):", fg="blue", cursor="hand2")
+crop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/stable/reference.html#crop"))
+crop_label.grid(row=current_row, column=2)
+crop_x_end_entry = Entry(window, width=7)
+crop_x_end_entry.insert(0, str(0))
+crop_x_end_entry.grid(sticky="w", row=current_row, column=3)
+current_row += 1
+
+rotate_label = Label(window, text="Rotate Clockwise (deg):", fg="blue", cursor="hand2")
+rotate_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
+rotate_label.grid(row=current_row, column=0)
+rotate_entry = Entry(window, width=7)
+if float(svg_width_inches) < float(svg_height_inches) and float(svg_width_inches)<12:
+    rotate_entry.insert(0, "90") #autorotate for small axidraw designs where the width is the long side
+else:
+    rotate_entry.insert(0, "0") 
+rotate_entry.grid(sticky="w", row=current_row, column=1)
+
+Label(window, text="Crop Y (in):").grid(row=current_row, column=2)
+crop_y_end_entry = Entry(window, width=7)
+crop_y_end_entry.insert(0, str(0))
+crop_y_end_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
@@ -467,6 +504,9 @@ layout_landscape_label = Label(window, text="By default, the larger layout size 
 layout_landscape_label.grid(row=current_row, column=0, columnspan=2)
 layout_landscape = IntVar(value=1)
 Checkbutton(window, text="Landscape", variable=layout_landscape).grid(sticky="w", row=current_row, column=2)
+
+crop_to_page_size = IntVar(value=1)
+Checkbutton(window, text="Crop to\nPage Size", variable=crop_to_page_size).grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
