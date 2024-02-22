@@ -21,6 +21,8 @@ function gui_values(){
   parameterize("y_sin_amp", 200, 0, 400, 1, true);
   parameterize("sin_range", random(180), 0, 720, 1, false);
   parameterize("rotate_per_line", 0, -5, 5, 0.1, false);
+  parameterize("x_move", 0, -100, 100, 1, true);
+  parameterize("y_move", 0, -100, 100, 1, true);
 } 
 
 function setup() {
@@ -34,11 +36,11 @@ function draw() {
 
   //actual drawing stuff
   push();
-
+  translate(x_move, y_move);
   const y_theta_offset = random(360);
   noFill();
-  const segment_step_size = canvas_x/line_segments;
-  const line_step_size = canvas_y/number_of_lines;
+  const segment_step_size = canvas_x*2/line_segments;
+  const line_step_size = canvas_y*2/number_of_lines;
   // curveTightness(1);
   for(let j=0; j<number_of_lines; j++){
     rotate(rotate_per_line);
