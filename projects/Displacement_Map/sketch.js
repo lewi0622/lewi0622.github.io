@@ -10,12 +10,15 @@ let k;
 let y_offset;
 let noise_map;
 let total_loops;
+let col_step, row_step;
+let margin_x, margin_y;
 
 const suggested_palettes = [BEACHDAY, COTTONCANDY, SOUTHWEST, SIXTIES];
 
 function gui_values(){
-  parameterize("num_rows", 200, 1, 1000, 1, false);
-  parameterize("num_cols", 200, 1, 1000, 1, false);
+  const row_col_num = floor(random(75,200));
+  parameterize("num_rows", row_col_num, 1, 500, 1, false);
+  parameterize("num_cols", row_col_num, 1, 500, 1, false);
   parameterize("amp", random(0.5,1.5), 0, 5, 0.1, false);
   parameterize("num_warps", 50, 0, 100, 1, false);
   parameterize("x_damp", random(15,40), 1, 100, 1, false);
@@ -23,6 +26,7 @@ function gui_values(){
   parameterize("x_color_damp", random(50,150), 0, 500, 1, false);
   parameterize("y_color_damp", random(50,150), 0, 500, 1, false);
   parameterize("falloff", 1, 0, 1, 0.1, false);
+  parameterize("force_circle_radius", random([0, 40, random(40, 150), 150]), 0, 150, 1, true);
 }
 
 function setup() {
@@ -43,11 +47,19 @@ function setup() {
   for(let i=0; i<num_colors; i++) working_palette.push(palette_placeholder[i]);
   
   y_offset = random(500, 2000);
+  row_step = canvas_y * 3/4 / num_rows;
+  col_step = canvas_x * 3/4 / num_cols;
+  margin_x = canvas_x/8;
+  margin_y = canvas_y/8;
 
   for(let i=0; i<num_rows; i++){
     for(let j=0; j<num_cols; j++){
       let x = j;
       let y = i;
+
+      //constrain points within radius parameter
+      if(force_circle_radius > 0 && dist(x * col_step + margin_x, y * row_step + margin_y, canvas_x/2, canvas_y/2) > force_circle_radius) continue;
+
       const c_index = map(pnoise.simplex2(x / x_color_damp, y / y_color_damp), -1,1, 0,1);
       noise_map.push({
         x:x,
@@ -65,21 +77,20 @@ function setup() {
 function draw() {
   global_draw_start(false);
 
-  if(k+2 == total_loops) noLoop();
+  if(k+2 >= total_loops) noLoop();
   
   //actual drawing stuff
   push();
-  translate(canvas_x / 8, canvas_y / 8);
+  translate(margin_x, margin_y);
 
-  const row_step = canvas_y * 3/4 / num_rows;
-  const col_step = canvas_x * 3/4 / num_cols;
   for(let i=k; i<k+1000; i++){
     const actual_k = floor(k/noise_map.length);
     let e = noise_map[i%noise_map.length];
+    if(e == undefined) continue;
     e.x += amp * pnoise.simplex2(e.x / x_damp, e.y / y_damp);
     e.y += amp * pnoise.simplex2(y_offset + e.x / x_damp, y_offset + e.y / y_damp);
 
-    e.c.setAlpha(lerp(100, 10, actual_k / num_warps));
+    e.c.setAlpha(lerp(255, 0, actual_k / num_warps));
 
     fill(e.c);
 
