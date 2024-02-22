@@ -107,8 +107,8 @@ function draw_face(size){
   //Draws LewistonFace centerd on current point
   textSize(size);
 
-  const x_adjust = -70/200 * size;
-  const y_adjust = -70/200 * size;
+  const x_adjust = -7/20 * size;
+  const y_adjust = -7/20 * size;
 
   push();
   translate(x_adjust, y_adjust);
