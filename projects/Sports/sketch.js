@@ -4,11 +4,11 @@ let gif = true;
 let animation = true;
 const fr = 5;
 const capture = false;
-const capture_time = 20;
+const capture_time = 10;
 
 const suggested_palettes = [GAMEDAY, BIRDSOFPARADISE, SOUTHWEST, NURSERY];
 
-let num_shapes, total_shapes, shapes, bg_c;
+let num_shapes, total_shapes, shapes, bg_c, same_side, canvas_rotaion;
 
 function gui_values(){
   parameterize("cols", 10, 1, 100, 1, false);
@@ -17,6 +17,7 @@ function gui_values(){
   parameterize("thickness", 5, 1, 100, 1, false);
   parameterize("shadow_opacity", 50, 1, 255, 1, false);
   parameterize("rot", random(10), 0, 180, 1, false);
+  parameterize("pop_on", random([0,1]), 0, 1, 1, false); //pop=0; shuffle=1;
 }
 
 function setup() {
@@ -24,6 +25,8 @@ function setup() {
   num_shapes = 1;
   total_shapes = floor(random(8,20));
   shapes = [];
+  canvas_rotaion = random([0,90,180,270]);
+  same_side = random()>0.5;
 }
 //***************************************************
 function draw() {
@@ -33,8 +36,8 @@ function draw() {
   push();
   const grid_step_size = round((canvas_x - padding * 2) / cols);
   const rows = floor((canvas_y - padding * 2) / grid_step_size);
-
   noStroke();
+  center_rotate(canvas_rotaion);
   translate(padding, padding);
   if(frameCount == 1){
     refresh_working_palette();
@@ -57,14 +60,36 @@ function draw() {
   
       const c = random(working_palette);
   
+      let x,y;
+      let chance = random();
+      if(same_side) chance = 0;
+      if(chance<0.25){ //left
+        x = -canvas_x;
+        y = random(canvas_y);
+      }
+      else if(chance<0.5){ //top
+        x = random(canvas_x);
+        y = -canvas_y;
+      }
+      else if(chance<0.75){ //right
+        x = 2*canvas_x;
+        y = random(canvas_y);
+      }
+      else{ //bottom
+        x = random(canvas_x);
+        y = 2 * canvas_y;
+      }
+
       shapes.push({
         start_x:start_x,
         start_y:start_y,
         size_x:size_x,
         size_y:size_y,
+        x:x,
+        y:y,
         area:size_x * size_y,
         c:c,
-        corner: random([0,45])
+        corner: random([0,canvas_x])
       });
     }
     shapes.sort((a, b) => {
@@ -89,14 +114,25 @@ function draw() {
     drawingContext.shadowOffsetX = lerp(5,0,i/num_shapes)*global_scale;
     drawingContext.shadowOffsetY = lerp(5,0,i/num_shapes)*global_scale;
     for(let j=0; j<thickness; j++){
-      const x = s.start_x + 0.25 * j * global_scale;
-      const y = s.start_y + 0.25 * j * global_scale;
+      const x = s.x + 0.25 * j * global_scale;
+      const y = s.y + 0.25 * j * global_scale;
       rect(x,y, s.size_x, s.size_y,s.corner);
     }
+    if(pop_on){
+      s.x = s.start_x;
+      s.y = s.start_y;
+    }
+    else{
+      s.x = lerp(s.x, s.start_x, 0.1);
+      s.y = lerp(s.y, s.start_y, 0.1);
+    }
+
     pop();
   }
 
   if(num_shapes<total_shapes) num_shapes++;
+
+  if(frameCount>60)noLoop();
 
   pop();
   global_draw_end();
