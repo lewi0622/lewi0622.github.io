@@ -1,16 +1,10 @@
-import subprocess, os, glob
+import subprocess, os
 from tkinter import *
 from tkinter import ttk
-from tkinter.filedialog import askopenfilenames
 import sys
 from vpype_utils import *
 
 temp_file = ""
-
-if sys.argv[0] == "Run_Vpype.py":
-    directory_name = os.getcwd()
-else:
-    directory_name = os.path.dirname(sys.argv[0])
 
 def delete_temp_file():
     try:
@@ -41,6 +35,11 @@ def run_vpypeline():
     delete_temp_file()
 
     if paint.get():
+        if sys.argv[0] == "Run_Vpype.py":
+            directory_name = os.getcwd()
+        else:
+            directory_name = os.path.dirname(sys.argv[0])
+
         subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
 
 def show_vpypeline():
@@ -224,15 +223,9 @@ def layout_selection_changed(event):
         layout_height_entry.insert(0,"23.4")
         layout.set(0)
 
-initial_dir = os.path.expandvars(R"C:\Users\$USERNAME\Downloads")
-list_of_files = glob.glob(initial_dir + r"\*.svg")
-latest_file = max(list_of_files, key=os.path.getctime)
+input_files = get_files()
 
-input_files = askopenfilenames(initialdir=initial_dir, filetypes=(("SVG files","*.svg*"),("all files","*.*")), initialfile=latest_file)
-
-input_file = input_files[0]
-
-svg_width_inches, svg_height_inches = get_svg_width_height(input_file)
+svg_width_inches, svg_height_inches = get_svg_width_height(input_files[0])
 
 #tk widgets and window
 current_row = 0 #helper row var, inc-ed every time used;

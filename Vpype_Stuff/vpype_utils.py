@@ -1,6 +1,7 @@
+import os, glob
 import xml.etree.ElementTree as ET
 import webbrowser
-
+from tkinter.filedialog import askopenfilenames
 
 def open_url_in_browser(url):
    """Opens the given url in a new browser tab"""
@@ -34,3 +35,10 @@ def get_svg_width_height(path):
 
     return svg_width_inches, svg_height_inches
 
+
+def get_files():
+    initial_dir = os.path.expandvars(R"C:\Users\$USERNAME\Downloads")
+    list_of_files = glob.glob(initial_dir + r"\*.svg")
+    latest_file = max(list_of_files, key=os.path.getctime)
+
+    return askopenfilenames(initialdir=initial_dir, filetypes=(("SVG files","*.svg*"),("all files","*.*")), initialfile=latest_file)
