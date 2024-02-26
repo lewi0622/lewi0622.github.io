@@ -2,9 +2,8 @@ import subprocess, os, glob
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilenames
-import xml.etree.ElementTree as ET
-import webbrowser
 import sys
+from vpype_utils import *
 
 temp_file = ""
 
@@ -12,10 +11,6 @@ if sys.argv[0] == "Run_Vpype.py":
     directory_name = os.getcwd()
 else:
     directory_name = os.path.dirname(sys.argv[0])
-
-def callback(url):
-   """callback function for weblinks"""
-   webbrowser.open_new_tab(url)
 
 def delete_temp_file():
     try:
@@ -237,52 +232,20 @@ input_files = askopenfilenames(initialdir=initial_dir, filetypes=(("SVG files","
 
 input_file = input_files[0]
 
-#get svg size
-with open(input_file, "r") as svg_file:
-    tree = ET.parse(svg_file)
-    root = tree.getroot()
-    svg_width = root.attrib["width"] #size in pixels, css units are 96 px = 1 inch 
-    svg_height = root.attrib["height"] 
-    try:
-        svg_viewbox = root.attrib["viewBox"] #ran into a few svgs that don't give a viewBox
-    except:
-        svg_viewbox = f"[0 0 {svg_width} {svg_height}]" #set viewbox to use width and height
-    svg_viewbox = svg_viewbox.split(" ")
-
-if "in" in svg_width:
-    svg_width_inches = svg_width.replace("in", "")
-elif "px" in svg_width:
-    svg_width_inches = float(svg_width.replace("px", ""))/96 
-elif "cm" in svg_width:
-    svg_width_inches = float(svg_width.replace("cm", ""))/2.54
-elif "%" in svg_width: #Expects that the viewbox is using 96DPI
-    svg_width_inches = float(svg_viewbox[2])/96
-else:
-    svg_width_inches = float(svg_width)/96 
-
-if "in" in svg_height:
-    svg_height_inches = svg_height.replace("in", "")
-elif "px" in svg_height:
-    svg_height_inches = float(svg_height.replace("px", ""))/96 
-elif "cm" in svg_height:
-    svg_height_inches = float(svg_height.replace("cm", ""))/2.54
-elif "%" in svg_height: #Expects that the viewbox is using 96DPI
-    svg_height_inches = float(svg_viewbox[3])/96
-else:   
-    svg_height_inches = float(svg_height)/96
+svg_width_inches, svg_height_inches = get_svg_width_height(input_file)
 
 #tk widgets and window
 current_row = 0 #helper row var, inc-ed every time used;
 
 window = Tk()
 title = Label(window, text="Vpype Options", fg="blue", cursor="hand2")
-title.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/index.html"))
+title.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/index.html"))
 title.grid(row=current_row,column=0, columnspan=4)
 current_row += 1
 
 Label(window, text=f"{len(input_files)} file(s) selected,\nInput file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}").grid(row=current_row, column=0, columnspan=2)
 crop_input_label = Label(window, text="Crop to input\ndimensions on read", fg="blue", cursor="hand2")
-crop_input_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#cmdoption-read-c"))
+crop_input_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#cmdoption-read-c"))
 crop_input_label.grid(row=current_row,column=2)
 crop_input = IntVar(value=0)
 Checkbutton(window, text="Crop input", variable=crop_input).grid(sticky="w", row=current_row,column=3)
@@ -292,7 +255,7 @@ ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, co
 current_row += 1
 
 occult_label = Label(window, text="Remove occluded geometries", fg="blue", cursor="hand2")
-occult_label.bind("<Button-1>", lambda e: callback("https://github.com/LoicGoulefert/occult"))
+occult_label.bind("<Button-1>", lambda e: open_url_in_browser("https://github.com/LoicGoulefert/occult"))
 occult_label.grid(row=current_row, column=0)
 occult = IntVar(value=0)
 Checkbutton(window, text="Occult", variable=occult).grid(sticky="w", row=current_row, column=1)
@@ -310,7 +273,7 @@ ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, co
 current_row += 1
 
 grid_label = Label(window, text="Merge Multiple SVGs into Grid", fg="blue", cursor="hand2")
-grid_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#faq-merge-to-grid"))
+grid_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/cookbook.html#faq-merge-to-grid"))
 grid_label.grid(row=current_row, column=0, columnspan=4)
 # Label(window, text="Color Options:").grid(row=current_row, column=1)
 # grid_color_options_combobox = ttk.Combobox(
@@ -350,7 +313,7 @@ ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, co
 current_row += 1
 
 scale_label = Label(window, text="Scale options\n(default: input file size)", fg="blue", cursor="hand2")
-scale_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#scaleto"))
+scale_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#scaleto"))
 scale_label.grid(row=current_row, column=0)
 scale_option = IntVar(value=1)
 Checkbutton(window, text="Scale?", variable=scale_option).grid(sticky="w", row=current_row,column=1)
@@ -374,7 +337,7 @@ center_geometries = IntVar(value=1)
 Checkbutton(window, text="Center Geometries to Input File Size", variable=center_geometries).grid(row=current_row, column=0, columnspan=2)
 
 crop_label = Label(window, text="Crop X (in):", fg="blue", cursor="hand2")
-crop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/stable/reference.html#crop"))
+crop_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/stable/reference.html#crop"))
 crop_label.grid(row=current_row, column=2)
 crop_x_end_entry = Entry(window, width=7)
 crop_x_end_entry.insert(0, str(0))
@@ -382,7 +345,7 @@ crop_x_end_entry.grid(sticky="w", row=current_row, column=3)
 current_row += 1
 
 rotate_label = Label(window, text="Rotate Clockwise (deg):", fg="blue", cursor="hand2")
-rotate_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
+rotate_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#rotate"))
 rotate_label.grid(row=current_row, column=0)
 rotate_entry = Entry(window, width=7)
 if float(svg_width_inches) < float(svg_height_inches) and float(svg_width_inches)<12:
@@ -401,7 +364,7 @@ ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, co
 current_row += 1
 
 linemerge_label = Label(window, text="Merge Lines with\noverlapping line endings", fg="blue", cursor="hand2")
-linemerge_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linemerge"))
+linemerge_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#linemerge"))
 linemerge_label.grid(row=current_row, column=0)
 linemerge = IntVar(value=1)
 Checkbutton(window, text="linemerge", variable=linemerge).grid(sticky="w", row=current_row, column=1)
@@ -412,20 +375,20 @@ linemerge_tolerance_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 linesort_label = Label(window, text="Sort Lines", fg="blue", cursor="hand2")
-linesort_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linesort"))
+linesort_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#linesort"))
 linesort_label.grid(row=current_row, column=0)
 linesort = IntVar(value=1)
 Checkbutton(window, text="linesort", variable=linesort).grid(sticky="w", row=current_row, column=1)
 
 reloop_label = Label(window, text="Randomize seam location\non closed paths", fg="blue", cursor="hand2")
-reloop_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#reloop"))
+reloop_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#reloop"))
 reloop_label.grid(row=current_row, column=2)
 reloop = IntVar(value=1)
 Checkbutton(window, text="reloop", variable=reloop).grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 linesimplify_label = Label(window, text="Reduce geometry complexity", fg="blue", cursor="hand2")
-linesimplify_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#linesimplify"))
+linesimplify_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#linesimplify"))
 linesimplify_label.grid(row=current_row, column=0)
 linesimplify = IntVar(value=1)
 Checkbutton(window, text="linesimplify", variable=linesimplify).grid(sticky="w", row=current_row, column=1)
@@ -436,7 +399,7 @@ linesimplify_tolerance_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 squiggle_label = Label(window, text="Add squiggle filter", fg="blue", cursor="hand2")
-squiggle_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#squiggles"))
+squiggle_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#squiggles"))
 squiggle_label.grid(row=current_row, column=0)
 squiggle = IntVar(value=0)
 Checkbutton(window, text="squiggle", variable=squiggle).grid(sticky="w", row=current_row, column=1)
@@ -454,13 +417,13 @@ squiggle_period_entry.grid(sticky="w", row=current_row, column=3)
 current_row +=1 
 
 multipass_label = Label(window, text="Add multiple passes to all lines", fg="blue", cursor="hand2")
-multipass_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#multipass"))
+multipass_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#multipass"))
 multipass_label.grid(row=current_row, column=0)
 multipass = IntVar(value=0)
 Checkbutton(window, text="multipass", variable=multipass).grid(sticky="w", row=current_row, column=1)
 
 separate_files_label = Label(window, text="Separate SVG Layers\ninto individual files", fg="blue", cursor="hand2")
-separate_files_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file"))
+separate_files_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file"))
 separate_files_label.grid(row=current_row, column=2)
 separate_files = IntVar(value=0)
 Checkbutton(window, text="forlayer", variable=separate_files).grid(sticky="w", row=current_row, column=3)
@@ -470,7 +433,7 @@ ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, co
 current_row += 1
 
 layout_label = Label(text="Layout centers scaled\ndesign in page size)", fg="blue", cursor="hand2")
-layout_label.bind("<Button-1>", lambda e: callback("https://vpype.readthedocs.io/en/latest/reference.html#layout"))
+layout_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/reference.html#layout"))
 layout_label.grid(row=current_row, column=0)
 layout = IntVar(value=1)
 Checkbutton(window, text="Layout?", variable=layout).grid(sticky="w", row=current_row, column=1)
