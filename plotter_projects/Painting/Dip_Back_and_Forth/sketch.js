@@ -9,24 +9,18 @@ const capture_time = 10;
 
 
 function gui_values(){
-  parameterize("dip_radius", 96/4, 0, 1.025*96, 0.1, false);
 }
 
 function setup() {
-  common_setup((12+5/32)*96, 8.5*96, SVG);
+  common_setup(1*96,1*96, SVG);
 }
 //***************************************************
 function draw() {
   global_draw_start();
-  const container_radius = 1.25*96; //2.5 inch diameter circles for spyhouse bottoms
   push();
-  translate(container_radius, 0);
-
-  beginShape();
-  vertex(0,0);
-  vertex(dip_radius,0);
-  vertex(-dip_radius,0);
-  endShape(CLOSE);
+  const size_shape = 1*96;
+  line(0,0, size_shape,0);
+  line(size_shape,0, 0,0);
 
   pop();
   global_draw_end();
