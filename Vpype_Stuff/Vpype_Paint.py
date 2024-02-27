@@ -3,7 +3,8 @@ from tkinter import *
 from tkinter import ttk
 from vpype_utils import *
 
-dip_options = os.listdir(os.path.join(get_directory_name("Vpype_Paint.py"), "Dip_Locations"))
+directory_name = get_directory_name("Vpype_Paint.py")
+dip_options = os.listdir(os.path.join(directory_name, "Dip_Locations"))
 
 
 def run_vpypeline():
@@ -14,10 +15,10 @@ def run_vpypeline():
 
 
 def show_vpypeline():
-    """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
-    command = build_vpypeline(show=True)
+    """Runs given commands on first file, but only shows the output."""
+    command = build_vpypeline(True)
     print("Showing: \n", command)
-    subprocess.run(command, capture_output=True, shell=True)
+    subprocess.run(command)
 
 
 def build_vpypeline(show):
@@ -31,7 +32,7 @@ def build_vpypeline(show):
     
     dip_detail_list = []
     for i in range(max_num_colors):
-        file_name = f"Dip_Locations\\{dip_details[i]['layer'].get()}.svg"
+        file_name = os.path.join(directory_name, "Dip_Locations", dip_details[i]['layer'].get())
         dip_detail_list.append([
             file_name,
             dip_details[i]["x"].get(), 
