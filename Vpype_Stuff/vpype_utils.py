@@ -1,4 +1,4 @@
-import os, glob
+import os, glob, sys
 import xml.etree.ElementTree as ET
 import webbrowser
 from tkinter.filedialog import askopenfilenames
@@ -61,3 +61,9 @@ def max_colors_per_file(input_files):
             max_num_color = len(color_dict)
     return max_num_color
 
+
+def get_directory_name(file_name):
+    if sys.argv[0] == "file_name":
+        return os.getcwd()
+    else:
+        return os.path.dirname(sys.argv[0])
