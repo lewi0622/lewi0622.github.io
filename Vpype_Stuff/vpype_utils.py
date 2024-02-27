@@ -33,6 +33,9 @@ def get_svg_width_height(path):
     else:   
         svg_height_inches = float(svg_height)/96
 
+    svg_width_inches = round(svg_width_inches * 1000)/1000
+    svg_height_inches = round(svg_height_inches * 1000)/1000
+
     return svg_width_inches, svg_height_inches
 
 
@@ -42,3 +45,19 @@ def get_files():
     latest_file = max(list_of_files, key=os.path.getctime)
 
     return askopenfilenames(initialdir=initial_dir, filetypes=(("SVG files","*.svg*"),("all files","*.*")), initialfile=latest_file)
+
+
+def max_colors_per_file(input_files):
+    """Finds the max of distinct colors in any given file"""
+    max_num_color = 0
+    for input_file in input_files:
+        color_dict = {}
+        tree = ET.parse(input_file)
+        root = tree.getroot()
+        for child in root:
+            if "stroke" in child.attrib:
+                color_dict[child.attrib["stroke"]] = 0
+        if len(color_dict) > max_num_color:
+            max_num_color = len(color_dict)
+    return max_num_color
+
