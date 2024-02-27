@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from vpype_utils import *
 
-dip_options = ["back_and_forth", "circle"]
+dip_options = os.listdir(os.path.join(get_directory_name("Vpype_Paint.py"), "Dip_Locations"))
 
 
 def run_vpypeline():

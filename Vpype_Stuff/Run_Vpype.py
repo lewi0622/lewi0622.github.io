@@ -35,12 +35,7 @@ def run_vpypeline():
     delete_temp_file()
 
     if paint.get():
-        if sys.argv[0] == "Run_Vpype.py":
-            directory_name = os.getcwd()
-        else:
-            directory_name = os.path.dirname(sys.argv[0])
-
-        subprocess.run(f"python {directory_name}\\Vpype_Paint.py")
+        subprocess.run(f"python {get_directory_name('Run_Vpype.py')}\\Vpype_Paint.py")
 
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
