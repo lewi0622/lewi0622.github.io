@@ -20,7 +20,7 @@ function gui_values(){
 
 function setup() {
   //7 inches * 96 = 672 px
-  common_setup(672, 672, SVG);
+  common_setup(672, 672);
   pen_weight = COPICMARKER;
   fill_iterations = ceil(weight/pen_weight);
   print(fill_iterations)

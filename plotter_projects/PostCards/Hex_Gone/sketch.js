@@ -17,7 +17,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(1100, 850, SVG);
+  common_setup(1100, 850);
 }
 //***************************************************
 function draw() {
@@ -52,7 +52,7 @@ function create_hex_cnv(){
   push();
   let card_w = canvas_x/2;
   let card_h = canvas_y/2;
-  let hex_cnv = createGraphics(card_w, card_h, SVG);
+  let hex_cnv = createGraphics(card_w, card_h);
   hex_cnv.stroke(c);
   c+=40;
 

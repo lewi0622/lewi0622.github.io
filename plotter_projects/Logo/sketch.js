@@ -16,7 +16,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(100, 80, SVG);
+  common_setup(100, 80);
 
   textFont(font);
   textSize(32*global_scale);
