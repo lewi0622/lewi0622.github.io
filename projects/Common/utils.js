@@ -12,7 +12,7 @@ let capturer, capture_state;
 const control_height_base = 20;
 const control_spacing_base = 5;
 let seed_input, scale_box, color_sel;
-let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype;
+let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype, x_size_input, y_size_input, unit_select;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
 let global_palette_id = PALETTE_ID_DEFAULT;
@@ -23,7 +23,7 @@ let picker_changed = false;
 let global_scale = 1;
 let previous_scale = global_scale;
 let multiplier_changed = true;
-let controls_param, seed_param, colors_param, scale_param; //global url parameters
+let controls_param, seed_param, colors_param, scale_param, x_size_px_param, y_size_px_param; //global url parameters
 let randomize_time_param; //optional url parameters
 let timeout_set = false;
 const in_iframe = window.location !== window.parent.location;
@@ -136,12 +136,14 @@ function first_time_setup(){
   if(getParamValue("scale") == undefined) scale_param = build_scale();
   else scale_param = verify_scale(getParamValue("scale"));
 
+  if(getParamValue("x_size_px") == undefined) x_size_px_param = build_size_px();
+  else x_size_px_param = verify_size_px(getParamValue("x_size_px"));
+
+  if(getParamValue("y_size_px") == undefined) y_size_px_param = build_size_px();
+  else y_size_px_param = verify_size_px(getParamValue("y_size_px"));
+
   if(getParamValue("randomize_time") == undefined) randomize_time_param =  build_randomize_time();
   else randomize_time_param = verify_randomize_time(getParamValue("randomize_time"));
-
-  //replace initial url with one with full params 
-  const url = build_url();
-  window.history.replaceState({}, "", url); 
 
   if(controls_param != "full"){
     // disable right clicks 
@@ -205,6 +207,15 @@ function verify_scale(val){
   else return build_scale();
 }
 
+function build_size_px(){
+  return 0;
+}
+
+function verify_size_px(val){
+  if(!isNaN(val) && parseInt(val) > 0) return val;
+  else return build_size_px();
+}
+
 function build_randomize_time(){
   return -1;
 }
@@ -221,6 +232,8 @@ function build_url(){
   base_url += "&seed=" + seed_param;
   base_url += "&colors=" + colors_param;
   base_url += "&scale=" + scale_param;
+  base_url += "&x_size_px=" + x_size_px_param;
+  base_url += "&y_size_px=" + y_size_px_param;
 
   //optional
   if(randomize_time_param > 0) base_url += "&randomize_time=" + randomize_time_param;
@@ -228,10 +241,30 @@ function build_url(){
   return base_url;
 }
 
-function common_setup(size_x=400, size_y=400, renderer=P2D){
+function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P2D){
+  if(size_x <= 0){
+    size_x = 400;
+    x_size_px_param = 400;
+  }
+  else if(redraw) size_x = x_size_px_param;
+  else x_size_px_param = size_x;
+
+  if(size_y <= 0){
+    size_y = 400;
+    y_size_px_param = 400;
+  }
+  else if(redraw) size_y = y_size_px_param;
+  else y_size_px_param = size_y;
+
+  if(!redraw){
+    //replace initial url with one with full params 
+    const url = build_url();
+    window.history.replaceState({}, "", url); 
+  }
+
   //init globals
   file_saved = false;
-  capture_state = "init"
+  capture_state = "init";
 
   //set up CCapture, override num_frames in setup/draw if necessary
   capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
@@ -244,11 +277,6 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
     type = "svg";
     renderer = SVG;
     protected_storage_set("fileType", type, "session");
-
-    parameterize("svg_width", size_x/96, 1, 30, 0.05, false);
-    parameterize("svg_height", size_y/96, 1, 30, 0.05, false);
-    size_x = svg_width*96;
-    size_y = svg_height*96;
   }
 
   setParams();
@@ -267,6 +295,7 @@ function common_setup(size_x=400, size_y=400, renderer=P2D){
   pnoise.seed(int_seed);
 
   seed_scale_button(control_height, control_spacing);
+  populate_size_inputs();
 
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
@@ -356,7 +385,7 @@ function getParamValue(paramName){
 
 function seed_scale_button(control_height, control_spacing){
   const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"];
-  const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "Save", "File Type"];
+  const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "X Size Val", "Y Size Val", "Size Units", "Save", "File Type"];
 
   if(!redraw){
     //declare unchanging properties
@@ -433,9 +462,26 @@ function seed_scale_button(control_height, control_spacing){
     scale_box.id("Scale Box");
 
     //reset parameters button
-    reset_parameters = createButton("Reset Parameters");
+    reset_parameters = createButton("Reset Params");
     reset_parameters.mouseClicked(clear_params);
     reset_parameters.id("Reset Parameters");
+
+    //size parameters
+    x_size_input = createInput();
+    x_size_input.style("text-align", "right");
+    x_size_input.id('X Size Val');
+
+    y_size_input = createInput();
+    y_size_input.style("text-align", "right");
+    y_size_input.id('Y Size Val');
+
+    unit_select = createSelect();
+    unit_select.option("px");
+    unit_select.option("in");
+    if(type == "png") unit_select.selected("px");
+    else unit_select.selected("in");
+    unit_select.changed(populate_size_inputs);
+    unit_select.id('Size Units');
 
     //save button
     btSave = createButton("Save");
@@ -489,16 +535,24 @@ function seed_scale_button(control_height, control_spacing){
 
     //scale text box
     scale_box.position(auto_scale.size().width+control_spacing, canvas_y+control_height*2)
-    scale_box.size(30*global_scale, 18*global_scale);
+    scale_box.size(30*global_scale, control_height-6);
     scale_box.value(global_scale);
 
     //reset parameters button
     reset_parameters.position(scale_box.position().x+scale_box.size().width+control_spacing, canvas_y+control_height*2);
-    reset_parameters.size(130*global_scale, control_height);
+    reset_parameters.size(100*global_scale, control_height);
+
+    //size parameters
+    x_size_input.position(reset_parameters.position().x+reset_parameters.size().width+control_spacing, canvas_y+control_height*2);
+    x_size_input.size(30*global_scale, control_height-6);
+    y_size_input.position(x_size_input.position().x+x_size_input.size().width, canvas_y+control_height*2);
+    y_size_input.size(30*global_scale, control_height-6);
+    unit_select.position(y_size_input.position().x+y_size_input.size().width, canvas_y+control_height*2);
+    unit_select.size(40*global_scale, control_height);
 
     //save button
-    btSave.size(70*global_scale, control_height);
-    btSave.position(400*global_scale-70*global_scale, canvas_y+control_height*2);
+    btSave.size(50*global_scale, control_height);
+    btSave.position(400*global_scale-50*global_scale, canvas_y+control_height*2);
 
     //style all ctrls
     ids.concat(full_ids).forEach(id => {
@@ -512,6 +566,30 @@ function seed_scale_button(control_height, control_spacing){
     show_hide_controls(full_ids, controls_param != "full");
   }
   seed_input.value(seed_param); //needs to be set every time
+}
+
+function populate_size_inputs(){
+  if(unit_select.value() == "in"){
+    x_size_input.value(x_size_px_param/96);
+    y_size_input.value(y_size_px_param/96);
+  }
+  else{
+    x_size_input.value(x_size_px_param);
+    y_size_input.value(y_size_px_param);
+  }
+}
+
+function update_size_params(){
+  const x_val = x_size_input.value();
+  const y_val = y_size_input.value();
+  if(!isNaN(x_val) && parseInt(x_val) > 0){
+    x_size_px_param = parseInt(x_val);
+    if(unit_select.value() == "in") x_size_px_param *= 96;
+  }
+  if(!isNaN(y_val) && parseInt(y_val) > 0){
+    y_size_px_param = parseInt(y_val);
+    if(unit_select.value() == "in") y_size_px_param *= 96;
+  }
 }
 
 function randomize_seed(){
@@ -554,6 +632,7 @@ function set_seed(e){
   if(e == undefined) event_id = "";
   else event_id = e.srcElement.id;
 
+  update_size_params();
   seed_param = String(seed_input.value());
   colors_param = String(current_palette_index());
   palette_changed = current_palette_index() != int(getParamValue('colors'));
