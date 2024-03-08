@@ -10,8 +10,8 @@ const suggested_palettes = []
 
 
 function gui_values(){
-  parameterize("x_pts", 850, 100, 10000, 10, false);
-  parameterize("y_pts", 1100, 100, 10000, 10, false);
+  parameterize("x_pts", 300, 100, 10000, 10, false);
+  parameterize("y_pts", 400, 100, 10000, 10, false);
   parameterize("x_noise_damp", 150, 1, 500, 1, false);
   parameterize("y_noise_damp", 10, 1, 500, 1, false);
   parameterize("x_sin_damp", 80, 1, 500, 1, false);
@@ -39,7 +39,7 @@ function draw() {
       const c = color_map(x,y);
       // c.setAlpha(100);
       stroke(c);
-      point(x, y);
+      line(x,y, x+0.1,y+0.1);
     }
   }
   
