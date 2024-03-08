@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Iframe Grid</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .iframe-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-gap: 20px;
+            padding: 20px;
+        }
+
+        iframe{
+            height: 400px;
+            width: 440px;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+    </style>
+    <script src=all_projects.js></script>
+</head>
+
+<body>
+    <div class="iframe-container" id="iframeContainer"></div>
+    <div class="pagination" id="pagination"></div>
+
+    <script>
+        const iframeUrls = all_projects_rel_paths;
+
+        const itemsPerPage = 4;
+        const totalPages = Math.ceil(iframeUrls.length / itemsPerPage);
+
+        function renderIframes(page) {
+            const container = document.getElementById('iframeContainer');
+            container.innerHTML = '';
+
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            for (let i = startIndex; i < endIndex && i < iframeUrls.length; i++) {
+                const div = document.createElement('div');
+                const caption = document.createElement('a');
+                caption.href = iframeUrls[i];
+
+                const iframe = document.createElement('iframe');
+                iframe.src = iframeUrls[i];
+                div.appendChild(iframe);
+                div.appendChild(caption);
+                container.appendChild(div);
+            }
+        }
+
+        function renderPagination() {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.addEventListener('click', function () {
+                    renderIframes(i);
+                });
+                paginationContainer.appendChild(button);
+            }
+        }
+
+        // Initial rendering
+        renderIframes(1);
+        renderPagination();
+    </script>
+</body>
+
+</html>
