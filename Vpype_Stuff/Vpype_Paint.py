@@ -38,6 +38,12 @@ def build_vpypeline(show):
             dip_details[i]["x"].get(), 
             dip_details[i]["y"].get()
             ])
+    if split_all.get():
+        splitall = "splitall"
+        linemerge = "linemerge"
+    else:
+        splitall = ""
+        linemerge = ""
 
     if show:
         repeat_num = 1
@@ -53,7 +59,9 @@ eval "dip_details={dip_detail_list}" \
 repeat {repeat_num} \
 read -a stroke %files_in[_i]% \
 forlayer \
+{splitall} \
 splitdist {split_dist_entry.get()}in \
+{linemerge} \
 eval "j=_i" \
 forlayer \
 lmove %_lid% "%_lid*2%" \
@@ -79,6 +87,9 @@ title = Label(window, text="Vpype Paint", fg="blue", cursor="hand2")
 title.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/cookbook.html#inserting-regular-dipping-patterns-for-plotting-with-paint"))
 title.grid(row=current_row,column=0, columnspan=4)
 current_row += 1
+
+Label(window, text="Input files should have already been processed\nand laid out with enough space for dipping trays").grid(row=current_row, column=0, columnspan=4)
+current_row +=1 
 
 Label(window, text=f"{len(input_files)} file(s) selected, Input file Width(in): {svg_width_inches}, Height(in): {svg_height_inches}, Max colors in file(s): {max_num_colors}").grid(row=current_row, column=0, columnspan=4)
 current_row +=1 
@@ -145,4 +156,3 @@ else:
     Button(window, text="Confirm", command=run_vpypeline).grid(row=current_row, column=3)
 
 window.mainloop()
-
