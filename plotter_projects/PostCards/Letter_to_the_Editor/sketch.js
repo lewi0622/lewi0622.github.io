@@ -12,7 +12,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(8.5*96, 11*96, SVG);
+  common_setup(8.5*96, 11*96);
 }
 //***************************************************
 function draw() {
@@ -42,7 +42,7 @@ function write_letter(pg_width, pg_height){
   const amp_start = random(15,20)*global_scale;
   const tightness = random(4,5);
 
-  const pg = createGraphics(pg_width, pg_height, SVG);
+  const pg = createGraphics(pg_width, pg_height);
   pg.angleMode(DEGREES)
   pg.push();
   pg.noFill();
