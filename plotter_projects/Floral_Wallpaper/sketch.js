@@ -25,7 +25,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(5*96, 5*96, SVG);
+  common_setup(5*96, 5*96);
 }
 //***************************************************
 function draw() {
@@ -69,7 +69,7 @@ function draw() {
         pts = arrayRotate(pts, floor(random(pts.length)));
         beginShape();
         //set points+3 to close loops, or +4 to overlap loops and not have closed shapes
-        for(let i=0; i<points+4; i++){
+        for(let i=0; i<points+3; i++){
           curveVertex(pts[i%pts.length].x, pts[i%pts.length].y)
         }
         endShape();
