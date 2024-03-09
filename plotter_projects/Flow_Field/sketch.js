@@ -14,11 +14,11 @@ function gui_values(){
   parameterize('inc', 0.1, 0.01, 10, 0.01, false);
   parameterize("zinc", 0.1, 0, 1, 0.01, false);
   parameterize("scl", 10, 1, 100, 1, true);
-  parameterize("z_iterations", 1, 1, 100, 1, false);
+  parameterize("z_iterations", 1, 1, 25, 1, false);
 }
 
 function setup() {
-  common_setup(11*96, 8.5*96);
+  common_setup();
 
   opentype.load('..\\..\\fonts\\SquarePeg-Regular.ttf', function (err, f) {
     if (err) {
@@ -34,7 +34,7 @@ function setup() {
 function draw() {
   global_draw_start();
   if(font == undefined) return;
-  const letters = "SUNNY".split("");
+  const letters = "ERIC".split("");
   let fSize = 20*global_scale;
   const letter_paths = [];
   letters.forEach(letter => {

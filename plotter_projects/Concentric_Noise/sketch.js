@@ -16,7 +16,6 @@ function gui_values(){
   parameterize("x_translate", 0, -1000, 1000, 1, true);
   parameterize("y_translate", 0, -1000, 1000, 1, true);
   parameterize("rotation", 0, 0, 360, 1, false);
-  parameterize("number_of_sins", 0, 0, 100, 1, false);
   parameterize("power", 1, 0.001, 15, 0.001, false);
 }
 

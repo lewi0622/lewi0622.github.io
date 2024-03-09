@@ -16,7 +16,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(10*96, 8*96);
+  common_setup();
 }
 //***************************************************
 function draw() {
