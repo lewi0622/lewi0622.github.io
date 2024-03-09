@@ -34,7 +34,7 @@ function draw() {
 
   push();
   noFill();
-  let msg = "W"; // text to write
+  let msg = "HI"; // text to write
   let path = font.getPath(msg, 0,0, font_size);
 
   let bbox = path.getBoundingBox();

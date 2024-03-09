@@ -17,7 +17,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(7*96, 7*96);
+  common_setup();
 
 }
 //***************************************************

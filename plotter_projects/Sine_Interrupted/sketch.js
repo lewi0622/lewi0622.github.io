@@ -15,10 +15,11 @@ function gui_values(){
   parameterize("offset", 10, 0, 100, 1, true);
   parameterize('offset_inc', 5, -50, 50, 1, true);
   parameterize("rot", 0, 0, 360, 90);
+  parameterize("amp", 400, 0, 1000, 1, true);
 }
 
 function setup() {
-  common_setup(500, 400);
+  common_setup();
 }
 //***************************************************
 function draw() {
@@ -26,10 +27,10 @@ function draw() {
 
   //actual drawing stuff
   push();
+  noFill();
   center_rotate(rot);
   line_steps = floor(line_steps);
   let vertical_space = canvas_y-vertical_padding;
-  let amp = 400*global_scale;
   translate(0, vertical_padding);
   for(let i=0; i<num_lines; i++){
     push();

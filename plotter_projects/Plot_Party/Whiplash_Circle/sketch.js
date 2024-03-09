@@ -28,7 +28,7 @@ function gui_values(){
 
 function setup() {
   if(!capture){
-    common_setup(11*96, 8.5*96);
+    common_setup();
   }
   else{
     common_setup();
