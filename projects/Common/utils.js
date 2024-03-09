@@ -321,6 +321,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   //shift position to center canvas if base is different than 400
   if(size_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
+  else cnv.position(0,0);
   
   // gives change for square or rounded edges, this can be overriden within the draw function
   if(renderer != WEBGL) strokeCap(random([PROJECT,ROUND]));
