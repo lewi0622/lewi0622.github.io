@@ -32,7 +32,7 @@ function draw() {
 
   //apply background
   let bg_c = random(working_palette)
-  background(bg_c)
+  if(type == "png") background(bg_c)
   reduce_array(working_palette, bg_c)
 
   //actual drawing stuff

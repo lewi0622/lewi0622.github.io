@@ -14,7 +14,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(400, 400);
+  common_setup();
 }
 //***************************************************
 function draw() {
@@ -24,7 +24,7 @@ function draw() {
   push();
   center_rotate(random(360));
 
-  createBackground();
+  if(type == "png") createBackground();
 
   createSpiral();
 
@@ -74,14 +74,18 @@ const createSpiral = function(){
   push();
   noStroke();
   refresh_working_palette();
-  const steps = 1000;    
-  let c1 = random(working_palette);
-  reduce_array(working_palette,c1);
-  let c2 = random(working_palette);
-  const opacity = 200;
-  c1[3] = opacity;
-  c2[3] = opacity;
-  drawingContext.shadowColor = color(0,0,0,100);
+  const steps = 1000;
+  let c1, c2;
+  if(type == "png"){
+    c1 = random(working_palette);
+    reduce_array(working_palette,c1);
+    c2 = random(working_palette);
+    const opacity = 200;
+    c1[3] = opacity;
+    c2[3] = opacity;
+    drawingContext.shadowColor = color(0,0,0,100);
+  }    
+
   translate(canvas_x/2, canvas_y/2);
   const phi = random(1,255);
   const dist_scale = random(1.25,2.5);
@@ -90,8 +94,14 @@ const createSpiral = function(){
   const dir = random([1,-1]);
   for(let i=0; i<steps; i++){
     const f = i/steps;
-    const c = lerpColor(color(c1), color(c2), f*2);
-    fill(c);
+    if(type == "png"){
+      const c = lerpColor(color(c1), color(c2), f*2);
+      fill(c);
+    }
+    else{
+      stroke("BLACK")
+      fill("WHITE");
+    }
     const radius = sqrt(0.5);
     const angle = i * phi * dir;
     let smaller_cnv = min(canvas_x, canvas_y);
