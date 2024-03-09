@@ -19,6 +19,7 @@ let global_palette_id = PALETTE_ID_DEFAULT;
 let palette, working_palette;
 let palette_changed = true;
 let picker_changed = false;
+let size_changed = false;
 
 let global_scale = 1;
 let previous_scale = global_scale;
@@ -208,7 +209,7 @@ function verify_scale(val){
 }
 
 function build_size_px(){
-  return 0;
+  return "0";
 }
 
 function verify_size_px(val){
@@ -242,19 +243,21 @@ function build_url(){
 }
 
 function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P2D){
+  size_x = parseInt(size_x);
+  size_y = parseInt(size_y);
   if(size_x <= 0){
     size_x = 400;
-    x_size_px_param = 400;
+    x_size_px_param = "400";
   }
-  else if(redraw) size_x = x_size_px_param;
-  else x_size_px_param = size_x;
+  else if(redraw) size_x = parseInt(x_size_px_param);
+  else x_size_px_param = String(size_x);
 
   if(size_y <= 0){
     size_y = 400;
-    y_size_px_param = 400;
+    y_size_px_param = "400";
   }
-  else if(redraw) size_y = y_size_px_param;
-  else y_size_px_param = size_y;
+  else if(redraw) size_y = parseInt(y_size_px_param);
+  else y_size_px_param = String(size_y);
 
   if(!redraw){
     //replace initial url with one with full params 
@@ -358,6 +361,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   multiplier_changed = false;
   palette_changed = false;
   picker_changed = false;
+  size_changed = false;
   redraw_reason = "";
   if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
@@ -489,7 +493,7 @@ function seed_scale_button(control_height, control_spacing){
     btSave.id("Save");
   }
 
-  if(!redraw || multiplier_changed || redraw_reason == "window"){
+  if(!redraw || multiplier_changed || size_changed || redraw_reason == "window"){
     //resize for given global scale
     //START OF TOP ROW
     //left/right buttons for easy seed nav
@@ -570,8 +574,8 @@ function seed_scale_button(control_height, control_spacing){
 
 function populate_size_inputs(){
   if(unit_select.value() == "in"){
-    x_size_input.value(x_size_px_param/96);
-    y_size_input.value(y_size_px_param/96);
+    x_size_input.value(parseInt(x_size_px_param)/96);
+    y_size_input.value(parseInt(y_size_px_param)/96);
   }
   else{
     x_size_input.value(x_size_px_param);
@@ -583,12 +587,12 @@ function update_size_params(){
   const x_val = x_size_input.value();
   const y_val = y_size_input.value();
   if(!isNaN(x_val) && parseInt(x_val) > 0){
-    x_size_px_param = parseInt(x_val);
-    if(unit_select.value() == "in") x_size_px_param *= 96;
+    x_size_px_param = x_val;
+    if(unit_select.value() == "in") x_size_px_param = String(parseInt(x_val) * 96);
   }
   if(!isNaN(y_val) && parseInt(y_val) > 0){
-    y_size_px_param = parseInt(y_val);
-    if(unit_select.value() == "in") y_size_px_param *= 96;
+    y_size_px_param = y_val;
+    if(unit_select.value() == "in") y_size_px_param = String(parseInt(y_val) * 96);
   }
 }
 
@@ -637,6 +641,7 @@ function set_seed(e){
   colors_param = String(current_palette_index());
   palette_changed = current_palette_index() != int(getParamValue('colors'));
   multiplier_changed = scale_box.value() != find_cnv_mult(canvas_x/global_scale, canvas_y/global_scale);
+  size_changed = x_size_px_param != getParamValue("x_size_px") ||  y_size_px_param != getParamValue("y_size_px");
   const auto = event_id == "Auto Scale" || (scale_param == "auto"  && !multiplier_changed);
   
   if(auto) scale_param = build_scale(); 
@@ -656,7 +661,7 @@ function set_seed(e){
 function keyTyped(e) {
   // user presses enter, it sends Custom seed and custom scale
   const event_id = e.srcElement.id;
-  if(keyCode === ENTER && (event_id == "Seed" || event_id == "Scale Box")){
+  if(keyCode === ENTER && (event_id == "Seed" || event_id == "Scale Box" || event_id == "X Size Val" || event_id=="Y Size Val")){
     set_seed(e); //pass thru event details
   }
   else if(keyCode == 65) previous_seed(); //A key
