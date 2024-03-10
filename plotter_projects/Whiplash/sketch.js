@@ -6,9 +6,6 @@ const fr = 30;
 const capture = false;
 const capture_time = 8;
 
-//project variables
-// const phase_off = 20;
-
 function gui_values(){
   parameterize("i_mult_coarse", random([0, 1.5, 2.5,  5, 10, 20, 30, 40, 120]), 0, 120, 1, false);
   parameterize("i_mult_fine", 0, -1, 1, 0.0001, false);
@@ -27,13 +24,7 @@ function gui_values(){
 }
 
 function setup() {
-  if(!capture){
-    common_setup(11*96, 8.5*96);
-  }
-  else{
-    common_setup();
-    background("WHITE")
-  }
+  common_setup();
   noFill();
   // strokeWeight(COPICMARKER*3/4);
   // strokeWeight(0.0944882*96);
@@ -42,10 +33,7 @@ function setup() {
 //***************************************************
 function draw() {
   global_draw_start();
-  if(capture){
-    background("WHITE");
-  }
-
+  if(type == "png") background("WHITE");
 
   //actual drawing stuff
   push();

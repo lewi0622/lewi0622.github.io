@@ -10,8 +10,8 @@ let pts, stroke_c, bg_c, curved;
 const suggested_palettes = [];
 
 function gui_values(){
-  parameterize("rows", 10, 1, 100, 1, false);
-  parameterize("cols", 8, 1, 100, 1, false);
+  parameterize("rows", 3, 1, 100, 1, false);
+  parameterize("cols", 3, 1, 100, 1, false);
   parameterize("min_main_rad", 10, 1, 300, 5, true);
   parameterize("max_main_rad", 50, 1, 300, 5, true);
   parameterize("min_sec_rad", 10, 1, 300, 5, true);
@@ -24,7 +24,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(7.5*96, 9.5*96);
+  common_setup();
 
   curved = round(random());
   noFill();
