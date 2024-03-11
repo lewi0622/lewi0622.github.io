@@ -332,7 +332,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
     show_hide_pickers();
     color_pickers();
   }
-  if(!redraw || multiplier_changed) size_pickers(control_height, control_spacing);
+  if(multiplier_changed || size_changed) size_pickers(control_height, control_spacing);
 
   if(!redraw){
      //post details
