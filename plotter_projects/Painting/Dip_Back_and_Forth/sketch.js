@@ -9,6 +9,7 @@ const capture_time = 10;
 
 
 function gui_values(){
+  parameterize("size_shape", canvas_x/global_scale, 0, 10*96, 1, true);
 }
 
 function setup() {
@@ -18,7 +19,6 @@ function setup() {
 function draw() {
   global_draw_start();
   push();
-  const size_shape = 1*96;
   line(0,0, size_shape,0);
   line(size_shape,0, 0,0);
 
