@@ -44,7 +44,7 @@ function draw() {
     const ang_step_size = 360/ang_steps;
     for(let j=0; j<ang_steps; j++){
       const theta = j * ang_step_size + map(noise(i,j/50, z), 0,1, -ang_step_size, ang_step_size);
-      const radius_start = ring_starting_radius + map(noise(i,j,z), 0,1, ring_size, ring_size*2) * i;
+      const radius_start = ring_starting_radius + map(noise(i,j,z), 0,1, ring_size, ring_size*2) * (i+1);
       const radius_end = radius_start + ring_size;
       const start_x = radius_start * cos(theta);
       const start_y = radius_start * sin(theta);
