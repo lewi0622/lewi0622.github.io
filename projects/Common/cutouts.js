@@ -23,6 +23,7 @@ function set_seed(params){
 }
 
 function common_params(params){
+    if(params == undefined) return {};
     set_color(params);
     set_seed(params);
 }
@@ -30,7 +31,7 @@ function common_params(params){
 function rect_cutout(params){
     push();
     noFill();
-    common_params(params);
+    params = common_params(params);
     const cutout_width = validate("width", params, canvas_x/2);
     const cutout_height = validate("height", params, canvas_y/2);
     const cutout_corners = validate("corners", params, 0);
@@ -46,13 +47,13 @@ function rect_cutout(params){
 function diamond_cutout(params){
     push();
     noFill();
-    common_params(params);
+    params = common_params(params);
     const cutout_width = validate("width", params, canvas_x/2);
     const cutout_height = validate("height", params, canvas_y/2);
     const x = validate("x", params, canvas_x/2);
     const y = validate("y", params, canvas_y/2);
     translate(x,y);
-    
+
     beginShape();
     vertex(cutout_width/2, 0);
     vertex(0, cutout_height/2);
