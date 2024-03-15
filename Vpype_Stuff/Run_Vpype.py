@@ -107,7 +107,7 @@ def build_vpypeline(show):
         if occult_keep_lines.get():
             args += r" -k "
         #write to temp file
-        args += f" write {temp_file} "
+        args += f' write "{temp_file}" '
 
         #delete all layers to avoid extra data hanging around
         args += r" ldelete all "
@@ -117,7 +117,7 @@ def build_vpypeline(show):
         args += r" --no-crop "
 
     if occult.get():
-        args += f" {temp_file} "
+        args += f' "{temp_file}" '
     else:
         args += r" %files_in[_i]% "
 
