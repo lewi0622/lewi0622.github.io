@@ -8,24 +8,18 @@ function validate(key, params, val){
     return val;
 }
 
-function set_color(params){
+function common_params(params){
+    if(params == undefined) return {};
+    
     const c = validate("color", params, "BLACK");
     stroke(c);
-}
 
-function set_seed(params){
-    //don't use in animations
+    set_color(params);
     const seed_val = validate("seed", params, "");
     if(seed_val == "") return;
     randomSeed(seed_val);
     noiseSeed(seed_val);
     pnoise.seed(seed_val);
-}
-
-function common_params(params){
-    if(params == undefined) return {};
-    set_color(params);
-    set_seed(params);
 }
 
 function rect_cutout(params){
