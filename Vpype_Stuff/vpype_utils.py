@@ -1,6 +1,9 @@
 import os, glob, sys
 import xml.etree.ElementTree as ET
 import webbrowser
+import re
+import random
+import math
 from tkinter.filedialog import askopenfilenames
 
 def open_url_in_browser(url):
@@ -47,19 +50,62 @@ def get_files():
     return askopenfilenames(initialdir=initial_dir, filetypes=(("SVG files","*.svg*"),("all files","*.*")), initialfile=latest_file)
 
 
+def get_hex_value(rgb):
+    """rgb must be in the form of a tubple of integers"""
+    hex_value = '#%02x%02x%02x' % rgb
+    return hex_value
+
+
+def build_color_dict(input_file):
+    color_dict = {}
+    #if the file is properly formatted, this will find the colors
+    tree = ET.parse(input_file)
+    root = tree.getroot()
+    for child in root:
+        if "stroke" in child.attrib:
+            color_dict[child.attrib["stroke"]] = 0
+    #otherwise we look in all the test
+    if color_dict == {}:
+        with open(input_file, 'r') as file:
+            content = file.read()
+            strokes = re.findall(r'(?:stroke=")(.*?)(?:")', content)
+            for stroke in strokes:
+                #check for rgb and convert to hex
+                if "rgb" in stroke:
+                    rgb = re.findall(r'(?:rgb\()(.*?)(?:\))', stroke)[0].split(",")
+                    hex_value = get_hex_value((int(rgb[0]), int(rgb[1]), int(rgb[2])))
+                elif "#" in stroke:
+                    hex_value = stroke
+                elif "none" in stroke:
+                    pass
+                else:
+                    print("Can't parse: ", stroke)
+                color_dict[hex_value] = 0
+    return color_dict
+
+
 def max_colors_per_file(input_files):
     """Finds the max of distinct colors in any given file"""
     max_num_color = 0
     for input_file in input_files:
-        color_dict = {}
-        tree = ET.parse(input_file)
-        root = tree.getroot()
-        for child in root:
-            if "stroke" in child.attrib:
-                color_dict[child.attrib["stroke"]] = 0
+        color_dict = build_color_dict(input_file)
         if len(color_dict) > max_num_color:
             max_num_color = len(color_dict)
     return max_num_color
+
+
+def generate_random_color(input_file):
+    color_dict = build_color_dict(input_file)
+    rgb_hex = "#000000"
+    while(rgb_hex in color_dict):
+        rgb = (
+            math.floor(random.random()*256), 
+            math.floor(random.random()*256), 
+            math.floor(random.random()*256)
+        )
+        rgb_hex = get_hex_value(rgb)
+
+    return rgb_hex
 
 
 def get_directory_name(file_name):
