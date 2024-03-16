@@ -1,7 +1,6 @@
 import subprocess, os
 from tkinter import *
 from tkinter import ttk
-import sys
 from vpype_utils import *
 
 temp_file = ""
@@ -58,6 +57,11 @@ def build_vpypeline(show):
         output_file = file_parts[0] + "_PROCESSED" #file extension is not appended at this time
         output_file_list.append(output_file)
 
+    if occult_keep_lines.get():
+        color_list = []
+        for filename in input_file_list:
+            color_list.append(generate_random_color(filename))
+
     args = r"vpype "
 
     # determine if grid is necessary
@@ -90,12 +94,18 @@ def build_vpypeline(show):
     args += r' eval "files_in=' + f"{input_file_list}" + '"'
     args += r' eval "files_out=' + f"{output_file_list}" + '"'
     args += r' eval "file_ext=' + r"'.svg'" + '"'
+    if occult_keep_lines.get():
+        args += r' eval "random_colors=' + f"{color_list}" + '"'
 
     if occult.get():
         #Edit file to place a unique id for each path so that the draw order is maintained when performing occult
         add_unique_ids()
-
         args += r" read -a id --no-crop %files_in[_i]% "
+
+        if occult_keep_lines.get():
+            #random color is applied to the added -k kept lines layer if it exists
+            args += r' eval "%last_color=random_colors[_i]%" '
+            args += r' forlayer eval "%num_layers=_n%" end '
 
         #occult function uses most recently drawn closed shapes to erase lines that are below the shape
         # the flag -i ignores layers and occults everything
@@ -106,6 +116,12 @@ def build_vpypeline(show):
             args += r" -a "
         if occult_keep_lines.get():
             args += r" -k "
+
+            #check if -k kept lines, and overwrite color of kept lines with random color
+            args += r' forlayer eval "%new_num_layers=_n%" '
+            args += r' eval "%if(new_num_layers<=num_layers):last_color=_color%" end '
+            args += r" color -l %new_num_layers% %last_color% "
+
         #write to temp file
         args += f' write "{temp_file}" '
 
