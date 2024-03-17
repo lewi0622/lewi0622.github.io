@@ -77,25 +77,31 @@ def build_vpypeline(show):
 
     slots = cols * rows
     grid = slots > 1
+
+    # Declare globals before the block operator (grid or repeat)
     if grid:
         while len(input_file_list) < slots: #crude way to make sure there's enough files per grid slot
             input_file_list = input_file_list + input_file_list
             output_file_list = output_file_list + output_file_list
-
-        args += f" grid -o {col_size}in {row_size}in {cols} {rows} "
-
-    else: #repeat for both single and batch operations
-        if show:
-            repeat_num = 1
-        else:
-            repeat_num = len(input_file_list)
-        args += f" repeat {repeat_num} "
+            if occult_keep_lines.get():
+                color_list = color_list + color_list
+        args += r' eval "%grid_layer_count=0%" '
 
     args += r' eval "files_in=' + f"{input_file_list}" + '"'
     args += r' eval "files_out=' + f"{output_file_list}" + '"'
     args += r' eval "file_ext=' + r"'.svg'" + '"'
     if occult_keep_lines.get():
         args += r' eval "random_colors=' + f"{color_list}" + '"'
+
+    #block operator grid or repeat
+    if grid:
+        args += f" grid -o {col_size}in {row_size}in {cols} {rows} "
+    else: #repeat for both single and batch operations
+        if show:
+            repeat_num = 1
+        else:
+            repeat_num = len(input_file_list)
+        args += f" repeat {repeat_num} "
 
     if occult.get():
         #Edit file to place a unique id for each path so that the draw order is maintained when performing occult
@@ -178,7 +184,9 @@ def build_vpypeline(show):
         args += f" multipass "
 
     if grid: 
-        args += r' eval "j=_i" forlayer lmove %_lid% %j*100+_lid% end end '# moves each layer onto it's own unique layer so that there's no merging of layers/colors later
+        args += r' eval "j=_i" forlayer '
+        args += r' lmove %_lid% %grid_layer_count+1% ' #moves each layer onto it's own unique layer so there's no merging
+        args += r' eval "%grid_layer_count=grid_layer_count+1%" end end' #inc the global layer counter
     
     #layout as letter centers graphics within given page size
     if layout.get():
