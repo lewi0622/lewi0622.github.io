@@ -8,44 +8,92 @@ const capture_time = 10;
 
 const suggested_palettes = [SIXTIES]
 
+let address_script = document.createElement('script');
+address_script.setAttribute('src', "addresses.js");
+document.head.appendChild(address_script);
+
+let font;
+
 function gui_values(){
+  parameterize("margin", 0.25*96, 0, 200, 0.25, true);
+  parameterize("font_size_body", 0.3*96, 1, 100, 1, true);
+  parameterize("x_body", 0, -20, 20, 0.5, true);
+  parameterize("y_body", 0, 0, 200, 0.5, true);
+  parameterize("font_size_address", 0.3*96, 1, 100, 1, true);
+  parameterize("x_address", 0, -20, 20, 0.5, true);
+  parameterize("y_address", -5, -20, 20, 0.5, true);
 }
 
 function setup() {
-  common_setup(8.5*96, 11*96);
+  common_setup(5*96, 4*96, SVG);
+
+  if(!redraw){
+    opentype.load('..\\..\\..\\fonts\\SquarePeg-Regular.ttf', function (err, f) {
+      if (err) {
+        alert('Font could not be loaded: ' + err);
+      } else {
+        font = f;
+        draw();
+      }
+    })
+  }
 }
 //***************************************************
 function draw() {
+  if(!font) return;
   global_draw_start();
 
   refresh_working_palette();
 
+  push();
+  
   //apply postcard lines
   noFill();
-  rect(0,0,canvas_x, canvas_y);
+
+  white_border();
+
   line(canvas_x/2, 0, canvas_x/2, canvas_y);
-  line(0,canvas_y/2, canvas_x, canvas_y/2);
+  translate(canvas_x/2 + margin, canvas_y/2);
 
-  //actual drawing stuff
-  stroke("BLUE")
-  for(let i=0; i<2; i++){
-    for(let j=0; j<2; j++){
-      push();
-      translate(i*canvas_x/2, j*canvas_y/2);
-      let address_spacing = 0.5*96;
-      let margin = 0.25*96;
-      //middle line
-      line(margin, canvas_y/4, canvas_x/2-margin, canvas_y/4);
-      //stamp space
-      rect(margin, margin, 96, 0.75*96);
-      //address lines
-      for(let z=0; z<4; z++){
-        line(canvas_x/4 + z * address_spacing, margin, canvas_x/4 + z * address_spacing, canvas_y/4-margin*2);
-      }
-
-      pop();
-    }
+  let address_text = [];
+  if(typeof addresses === "undefined"){
+    address_text = [
+          "Lewiston Face",
+          "1234 My Street",
+          "Apt 1",
+          "Minneapolis, MN 55445",
+          "USA"];
   }
+  else address_text = addresses[0];
+  for(let i=0; i<address_text.length; i++){
+    push();
+    translate(0, i*0.4*96);
+    const path = font.getPath(address_text[i], 0,0, font_size_address);
+    line(0,0, canvas_x/2-margin*2, 0);
+    translate(x_address, y_address);
+    draw_open_type_js_path_p5_commands(path);
+    pop();
+  }
+
+  pop();
+  push();//Space for message text 0-canvas_x/2, 0-canvas_y - margin
+
+  const body_text = [
+    "Happy Plot Party!",
+    "This design was made using p5.js",
+    "and plotted on an AxiDraw V3",
+    "@LewistonFace :)"
+  ]
+  translate(x_body, y_body);
+  for(let i=0; i<body_text.length; i++){
+    push();
+    translate(0, i*0.4*96);
+    const path = font.getPath(body_text[i], 0,0, font_size_body);
+    translate(x_address, y_address);
+    draw_open_type_js_path_p5_commands(path);
+    pop();
+  }
+  pop();
 
   global_draw_end();
 }
