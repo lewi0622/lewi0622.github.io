@@ -4,7 +4,7 @@ const gif = true;
 const animation = true;
 const fr = 30;
 const capture = false;
-const capture_time = 20;
+const capture_time = 5;
 
 const suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST, NURSERY, SIXTIES, SUPPERWARE]
 
@@ -22,7 +22,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(800, 400);
+  common_setup();
   mt_colors = [];
 }
 //***************************************************

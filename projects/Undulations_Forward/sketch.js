@@ -23,7 +23,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(800, 400);
+  common_setup();
   mts = [];
   mode = BLEND;
   idx = 0;
