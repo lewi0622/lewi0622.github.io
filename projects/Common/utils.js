@@ -767,13 +767,11 @@ function capture_frame(){
 //background functions
 function bg(remove, force){
   let c;
-  if(force !== undefined){
-    c = force;
-  }
+  if(force !== undefined) c = force;
   else c = random(working_palette);
   
   background(c);
-  if(remove == true) reduce_array(working_palette, c);
+  if(remove) reduce_array(working_palette, c);
   return c;
 };
 function bg_vertical_strips(strips){
