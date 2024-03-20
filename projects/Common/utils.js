@@ -12,7 +12,7 @@ let capturer, capture_state;
 const control_height_base = 20;
 const control_spacing_base = 5;
 let seed_input, scale_box, color_sel;
-let btLeft, btRight, button, reset_palette, randomize, auto_scale, reset_parameters, btSave, radio_filetype, x_size_input, y_size_input, unit_select;
+let btLeft, btRight, button, reset_palette, randomize, full_controls, auto_scale, reset_parameters, btSave, radio_filetype, x_size_input, y_size_input, unit_select;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
 let global_palette_id = PALETTE_ID_DEFAULT;
@@ -391,6 +391,7 @@ function getParamValue(paramName){
 function seed_scale_button(control_height, control_spacing){
   const ids = ["Bt Left", "Seed", "Bt Right", "Custom Seed", "Reset Palette", "Color Select", "Randomize", "Color Boxes"];
   const full_ids = ["Auto Scale", "Scale Box", "Reset Parameters", "X Size Val", "Y Size Val", "Size Units", "Save", "File Type"];
+  if(controls_param == "true" && !in_iframe) ids.push("Full Controls");
 
   if(!redraw){
     //declare unchanging properties
@@ -457,6 +458,11 @@ function seed_scale_button(control_height, control_spacing){
 
     //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
+    full_controls = createButton('Show me Full Controls, I can handle it!');
+    full_controls.mouseClicked(change_to_full_controls);
+    full_controls.id("Full Controls");
+    full_controls.style("visibility", "hidden");
+
     //autoscale button calls url minus any scaler
     auto_scale = createButton('Autoscale');
     auto_scale.mouseClicked(set_seed);
@@ -534,6 +540,10 @@ function seed_scale_button(control_height, control_spacing){
 
     //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
+    //enable full controls option
+    full_controls.position(0, canvas_y + control_height*2);
+    full_controls.size(220*global_scale, control_height);
+
     //autoscale button calls url minus any scaler
     auto_scale.position(0, canvas_y + control_height*2);
     auto_scale.size(70*global_scale, control_height)
@@ -597,6 +607,11 @@ function update_size_params(){
   }
 }
 
+function change_to_full_controls(){
+  controls_param = "full";
+  set_seed();
+}
+
 function randomize_seed(){
   seed_input.value(build_seed());
   set_seed();
@@ -629,6 +644,7 @@ function current_palette_index(){
 
 window.onpopstate = function(){
   //captures the back/forward browser buttons to move between history states without reloading the page
+  if(controls_param != getParamValue("controls")) location.reload(); //controls change mean reload the whole page
   redraw_sketch();
 };
 
@@ -648,8 +664,11 @@ function set_seed(e){
   if(auto) scale_param = build_scale(); 
   else scale_param = scale_box.value();
   
+  const reload_page = controls_param != getParamValue("controls"); //controls change mean reload the whole page
+
   //using pushState allows for changing the url, and then redrawing without needing to reload the page
   window.history.pushState({}, "", build_url());
+  if(reload_page) location.reload();
 
   if(event_id == "Color Select"){
     palette_changed = true; //color picker was used
