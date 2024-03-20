@@ -1,4 +1,4 @@
-name: run-get-projects
+name: get projects and mass index change
 on: [push]
 jobs:
   build:
