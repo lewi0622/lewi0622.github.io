@@ -574,6 +574,11 @@ function seed_scale_button(control_height, control_spacing){
       const elem = document.getElementById(id)
       if(elem){
         elem.style.fontSize = str(12*global_scale) + 'px';
+        if(elem.nodeName == "BUTTON"){
+          elem.style.textAlign = "center";
+          elem.style.padding = 0;
+          elem.style.color = "black";
+        }
       }
     });
 
