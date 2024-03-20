@@ -27,7 +27,8 @@ function draw() {
 
   //actual drawing stuff
   push();
-  const bg_c = bg(true);
+  const bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
   if(type == "png") {
     background(bg_c);
     stroke(random(working_palette));
