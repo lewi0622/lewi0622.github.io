@@ -6,8 +6,15 @@ const fr = 1;
 const capture = false;
 const capture_time = 8;
 
+const suggested_palettes = [SAGEANDCITRUS, BEACHDAY, BIRDSOFPARADISE];
 
 function gui_values(){
+  const row_col = floor(random(2,6));
+  parameterize("cols", row_col, 1, 20, 1, false);
+  parameterize("rows", row_col, 1, 20, 1, false);
+  parameterize("margin", random(0,50), 0, 100, 1, true);
+  parameterize("shape_rad", random(20,60), 0, 200, 1, true);
+  parameterize("pts", floor(random(30, 150)), 1, 200, 1, false);
 }
 
 function setup() {
@@ -19,51 +26,35 @@ function draw() {
 
   //actual drawing stuff
   push();
-
+  refresh_working_palette();
+  const bg_c = bg(true);
+  if(type != "svg") background(bg_c);
+  strokeJoin(ROUND);
   strokeWeight(1*global_scale);
 
   noFill();
-  const  colors = gen_n_colors(4);
-  stroke(colors[0]);
-  const pts = 75;
-  const shape_rad = 40*global_scale;
-  const spacing = shape_rad * 2;
-  let zoff = 0;
-  const inc = 0.01;
-  let counter = 0;
-  for(let i=spacing; i<canvas_x; i+=spacing){
-    for(let j=spacing; j<canvas_y; j+=spacing){
-      push();
-      if(j==i){
-        //central row outline
-        stroke(colors[2]);
-        circle(i,j, shape_rad*2);
-        circle(i,j, shape_rad*2+global_scale)
+  const c1 = random(working_palette);
+  reduce_array(working_palette, c1);
+  const c2 = random(working_palette);
+  stroke(c1);
 
-        //central row
-        stroke(colors[1]);
-      }
-      else{
-        push();
-        // stroke(colors[3]);
-        circle(i,j, shape_rad*2);
-        circle(i,j, shape_rad*2+global_scale);
-        pop();
-      }
-      curveTightness(random(-5,5));
-      strokeJoin(ROUND)
-      translate(i, j);
+  const x_spacing = (canvas_x - margin*2)/cols;
+  const y_spacing = (canvas_y - margin*2)/rows;
+  
+  translate(margin + x_spacing/2, margin + y_spacing/2);
+  for(let i=0; i<cols; i++){
+    for(let j=0; j<rows; j++){
+      push();
+      translate(i*x_spacing, j*y_spacing);
+      if(j==i) stroke(c2); //central row outline
+
+      circle(0,0, shape_rad*2);
       beginShape();
       for(let z=0; z<pts; z++){
-        // curveVertex(random(-shape_rad,shape_rad), random(-shape_rad,shape_rad));
-        // vertex(map(noise(z+i-j+zoff), 0,1, -shape_rad, shape_rad), map(noise(z+i+j+zoff), 0,1, -shape_rad, shape_rad));
-        const ang = map(noise(z + counter + i + j + zoff), 0,1, 0,1080);
+        const ang = random(360);
         vertex(shape_rad*cos(ang), shape_rad*sin(ang));
-
       }
       endShape();
-      zoff += inc;
-      counter++;
       pop();
     }
   }
