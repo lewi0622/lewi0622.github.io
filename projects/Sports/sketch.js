@@ -104,7 +104,6 @@ function draw() {
   for(let i=0; i<num_shapes; i++){
     push();
     const s = shapes[i];  
-    console.log(s);
     fill(s.c);
     rotate(random(-rot,rot));
     const shadow_c = color("black");
