@@ -37,7 +37,7 @@ function draw() {
   global_draw_start();
 
   refresh_working_palette();
-
+  // white_border();
   //actual drawing stuff
   push();
   noFill();
@@ -59,6 +59,10 @@ function draw() {
     pop();
   }
   pop();
+  // const cutout_size = canvas_x/2;
+  // rect_cutout({color:"GREEN", width: cutout_size, height: cutout_size, x:canvas_x/3, y:canvas_y/3});
+  // rect_cutout({color:"GREEN", width: cutout_size, height: cutout_size, x:canvas_x*2/3, y:canvas_y*2/3});
+  // rect_cutout({color:"GREEN", width: cutout_size, height: cutout_size, x:canvas_x*2/3, y:canvas_y*3/4});
   global_draw_end();
 }
 //***************************************************
