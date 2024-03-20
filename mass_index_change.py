@@ -3,12 +3,8 @@ import pathlib
 
 path = os.getcwd()
 
-print(path)
-
 #absolute paths
 common = os.path.join(path, "projects", "Common")
-
-print(common)
 
 to_replace = []
 
