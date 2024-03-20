@@ -458,7 +458,7 @@ function seed_scale_button(control_height, control_spacing){
 
     //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
-    full_controls = createButton('Show me Full Controls, I can handle it!');
+    full_controls = createButton('Full Controls');
     full_controls.mouseClicked(change_to_full_controls);
     full_controls.id("Full Controls");
     full_controls.style("visibility", "hidden");
@@ -516,17 +516,17 @@ function seed_scale_button(control_height, control_spacing){
     btRight.position(seed_input.size().width + seed_input.position().x, canvas_y);
 
     //custom seed button
-    button.size(90*global_scale, control_height)
+    button.size(101*global_scale, control_height)
     button.position(btRight.size().width + btRight.position().x + control_spacing, canvas_y);
 
     if(!in_iframe){
       //reset palette button
-      reset_palette.size(90*global_scale, control_height)
+      reset_palette.size(101*global_scale, control_height)
       reset_palette.position(button.size().width + button.position().x + control_spacing, canvas_y);
     }
 
     //randomize button
-    randomize.size(80*global_scale, control_height);
+    randomize.size(84*global_scale, control_height);
     randomize.position(400*global_scale-randomize.size().width, canvas_y);
 
     //START OF SECOND ROW
@@ -542,7 +542,7 @@ function seed_scale_button(control_height, control_spacing){
     //START OF THIRD ROW
     //enable full controls option
     full_controls.position(0, canvas_y + control_height*2);
-    full_controls.size(220*global_scale, control_height);
+    full_controls.size(100*global_scale, control_height);
 
     //autoscale button calls url minus any scaler
     auto_scale.position(0, canvas_y + control_height*2);
@@ -574,10 +574,9 @@ function seed_scale_button(control_height, control_spacing){
       const elem = document.getElementById(id)
       if(elem){
         elem.style.fontSize = str(12*global_scale) + 'px';
+        elem.style.color = "black";
         if(elem.nodeName == "BUTTON"){
-          elem.style.textAlign = "center";
           elem.style.padding = 0;
-          elem.style.color = "black";
         }
       }
     });
