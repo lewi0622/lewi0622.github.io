@@ -1339,39 +1339,6 @@ function retrieve_gui_settings(){
   }
 }
 
-//SVG feTurbulence filter
-function feTurbulence(baseFrequency, numOctaves, filter_scale){
-  //good values for wobbly lines is 0.05, 3, 2
-
-  //check if filter exists, if so delete and remake
-  if(document.getElementById("turb") != null){
-    document.getElementById("turb").remove();
-  }
-  let filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
-  filter.setAttribute("id","turb");
-  
-  let feTurbulence = document.createElementNS("http://www.w3.org/2000/svg", "feTurbulence");
-  feTurbulence.setAttribute("type", "turbulence");
-  feTurbulence.setAttribute("baseFrequency", str(baseFrequency));
-  feTurbulence.setAttribute("numOctaves", str(numOctaves));
-  feTurbulence.setAttribute("result", "turblence");
-
-  let feDisplacementMap = document.createElementNS("http://www.w3.org/2000/svg", "feDisplacementMap");
-  feDisplacementMap.setAttribute("in2", "turbulence");
-  feDisplacementMap.setAttribute("in", "SourceGraphic");
-  feDisplacementMap.setAttribute("scale", str(filter_scale));
-  feDisplacementMap.setAttribute("xChannelSelector", "R");
-  feDisplacementMap.setAttribute("yChannelSelector", "G");
-
-  //find svg tag
-  let svg_defs = document.getElementsByTagName("defs")[0];
-  filter.appendChild(feTurbulence);
-  filter.appendChild(feDisplacementMap);
-  svg_defs.appendChild(filter);
-  let g_tag = document.getElementsByTagName("g")[0];
-  g_tag.setAttribute("filter", "url(#turb)");
-}
-
 function bezier_arc_controls(xc, yc, x1, y1, x4, y4){
   //returns bezier control points creating an arc based on two points and the center of the circle
   //https://stackoverflow.com/questions/734076/how-to-best-approximate-a-geometrical-arc-with-a-bezier-curve
