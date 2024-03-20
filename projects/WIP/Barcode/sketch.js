@@ -20,7 +20,8 @@ function setup() {
   common_setup();
 
   //apply background
-  bg_c = bg(true);
+  bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
   palette_reset = JSON.parse(JSON.stringify(controlled_shuffle(palette, true)));
   theta_offset = random(180);
 }
@@ -30,6 +31,7 @@ function draw() {
   
   //actual drawing stuff
   push();
+  background(bg_c);
   noFill();
   strokeWeight(map(sin(theta), -1, 1, 1, 40)*global_scale);
 

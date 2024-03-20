@@ -34,7 +34,8 @@ function draw() {
   push(); 
   strokeCap(ROUND);
   drawingContext.shadowBlur=random(10)*global_scale;
-  const bg_c = bg();
+  const bg_c = random(working_palette);
+  background(bg_c);
   if(line_spacing/global_scale>10) reduce_array(working_palette, bg_c);
   vertical_step_num = map(drip_len/global_scale, 1, 150, 15, 200);
   noFill();

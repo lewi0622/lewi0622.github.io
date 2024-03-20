@@ -24,7 +24,7 @@ function draw() {
   last_c_id = c_id;
 
   //apply background
-  bg(false, palette[c_id % palette.length]);
+  background(palette[c_id % palette.length]);
   c_id++;
 
   //actual drawing stuff

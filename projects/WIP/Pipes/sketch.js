@@ -23,8 +23,11 @@ function setup() {
 function draw() {
   global_draw_start();
 
+  refresh_working_palette();
   //apply background
-  bg(true);
+  const bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+  background(bg_c);
 
   center_rotate(floor(random(360)));
 
@@ -42,14 +45,14 @@ function draw() {
     };
   });
 
-  palette = controlled_shuffle(palette, true);
+  working_palette = controlled_shuffle(working_palette, true);
 
   pipes.forEach(pipe => {
     //set color
-    c = random(palette);
+    c = random(working_palette);
     pipe.color = color(c);
-    if(palette.length>1 && random()<0.4){
-      reduce_array(palette, c);
+    if(working_palette.length>1 && random()<0.4){
+      reduce_array(working_palette, c);
     }
   });
 

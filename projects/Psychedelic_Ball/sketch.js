@@ -24,7 +24,8 @@ function draw() {
   global_draw_start();
 
   //apply background
-  const bg_c = bg();
+  const bg_c = random(working_palette);
+  background(bg_c);
 
   const erase_or_bg = random()>0.5;
 

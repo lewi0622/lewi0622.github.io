@@ -29,7 +29,7 @@ function draw() {
   let funcs, colors, iterations, x_offset_min, x_offset_max, y_offset_min, y_offset_max;
 
   //apply background
-  bg();
+  background(random(working_palette));
   strokeCap(random([PROJECT,ROUND]));
 
   //actual drawing stuff

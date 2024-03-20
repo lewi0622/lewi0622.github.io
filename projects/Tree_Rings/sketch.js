@@ -23,7 +23,9 @@ function gui_values(){
 function setup() {
   common_setup();
   refresh_working_palette();
-  bg_c = bg(true);
+  bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+  background(bg_c);
   stroke_c = random(working_palette);
   z = 0;
   if(type == "svg") noLoop();

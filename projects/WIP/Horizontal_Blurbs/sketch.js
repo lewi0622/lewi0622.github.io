@@ -21,12 +21,17 @@ function setup() {
   common_setup();
 
   palette = JSON.parse(JSON.stringify(controlled_shuffle(palette, true))).slice(0,5);
-  bg_c = bg(true);
+  refresh_working_palette();
+  bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+  background(bg_c);
   palette_reset = JSON.parse(JSON.stringify(controlled_shuffle(palette, true)));
 }
 //***************************************************
 function draw() {
   global_draw_start();
+
+
   if(gif){
     background(bg_c);
     palette = palette_reset;

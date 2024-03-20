@@ -27,7 +27,8 @@ function draw() {
   //actual drawing stuff
   push();
   refresh_working_palette();
-  const bg_c = bg(true);
+  const bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
   if(type != "svg") background(bg_c);
   strokeJoin(ROUND);
   strokeWeight(1*global_scale);
