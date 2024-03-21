@@ -25,6 +25,11 @@ function draw() {
 
   //actual drawing stuff
   push();
+  noFill();
+  const bg_c = random(working_palette);
+  strokeWeight(1*global_scale);
+  reduce_array(working_palette, bg_c);
+  if(type == "png") background(bg_c);
   const circles = [];
 
   for(let i=0; i<circle_attempts; i++){
@@ -38,7 +43,7 @@ function draw() {
     let circle_bad = false;
     for(let j=0; j<circles.length; j++){
       let c = circles[j];
-      let overlap = c.r + new_c.r - dist(c.x, c.y, new_c.x, new_c.y);
+      let overlap = c.r + new_c.r + 1*global_scale - dist(c.x, c.y, new_c.x, new_c.y);
       if(overlap <= 0) continue;
       new_c.r -= overlap;
       if(new_c.r < min_radius){
