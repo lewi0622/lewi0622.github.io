@@ -399,7 +399,6 @@ function create_new_button(button_text, id, hide){
 function create_new_input(input_text, id, hide){
   const input = createInput(input_text);
   input.style("text-align", "right");
-  style_control(input);
   input.id(id);
   if(hide) input.style("visibility", "hidden");
   return input;
@@ -456,7 +455,6 @@ function seed_scale_button(control_height, control_spacing){
     color_select.selected(palette_names[current_palette_index()]);
     color_select.changed(set_seed);
     color_select.id('Color Select');
-    style_control(color_select);
     if(hide) color_select.style("visibility", "hidden");
 
     //radio control for png/svg
@@ -467,7 +465,6 @@ function seed_scale_button(control_height, control_spacing){
     filetype_radio.changed(set_file_type);
     filetype_radio.id("File Type");
     if(hide) filetype_radio.style("visibility", "hidden");
-    style_control(filetype_radio);
 
     //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
@@ -499,7 +496,6 @@ function seed_scale_button(control_height, control_spacing){
     unit_select.changed(populate_size_inputs);
     unit_select.id('Size Units');
     if(hide) unit_select.style("visibility", "hidden");
-    style_control(unit_select);
 
     //save button
     save_button = create_new_button("Save", "Save", hide);
@@ -512,68 +508,81 @@ function seed_scale_button(control_height, control_spacing){
     //left/right buttons for easy seed nav
     left_button.size(20*global_scale, control_height);
     left_button.position(0, canvas_y);
+    style_control(left_button);
 
     //creates controls below canvas for displaying/setting seed
     seed_input.size(55*global_scale, control_height-6);
     seed_input.position(left_button.size().width,canvas_y);
+    style_control(seed_input);
 
     //left/right buttons for easy seed nav
     right_button.size(20*global_scale, control_height);
     right_button.position(seed_input.size().width + seed_input.position().x, canvas_y);
+    style_control(right_button);
 
     //custom seed button
     custom_seed_button.size(101*global_scale, control_height)
     custom_seed_button.position(right_button.size().width + right_button.position().x + control_spacing, canvas_y);
+    style_control(custom_seed_button);
 
-    if(!in_iframe){
-      //reset palette button
-      reset_palette_button.size(101*global_scale, control_height)
-      reset_palette_button.position(custom_seed_button.size().width + custom_seed_button.position().x + control_spacing, canvas_y);
-    }
+    reset_palette_button.size(101*global_scale, control_height)
+    reset_palette_button.position(custom_seed_button.size().width + custom_seed_button.position().x + control_spacing, canvas_y);
+    style_control(reset_palette_button);
 
     //randomize button
     randomize_button.size(84*global_scale, control_height);
     randomize_button.position(400*global_scale-randomize_button.size().width, canvas_y);
+    style_control(randomize_button);
 
     //START OF SECOND ROW
     //color palette select
     color_select.position(0, canvas_y+control_height);
     color_select.size(120*global_scale, control_height);
+    style_control(color_select);
 
     //file type radio control
     filetype_radio.size(80*global_scale, control_height);
     filetype_radio.position(400*global_scale-filetype_radio.size().width, canvas_y + control_height);
+    style_control(filetype_radio);
 
     //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
     //enable full controls option
     full_controls_button.position(0, canvas_y + control_height*2);
     full_controls_button.size(100*global_scale, control_height);
+    style_control(full_controls_button);
 
     //autoscale button calls url minus any scaler
     auto_scale_button.position(0, canvas_y + control_height*2);
     auto_scale_button.size(70*global_scale, control_height)
+    style_control(auto_scale_button);
 
     //scale text box
     scale_input.position(auto_scale_button.size().width+control_spacing, canvas_y+control_height*2)
     scale_input.size(30*global_scale, control_height-6);
     scale_input.value(global_scale);
+    style_control(scale_input);
 
     //reset parameters button
     reset_parameters_button.position(scale_input.position().x+scale_input.size().width+control_spacing, canvas_y+control_height*2);
     reset_parameters_button.size(100*global_scale, control_height);
+    style_control(reset_parameters_button);
 
     //size parameters
     x_size_input.position(reset_parameters_button.position().x+reset_parameters_button.size().width+control_spacing, canvas_y+control_height*2);
     x_size_input.size(30*global_scale, control_height-6);
+    style_control(x_size_input);
     y_size_input.position(x_size_input.position().x+x_size_input.size().width, canvas_y+control_height*2);
     y_size_input.size(30*global_scale, control_height-6);
+    style_control(y_size_input);
     unit_select.position(y_size_input.position().x+y_size_input.size().width, canvas_y+control_height*2);
     unit_select.size(40*global_scale, control_height);
+    style_control(unit_select);
 
     //save button
     save_button.size(50*global_scale, control_height);
     save_button.position(400*global_scale-50*global_scale, canvas_y+control_height*2);
+    style_control(save_button);
   }
   seed_input.value(seed_param); //needs to be set every time
 }
