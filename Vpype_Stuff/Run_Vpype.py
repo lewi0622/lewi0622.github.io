@@ -85,7 +85,7 @@ def build_vpypeline(show):
             output_file_list = output_file_list + output_file_list
             if occult_keep_lines.get():
                 color_list = color_list + color_list
-        args += r' eval "%grid_layer_count=0%" '
+        args += r' eval "%grid_layer_count=1%" '
 
     args += r' eval "files_in=' + f"{input_file_list}" + '"'
     args += r' eval "files_out=' + f"{output_file_list}" + '"'
@@ -184,8 +184,8 @@ def build_vpypeline(show):
         args += f" multipass "
 
     if grid: 
-        args += r' eval "j=_i" forlayer '
-        args += r' lmove %_lid% %grid_layer_count+1% ' #moves each layer onto it's own unique layer so there's no merging
+        args += r' forlayer '
+        args += r' lmove %_lid% %grid_layer_count% ' #moves each layer onto it's own unique layer so there's no merging
         args += r' eval "%grid_layer_count=grid_layer_count+1%" end end' #inc the global layer counter
     
     #layout as letter centers graphics within given page size
