@@ -457,6 +457,8 @@ function seed_scale_button(control_height, control_spacing){
     color_select.id('Color Select');
     if(hide) color_select.style("visibility", "hidden");
 
+    //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
+    hide = controls_param != "full";
     //radio control for png/svg
     filetype_radio = createRadio();
     filetype_radio.option("png");
@@ -466,10 +468,7 @@ function seed_scale_button(control_height, control_spacing){
     filetype_radio.id("File Type");
     if(hide) filetype_radio.style("visibility", "hidden");
 
-    //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
-    hide = controls_param != "full";
-
     full_controls_button = create_new_button("Full Controls", "Full Controls", controls_param != "true");
     full_controls_button.mouseClicked(change_to_full_controls);
 
