@@ -10,7 +10,11 @@ const suggested_palettes = [BUMBLEBEE, SIXTIES, SUPPERWARE]
 
 
 function gui_values(){
-
+  parameterize("line_length", 60, 10, 200, 1, true);
+  parameterize("weight", 2, 0.1, 20, 0.1, true);
+  parameterize("iterations", 50, 1, 200, 1, false);
+  parameterize("x_offset", 20, 0, 100, 1, true);
+  parameterize("y_offset", 20, 0, 100, 1, true);
 }
 
 function setup() {
@@ -21,40 +25,38 @@ function draw() {
   global_draw_start();
 
   //project variables
-  const line_length = 60*global_scale;
-  const tile_width = canvas_x / line_length;
-  const tile_height = canvas_y / line_length;
-
-  let i_offset = 0;
-  let j_offset = 0;
-
-  let x_offset_min = 0;
-  let x_offset_max = 20;
-  let y_offset_min = 0;
-  let y_offset_max = 20;
-  let funcs, colors, iterations;
-
-
+  const cols = floor(canvas_x / line_length);
+  const rows = floor(canvas_y / line_length);
 
   refresh_working_palette();
-  strokeCap(random([PROJECT,ROUND]))
+  strokeCap(random([PROJECT,ROUND]));
 
   //apply background
-  let bg_c = random(working_palette)
-  background(bg_c)
-  reduce_array(working_palette, bg_c)
+  let bg_c = random(working_palette);
+  if(type == "png") background(bg_c);
+  reduce_array(working_palette, bg_c);
 
   //actual drawing stuff
   push();
   center_rotate(random([0, 90, 180, 270]));
   //line width
-  strokeWeight(2*global_scale);
+  strokeWeight(weight);
   
   //tile lines
-  tile(tile_width, tile_height, line_length, funcs=[draw_diag, draw_cardinal], 
-    colors=working_palette, iterations=50, 
-    x_offset_min=x_offset_min*global_scale, x_offset_max=x_offset_max*global_scale,
-    y_offset_min=y_offset_min*global_scale, y_offset_max=y_offset_max*global_scale);
+  for(let i=0; i<iterations; i++){
+    translate(random(x_offset), random(y_offset));
+    for(let j=0; j<cols; j++){
+      for(let k=0; k<rows; k++){
+        push();
+        translate(j*line_length, k*line_length);
+        stroke(random(working_palette));
+        translate(line_length/2, line_length/2);
+        rotate(random([0,45,90,135,180,225,270,315]));
+        line(-line_length/2,0, line_length/2, 0);
+        pop();
+      }
+    }
+  }
 
   pop();
   global_draw_end();
