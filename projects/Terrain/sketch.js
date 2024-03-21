@@ -23,7 +23,6 @@ function draw() {
 
   //actual drawing stuff
   push();
-  refresh_working_palette();
   let bg_c = random(working_palette);
   background(bg_c);
   reduce_array(working_palette,bg_c);

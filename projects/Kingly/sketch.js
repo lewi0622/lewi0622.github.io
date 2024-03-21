@@ -41,7 +41,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]));
 
   center_rotate(flip*180);

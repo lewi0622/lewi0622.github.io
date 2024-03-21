@@ -28,8 +28,6 @@ function draw() {
   const tile_height = canvas_y / Line_length;
   let funcs, colors, x_offset_min, x_offset_max, y_offset_min, y_offset_max;
 
-  refresh_working_palette();
-
   //apply background
   let bg_c = random(working_palette);
   background(bg_c)

@@ -38,7 +38,6 @@ function setup() {
   phase_6_counter = 0;
 
   //colors
-  refresh_working_palette();
   bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);
 

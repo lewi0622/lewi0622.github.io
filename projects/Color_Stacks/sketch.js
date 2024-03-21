@@ -23,7 +23,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
   let bg_c;
   //set custom background colors
   if(global_palette_id == COTTONCANDY){

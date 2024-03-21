@@ -29,8 +29,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
-
   //apply background
   background(bg_c)
   reduce_array(working_palette, bg_c)

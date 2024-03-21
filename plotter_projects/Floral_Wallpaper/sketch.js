@@ -34,8 +34,6 @@ function draw() {
 
   //actual drawing stuff
   push();
-
-  refresh_working_palette();
   
   // strokeWeight(random(0.25,0.75)*global_scale);
   // strokeWeight(COPICMARKER*3/4)

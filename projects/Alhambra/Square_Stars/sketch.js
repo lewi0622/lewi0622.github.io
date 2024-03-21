@@ -22,8 +22,6 @@ function draw() {
   global_draw_start();
 
   //projct variables
-
-  refresh_working_palette();
   working_palette = controlled_shuffle(working_palette, true);
   //apply background
   let bg_c = color("WHITE");

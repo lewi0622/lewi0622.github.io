@@ -36,7 +36,6 @@ function setup() {
   k=0;
   noise_map = [];
 
-  refresh_working_palette();
   //apply background
   noStroke();
   working_palette = controlled_shuffle(working_palette, true);

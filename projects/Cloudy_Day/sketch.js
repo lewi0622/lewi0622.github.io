@@ -22,7 +22,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
   //actual drawing stuff
   push();
   let multi_color = random()>0.75;

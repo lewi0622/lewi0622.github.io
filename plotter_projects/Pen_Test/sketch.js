@@ -20,8 +20,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
-
   //actual drawing stuff
   push();
   const margin_from_center = 0.25*96;

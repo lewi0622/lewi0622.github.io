@@ -25,7 +25,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
   let bg_c = random(working_palette);
   reduce_array(working_palette, bg_c)
   if(random()>0.5){

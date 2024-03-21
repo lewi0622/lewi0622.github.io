@@ -24,7 +24,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
   let branch_color;
   if(arrayEquals(working_palette[0], [87, 61, 38, 255])){
     branch_color = working_palette[0];

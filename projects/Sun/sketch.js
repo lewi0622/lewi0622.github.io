@@ -22,7 +22,6 @@ function draw() {
   global_draw_start();
   
   const cutout = random()>0.5;
-  refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]))
 
   //apply background

@@ -21,7 +21,6 @@ function setup() {
 function draw() {  
   global_draw_start();
 
-  refresh_working_palette();
   strokeCap(ROUND)
 
   //apply background

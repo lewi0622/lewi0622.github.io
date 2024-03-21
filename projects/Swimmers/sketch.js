@@ -24,7 +24,6 @@ function setup() {
   gui_values();
 
   swimmers = [];
-  refresh_working_palette();
   bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);
 

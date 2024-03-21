@@ -21,8 +21,6 @@ function setup() {
 function draw() {  
   global_draw_start();
 
-  refresh_working_palette();
-
   //apply background
   const line_length = random([25, 40])*global_scale;
   const circle_x = round(canvas_x/line_length);

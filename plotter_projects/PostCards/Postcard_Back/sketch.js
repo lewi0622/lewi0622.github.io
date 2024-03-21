@@ -44,8 +44,6 @@ function draw() {
   if(!font) return;
   global_draw_start();
 
-  refresh_working_palette();
-
   push();
   
   //apply postcard lines

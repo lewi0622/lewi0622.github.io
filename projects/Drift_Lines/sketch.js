@@ -29,7 +29,6 @@ function draw() {
   const cols = floor(canvas_x / line_length);
   const rows = floor(canvas_y / line_length);
 
-  refresh_working_palette();
   strokeCap(random([PROJECT,ROUND]));
 
   //apply background

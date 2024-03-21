@@ -22,7 +22,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
   //actual drawing stuff
   push();
   translate(canvas_x/2, canvas_y/2);

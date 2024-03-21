@@ -24,8 +24,6 @@ function draw() {
   //actual drawing stuff
   push();
 
-  refresh_working_palette();
-  
   let tree_c = random(working_palette);
   fill(tree_c);
   reduce_array(working_palette,tree_c);

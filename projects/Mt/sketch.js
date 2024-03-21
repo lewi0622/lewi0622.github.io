@@ -24,8 +24,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
-
   //apply background
   bg_horizontal_strips(2);
 

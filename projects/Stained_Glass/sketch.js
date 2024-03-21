@@ -22,8 +22,6 @@ function setup() {
 //***************************************************
 function draw() {
   global_draw_start();
-
-  refresh_working_palette();
  
   //apply background
   background(working_palette[floor(random(working_palette.length))]);

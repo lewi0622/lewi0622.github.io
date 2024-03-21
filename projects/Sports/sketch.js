@@ -41,7 +41,6 @@ function draw() {
   center_rotate(canvas_rotaion);
   translate(padding, padding);
   if(frameCount == 1){
-    refresh_working_palette();
     bg_c = random(working_palette);
     reduce_array(working_palette, bg_c);
 

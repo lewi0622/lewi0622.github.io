@@ -26,7 +26,6 @@ function draw() {
 
   //actual drawing stuff
   push();
-  refresh_working_palette();
   center_rotate(random(360));
   let bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);

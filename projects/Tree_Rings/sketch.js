@@ -23,7 +23,6 @@ function gui_values(){
 function setup() {
   common_setup();
   gui_values();
-  refresh_working_palette();
   bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);
   background(bg_c);

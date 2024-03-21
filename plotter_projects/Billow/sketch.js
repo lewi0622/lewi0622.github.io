@@ -34,8 +34,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
-
   //actual drawing stuff
   push();
   translate(x_move, y_move);

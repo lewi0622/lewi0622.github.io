@@ -31,7 +31,6 @@ function setup() {
   line_length = 0;
 
   //colors
-  refresh_working_palette();
   // bg_c = random(working_palette);
   // reduce_array(working_palette, bg_c);
   bg_c = color("#18181b");

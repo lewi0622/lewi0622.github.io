@@ -26,7 +26,6 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  refresh_working_palette();
   //apply background
   if(frameCount == 1){
     bg_c = random(working_palette);
