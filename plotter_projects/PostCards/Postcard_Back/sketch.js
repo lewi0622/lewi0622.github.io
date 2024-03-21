@@ -26,6 +26,7 @@ function gui_values(){
 
 function setup() {
   common_setup(5*96, 4*96, SVG);
+  gui_values();
 
   if(!redraw){
     opentype.load('..\\..\\..\\fonts\\SquarePeg-Regular.ttf', function (err, f) {

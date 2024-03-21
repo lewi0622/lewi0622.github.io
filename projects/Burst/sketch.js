@@ -18,6 +18,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   min_line_len = 0;
   inc = global_scale;
   c1 = random(working_palette);

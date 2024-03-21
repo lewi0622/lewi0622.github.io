@@ -25,6 +25,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   //parameter
   weight = 150*global_scale;
 

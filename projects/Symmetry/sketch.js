@@ -20,6 +20,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   //start drawing over if autoscaled
   xoff = 0;

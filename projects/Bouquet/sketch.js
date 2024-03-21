@@ -17,7 +17,8 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(); //540,960 x2 for reel
+  common_setup();
+  gui_values(); //540,960 x2 for reel
 }
 //***************************************************
 function draw() {

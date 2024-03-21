@@ -17,6 +17,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   textFont(font);
 }

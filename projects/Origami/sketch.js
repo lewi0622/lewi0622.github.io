@@ -18,6 +18,7 @@ let pt_size, pts, c_idx, bg_c, frame_switch;
 
 function setup() {
   common_setup();
+  gui_values();
 
   //create series of points
   pt_size = 20*global_scale;

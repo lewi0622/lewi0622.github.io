@@ -21,6 +21,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   bg_c = random(palette);
   rot_inc *= random([-1,1])
 }

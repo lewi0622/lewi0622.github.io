@@ -20,6 +20,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   
   xoff = 0;
   sym_angs = floor(random(6,49));

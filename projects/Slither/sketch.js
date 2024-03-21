@@ -20,6 +20,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   working_palette = controlled_shuffle(working_palette, true);
   c_0 = color(working_palette[0]);

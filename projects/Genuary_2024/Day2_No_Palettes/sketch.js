@@ -19,6 +19,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   background("WHITE");
   colorMode(HSB,100);
   strokeCap(ROUND);

@@ -24,7 +24,8 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(400, 400);
+  common_setup();
+  gui_values();
 }
 //***************************************************
 function draw() {

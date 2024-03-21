@@ -302,14 +302,11 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
   //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
-  gui_values();
+  // gui_values();
 
-  if(controls_param == "full" && !redraw){
+  if(controls_param == "full"){
     //declare gui before noLoop is extended in p5.gui.js
-    gui = createGui('Parameters');
-    for(const key in gui_params){
-      gui.addGlobals(key);
-    }
+    if(!redraw) gui = createGui('Parameters');
     add_gui_event_handlers();
     // collapse or reposition param
     retrieve_gui_settings();
@@ -358,12 +355,8 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
     }, randomize_time_param * 1000);
   }
 
-  //reset changed flags
-  multiplier_changed = false;
-  palette_changed = false;
-  picker_changed = false;
-  size_changed = false;
-  redraw_reason = "";
+  refresh_working_palette();
+
   if(gif || animation) loop(); 
   //else necessary when redrawing timed pieces
   else noLoop();
@@ -737,6 +730,13 @@ function save_drawing(){
 }
 
 function global_draw_start(clear_cnv=true){
+  //reset changed flags
+  multiplier_changed = false;
+  palette_changed = false;
+  picker_changed = false;
+  size_changed = false;
+  redraw_reason = "";
+
   attach_icons(); //attach icons decides whether to add dice and slash or not
 
   if(clear_cnv) clear(); //should be false for some animating pieces
@@ -919,8 +919,6 @@ function change_default_palette(){
   if(stored_palette != null) palette = JSON.parse(stored_palette);
   else palette = JSON.parse(JSON.stringify(palettes[global_palette_id]));
   color_select.selected(palette_names[global_palette_id]);
-
-  refresh_working_palette();
 }
 
 function refresh_working_palette(){
@@ -1177,6 +1175,7 @@ function create_global_parameters(name, val, min, max, step){
 
     if(redraw && controls_param == "full") gui_force_update(name, val, min, max, step);
   }
+  if(!redraw && controls_param == "full")gui.addGlobals(name);
 }
 
 function gui_force_update(name, val, min, max, step){

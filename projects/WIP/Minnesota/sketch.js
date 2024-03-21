@@ -21,6 +21,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   strokeWeight(weight);
 
   bg_c = random(working_palette);

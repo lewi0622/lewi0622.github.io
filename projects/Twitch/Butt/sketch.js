@@ -23,6 +23,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   //parameter
   weight = 7*global_scale;
   rotation_amount = random(360);

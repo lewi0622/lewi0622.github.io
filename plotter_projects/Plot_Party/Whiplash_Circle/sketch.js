@@ -34,6 +34,7 @@ function setup() {
     common_setup();
     background("WHITE")
   }
+  gui_values();
   // noFill();
   // strokeWeight(COPICMARKER*3/4);
   // strokeWeight(0.0944882*96);

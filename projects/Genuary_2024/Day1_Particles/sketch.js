@@ -20,6 +20,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   background(color(0,0,0,255));
   particles = [];
 }

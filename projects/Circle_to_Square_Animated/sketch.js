@@ -19,6 +19,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   rotation_per_loop = 0;
   rotation_inc = map(num_circles, 20, 100, 0.2, 0.1);
 

@@ -16,6 +16,7 @@ function gui_values(){
 
 function setup() {
   common_setup(400, 400, WEBGL);
+  gui_values();
 }
 //***************************************************
 function draw() {

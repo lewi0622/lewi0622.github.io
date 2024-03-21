@@ -21,6 +21,7 @@ function gui_values(){
 
 function setup() {
   common_setup(400, 600);
+  gui_values();
   canvas_y *= 3/4;
 }
 //***************************************************

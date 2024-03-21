@@ -20,6 +20,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   z_inc = random(0.001, 0.01);
   starting_circle_radius = random(30, map(num_rings*num_circles, 9,500, 130, 30));
 }

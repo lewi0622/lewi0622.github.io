@@ -31,6 +31,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   k=0;
   noise_map = [];

@@ -22,6 +22,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   num_shapes = 1;
   total_shapes = floor(random(8,20));
   shapes = [];

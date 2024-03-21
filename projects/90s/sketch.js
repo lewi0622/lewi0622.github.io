@@ -20,6 +20,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   grid_bg_c = random(working_palette);
 }

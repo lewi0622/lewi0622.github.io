@@ -24,6 +24,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   bg_c = random(working_palette);
   working_palette = controlled_shuffle(working_palette, true);
   if(working_palette.length>3) working_palette.splice(3, working_palette.length-3);

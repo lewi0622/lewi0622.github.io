@@ -24,6 +24,7 @@ function gui_values(){
 
 function setup() {
   common_setup(svg_viewbox[2], svg_viewbox[3], SVG);
+  gui_values();
 }
 //***************************************************
 function draw() {

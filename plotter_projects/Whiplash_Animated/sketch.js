@@ -18,6 +18,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   //project variables
   i_mult = random([0, 1.5, 2.5,  5, 10, 20, 30, 40, 120]);

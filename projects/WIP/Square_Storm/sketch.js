@@ -22,6 +22,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   for(let i=0; i<num_squares; i++){
     const c = color(random(palette));
     c.setAlpha(0.05*255);

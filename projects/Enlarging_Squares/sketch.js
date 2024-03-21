@@ -18,6 +18,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   xoff = 0;
   squares = [];

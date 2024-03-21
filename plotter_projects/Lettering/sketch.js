@@ -14,6 +14,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   if(!redraw){
     opentype.load('..\\..\\fonts\\PeachyRoseRegular-w1xpw.ttf', function (err, f) {

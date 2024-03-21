@@ -19,6 +19,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   square_rotation = 0;
   if(type == "svg"){
     noLoop();

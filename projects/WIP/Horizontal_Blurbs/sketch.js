@@ -19,6 +19,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   palette = JSON.parse(JSON.stringify(controlled_shuffle(palette, true))).slice(0,5);
   refresh_working_palette();

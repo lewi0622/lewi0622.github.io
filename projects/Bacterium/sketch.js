@@ -22,12 +22,14 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 
   phase = 0;
 
   //styling
-  palette = controlled_shuffle(palette, true);
-  bg_c = bg(true);
+  working_palette = controlled_shuffle(working_palette, true);
+  bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
   weight = 2*global_scale;
   strokeWeight(weight);
   strokeCap(ROUND);

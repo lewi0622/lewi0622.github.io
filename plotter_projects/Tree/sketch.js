@@ -18,6 +18,7 @@ function gui_values(){
 function setup() {
   //looks good in 300x400
   common_setup();
+  gui_values();
 }
 //***************************************************
 function draw() {

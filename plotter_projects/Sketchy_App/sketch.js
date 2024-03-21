@@ -11,7 +11,7 @@ const suggested_palettes = []
 
 function gui_values(){
   parameterize("num_lines", floor(random(50,300)), 1, 500, 1, false);
-  parameterize("radius", canvas_x/2, 1, 1000, 5, true);
+  parameterize("radius", canvas_x/global_scale/2, 1, 1000, 5, true);
   parameterize("pct_variation", random(0.15), 0, 1, 0.01, false);
   parameterize("pct_line_skip", random(0.15), 0, 1, 0.01, false);
   parameterize("corner_radius", random(0.1), 0, 1, 0.01, false);
@@ -19,6 +19,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
 }
 //***************************************************
 function draw() {

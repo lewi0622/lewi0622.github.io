@@ -25,6 +25,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  gui_values();
   noFill();
   // strokeWeight(COPICMARKER*3/4);
   // strokeWeight(0.0944882*96);
