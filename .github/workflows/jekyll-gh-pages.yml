@@ -28,7 +28,7 @@ jobs:
     steps:
 
       - name: checkout repo content
-        uses: actions/checkout # checkout the repository content
+        uses: actions/checkout@v2 # checkout the repository content
 
       - name: setup python
         uses: actions/setup-python@v4
@@ -56,7 +56,7 @@ jobs:
           git diff-index --quiet HEAD || (git commit -a -m "updated all index files" --allow-empty)
 
       - name: push changes
-        uses: ad-m/github-push-action
+        uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: master 
