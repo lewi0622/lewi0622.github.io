@@ -1,5 +1,5 @@
 # Sample workflow for building and deploying a Jekyll site to GitHub Pages
-name: Deploy Jekyll with GitHub Pages dependencies preinstalled
+name: Run Projects, Mass Index Change, and Build and Deploy Jekyll
 
 on:
   # Runs on pushes targeting the default branch
@@ -22,10 +22,45 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Build job
+  #get projects and mass index change
   build:
     runs-on: ubuntu-latest
     steps:
+
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' # install the python version needed
+
+      - name: execute get projects script # run main.py
+        run: python get_projects.py
+
+      - name: commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff-index --quiet HEAD || (git commit -a -m "updated all_projects.js" --allow-empty)
+
+      - name: execute mass index script # run main.py
+        run: python mass_index_change.py
+
+      - name: commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff-index --quiet HEAD || (git commit -a -m "updated all index files" --allow-empty)
+
+      - name: push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master 
+      #Start of jekyll build step
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Pages
