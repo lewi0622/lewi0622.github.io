@@ -283,9 +283,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   }
 
   setParams();
-  if(scale_param == "auto") global_scale = find_cnv_mult(size_x, size_y);
-  else global_scale = parseFloat(scale_param);
-
+  global_scale = find_cnv_mult(size_x, size_y);
   const control_height = control_height_base * global_scale;
   const control_spacing = control_spacing_base * global_scale;
 
@@ -643,9 +641,8 @@ function set_seed(e){
   seed_param = String(seed_input.value());
   colors_param = String(current_palette_index());
   palette_changed = current_palette_index() != int(getParamValue('colors'));
-  multiplier_changed = scale_input.value() != find_cnv_mult(canvas_x/global_scale, canvas_y/global_scale);
   size_changed = x_size_px_param != getParamValue("x_size_px") ||  y_size_px_param != getParamValue("y_size_px");
-  const auto = event_id == "Auto Scale" || (scale_param == "auto"  && !multiplier_changed);
+  const auto = event_id == "Auto Scale";
   
   if(auto) scale_param = build_scale(); 
   else scale_param = scale_input.value();
@@ -928,28 +925,32 @@ function refresh_working_palette(){
 function find_cnv_mult(size_x, size_y){
   //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
   if(type == "svg") return 1;
-  size_x = max(400, size_x); //because we center within a 400x400 canvas for things smaller than 400
+  let smaller_multiplier;
+  if(scale_param === "auto"){
+    size_x = max(400, size_x); //because we center within a 400x400 canvas for things smaller than 400
 
-  if(controls_param == "true") size_y += 40;
-  else if(controls_param == "full") size_y += 60;
-
-  size_y += 3; //extra 3 is make sure no vertical scrollbar in all window conifgurations
-
-  const x_mult = Math.round((windowWidth/size_x)*1000)/1000; //find multiplier based on the x dimension  
-  const y_mult = Math.round((windowHeight/size_y)*1000)/1000; //find multipler based on the y dimension
-
-  let smaller_multiplier = min(x_mult, y_mult);  //find the smaller mult
+    if(controls_param == "true") size_y += 40;
+    else if(controls_param == "full") size_y += 60;
   
-  //constrain between 1 and 12
-  smaller_multiplier = constrain(smaller_multiplier, 1, 12);
-
-  //get a mult that will give an even number of whole pixels for the x dimension
-  if(round(size_x*smaller_multiplier) % 2 != 0) smaller_multiplier = (round(size_x*smaller_multiplier)-1)/size_x; //-1 so that the canvas is always slightly smaller than the window
-
-  //canvas_x and canvas_y rounded later on
+    size_y += 3; //extra 3 is make sure no vertical scrollbar in all window conifgurations
+  
+    const x_mult = Math.round((windowWidth/size_x)*1000)/1000; //find multiplier based on the x dimension  
+    const y_mult = Math.round((windowHeight/size_y)*1000)/1000; //find multipler based on the y dimension
+  
+    smaller_multiplier = min(x_mult, y_mult);  //find the smaller mult
+    
+    //constrain between 1 and 12
+    smaller_multiplier = constrain(smaller_multiplier, 1, 12);
+  
+    //get a mult that will give an even number of whole pixels for the x dimension
+    if(round(size_x*smaller_multiplier) % 2 != 0) smaller_multiplier = (round(size_x*smaller_multiplier)-1)/size_x; //-1 so that the canvas is always slightly smaller than the window
+  
+    //canvas_x and canvas_y rounded later on
+  }
+  else smaller_multiplier = parseFloat(scale_param);
 
   //check for change in multiplier due to gui param changes
-  multiplier_changed = smaller_multiplier != global_scale
+  multiplier_changed = smaller_multiplier != global_scale;
   if(multiplier_changed) previous_scale = global_scale;
   return smaller_multiplier;
 }
