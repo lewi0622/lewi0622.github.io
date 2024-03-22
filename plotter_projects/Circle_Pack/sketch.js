@@ -7,7 +7,7 @@ const capture = false;
 const capture_time = 10;
 
 let x_fourth, y_fourth, copic_palette;
-const suggested_palettes = []
+const suggested_palettes = [BEACHDAY, BUMBLEBEE, SUMMERTIME];
 
 function gui_values(){
   parameterize("min_radius", 1, 1, 100, 1, true);
