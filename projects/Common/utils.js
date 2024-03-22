@@ -581,8 +581,8 @@ function seed_scale_button(control_height, control_spacing){
 
 function populate_size_inputs(){
   if(unit_select.value() == "in"){
-    x_size_input.value(parseInt(x_size_px_param)/96);
-    y_size_input.value(parseInt(y_size_px_param)/96);
+    x_size_input.value(parseFloat(x_size_px_param)/96);
+    y_size_input.value(parseFloat(y_size_px_param)/96);
   }
   else{
     x_size_input.value(x_size_px_param);
@@ -593,13 +593,13 @@ function populate_size_inputs(){
 function update_size_params(){
   const x_val = x_size_input.value();
   const y_val = y_size_input.value();
-  if(!isNaN(x_val) && parseInt(x_val) > 0){
+  if(!isNaN(x_val) && parseFloat(x_val) > 0){
     x_size_px_param = x_val;
-    if(unit_select.value() == "in") x_size_px_param = String(parseInt(x_val) * 96);
+    if(unit_select.value() == "in") x_size_px_param = String(parseFloat(x_val) * 96);
   }
-  if(!isNaN(y_val) && parseInt(y_val) > 0){
+  if(!isNaN(y_val) && parseFloat(y_val) > 0){
     y_size_px_param = y_val;
-    if(unit_select.value() == "in") y_size_px_param = String(parseInt(y_val) * 96);
+    if(unit_select.value() == "in") y_size_px_param = String(parseFloat(y_val) * 96);
   }
 }
 
