@@ -2,3 +2,7 @@
 /.vscode
 __pycache__
 addresses.js
+_site
+.sass-cache
+.jekyll-metadata
+Gemfile.lock
