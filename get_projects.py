@@ -13,8 +13,8 @@ def find_folders_with_files(directory):
                 thumbnail_name = file
         if thumbnail and 'index.html' in files and 'sketch.js' in files:
             rel_path = os.path.relpath(current_path, directory)
-            iframe_path = os.path.join("../", rel_path, "index.html?controls=true")
-            thumbnail_path = os.path.join("../", rel_path, thumbnail_name)
+            iframe_path = os.path.join(rel_path, "index.html?controls=true")
+            thumbnail_path = os.path.join(rel_path, thumbnail_name)
             folder_dict = {"iframe":iframe_path, "thumbnail": thumbnail_path}
             folders_with_files.append(folder_dict)
 
