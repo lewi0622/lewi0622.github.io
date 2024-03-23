@@ -1,10 +1,11 @@
 ---
-title: "Post: Vpype Grid Colors"
+title: "Vpype Grid Colors"
 categories:
   - Blog
 tags:
-  - Vpype
+  - Vpype
 ---
+
 
 # Vpype Grid
 I ran into an issue when implementing the [Grid](https://vpype.readthedocs.io/en/latest/reference.html#grid) command in [Vpype](https://github.com/abey79/vpype). When pulling in multiple files, it would often place them onto the same layers, thereby overwriting whatever color was assigned to that layer. In multi-color plots, this was a problem!
