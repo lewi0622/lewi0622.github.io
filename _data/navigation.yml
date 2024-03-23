@@ -1,6 +1,6 @@
 main:
-  - title: "All Projects"
-    url: /all_projects/
+  - title: "Home"
+    url: https://lewi0622.github.io/
   - title: "Posts"
     url: /posts/
   - title: "Categories"
