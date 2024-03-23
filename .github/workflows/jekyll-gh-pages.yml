@@ -61,8 +61,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: master 
       #Start of jekyll build step
-      - name: Checkout
-        uses: actions/checkout@v4
+      # - name: Checkout
+      #   uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Build with Jekyll
