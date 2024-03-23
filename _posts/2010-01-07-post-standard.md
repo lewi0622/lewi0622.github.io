@@ -1,12 +1,9 @@
 ---
-title: "Post: Standard"
-excerpt_separator: "<!--more-->"
+title: "Vpype Grid Colors"
 categories:
   - Blog
 tags:
   - Vpype
-  - readability
-  - standard
 ---
 
 
