@@ -1,6 +1,6 @@
 import os, json
 
-base_path = "lewi0622.github.io"
+base_path = r"https://lewi0622.github.io"
 
 def find_folders_with_files(directory):
     folders_with_files = []
