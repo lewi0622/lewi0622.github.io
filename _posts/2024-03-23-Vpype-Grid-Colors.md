@@ -1,5 +1,5 @@
 ---
-title: "Vpype Grid Colors"
+title: "Post: Vpype Grid Colors"
 categories:
   - Blog
 tags:
