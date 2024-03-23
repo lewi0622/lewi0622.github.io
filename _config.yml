@@ -16,7 +16,7 @@
 title: LewistonFace
 email: LewistonFaceArt@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Explore my work!
+  Lewiston Face Artwork
 twitter_username: LewistonFace
 github_username: lewi0622
 minimal_mistakes_skin: neon
@@ -58,7 +58,7 @@ plugins:
 author:
   name   : "Eric Lewiston"
   avatar : "/assets/images/logo_face.png"
-  bio    : "My awesome biography constrained to a sentence or two goes here."
+  bio    : "Explore my work!"
   links:
     - label: "Website"
       icon: "fas fa-fw fa-link"
