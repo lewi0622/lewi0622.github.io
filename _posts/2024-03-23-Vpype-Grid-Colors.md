@@ -1,7 +1,7 @@
 ---
 title: "Vpype Grid Colors"
 categories:
-  - blog
+  - Blog
 tags:
   - Vpype
 ---
