@@ -58,7 +58,7 @@ plugins:
 author:
   name   : "Eric Lewiston"
   avatar : "/assets/images/logo_face.png"
-  bio    : "Explore my work!"
+  bio    : "Click on a design to see an interactive version!"
   links:
     - label: "Website"
       icon: "fas fa-fw fa-link"
