@@ -10,24 +10,13 @@ const suggested_palettes = [SUMMERTIME, SOUTHWEST];
 
 function gui_values(){
   parameterize("number_of_circles", floor(random(50, 400)), 1, 1000, 1, false);
-  parameterize("n_points", random([3,4,5,6,7,8,9,10,11,12,100]), 3, 300, 1, false);
+  parameterize("points_per_shape", random([3,4,5,6,7,8,9,10,11,12,100]), 3, 300, 1, false);
   parameterize("overall_rotation", random(360), 0, 360, 15, false);
   parameterize("rotation_per_shape", random(-5,5), -10, 10, 0.1, false);
-  parameterize("point_1_x", random(base_x), -500, base_x+500, 1, true);
-  parameterize("point_2_x", random(base_x), -500, base_x+500, 1, true);
-  parameterize("point_3_x", random(base_x), -500, base_x+500, 1, true);
-  parameterize("point_4_x", random(base_x), -500, base_x+500, 1, true);
-  parameterize("point_5_x", random(base_x), -500, base_x+500, 1, true);
-  parameterize("point_1_y", random(base_y), -500, base_y+500, 1, true);
-  parameterize("point_2_y", random(base_y), -500, base_y+500, 1, true);
-  parameterize("point_3_y", random(base_y), -500, base_y+500, 1, true);
-  parameterize("point_4_y", random(base_y), -500, base_y+500, 1, true);
-  parameterize("point_5_y", random(base_y), -500, base_y+500, 1, true);
-  parameterize("radius_1", 0, 0, smaller_base, 1, true);
-  parameterize("radius_2", random(smaller_base/2), 0, smaller_base, 1, true);
-  parameterize("radius_3", random(smaller_base/2), 0, smaller_base, 1, true);
-  parameterize("radius_4", random(smaller_base/2), 0, smaller_base, 1, true);
-  parameterize("radius_5", 0, 0, smaller_base, 1, true);
+  parameterize("num_pts", 5, 2, 20, 1, false);
+  parameterize("margin", smaller_base*0.1, -smaller_base/2, smaller_base/2, 1, true);
+  parameterize("min_radius", 0.1*smaller_base, 0, smaller_base, 1, true);
+  parameterize("max_radius", 0.25*smaller_base, 0, smaller_base, 1, true);
 }
 
 function setup() {
@@ -45,47 +34,69 @@ function draw() {
   reduce_array(working_palette, fill_c);
   const stroke_c = random(working_palette);
   line_blur(stroke_c, 2*global_scale);
-  fill(fill_c);
-  stroke(stroke_c);
+
+  //create points
+  const pts = [];
+  let min_x = canvas_x-margin;
+  let max_x = margin;
+  let min_y = canvas_y-margin;
+  let max_y = margin;
+  for(let i=0; i<num_pts; i++){
+    const pt = {x: random(margin, canvas_x-margin), y: random(margin, canvas_y-margin), radius: random(min_radius, max_radius)};
+    if(i==0 || i+1==num_pts) pt.radius = 0;
+    pts.push(pt);
+
+    if(pt.x - pt.radius<min_x) min_x = pt.x - pt.radius;
+    if(pt.x + pt.radius>max_x) max_x = pt.x + pt.radius;
+    if(pt.y - pt.radius<min_y) min_y = pt.y - pt.radius;
+    if(pt.y + pt.radius>max_y) max_y = pt.y + pt.radius;
+  }
+
+  //find overall distance
+  let total_dist = 0;
+  for(let i=0; i<num_pts-1; i++){
+    const pt1 = pts[i];
+    const pt2 = pts[i+1];
+    total_dist += dist(pt1.x, pt1.y, pt2.x, pt2.y);
+  }
+
+  //evenly distribute number of circles across point groupings
+  const circles_per_pt_group = [];
+  for(let i=0; i<num_pts-1; i++){
+    const pt1 = pts[i];
+    const pt2 = pts[i+1];
+    const distance = dist(pt1.x, pt1.y, pt2.x, pt2.y);
+    circles_per_pt_group.push(distance/total_dist * number_of_circles);
+  }
+
   //actual drawing stuff
   push();
-  for(let i=0; i<number_of_circles; i++){
-    let pt1, pt2, rad_1, rad_2;
-    if(i/number_of_circles<0.25){
-      pt1 = {x: point_1_x, y: point_1_y};
-      pt2 = {x: point_2_x, y: point_2_y};
-      rad_1 = radius_1;
-      rad_2 = radius_2; 
-    }
-    else if(i/number_of_circles>=0.25 && i/number_of_circles<0.5){
-      pt1 = {x: point_2_x, y: point_2_y};
-      pt2 = {x: point_3_x, y: point_3_y};
-      rad_1 = radius_2;
-      rad_2 = radius_3; 
-    }
-    else if(i/number_of_circles>=0.5 && i/number_of_circles<0.75){
-      pt1 = {x: point_3_x, y: point_3_y};
-      pt2 = {x: point_4_x, y: point_4_y};
-      rad_1 = radius_3;
-      rad_2 = radius_4; 
-    }
-    else{
-      pt1 = {x: point_4_x, y: point_4_y};
-      pt2 = {x: point_5_x, y: point_5_y};
-      rad_1 = radius_4;
-      rad_2 = radius_5; 
-    }
+  fill(fill_c);
+  stroke(stroke_c);
 
-    const x = lerp(pt1.x, pt2.x, 4*i/number_of_circles%1);
-    const y = lerp(pt1.y, pt2.y, 4*i/number_of_circles%1);
-    const rad = lerp(rad_1, rad_2, 4*i/number_of_circles%1);
-    push();
-    translate(x,y);
-    rotate(overall_rotation);
-    rotate(i*rotation_per_shape);
-    //add options for RECT with/out rounded corners and ellipses
-    polygon(0,0,rad, n_points);
-    pop();
+  //center design
+  const offset_x = (canvas_x - max_x-min_x)/2;
+  const offset_y = (canvas_y - max_y-min_y)/2;
+  translate(offset_x, offset_y);
+
+  let loop_count = 0;
+  for(let i=0; i<num_pts-1; i++){
+    const start_pt = pts[i];
+    const end_pt = pts[i+1];
+    const pt_num_circles = circles_per_pt_group[i];
+    for(let j=0; j<pt_num_circles; j++){
+      const pct = j/pt_num_circles;
+      const x = lerp(start_pt.x, end_pt.x, pct);
+      const y = lerp(start_pt.y, end_pt.y, pct);
+      const rad = lerp(start_pt.radius, end_pt.radius, pct);
+      push();
+      translate(x,y);
+      rotate(overall_rotation);
+      rotate(loop_count*rotation_per_shape);
+      polygon(0, 0, rad, points_per_shape);
+      pop();
+      loop_count++;
+    } 
   }
   pop();
 
