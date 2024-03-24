@@ -12,8 +12,8 @@ const suggested_palettes = [BUMBLEBEE, BIRDSOFPARADISE, SIXTIES];
 function gui_values(){
   parameterize("cols", round(random(5,20)), 1, 50, 1, false, grid_slider_1);
   parameterize("rows", round(random(5,20)), 1, 50, 1, false, grid_slider_2);
-  parameterize("starting_arch_width", random(15, 100), 1, 1000, 1, true, grid_slider_3);
-  parameterize("starting_arch_height", random(1,100), 1, 1000, 1, true, grid_slider_4);
+  parameterize("starting_arch_width", base_x/random(4,25), 1, base_x, 1, true, grid_slider_3);
+  parameterize("starting_arch_height", base_y/4 * random(), 1, base_y, 1, true, grid_slider_4);
   parameterize("num_arches", round(random(5, 20)), 1, 50, 1, false);
   parameterize("filled_shapes", 1, 0, 1, 1, false);
 }
