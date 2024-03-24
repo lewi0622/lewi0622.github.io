@@ -1,7 +1,7 @@
 ---
 title: "Vpype Grid Colors"
 categories:
-  - Blog
+  - SVG Processing
 tags:
   - Vpype
 ---
