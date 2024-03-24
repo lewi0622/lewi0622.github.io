@@ -36,12 +36,17 @@ function draw() {
 
   //actual drawing stuff
   push();
+  strokeWeight(0.25*global_scale);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
   noFill();
   const segment_step_size = canvas_x*2/line_segments;
   const line_step_size = canvas_y*2/number_of_lines;
   // curveTightness(1);
+  let min_x = canvas_x;
+  let max_x = 0;
+  let min_y = canvas_y;
+  let max_y = 0;
   const lines = [];
   for(let j=0; j<number_of_lines; j++){
     rotate(rotate_per_line);
@@ -54,9 +59,19 @@ function draw() {
       const x = x_loc + map(noise(x_loc/x_i_damp, y_loc/x_j_damp), 0,1, -x_amp, x_amp);
       const y = y_loc + map(noise(x_loc/y_i_damp, y_loc/y_j_damp), 0,1, -y_amp, y_amp);
       pts.push([x,y]);
+
+      if(x<min_x) min_x = x;
+      if(x>max_x) max_x = x;
+      if(y<min_y) min_y = y;
+      if(y>max_y) max_y = y;
     }
     lines.push(pts);
   }
+
+  //center design
+  const offset_x = (canvas_x - max_x-min_x)/2;
+  const offset_y = (canvas_y - max_y-min_y)/2;
+  translate(offset_x, offset_y);
 
   let shape_began = false;
   lines.forEach((l,index) => {
