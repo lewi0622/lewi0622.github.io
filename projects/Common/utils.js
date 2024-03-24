@@ -652,7 +652,8 @@ function set_seed(e){
   colors_param = String(current_palette_index());
   palette_changed = current_palette_index() != int(getParamValue('colors'));
   size_changed = x_size_px_param != getParamValue("x_size_px") ||  y_size_px_param != getParamValue("y_size_px");
-  const auto = event_id == "Auto Scale" || size_changed&&scale_param=="auto" || parseFloat(scale_input.value()) == global_scale;
+  const auto = event_id == "Auto Scale" || scale_param=="auto" &&( size_changed || parseFloat(scale_input.value()) == global_scale);
+
   if(auto) scale_param = build_scale(); 
   else scale_param = scale_input.value();
   
