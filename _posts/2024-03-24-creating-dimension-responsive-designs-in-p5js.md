@@ -11,7 +11,6 @@ For a long time now, I've used a custom scale factor which, applied to certain p
 
 For the most part, I've created square designs, and in doing so haven't always been great at differentiating between the width and height because it was always the same!
 
-For the most part, I've created square designs, and in doing so haven't always been great at differentiating between the width and height because it was always the same!
 Recently I introduced new parameters to my p5.js framework:
 > smaller_base and larger_base:
 > the unscaled pixel value of the smaller/larger canvas dimension
@@ -57,6 +56,6 @@ Much better, what about a 1:4 ratio?
 
 Perfect!
 
-For me, this is going to require rewriting some of my earlier code, but it will be worth it when I want to generate a phone wallpaper from a square design, and not have to write code for specific size or ratio based contingencies.
+For me, this is going to require rewriting some of my earlier code, but it will be worth it when I want to generate a phone wallpaper from a square design, and not have to write code for specific size or ratio based corner cases.
 
 See and edit the code used for this example [here](https://editor.p5js.org/lewi0622/sketches/DaXHaDd_9).
