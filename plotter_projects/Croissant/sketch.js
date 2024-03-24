@@ -6,28 +6,27 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = []
-
+const suggested_palettes = [SUMMERTIME, SOUTHWEST];
 
 function gui_values(){
-  parameterize("number_of_circles", 100, 1, 1000, 1, false);
+  parameterize("number_of_circles", floor(random(50, 400)), 1, 1000, 1, false);
   parameterize("n_points", random([3,4,5,6,7,8,9,10,11,12,100]), 3, 300, 1, false);
   parameterize("overall_rotation", random(360), 0, 360, 15, false);
   parameterize("rotation_per_shape", random(-5,5), -10, 10, 0.1, false);
-  parameterize("point_1_x", random(canvas_x), -500, canvas_x+500, 1, true);
-  parameterize("point_2_x", random(canvas_x), -500, canvas_x+500, 1, true);
-  parameterize("point_3_x", random(canvas_x), -500, canvas_x+500, 1, true);
-  parameterize("point_4_x", random(canvas_x), -500, canvas_x+500, 1, true);
-  parameterize("point_5_x", random(canvas_x), -500, canvas_x+500, 1, true);
-  parameterize("point_1_y", random(canvas_y), -500, canvas_y+500, 1, true);
-  parameterize("point_2_y", random(canvas_y), -500, canvas_y+500, 1, true);
-  parameterize("point_3_y", random(canvas_y), -500, canvas_y+500, 1, true);
-  parameterize("point_4_y", random(canvas_y), -500, canvas_y+500, 1, true);
-  parameterize("point_5_y", random(canvas_y), -500, canvas_y+500, 1, true);
+  parameterize("point_1_x", random(base_x), -500, base_x+500, 1, true);
+  parameterize("point_2_x", random(base_x), -500, base_x+500, 1, true);
+  parameterize("point_3_x", random(base_x), -500, base_x+500, 1, true);
+  parameterize("point_4_x", random(base_x), -500, base_x+500, 1, true);
+  parameterize("point_5_x", random(base_x), -500, base_x+500, 1, true);
+  parameterize("point_1_y", random(base_y), -500, base_y+500, 1, true);
+  parameterize("point_2_y", random(base_y), -500, base_y+500, 1, true);
+  parameterize("point_3_y", random(base_y), -500, base_y+500, 1, true);
+  parameterize("point_4_y", random(base_y), -500, base_y+500, 1, true);
+  parameterize("point_5_y", random(base_y), -500, base_y+500, 1, true);
   parameterize("radius_1", random(50), 0, 500, 1, true);
-  parameterize("radius_2", random(250), 0, 500, 1, true);
-  parameterize("radius_3", random(250), 0, 500, 1, true);
-  parameterize("radius_4", random(250), 0, 500, 1, true);
+  parameterize("radius_2", random(150), 0, 500, 1, true);
+  parameterize("radius_3", random(150), 0, 500, 1, true);
+  parameterize("radius_4", random(150), 0, 500, 1, true);
   parameterize("radius_5", random(50), 0, 500, 1, true);
 }
 
@@ -39,7 +38,15 @@ function setup() {
 function draw() {
   global_draw_start();
 
+  const bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+  if(type == "png") background(bg_c);
+  const fill_c = random(working_palette);
+  reduce_array(working_palette, fill_c);
+  const stroke_c = random(working_palette);
 
+  fill(fill_c);
+  stroke(stroke_c);
   //actual drawing stuff
   push();
   for(let i=0; i<number_of_circles; i++){
