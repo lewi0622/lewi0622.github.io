@@ -9,7 +9,7 @@ const capture_time = 8;
 const suggested_palettes = [SUPPERWARE];
 
 function gui_values(){
-  parameterize("starting_radius", random(smaller_dim*3/4, smaller_dim/4), 10, 1000, 1, true);
+  parameterize("starting_radius", random(smaller_base*3/4, smaller_base/4), 10, 1000, 1, true);
   parameterize("number_of_points", 100, 4, 1000, 1, false);
   parameterize("number_of_rings", 20, 1, 200, 1, false);
   parameterize("max_noise", 5, 0, 1000, 1, false);

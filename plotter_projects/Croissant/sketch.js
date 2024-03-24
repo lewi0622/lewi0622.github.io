@@ -23,11 +23,11 @@ function gui_values(){
   parameterize("point_3_y", random(base_y), -500, base_y+500, 1, true);
   parameterize("point_4_y", random(base_y), -500, base_y+500, 1, true);
   parameterize("point_5_y", random(base_y), -500, base_y+500, 1, true);
-  parameterize("radius_1", random(50), 0, 500, 1, true);
-  parameterize("radius_2", random(150), 0, 500, 1, true);
-  parameterize("radius_3", random(150), 0, 500, 1, true);
-  parameterize("radius_4", random(150), 0, 500, 1, true);
-  parameterize("radius_5", random(50), 0, 500, 1, true);
+  parameterize("radius_1", 0, 0, smaller_base, 1, true);
+  parameterize("radius_2", random(smaller_base/2), 0, smaller_base, 1, true);
+  parameterize("radius_3", random(smaller_base/2), 0, smaller_base, 1, true);
+  parameterize("radius_4", random(smaller_base/2), 0, smaller_base, 1, true);
+  parameterize("radius_5", 0, 0, smaller_base, 1, true);
 }
 
 function setup() {
@@ -44,7 +44,7 @@ function draw() {
   const fill_c = random(working_palette);
   reduce_array(working_palette, fill_c);
   const stroke_c = random(working_palette);
-
+  line_blur(stroke_c, 2*global_scale);
   fill(fill_c);
   stroke(stroke_c);
   //actual drawing stuff
