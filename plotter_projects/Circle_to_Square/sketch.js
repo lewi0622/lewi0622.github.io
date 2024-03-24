@@ -6,13 +6,13 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
+const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE];
 
 
 function gui_values(){
   parameterize("fill_in", 1, 0, 1, 1, false);
   parameterize("num_circles", floor(random(15,150)), 1, 500, 1, false);
-  parameterize("starting_radius", random(canvas_x/2,canvas_x), 1, 1000, 1, true);
+  parameterize("starting_radius", random(smaller_dim/2, smaller_dim*3/4), 1, 1000, 1, true);
   parameterize("ending_radius", 0, -500, 500, 1, true);
   parameterize("drift_x_per_loop", 0, -10, 10, 0.1, true);
   parameterize("drift_y_per_loop", 0, -10, 10, 0.1, true);
@@ -29,11 +29,20 @@ function setup() {
 function draw() {
   global_draw_start();
 
+  const bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+  if(type == "png") background(bg_c);
+
+  const c1 = random(working_palette);
+  reduce_array(working_palette, c1);
+  const c2 = random(working_palette);
   //actual drawing stuff
   push();
   rectMode(CENTER);
   translate(canvas_x/2, canvas_y/2);
+  stroke(c1);
   if(!fill_in) noFill();
+  else fill(c2);
   for(let i=0; i<num_circles; i++){ 
     push();
     const x = i*drift_x_per_loop;
