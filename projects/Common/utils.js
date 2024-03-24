@@ -652,7 +652,7 @@ function set_seed(e){
   colors_param = String(current_palette_index());
   palette_changed = current_palette_index() != int(getParamValue('colors'));
   size_changed = x_size_px_param != getParamValue("x_size_px") ||  y_size_px_param != getParamValue("y_size_px");
-  const auto = event_id == "Auto Scale";
+  const auto = event_id == "Auto Scale" || size_changed&&scale_param=="auto";
   
   if(auto) scale_param = build_scale(); 
   else scale_param = scale_input.value();
@@ -933,6 +933,7 @@ function refresh_working_palette(){
 }
 
 function find_cnv_mult(size_x, size_y){
+  console.log(scale_param)
   //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
   if(type == "svg") return 1;
   let smaller_multiplier;
