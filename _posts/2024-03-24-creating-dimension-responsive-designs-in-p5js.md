@@ -23,8 +23,10 @@ This requires a fundamental rethinking of how I design my sketches. For example,
   square(0,0, width/2);
 ```
 ![Square_1_1_ratio]({{ site.url }}{{ site.baseurl }}/assets/images/Square_1_1_ratio.png)
+
 You might say this is good enough! It changes when the design width changes, and always stays centered. But what if the aspect ratio goes from 1:1 to 4:1?
 ![Square_4_1_ratio]({{ site.url }}{{ site.baseurl }}/assets/images/Square_4_1_ratio.png)
+
 Hmm, not really what we want out of this sketch, we wanted to see a square centered, and while that's technically still what's happening, the square is getting cut off. 
 
 Let's add our new variables for smaller and larger base values in our setup function and assign them programmatically.
@@ -45,8 +47,11 @@ function setup() {
 
 Now how does that handle our 4:1 ratio?
 ![Square_4_1_ratio_fixed]({{ site.url }}{{ site.baseurl }}/assets/images/Square_4_1_ratio_fixed.png)
+
 Much better, what about a 1:4 ratio?
+
 ![Square_1_4_ratio]({{ site.url }}{{ site.baseurl }}/assets/images/Square_1_4_ratio.png)
+
 Perfect!
 
 For me, this is going to require rewriting some of my earlier code, but it will be worth it when I want to generate a phone wallpaper from a square design, and not have to write code for specific size or ratio based contingencies.
