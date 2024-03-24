@@ -60,6 +60,9 @@ author:
   avatar : "/assets/images/logo_face.png"
   bio    : "Click on a design to see an interactive version!"
   links:
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://www.instagram.com/lewistonface/"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       url: "https://www.lewistonface.com/"
@@ -69,21 +72,20 @@ author:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/lewi0622"
-    - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
-      url: "https://www.instagram.com/lewistonface/"
+
 
 footer:
   links:
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://www.instagram.com/lewistonface/"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       url: "https://twitter.com/LewistonFace"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/lewi0622"
-    - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
-      url: "https://www.instagram.com/lewistonface/"
+
 
 defaults:
   # _posts
