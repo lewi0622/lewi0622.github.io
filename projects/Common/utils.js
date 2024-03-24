@@ -4,7 +4,7 @@ const project_path = window.location.pathname.split('/')
 const project_name = project_path[project_path.length-2];
 const parameter_storage_name = project_name + "_gui_params";
 let canvas_x, canvas_y, cnv;
-let base_x, base_y, larger_dim, smaller_dim;
+let base_x, base_y, larger_base, smaller_base;
 let file_saved = false;
 
 const num_frames = capture_time*fr;
@@ -268,11 +268,11 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   base_x = size_x;
   base_y = size_y;
-  smaller_dim = base_x;
-  larger_dim = base_y;
-  if(larger_dim<smaller_dim){
-    smaller_dim = base_y;
-    larger_dim = base_x;
+  smaller_base = base_x;
+  larger_base = base_y;
+  if(larger_base<smaller_base){
+    smaller_base = base_y;
+    larger_base = base_x;
   }
 
   //init globals
@@ -1392,4 +1392,9 @@ function controlled_shuffle(array, standardize=false, len=longest_palette_length
   array = shuffle(array);
 
   return array.filter(a => !arrayEquals(a, [""]));
+}
+
+function line_blur(line_color, blur_size){
+  drawingContext.shadowBlur=blur_size;
+  drawingContext.shadowColor = color(line_color);
 }
