@@ -7,23 +7,25 @@ const capture = false;
 const capture_time = 10;
 
 let x_fourth, y_fourth, copic_palette;
-const suggested_palettes = []
+const suggested_palettes = [BUMBLEBEE, SUMMERTIME, SOUTHWEST, JAZZCUP];
 
 function gui_values(){
-  parameterize("line_segments", round(0.043*canvas_x), 3, 400, 1, false); 
-  parameterize("number_of_lines", round(0.46*canvas_y), 1, 400, 1, false); //standard lines for fineline: 353; standard lines for angled pitt pen: 115?
-  parameterize("x_amp", 280, 1, 500, 1, true);
-  parameterize("y_amp", 60, 1, 500, 1, true);
-  parameterize("x_i_damp", 500, 1, 1000, 1, false);
-  parameterize("x_j_damp", 500, 1, 1000, 1, false);
-  parameterize("y_i_damp", 1, 1, 1000, 1, false);
-  parameterize("y_j_damp", 500, 1, 1000, 1, false);
-  parameterize("y_sin_amp", 200, 0, 400, 1, true);
+  parameterize("line_segments", floor(random(10,base_x/10)), 3, base_x/4, 1, false); 
+  parameterize("number_of_lines", floor(random(1,2)*base_x), 10, base_x*3, 10, false); //standard lines for fineline: 353; standard lines for angled pitt pen: 115?
+  parameterize("x_amp", base_x/4, 1, base_x, 1, true);
+  parameterize("y_amp", base_y/6.5, 1, base_y, 1, true);
+  parameterize("x_i_damp", random(base_x/4, base_x*2), 1, base_x*2, 1, true);
+  parameterize("x_j_damp", base_x/random(1,4), 1, base_x*2, 1, true);
+  parameterize("y_i_damp", random(1,base_y/4), 1, base_y*2, 1, true);
+  parameterize("y_j_damp", random(base_y/4,base_y*2), 1, base_y*2, 1, true);
+  parameterize("y_sin_amp", random(base_y), 0, base_x, 1, true);
   parameterize("sin_range", random(180), 0, 720, 1, false);
-  parameterize("rotate_per_line", 0, -5, 5, 0.1, false);
+  parameterize("rotate_per_line", random(-0.003, 0.003), -0.1, 0.1, 0.001, false);
   parameterize("x_move", 0, -400, 400, 1, true);
   parameterize("y_move", 0, -400, 400, 1, true);
   parameterize("single_line", 0, 0, 1, 1, false);
+  parameterize("margin_x", random([0,base_x/4]), -base_x/2, base_x/2, 1, true);
+  parameterize("margin_y", random([0,base_y/4]), -base_y/2, base_y/2, 1, true);
 } 
 
 function setup() {
@@ -36,12 +38,14 @@ function draw() {
 
   //actual drawing stuff
   push();
+  png_bg();
+  if(type == "png") stroke(random(working_palette));
   strokeWeight(0.25*global_scale);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
   noFill();
-  const segment_step_size = canvas_x*2/line_segments;
-  const line_step_size = canvas_y*2/number_of_lines;
+  const segment_step_size = (canvas_x+margin_x*2)/line_segments;
+  const line_step_size = (canvas_y+margin_y*2)/number_of_lines;
   // curveTightness(1);
   let min_x = canvas_x;
   let max_x = 0;
@@ -49,7 +53,6 @@ function draw() {
   let max_y = 0;
   const lines = [];
   for(let j=0; j<number_of_lines; j++){
-    rotate(rotate_per_line);
     // stroke(random(working_palette));
     const pts = [];
     const y_base_loc = j*line_step_size;
@@ -83,12 +86,14 @@ function draw() {
     if(index%2==0){
       for(let i=0; i<l.length; i++){
         const pt = l[i];
+        center_rotate(rotate_per_line);
         curveVertex(pt[0], pt[1]);
       }
     }
     else{
       for(let i=l.length-1; i>=0; i--){
         const pt = l[i];
+        center_rotate(rotate_per_line);
         curveVertex(pt[0], pt[1]);
       }
     }
