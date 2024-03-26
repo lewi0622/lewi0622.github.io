@@ -50,14 +50,14 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // Fetch images from the server
-  fetch('assets/images/gallery')
+  fetch('assets/images/plotter_portfolio')
     .then(response => response.json())
     .then(data => {
       data.forEach(image => {
         var gridItem = document.createElement('div');
         gridItem.className = 'grid-item';
         var img = document.createElement('img');
-        img.src = 'assets/images/gallery/' + image.filename;
+        img.src = 'assets/images/plotter_portfolio/' + image.filename;
         img.alt = image.alt;
         gridItem.appendChild(img);
         grid.appendChild(gridItem);
