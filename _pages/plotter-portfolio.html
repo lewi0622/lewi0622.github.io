@@ -11,10 +11,14 @@ header:
 
 ---
 <script src=../plotter_portfolio.js></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
 
 <style>
   /* Style for images */
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-gap: 10px;
+    }
   .grid-item {
     width: 100%;
     margin-bottom: 15px;
@@ -35,27 +39,18 @@ header:
     }
   }
 </style>
-<div class="grid">
+<div class="grid_container">
   <!-- Gallery images will be inserted here -->
 </div>
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  var grid = document.querySelector('.grid');
-  var masonry = new Masonry(grid, {
-    itemSelector: '.grid-item',
-    columnWidth: '.grid-item',
-    gutter: 15
-  });
-  const paths = plotter_portfolio_full_paths;
-  for(let i=0; i<paths.length; i++){
-    var gridItem = document.createElement('div');
-    gridItem.className = 'grid-item';
-    var img = document.createElement('img');
-    img.src = paths[i];
-    gridItem.appendChild(img);
-    grid.appendChild(gridItem);
-  }
-  // After all images are added, layout Masonry again
-  masonry.layout();
-});
+var grid = document.querySelector('.grid_container');
+const paths = plotter_portfolio_full_paths;
+for(let i=0; i<paths.length; i++){
+  var gridItem = document.createElement('div');
+  gridItem.className = 'grid-item';
+  var img = document.createElement('img');
+  img.src = paths[i];
+  gridItem.appendChild(img);
+  grid.appendChild(gridItem);
+}
 </script>
