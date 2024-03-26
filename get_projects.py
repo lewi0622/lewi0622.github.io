@@ -46,9 +46,7 @@ def find_images_in_folder(file_path):
 
 path = os.getcwd()
 result = find_folders_with_files(path)
-
-write_js_array("all_projects.js", result, "all_projects_full_paths")
+write_js_array("all_projects.js", sorted(result, key=lambda d: d['iframe']), "all_projects_full_paths")
 
 plotter_portfolio_list = find_images_in_folder(os.path.join("assets", "images", "plotter_portfolio"))
-
 write_js_array("plotter_portfolio.js", plotter_portfolio_list, "plotter_portfolio_full_paths")
