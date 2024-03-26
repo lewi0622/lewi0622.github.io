@@ -6,11 +6,14 @@ title: " "
 
 layout: splash
 
+head_scripts:
+  - plotter_portfolio.js
+  - https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js
+
 header:
   overlay_image: /assets/images/splash/Billow_Digital_Designs.png
 
 ---
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.min.css">
 <style>
   /* Style for images */
   .grid-item {
@@ -33,13 +36,9 @@ header:
     }
   }
 </style>
-</head>
-<body>
 <div class="grid">
   <!-- Gallery images will be inserted here -->
 </div>
-<script src=../plotter_portfolio.js></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   var grid = document.querySelector('.grid');
