@@ -6,13 +6,10 @@ title: " "
 
 layout: splash
 
+header:
+  overlay_image: /assets/images/splash/Billow_Digital_Designs.png
+
 ---
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Responsive Gallery</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.min.css">
 <style>
   /* Style for images */
@@ -72,5 +69,3 @@ document.addEventListener("DOMContentLoaded", function() {
     .catch(error => console.error('Error fetching images:', error));
 });
 </script>
-</body>
-</html>
