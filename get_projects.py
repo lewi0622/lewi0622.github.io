@@ -36,8 +36,18 @@ def write_js_array(file_path, py_list):
     except Exception as e:
         print(f"Error occurred while writing JavaScript file: {e}")
 
+def find_images_in_folder(file_path):
+    image_list = []
+    files = os.listdir(file_path)
+    for file in files:
+        image_list.append(os.path.join(base_path, file_path, file))
+    return image_list
 
 path = os.getcwd()
 result = find_folders_with_files(path)
 
 write_js_array("all_projects.js", result)
+
+plotter_portfolio_list = find_images_in_folder(os.path.join("assets", "images", "plotter_portfolio"))
+
+write_js_array("plotter_portfolio.js", plotter_portfolio_list)
