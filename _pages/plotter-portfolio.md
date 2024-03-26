@@ -1,0 +1,76 @@
+---
+
+permalink: /plotter-portfolio/
+
+title: " "
+
+layout: splash
+
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsive Gallery</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.min.css">
+<style>
+  /* Style for images */
+  .grid-item {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  @media (min-width: 576px) {
+    .grid-item {
+      width: 50%;
+    }
+  }
+  @media (min-width: 768px) {
+    .grid-item {
+      width: 33.333%;
+    }
+  }
+  @media (min-width: 992px) {
+    .grid-item {
+      width: 25%;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="grid">
+  <!-- Gallery images will be inserted here -->
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var grid = document.querySelector('.grid');
+  var masonry = new Masonry(grid, {
+    itemSelector: '.grid-item',
+    columnWidth: '.grid-item',
+    gutter: 15
+  });
+
+  // Fetch images from the server
+  fetch('assets/images/gallery')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(image => {
+        var gridItem = document.createElement('div');
+        gridItem.className = 'grid-item';
+        var img = document.createElement('img');
+        img.src = 'assets/images/gallery/' + image.filename;
+        img.alt = image.alt;
+        gridItem.appendChild(img);
+        grid.appendChild(gridItem);
+      });
+      
+      // After all images are added, layout Masonry again
+      masonry.layout();
+    })
+    .catch(error => console.error('Error fetching images:', error));
+});
+</script>
+</body>
+</html>
