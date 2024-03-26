@@ -41,6 +41,7 @@ def find_images_in_folder(file_path):
     files = os.listdir(file_path)
     for file in files:
         image_list.append(os.path.join(base_path, file_path, file))
+    image_list.sort()
     return image_list
 
 path = os.getcwd()
