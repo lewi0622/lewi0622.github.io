@@ -38,7 +38,7 @@ header:
 <div class="grid">
   <!-- Gallery images will be inserted here -->
 </div>
-
+<script src=../plotter_portfolio.js></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -48,24 +48,16 @@ document.addEventListener("DOMContentLoaded", function() {
     columnWidth: '.grid-item',
     gutter: 15
   });
-
-  // Fetch images from the server
-  fetch('assets/images/plotter_portfolio')
-    .then(response => response.json())
-    .then(data => {
-      data.forEach(image => {
-        var gridItem = document.createElement('div');
-        gridItem.className = 'grid-item';
-        var img = document.createElement('img');
-        img.src = 'assets/images/plotter_portfolio/' + image.filename;
-        img.alt = image.alt;
-        gridItem.appendChild(img);
-        grid.appendChild(gridItem);
-      });
-      
-      // After all images are added, layout Masonry again
-      masonry.layout();
-    })
-    .catch(error => console.error('Error fetching images:', error));
+  const paths = plotter_portfolio_full_paths;
+  for(let i=0; i<paths.length; i++){
+    var gridItem = document.createElement('div');
+    gridItem.className = 'grid-item';
+    var img = document.createElement('img');
+    img.src = paths[i];
+    gridItem.appendChild(img);
+    grid.appendChild(gridItem);
+  }
+  // After all images are added, layout Masonry again
+  masonry.layout();
 });
 </script>
