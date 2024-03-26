@@ -22,13 +22,13 @@ header:
     height: 400px;
     object-fit: contain;
     background: #FFFFFF;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
     }
     .grid-item img,
     .grid-item video {
     display: block;
-    max-width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
     }
     </style>
     <script src=../all_projects.js></script>
@@ -43,6 +43,7 @@ header:
     const thumbnail_path = project_paths[i]["thumbnail"];
     const grid_parent = document.getElementsByClassName("grid-container")[0];
     const grid_item = document.createElement('div');
+    grid_item.classList.add("grid-item");
     let thumbnail;
     if (thumbnail_path.includes(".png") || thumbnail_path.includes(".gif")) {
     thumbnail = document.createElement("img");
