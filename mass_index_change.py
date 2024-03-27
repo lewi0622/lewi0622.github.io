@@ -23,6 +23,7 @@ for f in to_replace:
     file_contents = '''---
 layout: default
 ---
+<div>
 <!DOCTYPE html><html lang="en"><head>
 <script src="'''+os.path.join(rel_path.as_posix(), "p5.min.js") +'''"></script>
 <!-- Perlin and Simplex Noise functions -->
@@ -53,8 +54,11 @@ layout: default
 
 </head>
 <body>
+<div id="canvas_parent">
+</div>
 </body>
-</html>'''
+</html>
+</div>'''
 
     print("Overwriting" + f)
     with open(f, "w") as myfile:
