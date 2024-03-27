@@ -320,10 +320,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
     retrieve_gui_settings();
   }
 
-  if(!redraw){
-    cnv = createCanvas(canvas_x, canvas_y, renderer);
-    cnv.parent("canvas_parent");
-  }
+  if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
   frameCount = 0; //with animations, this needs to be one of the last things changed
 
