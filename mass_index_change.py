@@ -20,7 +20,11 @@ for f in to_replace:
     rel_path = os.path.relpath(common, os.path.dirname(f))
     rel_path = pathlib.Path(rel_path)
     
-    file_contents = '''<!DOCTYPE html><html lang="en"><head>
+    file_contents = '''
+    ---
+    layout: default
+    ---
+    <!DOCTYPE html><html lang="en"><head>
     <script src="'''+os.path.join(rel_path.as_posix(), "p5.min.js") +'''"></script>
     <!-- Perlin and Simplex Noise functions -->
     <script src="'''+os.path.join(rel_path.as_posix(), "perlin.js") +'''"></script>
