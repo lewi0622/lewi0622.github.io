@@ -58,7 +58,7 @@ plugins:
 author:
   name   : "Eric Lewiston"
   avatar : "/assets/images/logo_face.png"
-  bio    : "Click on a design to see an interactive version!"
+  bio    : "Artist and Engineer based in Minneapolis Minnesota"
   links:
     - label: "Instagram"
       icon: "fab fa-fw fa-instagram"
