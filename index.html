@@ -7,63 +7,35 @@ layout: splash
 header:
   overlay_image: /assets/images/splash/Billow_Digital_Designs.png
 ---
+<script src=../plotter_portfolio.js></script>
 <style>
-    .grid-container {
+  /* Style for images */
+  .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     grid-gap: 10px;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
     }
-    .grid-item {
-    position: relative;
-    overflow: hidden;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 400px;
-    height: 400px;
-    object-fit: contain;
-    background: #FFFFFF;
-    max-width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    }
-    .grid-item img,
-    .grid-item video {
-    display: block;
-    }
-    </style>
-    <script src=../all_projects.js></script>
-    </head>
-    <body>
-    <div class="grid-container">
-    </div>
-    <script>
-    const project_paths = all_projects_full_paths;
-    for (let i = 0; i < project_paths.length; i++) {
-    const iframe_path = project_paths[i]["iframe"];
-    const thumbnail_path = project_paths[i]["thumbnail"];
-    const grid_parent = document.getElementsByClassName("grid-container")[0];
-    const grid_item = document.createElement('div');
-    grid_item.classList.add("grid-item");
-    let thumbnail;
-    if (thumbnail_path.includes(".png") || thumbnail_path.includes(".gif")) {
-    thumbnail = document.createElement("img");
-    thumbnail.src = thumbnail_path;
-    }
-    else if (thumbnail_path.includes(".mp4")) {
-    thumbnail = document.createElement("video");
-    thumbnail.muted = true;
-    thumbnail.autoplay = true;
-    thumbnail.loop = true;
-    thumbnail_source = document.createElement("source");
-    thumbnail_source.src = thumbnail_path;
-    thumbnail.appendChild(thumbnail_source);
-    }
-    thumbnail.className = "grid-item"
-    thumbnail.onclick = function () {
-    window.open(iframe_path, '_blank').focus();
-    };
-    grid_item.appendChild(thumbnail);
-    
-    grid_parent.appendChild(grid_item);
-    }
+  .grid-item {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+</style>
+<div class="grid-container">
+  <!-- Gallery images will be inserted here -->
+</div>
+<script>
+var grid = document.querySelector('.grid-container');
+const paths = plotter_portfolio_full_paths;
+for(let i=0; i<paths.length; i++){
+  var gridItem = document.createElement('div');
+  gridItem.className = 'grid-item';
+  var img = document.createElement('img');
+  img.src = paths[i];
+  gridItem.appendChild(img);
+  grid.appendChild(gridItem);
+}
 </script>
