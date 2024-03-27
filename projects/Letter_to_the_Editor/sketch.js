@@ -24,13 +24,12 @@ function draw() {
 
   //apply background
   let bg_c;
-  print(global_palette_id)
   if(global_palette_id == 6) bg_c = working_palette[7];
   else if(global_palette_id == 12) bg_c = working_palette[0];
   else if(global_palette_id == 14) bg_c = working_palette[5];
-  else bg_c = random(working_palette)
-  background(bg_c)
-  reduce_array(working_palette, bg_c)
+  else bg_c = random(working_palette);
+  reduce_array(working_palette, bg_c);
+  if(type == "png") background(bg_c);
 
   //actual drawing stuff
   push();
@@ -150,16 +149,18 @@ function draw() {
   }
   //grain
   pop();
-  push();
-  noFill();
-  stroke("#f3f0de");
-  // stroke(random(working_palette));
-  strokeWeight(global_scale*0.006);
-  for(let i=0; i<60000; i++){
-    circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
+  if(type == "png"){
+    push();
+    noFill();
+    stroke("#f3f0de");
+    // stroke(random(working_palette));
+    strokeWeight(global_scale*0.006);
+    for(let i=0; i<60000; i++){
+      circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
+    }
+    pop();  
   }
-  pop();
-  
+
   global_draw_end();
 }
 //***************************************************
