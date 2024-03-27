@@ -20,8 +20,7 @@ for f in to_replace:
     rel_path = os.path.relpath(common, os.path.dirname(f))
     rel_path = pathlib.Path(rel_path)
     
-    file_contents = '''
-    ---
+    file_contents = '''---
     layout: default
     ---
     <!DOCTYPE html><html lang="en"><head>
