@@ -39,15 +39,69 @@ tagline: "Contact me to purchase or commission custom work!"
     padding: 10px 20px;
     border-radius: 5px;
   }
+  /* Modal styles */
+  .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+  }
+  .modal-content {
+      background-color: #fefefe;
+      margin: 20% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      border-radius: 10px;
+      max-width: 80%;
+  }
+  .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+  }
 </style>
-<div id="modal01" onclick="this.style.display='none'">
-  <img id="img01" style="width:100%">
+<div id="modal01" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img id="img01" style="width:100%">
+  </div>
 </div>
 <div class="grid-container">
   <!-- Gallery images will be inserted here -->
 </div>
 
 <script>
+const modal = document.getElementById("modal01");
+
+// Function to open the modal
+function openModal() {
+  modal.style.display = "block";
+}
+
+// Function to close the modal
+function closeModal() {
+  modal.style.display = "none";
+}
+
+// Close the modal when the user clicks outside of it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
 var grid = document.querySelector('.grid-container');
 const paths = plotter_portfolio_full_paths;
 for(let i=0; i<paths.length; i++){
@@ -59,7 +113,7 @@ for(let i=0; i<paths.length; i++){
   //onclick to open larger image
   img.onclick = function(element){
     document.getElementById("img01").src = element.srcElement.src; //set modal image src
-    document.getElementById("modal01").style.display = "block";
+    openModal();
   }
 
   gridItem.appendChild(img);
