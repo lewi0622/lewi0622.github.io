@@ -268,13 +268,9 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   base_x = size_x;
   base_y = size_y;
-  smaller_base = base_x;
-  larger_base = base_y;
-  if(larger_base<smaller_base){
-    smaller_base = base_y;
-    larger_base = base_x;
-  }
-
+  smaller_base = min(base_x, base_y);
+  larger_base = max(base_x, base_y);
+  
   //init globals
   file_saved = false;
   capture_state = "init";
