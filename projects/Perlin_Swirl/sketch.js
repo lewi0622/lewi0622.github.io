@@ -10,6 +10,7 @@ const capture_time = 10;
 const suggested_palettes = [SAGEANDCITRUS, BIRDSOFPARADISE];
 
 function gui_values(){
+  parameterize("rotation", 0, 0, 360, 1, false);
   parameterize("number_of_swirls", ceil(random(1,3)), 1, 5, 1, false);
   parameterize("margin", random(50), 0, 200, 1, true);
   parameterize("line_steps", floor(random(100, 600)), 1, 1000, 1, false);
@@ -33,6 +34,7 @@ function draw() {
 
   //actual drawing stuff
   push();
+  center_rotate(rotation);
   strokeWeight(weight);
   let bg_c = random(working_palette);
   background(bg_c);
@@ -51,7 +53,6 @@ function draw() {
     translate(canvas_x/2+offset_x, canvas_y/2+offset_y);
     rotate(random(360));
     const line_step_size = (canvas_x-margin*2)/line_steps;
-
     const skips = new Array(line_steps).fill(0); //
     for(let j=0; j<rotation_steps; j++){
       push();
