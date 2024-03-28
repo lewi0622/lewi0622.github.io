@@ -54,10 +54,13 @@ for(let i=0; i<paths.length; i++){
   gridItem.appendChild(img);
 
   //sold banner
-  if(paths[i].includes("sold")){
+  const file_parts = paths[i].split("/");
+  const file_name = file_parts[file_parts.length-1];
+  if(file_name.includes("_")){
     const banner = document.createElement('div');
     banner.classList.add('banner');
-    banner.innerText = "SOLD";
+    if(file_name.includes("sold")) banner.innerText = "SOLD";
+    else if(file_name.includes("na")) banner.innerText = "Not Available";
     gridItem.appendChild(banner);
   }
 
