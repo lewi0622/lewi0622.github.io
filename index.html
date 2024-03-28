@@ -28,6 +28,16 @@ tagline: "Contact me to purchase or commission custom work!"
     width: 100%;
     margin-bottom: 15px;
   }
+  .banner {
+    position: absolute;
+    bottom: 20px; /* adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
 </style>
 <div class="grid-container">
   <!-- Gallery images will be inserted here -->
@@ -41,6 +51,15 @@ for(let i=0; i<paths.length; i++){
   var img = document.createElement('img');
   img.src = paths[i];
   gridItem.appendChild(img);
+
+  //sold banner
+  if(paths[i].includes("sold")){
+    const banner = document.createElement('div');
+    banner.classList.add('banner');
+    banner.innerText = "SOLD";
+    gridItem.appendChild(banner);
+  }
+
   grid.appendChild(gridItem);
 }
 </script>
