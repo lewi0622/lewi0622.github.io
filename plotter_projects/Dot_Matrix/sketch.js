@@ -6,19 +6,20 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = []
-
+const suggested_palettes = [SOUTHWEST, MUTEDEARTH, SIXTIES];
 
 function gui_values(){
-  parameterize("margin_x", 0.5, 0, 5.5, 0.25, true);
-  parameterize("margin_y", 0.5, 0, 4, 0.25, true);
+  parameterize("margin_x", 0, -base_x/2, base_x/2, 1, true);
+  parameterize("margin_y", 0, -base_y/2, base_y/2, 1, true);
   parameterize("circles_per_row", 10, 1, 100, 1, false);
   parameterize("circles_per_column", 5, 1, 100, 1, false);
-  parameterize("circle_size", 0.5*96, 0.125*96, 2*96, 0.125*96, true);
+  parameterize("circle_size", smaller_base/8, 0, smaller_base/4, 1, true);
   parameterize("ring_skip", 0.1, 0, 1, 0.05, false);
+  parameterize("ring_step_size", circle_size/80, circle_size/1100, circle_size/5.5, circle_size/1100, true);
   parameterize("circle_skip", 0.1, 0, 1, 0.05, false);
   parameterize("x_damp", 10, 0.01, 1000, 0.1, false);
   parameterize("y_damp", 10, 0.01, 1000, 0.1, false);
+  parameterize("alpha", 255, 0, 255, 1, false);
 }
 
 function setup() {
@@ -33,21 +34,22 @@ function draw() {
   push();
   noFill();
   
-  strokeWeight(0.019685*96);
-  const color_array = [color("YELLOW"), color("MAGENTA"), color("CYAN")];
-  color_array.forEach(c => {
-    c.setAlpha(120);
-  });
-  const start_x = margin_x*96;
-  const start_y = margin_y*96;
-  const end_x = canvas_x - start_x;
-  const end_y = canvas_y - start_y;
+  strokeWeight(0.25*global_scale);
+  controlled_shuffle(working_palette, true);
 
-  const x_space = end_x-start_x;
-  const y_space = end_y-start_y; 
+  png_bg(true);
 
-  const x_grid_size = x_space/circles_per_row;
-  const y_grid_size = y_space/circles_per_column;
+  const color_array = [];
+  for(let i=0; i<working_palette.length; i++){
+    color_array.push(color(working_palette[i]));
+    color_array[i].setAlpha(alpha);
+  }
+
+  const x_grid_size = canvas_x/circles_per_row;
+  const y_grid_size = canvas_y/circles_per_column;
+
+  const start_x = margin_x + x_grid_size/2;
+  const start_y = margin_y + y_grid_size/2;
 
   translate(start_x, start_y);
 
@@ -58,13 +60,12 @@ function draw() {
       translate(i*x_grid_size, j*y_grid_size);
 
       const color_index = floor(noise((i+1)/x_damp, (j+1)/y_damp)*color_array.length);
-      // const color_index = floor(random()*4);
       if(random()>circle_skip){
         stroke(color_array[color_index]);
         
-        while(radius>MICRON05){
+        while(radius>ring_step_size){
           if(random()>ring_skip) circle(0,0, radius);
-          radius -= MICRON05;
+          radius -= ring_step_size;
         }
       }
       pop();
