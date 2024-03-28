@@ -40,9 +40,13 @@ tagline: "Contact me to purchase or commission custom work!"
     border-radius: 5px;
   }
 </style>
+<div id="modal01" onclick="this.style.display='none'">
+  <img id="img01" style="width:100%">
+</div>
 <div class="grid-container">
   <!-- Gallery images will be inserted here -->
 </div>
+
 <script>
 var grid = document.querySelector('.grid-container');
 const paths = plotter_portfolio_full_paths;
@@ -51,6 +55,13 @@ for(let i=0; i<paths.length; i++){
   gridItem.className = 'grid-item';
   var img = document.createElement('img');
   img.src = paths[i];
+
+  //onclick to open larger image
+  img.onclick = function(element){
+    document.getElementById("img01").src = element.srcElement.src; //set modal image src
+    document.getElementById("modal01").style.display = "block";
+  }
+
   gridItem.appendChild(img);
 
   //sold banner
