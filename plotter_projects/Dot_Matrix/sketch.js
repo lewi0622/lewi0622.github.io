@@ -11,9 +11,9 @@ const suggested_palettes = [SOUTHWEST, MUTEDEARTH, SIXTIES];
 function gui_values(){
   parameterize("margin_x", 0, -base_x/2, base_x/2, 1, true);
   parameterize("margin_y", 0, -base_y/2, base_y/2, 1, true);
-  parameterize("circles_per_row", 10, 1, 100, 1, false);
-  parameterize("circles_per_column", 5, 1, 100, 1, false);
-  parameterize("circle_size", smaller_base/8, 0, smaller_base/4, 1, true);
+  parameterize("circles_per_row", floor(random(10,50)), 1, 100, 1, false);
+  parameterize("circles_per_column", floor(random(10,50)), 1, 100, 1, false);
+  parameterize("circle_size", smaller_base/random(8,32), 0, smaller_base/4, 1, true);
   parameterize("ring_skip", 0.1, 0, 1, 0.05, false);
   parameterize("ring_step_size", circle_size/80, circle_size/1100, circle_size/5.5, circle_size/1100, true);
   parameterize("circle_skip", 0.1, 0, 1, 0.05, false);
