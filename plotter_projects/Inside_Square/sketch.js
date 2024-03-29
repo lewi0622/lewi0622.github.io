@@ -10,11 +10,10 @@ const suggested_palettes = [BIRDSOFPARADISE];
 
 
 function gui_values(){
-  parameterize("horizontal_squares", 10, 1, 100, 1, false);
-  parameterize("vertical_squares", 10, 1, 100, 1, false);
-  parameterize("step_number", 10, 1, 100, 1, false);
-  parameterize("horizontal_margin", 10, 0, 100, 1, true);
-  parameterize("vertical_margin", 10, 0, 100, 1, true);
+  parameterize("horizontal_squares", floor(random(3,30)), 1, 100, 1, false);
+  parameterize("step_number", floor(random(3, 20)), 1, 100, 1, false);
+  parameterize("margin", random([0,5,10,15,20]), 0, 50, 1, true);
+  parameterize("num_colors", round(random(1, working_palette.length-1)), 1, working_palette.length-1, 1, false);
 }
 
 function setup() {
@@ -27,15 +26,22 @@ function draw() {
 
   //actual drawing stuff
   push();
+  const vertical_squares = round(canvas_y/canvas_x*horizontal_squares);
+  strokeWeight(1*global_scale);
+  png_bg(true);
+  controlled_shuffle(working_palette, true);
+  const colors = [];
+  for(let i=0; i<num_colors; i++){
+    colors.push(color(working_palette[i]));
+  }
   noFill();
-  
-  const total_horizonatal_margin = horizontal_squares*(horizontal_margin+1);
-  const total_vertical_margin = vertical_squares*(vertical_margin+1);
+  strokeJoin(BEVEL);
+  const total_horizonatal_margin = (horizontal_squares-1) * margin;
+  const total_vertical_margin = (vertical_squares-1) * margin;
   const horizontal_square_size = (canvas_x-total_horizonatal_margin)/horizontal_squares;
   const vertical_square_size = (canvas_y-total_vertical_margin)/vertical_squares;
-  let square_size=vertical_square_size;
-  if(horizontal_square_size<vertical_square_size) square_size = horizontal_square_size;
-  let step_size = square_size/step_number;
+  const square_size = min(horizontal_square_size, vertical_square_size);
+  const step_size = square_size/step_number;
 
   let points = [];
 
@@ -53,12 +59,14 @@ function draw() {
     points.push({x:i*step_size, y:square_size}); // right
   }
 
-  translate(horizontal_margin, vertical_margin);
+  translate((canvas_x-total_horizonatal_margin-square_size*horizontal_squares)/2, (canvas_y-total_vertical_margin-square_size*vertical_squares)/2);
   for(let z=0; z<horizontal_squares; z++){
     for(let j=0; j<vertical_squares; j++){
       push();
-      // stroke(random(working_palette));
-      translate(z*(square_size+horizontal_margin), j*(square_size+vertical_margin));
+      const stroke_c = random(colors);
+      stroke(stroke_c);
+      line_blur(stroke_c, 2*global_scale);
+      translate(z*(square_size+margin), j*(square_size+margin));
       points = shuffle(points);
       for(let i=0; i<points.length-1; i++){
         const start = points[i];
