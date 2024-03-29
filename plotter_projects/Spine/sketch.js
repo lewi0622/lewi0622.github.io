@@ -35,7 +35,6 @@ function draw() {
   const margin = canvas_x/64;
   for(let i=0; i<3; i++){
     const step_size = floor(random(15,30))*global_scale;
-    console.log(step_size)
     const side_spacing = floor(random(4,10))*step_size;
     translate(0, canvas_y/4);
     if(i==1){
@@ -77,14 +76,12 @@ function draw() {
     stroke(colors[0]);
     min_dist = 10000000;
     current_id = -1;
-    console.log(pts0);
     pts0.forEach((pt0, idx) =>{
       if(dist(pt1.x, pt1.y, pt0.x, pt0.y)<min_dist){
         min_dist = dist(pt1.x, pt1.y, pt0.x, pt0.y);
         current_id = idx
       }
     })
-    console.log(pt1, pts0[current_id]);
     line(pt1.x, pt1.y+canvas_y/2, pts0[current_id].x, pts0[current_id].y+canvas_y/4);
 
     stroke(colors[1]);

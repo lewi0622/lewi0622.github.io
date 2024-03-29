@@ -12,7 +12,7 @@ const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE];
 function gui_values(){
   parameterize("fill_in", 1, 0, 1, 1, false);
   parameterize("num_circles", floor(random(15,150)), 1, 500, 1, false);
-  parameterize("starting_radius", random(smaller_dim/2, smaller_dim*3/4), 1, 1000, 1, true);
+  parameterize("starting_radius", random(smaller_base/2, smaller_base*3/4), 1, 1000, 1, true);
   parameterize("ending_radius", 0, -500, 500, 1, true);
   parameterize("drift_x_per_loop", 0, -10, 10, 0.1, true);
   parameterize("drift_y_per_loop", 0, -10, 10, 0.1, true);
