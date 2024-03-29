@@ -10,9 +10,9 @@ const suggested_palettes = [NURSERY, TOYBLOCKS];
 let cloud_color, cloud_back_color;
 let rain_dir; 
 function gui_values(){
-  parameterize("cloud_min_radius", random(1,5), 0, 200, 1, true);
-  parameterize("cloud_max_radius", random(3,10), 0, 200, 1, true);
-  parameterize("num_clouds", floor(random(1,3)), 1, 5, 1, false);
+  parameterize("cloud_min_radius", smaller_base/random(80, 400), 0, smaller_base/10, 1, true);
+  parameterize("cloud_max_radius", smaller_base/random(40, 135), 0, smaller_base/10, 1, true);
+  parameterize("num_clouds", floor(random(1,10)), 1, 5, 1, false);
   parameterize("rain", random([0,1]), 0, 1, 1, false);
   parameterize("rain_spacing", floor(random(5,20)), 1, 30, 0.5, true);
   parameterize("cloud_min_width", 10, 1, 100, 1, true);
@@ -26,13 +26,15 @@ function setup() {
 //***************************************************
 function draw() {
   global_draw_start();
+  
   //actual drawing stuff
   push();
-  cloud_color = "WHITE";
+  const bg_c = png_bg();
+  if(type == "png") cloud_color =  bg_c;
+  else cloud_color = "WHITE";
   cloud_back_color = "BLACK";
 
   translate(0,-canvas_y/8);
-
   let circle_rad = random(cloud_min_radius,cloud_max_radius);
   rain_dir = random([-1,1]);
   let cloud_info = [];
@@ -61,6 +63,18 @@ function draw() {
   });
 
   pop();
+  if(type == "png"){
+    //grain
+    push();
+    noFill();
+    stroke("#f3f0de");
+    // stroke(random(working_palette));
+    strokeWeight(global_scale*0.006);
+    for(let i=0; i<60000; i++){
+      circle(random(-canvas_x/2, canvas_x*1.5), random(-canvas_y/2, canvas_y*1.5), canvas_x/2);
+    }
+    pop();
+  }
 
   global_draw_end();
 }
@@ -104,6 +118,7 @@ function draw_clouds(coords){
 
     push();
     translate(x,y);
+    fill("BLACK");
     stroke(cloud_back_color);
     const x_wiggle = random(-1,1)*(rad)/2;
     const y_wiggle = random(-1,1)*(rad)/2;
@@ -118,6 +133,7 @@ function draw_clouds(coords){
     let rad = data[2];
     push();
     translate(x,y);
+    fill(cloud_color);
     stroke(cloud_color);
     rad *= random(0.2, 0.5);
     const x_wiggle = random(-1,1)*(data[2]-rad)/8;
