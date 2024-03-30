@@ -6,15 +6,13 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = [LASER]
-
+const suggested_palettes = [];
 
 function gui_values(){
-  parameterize("points_per_line", 500, 1, 500, 1, false);
-  parameterize("amp", random(20,500), 0, 1000, 1, true);
+  parameterize("points_per_line", floor(random(100, 500)), 1, 1000, 1, false);
+  parameterize("amp", base_x/random(1,5), 0, base_x, 1, true);
   parameterize("i_damp", random(300, 1000), 1, 1000, 1, false);
-  parameterize("j_boost", random(1,100), 1, 100, 1, false);
-  parameterize("number_of_lines", 150, 3, 500, 1, false);
+  parameterize("number_of_lines", floor(random(100,500)), 3, 500, 1, false);
 }
 
 function setup() {
@@ -27,6 +25,13 @@ function draw() {
 
   //actual drawing stuff
   push();
+  png_bg(true);
+  if(type == "png"){
+    const stroke_c = random(working_palette);
+    stroke(stroke_c);
+    line_blur(stroke_c, 2*global_scale);
+  }
+  strokeWeight(1*global_scale);
   noFill();
   translate(canvas_x/2, 0);
 
@@ -43,11 +48,13 @@ function draw() {
   beginShape();
   for(let i=0; i<points_per_line; i++){
     const x = starting_min_x + map(noise((i+starting_min_x)/i_damp), 0,1, -amp, amp);
-    const y = i*y_step_size;
+    let y = i*y_step_size;
+    if(i+1 == points_per_line){
+      ending_min_x = x;
+      y = canvas_y;
+    }
     vertex(x,y);
     lines_pts[i].push({id:line_id, x:x});
-
-    if(i+1 == points_per_line) ending_min_x = x;
   }
   endShape();
   line_id++;
@@ -57,11 +64,13 @@ function draw() {
   beginShape();
   for(let i=0; i<points_per_line; i++){
     const x = starting_max_x + map(noise((i+starting_max_x)/i_damp), 0,1, -amp, amp);
-    const y = i*y_step_size;
+    let y = i*y_step_size;
+    if(i+1 == points_per_line){
+      ending_max_x = x;
+      y = canvas_y;
+    }
     vertex(x,y);
     lines_pts[i].push({id:line_id, x:x});
-
-    if(i+1 == points_per_line) ending_max_x = x;
   }
   endShape();
   line_id++;
@@ -99,14 +108,18 @@ function draw() {
         if((prev_x<=x && !left_ids.includes(prev_id)) || (prev_x>x && !right_ids.includes(prev_id))){
           vertex(prev_x,y);
           collision = true;
-          print(lines_pts)
         }
       }
 
       if(collision) break;
+      if(i+1==points_per_line){
+        if(reverse) y = 0;
+        else y = canvas_y;
+      }
       vertex(x,y);
       lines_pts[i].push({id:line_id, x:x});
     }
+    
     endShape();
     if(reverse) lines_pts.reverse();
     line_id++;
