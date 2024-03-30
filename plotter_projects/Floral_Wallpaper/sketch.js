@@ -6,22 +6,20 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
-
+const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE];
 
 function gui_values(){
-  parameterize("dec", random(2,3),2,10,0.1,true);
   parameterize("points", floor(random(10,30)), 3, 100, 1, false);
   parameterize("scale_factor", random(10,15), 1, 30, 0.25, false);
   parameterize("noise_off", 50, 0, 100, 0.1, false);
-  parameterize("starter_radius", canvas_x/global_scale/random(4.5,6), canvas_x/global_scale/10, canvas_x/global_scale/3, 1 ,true);
-  parameterize("min_radius", 1, 0.1,50,0.1,true);
+  parameterize("starter_radius", smaller_base/random(4.5,8), smaller_base/10, smaller_base/3, 1 ,true);
+  parameterize("dec", smaller_base/random(130,200),0.1,smaller_base/2,0.1,true);
   parameterize("start_ang",0,0,360,1,false);
   parameterize("end_ang", 0, 0, 360, 1, false);
   parameterize("ang_div", 20, 1, 50, 0.5, false);
-  parameterize("spacing", 60, 60, 400, true);
-  parameterize("rows", 1, 1, 5, 1, false);
-  parameterize("cols", 1, 1, 5, 1, false);
+  parameterize("rows", floor(random([3, random(3,10)])), 1, 50, 1, false);
+  parameterize("cols", floor(random([3, random(3,10)])), 1, 50, 1, false);
+  parameterize("offset_rows", 1, 0, 1, 1, false);
 }
 
 function setup() {
@@ -34,25 +32,33 @@ function draw() {
 
   //actual drawing stuff
   push();
-  
-  // strokeWeight(random(0.25,0.75)*global_scale);
-  // strokeWeight(COPICMARKER*3/4)
-  let padding = starter_radius;
-  translate(padding, padding);
+  center_rotate(random([0,90,180,270]));
+  png_bg(false);
+  if(type == ("png")){
+    strokeWeight(random(0.5,1)*global_scale);
+    let stroke_c = random(working_palette);
+    stroke(stroke_c);
+    reduce_array(working_palette, stroke_c);
+    fill(random(working_palette));
+  }
+  const row_spacing = canvas_y/(rows-1);
+  const col_spacing = canvas_x/(cols-1);
+  let svg_color_counter = 0;
   for(let j=0; j<rows; j++){
     for(let z=0; z<cols; z++){
 
       let radius = starter_radius;
       push();
-      stroke((j+z+1)*10);
-      translate(z*spacing,j*spacing);
-      // if(j%2==1)translate(canvas_x/4,0);
+      if(type == "svg") stroke(svg_color_counter);
+      svg_color_counter++;
+      translate(z*col_spacing,j*row_spacing);
+      if(j%2==1 && offset_rows)translate(col_spacing/2,0);
       rotate(random(360));
 
       let noise_base = 0;
       let noise_inc = random(0.1,0.15);
       let dir = random([-1,1]);
-      while(radius>min_radius){
+      while(radius>0){
         let noise_scale = radius/starter_radius*global_scale*scale_factor;
         let ang_scale;
         let pts = [];
