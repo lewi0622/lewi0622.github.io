@@ -6,7 +6,7 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = [];
+const suggested_palettes = [COTTONCANDY, SOUTHWEST];
 
 function gui_values(){
   parameterize("points_per_line", floor(random(100, 500)), 1, 1000, 1, false);
