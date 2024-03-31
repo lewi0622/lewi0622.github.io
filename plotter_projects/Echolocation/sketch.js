@@ -11,7 +11,7 @@ const suggested_palettes = [SAGEANDCITRUS, BUMBLEBEE, BIRDSOFPARADISE, SOUTHWEST
 function gui_values(){
   parameterize("number_of_circles", floor(random(2,6)), 1, 50, 1, false);
   parameterize("number_of_rings", floor(random(10,100)), 1, 400, 1, false);
-  parameterize("starting_radius", random(0,smaller_base), 0, smaller_base, 1, true);
+  parameterize("max_radius", random(smaller_base), 0, smaller_base, 1, true);
   parameterize("num_colors", round(random(1, working_palette.length-1)), 1, working_palette.length-1, 1, false);
 } 
 
@@ -40,8 +40,8 @@ function draw() {
     points.push(vec);
   }
 
-  // let radius = starting_radius;
   for(let j=0; j<points.length-1; j++){
+    const starting_radius = random(0, max_radius);
     let start = points[j];
     let end = points[j+1];
 
