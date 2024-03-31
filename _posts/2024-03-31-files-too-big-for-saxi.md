@@ -44,5 +44,6 @@ Let's step thru this code and explain it piece by piece:
 	3. In this example, we expect to see \_lid = 1,2,3,4,5,6... and the new layer id to be 2,3,4,1,2,3... in response. It only irks me slightly that we don't start on layer 1, but it doesn't really matter.
 5. linesort
 	1. We're sorting the lines here, as any previous optimization is likely no longer as effective.
+
 ## Imperfections
 The only real issue with this workaround is the need to manually start each new layer. Ideally one would be able to press play on a four hour plot, rather than need to press play on 4x one hour plots. Likely a more robust solution is needed, especially if I transition to a larger plotter. Another issue is that the plot time increases by a decent amount since I can't optimize across the whole design.
