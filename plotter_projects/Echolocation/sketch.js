@@ -10,8 +10,8 @@ const suggested_palettes = [SAGEANDCITRUS, BUMBLEBEE, BIRDSOFPARADISE, SOUTHWEST
 
 function gui_values(){
   parameterize("number_of_circles", floor(random(2,6)), 1, 50, 1, false);
+  parameterize("iterations_per_circle", 2, 1, 5, 1, false);
   parameterize("number_of_rings", floor(random(10,100)), 1, 400, 1, false);
-  parameterize("max_radius", random(smaller_base), 0, smaller_base, 1, true);
   parameterize("num_colors", round(random(1, working_palette.length-1)), 1, working_palette.length-1, 1, false);
 } 
 
@@ -32,28 +32,28 @@ function draw() {
     colors.push(color(working_palette[i]));
   }
   noFill();
-  const points=[];
-  for(let i=0; i<=number_of_circles; i++){
-    const vec = createVector(
-      canvas_x/2 + random(-1,1)*canvas_x/3,
-      canvas_y/2 + random(-1,1)*canvas_y/3);
-    points.push(vec);
-  }
 
-  for(let j=0; j<points.length-1; j++){
-    const starting_radius = random(0, max_radius);
-    let start = points[j];
-    let end = points[j+1];
-
+  for(let i=0; i<number_of_circles; i++){
     const stroke_c = random(colors);
     stroke(stroke_c);
     line_blur(stroke_c, 2*global_scale);
+    
+    const ending_radius = random(canvas_x/2, canvas_x*1.5);
+    const end = createVector(
+      canvas_x/2 + random(-1,1)*canvas_x/2,
+      canvas_y/2 + random(-1,1)*canvas_y/2);
 
-    for(let i=0; i<number_of_rings; i++){
-      let target = p5.Vector.lerp(start,end, i/number_of_rings);
-      let radius = starting_radius + 2*abs(dist(start.x, start.y, target.x, target.y)); 
-      circle(target.x, target.y, radius);
-      if(type=="png") circle(target.x, target.y, radius);
+    for(let j=0; j<iterations_per_circle; j++){
+      const starting_radius = random(0, ending_radius/4);
+      const start = createVector(
+        end.x + random(-1,1)*(ending_radius-starting_radius)/3,
+        end.y + random(-1,1)*(ending_radius-starting_radius)/3);
+      for(let k=0; k<number_of_rings; k++){
+        let target = p5.Vector.lerp(start,end, k/number_of_rings);
+        let radius = lerp(starting_radius, ending_radius, k/number_of_rings);
+        circle(target.x, target.y, radius);
+        if(type=="png") circle(target.x, target.y, radius);
+      }
     }
   }
   pop();
