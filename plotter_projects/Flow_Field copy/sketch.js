@@ -6,7 +6,7 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = [SUMMERTIME];
+const suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME];
 
 function gui_values(){
   const col_division = random(4,10);
