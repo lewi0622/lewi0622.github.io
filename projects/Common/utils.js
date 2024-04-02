@@ -726,7 +726,7 @@ function save_drawing(){
   //get project name
   let scale_text = round(global_scale*1000)/1000; //round to nearest 1000th place
   scale_text = str(scale_text).replace(".", "_");
-  const filename = str(project_name) + '_seed_' + str(seed_input.value()) + '_colors_' + str(current_palette_index()) + '_scale_' + scale_text;
+  const filename = str(project_name).replace("%","_") + '_seed_' + str(seed_input.value()) + '_colors_' + str(current_palette_index()) + '_scale_' + scale_text;
   if(type == 'svg')save(filename);
   else saveCanvas(filename, type);
   file_saved = true;
