@@ -6,15 +6,16 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = []
+const suggested_palettes = [];
 
 let font;
 
 function gui_values(){
-  parameterize('inc', 0.1, 0.01, 10, 0.01, false);
+  parameterize('inc', 0.1, 0.001, 1, 0.001, false);
   parameterize("zinc", 0.1, 0, 1, 0.01, false);
   parameterize("scl", 10, 1, 100, 1, true);
   parameterize("z_iterations", 1, 1, 25, 1, false);
+  parameterize("fSize", 20, 1, 100, 1, true);
 }
 
 function setup() {
@@ -35,8 +36,7 @@ function setup() {
 function draw() {
   global_draw_start();
   if(font == undefined) return;
-  const letters = "ERIC".split("");
-  let fSize = 20*global_scale;
+  const letters = ":D".split("");
   const letter_paths = [];
   letters.forEach(letter => {
     letter_paths.push(font.getPath(letter, 0,0, fSize));
@@ -60,7 +60,6 @@ function draw() {
     for(let y=0; y<rows; y++){
       let xoff=0;
       for(let x=0; x<cols; x++){
-        let index = x + y * cols;
         let angle = noise(xoff, yoff, zoff) * 360;
         let v = p5.Vector.fromAngle(radians(angle));
         xoff += inc; 
