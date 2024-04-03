@@ -9,14 +9,15 @@ const capture_time = 10;
 const suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME];
 
 function gui_values(){
-  const col_division = random(4,10);
-  const row_division = random([col_division/2, col_division, col_division, col_division]);
+  const division = random(4,10);
+  const col_division = random([division*2, division, division, division]);
+  const row_division = random([division*2, division, division, division]);
   parameterize("cols", floor(base_x/col_division), 1, base_x, 1, false);
   parameterize("rows", floor(base_y/row_division), 1, base_y, 1, false);
   parameterize("x_margin", -base_x/16, -base_x/2, base_x/2, 1, true);
   parameterize("y_margin", -base_y/16, -base_y/2, base_y/2, 1, true);
-  parameterize("iterations", floor(random(10,100)), 1, 500, 1, false);
-  parameterize("step_size", 5, 1, 50, 1, true);
+  parameterize("iterations", floor(random(30,100)), 1, 500, 1, false);
+  parameterize("step_size", 1, 1, 50, 1, true);
   const damp = random(200, 2000);
   parameterize("x_damp", damp, 1, 10000, 1, false);
   parameterize("y_damp", damp, 1, 10000, 1, false);
@@ -39,7 +40,7 @@ function draw() {
   const colors = [];
   for(let i=0; i<num_colors; i++){
     colors.push(color(working_palette[i]));
-    colors[i].setAlpha(200);
+    // colors[i].setAlpha(200);
   }
   const col_step = (canvas_x-x_margin*2)/cols;
   const row_step = (canvas_y-y_margin*2)/rows;
@@ -58,7 +59,7 @@ function draw() {
       for(let i=0; i<iterations; i++){
         const starting_pt = pts[i];
     
-        curveVertex(starting_pt.x, starting_pt.y);
+        vertex(starting_pt.x, starting_pt.y);
     
         let angle = noise(starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp, i/i_damp) * 360*5;
         pts.push({
