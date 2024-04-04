@@ -120,7 +120,7 @@ for i in range(max_num_colors):
 
     Label(window, text="X (in)").grid(row=current_row, column=0)
     dip_loc_x_entry = Entry(window, width=7)
-    dip_loc_x_entry.insert(0,f"{i * 2}")
+    dip_loc_x_entry.insert(0,f"{i * 2 + 1}")
     dip_loc_x_entry.grid(row=current_row, column=1)
 
     Label(window, text="Y (in)").grid(row=current_row, column=2)
