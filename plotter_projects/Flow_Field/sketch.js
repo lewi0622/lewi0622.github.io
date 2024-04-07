@@ -17,12 +17,13 @@ function gui_values(){
   parameterize("x_margin", -base_x/16, -base_x/2, base_x/2, 1, true);
   parameterize("y_margin", -base_y/16, -base_y/2, base_y/2, 1, true);
   parameterize("iterations", floor(random(30,100)), 1, 500, 1, false);
-  parameterize("step_size", 1, 1, 50, 1, true);
+  parameterize("step_size", random(1,10), 1, 50, 1, true);
   const damp = random(200, 2000);
   parameterize("x_damp", damp, 1, 10000, 1, false);
   parameterize("y_damp", damp, 1, 10000, 1, false);
-  parameterize("i_damp", 1000, 1, 10000, 1, false);
+  parameterize("i_damp", random(100,1000), 1, 1000, 1, false);
   parameterize("num_colors", round(random(1, working_palette.length-1)), 1, working_palette.length-1, 1, false);
+  parameterize("simplex", round(random()), 0, 1, 1, false);
 }
 
 function setup() {
@@ -40,7 +41,7 @@ function draw() {
   const colors = [];
   for(let i=0; i<num_colors; i++){
     colors.push(color(working_palette[i]));
-    // colors[i].setAlpha(200);
+    colors[i].setAlpha(150);
   }
   const col_step = (canvas_x-x_margin*2)/cols;
   const row_step = (canvas_y-y_margin*2)/rows;
@@ -59,9 +60,15 @@ function draw() {
       for(let i=0; i<iterations; i++){
         const starting_pt = pts[i];
     
-        vertex(starting_pt.x, starting_pt.y);
-    
-        let angle = noise(starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp, i/i_damp) * 360*5;
+        curveVertex(starting_pt.x, starting_pt.y);
+        let angle;
+        if(simplex){
+          angle = pnoise.simplex3(starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp, i/i_damp) * 360*5;
+        }
+        else{
+          angle = noise(starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp, i/i_damp) * 360*5;
+        }
+
         pts.push({
           x: starting_pt.x + step_size * cos(angle),
           y: starting_pt.y + step_size * sin(angle)
