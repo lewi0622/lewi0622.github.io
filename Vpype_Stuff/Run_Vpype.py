@@ -3,14 +3,24 @@ from tkinter import *
 from tkinter import ttk
 from vpype_utils import *
 
-temp_file = ""
+occult_temp_file = ""
+show_temp_file = ""
+last_shown_command = ""
+output_filename = ""
 
-def delete_temp_file():
+
+def delete_temp_file(filename):
     try:
-        os.remove(temp_file) #created by occult, and not used when separate files are called for
+        os.remove(filename)
     except FileNotFoundError:
         return
-    
+
+
+def on_closing(): #clean up any temp files hanging around
+    delete_temp_file(occult_temp_file)
+    delete_temp_file(show_temp_file)
+    window.destroy()
+
 def add_unique_ids():
     """For each file selected, add unique ids so occult maintains draw order and color info"""
     path_id = 0
@@ -26,36 +36,53 @@ def add_unique_ids():
 
 def run_vpypeline():
     """calls vpype cli to process """
+    global last_shown_command
+    global output_filename
+
     window.quit()
     command = build_vpypeline(show=False)
-    print("Running: \n", command)
-    subprocess.run(command, capture_output=True, shell=True)
 
-    delete_temp_file()
+    if last_shown_command == build_vpypeline(show=True):
+        os.rename(show_temp_file, output_filename + ".svg")
+        print("Same command as shown file, not re-running Vpype pipeline")
+    else:
+        print("Running: \n", command)
+        subprocess.run(command, capture_output=True, shell=True)
+
+    delete_temp_file(occult_temp_file)
+    delete_temp_file(show_temp_file)
 
     if paint.get():
         subprocess.run(f"python {get_directory_name('Run_Vpype.py')}\\Vpype_Paint.py")
 
+
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
+    global last_shown_command
+
     command = build_vpypeline(show=True)
+    last_shown_command = command
     print("Showing: \n", command)
     subprocess.run(command, capture_output=True, shell=True)
-    delete_temp_file()
+    delete_temp_file(occult_temp_file)
 
 
 def build_vpypeline(show):
     """Builds vpype command based on GUI selections"""
     global input_files
-    global temp_file
+    global show_temp_file
+    global occult_temp_file
+    global output_filename
+
     #build output files list
     input_file_list = list(input_files)
     output_file_list = []
     for filename in input_file_list:
         file_parts = os.path.splitext(filename)
-        temp_file = file_parts[0] + "temp_file.svg"
-        output_file = file_parts[0] + "_PROCESSED" #file extension is not appended at this time
-        output_file_list.append(output_file)
+        show_temp_file = file_parts[0] + "_show_temp_file.svg"
+        occult_temp_file = file_parts[0] + "_occult_temp_file.svg"
+        output_filename = file_parts[0] + "_PROCESSED" #file extension is appended after output filename can change for separating layers into separate files.
+        output_file_list.append(output_filename)
 
     if occult_keep_lines.get():
         color_list = []
@@ -129,7 +156,7 @@ def build_vpypeline(show):
             args += r" color -l %new_num_layers% %last_color% "
 
         #write to temp file
-        args += f' write "{temp_file}" '
+        args += f' write "{occult_temp_file}" '
 
         #delete all layers to avoid extra data hanging around
         args += r" ldelete all "
@@ -139,7 +166,7 @@ def build_vpypeline(show):
         args += r" --no-crop "
 
     if occult.get():
-        args += f' "{temp_file}" '
+        args += f' "{occult_temp_file}" '
     else:
         args += r" %files_in[_i]% "
 
@@ -203,7 +230,7 @@ def build_vpypeline(show):
     if show:
         if not grid:
             args += r" end "
-        args += r" show "
+        args += f" write {show_temp_file} show "
 
         return args
     else:
@@ -221,6 +248,7 @@ def build_vpypeline(show):
                 args += r' write %files_out[_i]+file_ext% end'
 
             return args
+
 
 def layout_selection_changed(event):
     """Event from changing the layout dropdown box, sets the width and height accordingly"""
@@ -241,6 +269,7 @@ def layout_selection_changed(event):
         layout_width_entry.insert(0,"16.5")
         layout_height_entry.insert(0,"23.4")
         layout.set(0)
+
 
 input_files = get_files()
 
@@ -495,5 +524,5 @@ if len(input_files)>1:
 else:
     Button(window, text="Confirm", command=run_vpypeline).grid(row=current_row, column=3)
 
+window.protocol("WM_DELETE_WINDOW", on_closing)
 window.mainloop()
-
