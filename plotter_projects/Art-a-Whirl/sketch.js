@@ -6,7 +6,7 @@ const fr = 10;
 const capture = false;
 const capture_time = 30;
 
-const suggested_palettes = [];
+const suggested_palettes = [SAGEANDCITRUS, BUMBLEBEE, GAMEDAY, SOUTHWEST];
 let bg_c, whirl_color;
 let z = 0;
 const z_inc = 0.05;
