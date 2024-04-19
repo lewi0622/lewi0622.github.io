@@ -1,7 +1,7 @@
 'use strict';
 //setup variables
-const gif = true;
-const animation = true;
+let gif = true;
+let animation = true;
 const fr = 10;
 const capture = false;
 const capture_time = 30;
@@ -9,7 +9,7 @@ const capture_time = 30;
 const suggested_palettes = [SAGEANDCITRUS, BUMBLEBEE, GAMEDAY, SOUTHWEST];
 let bg_c, whirl_color;
 let z = 0;
-const z_inc = 0.05;
+const z_inc = 0.05 * 10/fr;
 
 function gui_values(){
   parameterize("circles_per_stage", 50, 1, 100, 1, false);
@@ -17,6 +17,9 @@ function gui_values(){
   parameterize("largest_rad", 200, 0, smaller_base, 1, true);
   parameterize("damp", 6, 1, 100, 1, false);
   parameterize("max_stroke_weight", 2.5, 1, 100, 0.1, false);
+  if(type == "svg"){
+    parameterize("svg_frame", 0, 0, 200, 0.05, false);
+  }
 } 
 
 function setup() {
@@ -26,6 +29,17 @@ function setup() {
   refresh_working_palette();
   bg_c = png_bg(true);
   whirl_color = random(working_palette);
+  if(type == "png"){
+    strokeCap(SQUARE);
+  }
+  else{
+    gif = false;
+    animation = false;
+    bg_c = color("WHITE");
+    noLoop();
+  }
+  stroke(whirl_color);
+  fill(bg_c);
 }
 //***************************************************
 function draw() {
@@ -33,11 +47,9 @@ function draw() {
 
   //actual drawing stuff
   push();
-  background(bg_c);
+  if(type =="png") background(bg_c);
+  else z = svg_frame;
   const ending_rad = 0;
-  stroke(whirl_color);
-  fill(bg_c);
-  strokeCap(SQUARE);
 
   // let last_x = map(noise(z/10), 0,1, 0, canvas_x);
   let last_x = canvas_x/8;
@@ -56,10 +68,11 @@ function draw() {
       if(i%2==1){
         stroke(bg_c);
         strokeCap(ROUND);
-        // drawingContext.setLineDash([random(1,20)*global_scale, random(1,20)*global_scale, random(1,20)*global_scale, random(1,20)*global_scale]);
       }
       if(i==0) strokeWeight(4*global_scale); //first loop
       else strokeWeight(random(0.1, max_stroke_weight)*global_scale);
+      if(type == "svg") strokeWeight(1*global_scale);
+
       if(j+1 == stages && i/circles_per_stage>0.6){
         fill(whirl_color);// last stage
         stroke(whirl_color);
