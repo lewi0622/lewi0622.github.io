@@ -7,16 +7,17 @@ const capture = false;
 const capture_time = 10;
 
 let x_fourth, y_fourth, copic_palette;
-const suggested_palettes = []
+const suggested_palettes = [BEACHDAY, BUMBLEBEE, BIRDSOFPARADISE];
 
 function gui_values(){
-  parameterize("circle_segments", 50, 3, 1000, 1, false);
-  parameterize("circle_radius", 100, 1, 1000, 1, true);
+  parameterize("circle_segments", 1000, 3, 5000, 1, false);
+  parameterize("circle_radius", smaller_base/random(4,8), 1, smaller_base * 2, 1, true);
   parameterize("min_line_length", 10, 1, 1000, 1, true);
-  parameterize("max_line_length", 10, 1, 1000, 1, true);
-  parameterize("ang", 10, 0, 180, 1, false);
-  parameterize("x_noise_damp", 100, 1, 1000,1, false);
-  parameterize("y_noise_damp", 100, 1, 1000,1, false);
+  parameterize("max_line_length", 120, 1, 1000, 1, true);
+  parameterize("ang", random([0,random(180)]), 0, 180, 1, false);
+  parameterize("x_noise_damp", random(50,1000), 1, 1000,1, true);
+  parameterize("y_noise_damp", random(50,1000), 1, 1000,1, true);
+  parameterize("num_colors", round(random(2, working_palette.length-1)), 2, working_palette.length-1, 1, false);
 } 
 
 function setup() {
@@ -29,20 +30,21 @@ function draw() {
 
   //actual drawing stuff
   push();
+  strokeWeight(1*global_scale);
+  working_palette = controlled_shuffle(working_palette, true);
+  png_bg(true);
+  const circle_step = 360/num_colors;
+  const rotations = [];
+  const colors = [];
+  for(let i=0; i<num_colors; i++){
+    rotations.push(random(-ang, ang) + i * circle_step);
 
-  //ADD CYLINDERS OPTION INSTEAD OF LINES AND PERFORM OCCULT
-
+    colors.push(color(working_palette[i]));
+    colors[i].setAlpha(200);
+  }
   translate(canvas_x/2, canvas_y/2);
   noFill();
-  const directions = ["up", "down", "left", "right"];
-  const rotations = [random(-ang,ang), random(-ang,ang), random(-ang,ang), random(-ang,ang)]
-  const colors = ["YELLOW", "MAGENTA", "CYAN", "BLACK"]
-  for(let i=0; i<colors.length; i++){
-    colors[i] = color(colors[i]);
-    colors[i].setAlpha(120);
-  }
-  directions.push(random(directions));
-  
+
   for(let i=0; i<circle_segments; i++){
     push();
     const theta = 360/circle_segments*i;
@@ -50,33 +52,11 @@ function draw() {
     const y = circle_radius * sin(theta);
     translate(x,y);
     const line_length = map(noise(x/x_noise_damp,y/y_noise_damp),0,1, min_line_length,max_line_length);
-    const current_direction = random(directions);
-    switch(current_direction){
-      case("up"):
-      rotate(rotations[0]);
-      // stroke(colors[0]);
-      line(0,0, 0,-line_length);
-      break;
-      case("down"):
-      rotate(rotations[1]);
-      // stroke(colors[1]);
-      line(0,0, 0,line_length);
-      break;
-      case("left"):
-      rotate(rotations[2]);
-      // stroke(colors[2]);
-      line(0,0, -line_length, 0);
-      break;
-      case("right"):
-      rotate(rotations[3]);
-      // stroke(colors[3]);
-      line(0,0, line_length, 0);
-      break;
-      default:
-      break;
-    }
-    directions.pop();
-    directions.push(current_direction);
+    const id = colors.indexOf(random(colors));
+    rotate(rotations[id]);
+    stroke(colors[id]);
+    line_blur(colors[id], 2*global_scale);
+    line(0,0, line_length, 0);
     pop();
   }
 
