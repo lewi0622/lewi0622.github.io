@@ -4,10 +4,14 @@ const gif = false;
 const animation = false;
 const fr = 1;
 const capture = false;
-const capture_time = 10;
+const capture_time = 20;
 
 let x_fourth, y_fourth, copic_palette;
 const suggested_palettes = [BUMBLEBEE, SUMMERTIME, SOUTHWEST, JAZZCUP];
+let font;
+function preload(){
+  font = loadFont("../../fonts/Porcine-Heavy.ttf");
+}
 
 function gui_values(){
   parameterize("line_segments", floor(random(10,base_x/10)), 3, base_x/4, 1, false); 
@@ -38,9 +42,11 @@ function draw() {
 
   //actual drawing stuff
   push();
+  refresh_working_palette();
   png_bg();
-  if(type == "png") stroke(random(working_palette));
-  strokeWeight(0.25*global_scale);
+  const stroke_c = random(working_palette);
+  if(type == "png") stroke(stroke_c);
+  strokeWeight(0.5*global_scale);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
   noFill();
@@ -53,7 +59,6 @@ function draw() {
   let max_y = 0;
   const lines = [];
   for(let j=0; j<number_of_lines; j++){
-    // stroke(random(working_palette));
     const pts = [];
     const y_base_loc = j*line_step_size;
     for(let i=0; i<line_segments; i++){
@@ -86,14 +91,14 @@ function draw() {
     if(index%2==0){
       for(let i=0; i<l.length; i++){
         const pt = l[i];
-        center_rotate(rotate_per_line);
+        if(!single_line) center_rotate(rotate_per_line);
         curveVertex(pt[0], pt[1]);
       }
     }
     else{
       for(let i=l.length-1; i>=0; i--){
         const pt = l[i];
-        center_rotate(rotate_per_line);
+        if(!single_line) center_rotate(rotate_per_line);
         curveVertex(pt[0], pt[1]);
       }
     }
@@ -103,6 +108,19 @@ function draw() {
   if(single_line) endShape();
 
   pop();
+
+  // push();
+  // strokeWeight(2*global_scale);
+  // const letter_stroke_c = random(working_palette);
+  // reduce_array(working_palette, letter_stroke_c);
+  // stroke(letter_stroke_c);
+  // fill(random(working_palette));
+  // textFont(font);
+  // textAlign(CENTER, CENTER);
+  // textSize(100*global_scale);
+  // translate(0,-18*global_scale);
+  // pop();
+
   global_draw_end();
 }
 //***************************************************
