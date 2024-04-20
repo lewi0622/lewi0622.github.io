@@ -6,13 +6,14 @@ const fr = 30;
 const capture = false;
 const capture_time = 8;
 
-let font, bg_c, stroke_c;
+let font, bg_c, stroke_c, fill_c;
 let z=0; 
-const z_inc = 0.01;
+const z_inc = 0.05;
 
 function gui_values(){
   parameterize("font_size", 50, 1, 400, 1, true);
-  parameterize("amp", 1, 0, 100, 1, true);
+  parameterize("max_amp", 1, 0, smaller_base, 1, true);
+  parameterize("loc_damp", 10, 1, 1000, 1, false);
 }
 
 function setup() {
@@ -20,7 +21,7 @@ function setup() {
   gui_values();
 
   if(!redraw){
-    opentype.load('..\\..\\fonts\\PeachyRoseRegular-w1xpw.ttf', function (err, f) {
+    opentype.load('..\\..\\fonts\\Porcine-Heavy.ttf', function (err, f) {
       if (err) {
         alert('Font could not be loaded: ' + err);
       } else {
@@ -31,6 +32,7 @@ function setup() {
   }
   bg_c = png_bg(true);
   stroke_c = random(working_palette);
+  fill_c = random(working_palette);
 }
 //***************************************************
 function draw() {
@@ -42,8 +44,12 @@ function draw() {
   stroke(stroke_c);
   strokeWeight(1*global_scale);
   line_blur(color(stroke_c), 2*global_scale);
-  noFill();
-  let msg = "ERIC"; // text to write
+  if(frameCount % 10 == 0) fill_c = random(working_palette);
+  fill(fill_c);
+
+  const amp = map(sin(frameCount), -1,1, 0, max_amp);
+
+  let msg = "HEY THERE"; // text to write
   let path = font.getPath(msg, 0,0, font_size);
 
   let bbox = path.getBoundingBox();
@@ -51,12 +57,12 @@ function draw() {
 
   const point_counter = 0;
   for (let cmd of path.commands) {
-    if(cmd.x != undefined) cmd.x += map(noise(cmd.x/global_scale/100, z), 0,1, -amp,amp);
-    if(cmd.y != undefined) cmd.y += map(noise(cmd.y/global_scale/100, z), 0,1, -amp,amp);
-    if(cmd.x1 != undefined) cmd.x1 += map(noise(cmd.x1/global_scale/100, z), 0,1, -amp,amp);
-    if(cmd.y1 != undefined) cmd.y1 += map(noise(cmd.y1/global_scale/100, z), 0,1, -amp,amp);
-    if(cmd.x2 != undefined) cmd.x2 += map(noise(cmd.x2/global_scale/100, z), 0,1, -amp,amp);
-    if(cmd.y2 != undefined) cmd.y2 += map(noise(cmd.y2/global_scale/100, z), 0,1, -amp,amp);
+    if(cmd.x != undefined) cmd.x += map(noise(cmd.x/global_scale/loc_damp, z), 0,1, -amp,amp);
+    if(cmd.y != undefined) cmd.y += map(noise(cmd.y/global_scale/loc_damp, z), 0,1, -amp,amp);
+    if(cmd.x1 != undefined) cmd.x1 += map(noise(cmd.x1/global_scale/loc_damp, z), 0,1, -amp,amp);
+    if(cmd.y1 != undefined) cmd.y1 += map(noise(cmd.y1/global_scale/loc_damp, z), 0,1, -amp,amp);
+    if(cmd.x2 != undefined) cmd.x2 += map(noise(cmd.x2/global_scale/loc_damp, z), 0,1, -amp,amp);
+    if(cmd.y2 != undefined) cmd.y2 += map(noise(cmd.y2/global_scale/loc_damp, z), 0,1, -amp,amp);
 
     if (cmd.type === 'M') { //move to
       beginShape();
