@@ -6,29 +6,49 @@ from vpype_utils import *
 directory_name = get_directory_name("Vpype_Paint.py")
 dip_options = os.listdir(os.path.join(directory_name, "Dip_Locations"))
 
+show_temp_file = ""
+last_shown_command = ""
+output_filename = ""
+
+
+def on_closing(): #clean up any temp files hanging around
+    delete_temp_file(show_temp_file)
+    window.destroy()
+
 
 def run_vpypeline():
     window.quit()
     command = build_vpypeline(False)
-    print("Running: \n", command)
-    subprocess.run(command)
+
+    if last_shown_command == build_vpypeline(True):
+        rename_replace(show_temp_file, output_filename)
+        print("Same command as shown file, not re-running Vpype pipeline")
+    else:
+        print("Running: \n", command)
+        subprocess.run(command, capture_output=True, shell=True)
 
 
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output."""
+    global last_shown_command
     command = build_vpypeline(True)
+    last_shown_command = command
     print("Showing: \n", command)
     subprocess.run(command)
 
 
 def build_vpypeline(show):
+    global show_temp_file
+    global output_filename
+
     #build output files list
     input_file_list = list(input_files)
     output_file_list = []
     for filename in input_file_list:
         file_parts = os.path.splitext(filename)
-        output_file = file_parts[0] + "_PAINT.svg"
-        output_file_list.append(output_file)
+        show_temp_file = file_parts[0] + "_show_temp_file.svg"
+        output_filename = file_parts[0] + "_PAINT.svg"
+        output_file_list.append(output_filename)
     
     dip_detail_list = []
     for i in range(max_num_colors):
@@ -47,7 +67,7 @@ def build_vpypeline(show):
 
     if show:
         repeat_num = 1
-        show_or_write = r" end show "
+        show_or_write = f" end write {show_temp_file} show "
     else:
         repeat_num = len(input_file_list)
         show_or_write = r"write %files_out[_i]% end"
@@ -155,4 +175,5 @@ if len(input_files)>1:
 else:
     Button(window, text="Confirm", command=run_vpypeline).grid(row=current_row, column=3)
 
+window.protocol("WM_DELETE_WINDOW", on_closing)
 window.mainloop()

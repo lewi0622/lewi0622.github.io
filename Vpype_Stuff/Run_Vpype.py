@@ -9,13 +9,6 @@ last_shown_command = ""
 output_filename = ""
 
 
-def delete_temp_file(filename):
-    try:
-        os.remove(filename)
-    except FileNotFoundError:
-        return
-
-
 def on_closing(): #clean up any temp files hanging around
     delete_temp_file(occult_temp_file)
     delete_temp_file(show_temp_file)
@@ -36,14 +29,12 @@ def add_unique_ids():
 
 def run_vpypeline():
     """calls vpype cli to process """
-    global last_shown_command
-    global output_filename
 
     window.quit()
     command = build_vpypeline(show=False)
 
     if last_shown_command == build_vpypeline(show=True):
-        os.rename(show_temp_file, output_filename + ".svg")
+        rename_replace(show_temp_file, output_filename + ".svg")
         print("Same command as shown file, not re-running Vpype pipeline")
     else:
         print("Running: \n", command)
@@ -66,7 +57,6 @@ def show_vpypeline():
 
 def build_vpypeline(show):
     """Builds vpype command based on GUI selections"""
-    global input_files
     global show_temp_file
     global occult_temp_file
     global output_filename

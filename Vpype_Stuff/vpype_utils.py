@@ -113,3 +113,18 @@ def get_directory_name(file_name):
         return os.getcwd()
     else:
         return os.path.dirname(sys.argv[0])
+    
+
+def delete_temp_file(filename):
+    try:
+        os.remove(filename)
+    except FileNotFoundError:
+        return
+
+
+def rename_replace(old_filename, new_filename):
+    try:
+        os.rename(old_filename, new_filename)
+    except FileExistsError:
+        os.remove(new_filename)
+        os.rename(old_filename, new_filename)
