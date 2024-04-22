@@ -52,9 +52,6 @@ def run_vpypeline():
     delete_temp_file(occult_temp_file)
     delete_temp_file(show_temp_file)
 
-    if paint.get():
-        subprocess.run(f"python {get_directory_name('Run_Vpype.py')}\\Vpype_Paint.py")
-
 
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output. Cleans up any Occult generated temp files."""
@@ -512,11 +509,6 @@ current_row +=1
 
 ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)
 current_row += 1
-
-paint = IntVar(value=0)
-if len(input_files) == 1:
-    Label(window, text="Run Paint after").grid(row=current_row, column=0)
-    Checkbutton(window, text="Paint", variable=paint).grid(sticky="w", row=current_row, column=1)
 
 Button(window, text="Show Output", command=show_vpypeline).grid(row=current_row, column=2)
 if len(input_files)>1:
