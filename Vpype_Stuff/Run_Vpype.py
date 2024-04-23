@@ -33,7 +33,7 @@ def run_vpypeline():
     window.quit()
     command = build_vpypeline(show=False)
 
-    if last_shown_command == build_vpypeline(show=True):
+    if len(input_files) == 1 and last_shown_command == build_vpypeline(show=True):
         rename_replace(show_temp_file, output_filename + ".svg")
         print("Same command as shown file, not re-running Vpype pipeline")
     else:

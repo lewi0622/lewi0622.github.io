@@ -20,13 +20,14 @@ def run_vpypeline():
     window.quit()
     command = build_vpypeline(False)
 
-    if last_shown_command == build_vpypeline(True):
+    if len(input_files) == 1 and last_shown_command == build_vpypeline(True):
         rename_replace(show_temp_file, output_filename)
         print("Same command as shown file, not re-running Vpype pipeline")
     else:
         print("Running: \n", command)
         subprocess.run(command, capture_output=True, shell=True)
-
+        
+    delete_temp_file(show_temp_file)
 
 def show_vpypeline():
     """Runs given commands on first file, but only shows the output."""
