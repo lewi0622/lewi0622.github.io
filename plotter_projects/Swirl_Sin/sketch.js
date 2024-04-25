@@ -1,7 +1,7 @@
 'use strict';
 //setup variables
-const gif = true;
-const animation = true;
+let gif = true;
+let animation = true;
 const fr = 30;
 const capture = false;
 const capture_time = 72/30;
@@ -20,6 +20,9 @@ function gui_values(){
   parameterize("lerp_inc_per_ring", 0.03, 0, 1, 0.01, false);
   parameterize("new_sin_offset", random(45), 0, 180, 1, false);
   parameterize("sin_mult", random(5,10), 0.1, 20, 0.1, false);
+  if(type == "svg"){
+    parameterize("svg_z", 0, -360, 360, 1, false);
+  }
 }
 
 function setup() {
@@ -29,7 +32,11 @@ function setup() {
   stroke_c = color(random(working_palette));
   if(type == "png"){
     stroke(stroke_c);
-    // line_blur(color(stroke_c), 1*global_scale);
+  }
+  else{
+    gif = false;
+    animation = false;
+    noLoop();
   }
   rot = random(360);
   strokeWeight(0.5*global_scale);
@@ -43,12 +50,13 @@ function draw() {
   push();
   refresh_working_palette();
 
-  background(bg_c);
+  if(type == "png") background(bg_c);
+  else z = svg_z;
 
   translate(canvas_x/2, canvas_y/2);
   rotate(rot);
 
-  const starting_num_pts = 4;
+  const starting_num_pts = 6;
   let pt_angles = [];
   for(let i=0; i<starting_num_pts; i++){
     //could add randomization to starting angles
