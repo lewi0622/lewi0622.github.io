@@ -217,7 +217,7 @@ def build_vpypeline(show):
     if show:
         if not grid:
             args += r" end "
-        args += f" write {show_temp_file} show "
+        args += f' write "{show_temp_file}" show '
 
         return args
     else:
@@ -454,7 +454,7 @@ separate_files_label = Label(window, text="Separate SVG Layers\ninto individual 
 separate_files_label.bind("<Button-1>", lambda e: open_url_in_browser("https://vpype.readthedocs.io/en/latest/cookbook.html#saving-each-layer-as-a-separate-file"))
 separate_files_label.grid(row=current_row, column=2)
 separate_files = IntVar(value=0)
-Checkbutton(window, text="forlayer", variable=separate_files).grid(sticky="w", row=current_row, column=3)
+Checkbutton(window, text="Separate\nFiles", variable=separate_files).grid(sticky="w", row=current_row, column=3)
 current_row += 1
 
 ttk.Separator(window, orient='horizontal').grid(sticky="we", row=current_row, column=0, columnspan=4)

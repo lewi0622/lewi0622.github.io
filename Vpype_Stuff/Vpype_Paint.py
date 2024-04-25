@@ -26,7 +26,7 @@ def run_vpypeline():
     else:
         print("Running: \n", command)
         subprocess.run(command, capture_output=True, shell=True)
-        
+
     delete_temp_file(show_temp_file)
 
 def show_vpypeline():
@@ -68,7 +68,7 @@ def build_vpypeline(show):
 
     if show:
         repeat_num = 1
-        show_or_write = f" end write {show_temp_file} show "
+        show_or_write = f' end write "{show_temp_file}" show '
     else:
         repeat_num = len(input_file_list)
         show_or_write = r"write %files_out[_i]% end"
