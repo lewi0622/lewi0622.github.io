@@ -9,9 +9,6 @@ const capture_time = 20;
 let x_fourth, y_fourth, copic_palette;
 const suggested_palettes = [BUMBLEBEE, SUMMERTIME, SOUTHWEST, JAZZCUP];
 let font;
-function preload(){
-  font = loadFont("../../fonts/Porcine-Heavy.ttf");
-}
 
 function gui_values(){
   parameterize("line_segments", floor(random(10,base_x/10)), 3, base_x/4, 1, false); 
@@ -30,14 +27,26 @@ function gui_values(){
   parameterize("single_line", 0, 0, 1, 1, false);
   parameterize("margin_x", random([0,base_x/4]), -base_x/2, base_x/2, 1, true);
   parameterize("margin_y", random([0,base_y/4]), -base_y/2, base_y/2, 1, true);
+  parameterize("text_size", 500, 1, 1000, 1, true);
 } 
 
 function setup() {
   common_setup();
   gui_values();
+  if(!redraw){
+    opentype.load('..\\..\\fonts\\Porcine-Heavy.ttf', function (err, f) {
+      if (err) {
+        alert('Font could not be loaded: ' + err);
+      } else {
+        font = f;
+        draw();
+      }
+    })
+  }
 }
 //***************************************************
 function draw() {
+  if(!font) return;
   global_draw_start();
 
   //actual drawing stuff
@@ -110,15 +119,11 @@ function draw() {
   pop();
 
   // push();
-  // strokeWeight(2*global_scale);
-  // const letter_stroke_c = random(working_palette);
-  // reduce_array(working_palette, letter_stroke_c);
-  // stroke(letter_stroke_c);
-  // fill(random(working_palette));
-  // textFont(font);
-  // textAlign(CENTER, CENTER);
-  // textSize(100*global_scale);
-  // translate(0,-18*global_scale);
+  // noFill();
+  // stroke("GREEN")
+  // translate(canvas_x/20, canvas_y*3/4);
+  // const line1 = font.getPath("HEY", 0,0, text_size);
+  // draw_open_type_js_path_p5_commands(line1);
   // pop();
 
   global_draw_end();
