@@ -1,39 +1,30 @@
 ---
-title: "Flow Fields"
+title: "Coloring by Drawing Order"
 categories:
-  - Design
+  - SVG Processing
 tags:
-  - p5js
+  - Vpype
 ---
 
-# Flow Fields
+# Coloring by Drawing Order
 
+In most of my digital designs (done in p5.js), I use the random function to assign colors for lines. I have a palette of pre-defined colors that I know work well together, and simply pick from that. Occasionally, I'll use noise values based on the X,Y coordinates of a given line/shape to determine it's color, this results in clumps of color that vary with the underlying noise values.
+
+While plotting one of my [Flow Fields](https://lewistonface.com/design/flow-fields/), I realized on the last layer, that I really liked how it was looking with only partially coverage. The line sorting algorithm had picked out these big chunks of the deisgn, and resulted in some beautiful art!
 <p align="center">
-  <img src="https://lewistonface.com/assets/images/flow-fields/Flow_Field_20copy_seed_147274_colors_6_scale_1.png" />
+  <img src="https://lewistonface.com/assets/images/flow-fields/Partially_Finished_Plot.jpg" />
 </p>
 
-Flow fields are two dimensional Perlin Noise fields, and to my mind, often considered passé in the generative art community. Perhaps because of that reason,  I've been avoiding them for some time. A while back I played with the flow field code from [The Coding Train](https://www.youtube.com/watch?v=BjoM9oKOAKY), but I never did much with it. 
+This gave me an idea of how to color or re-color my designs, using Vpype's linesort algorithm as it's base. Here's the steps I came up with to try and recreate what had accidentally occured.
+1. Post process the file with linesort
+2. Take one layer and split it into chunks (three in this example)
+```bash
+...
+splitdist 20in \
+forlayer \
+lmove %_lid% "%_i%%3+1%" \
+end \
+...
+```
 
-<p align="center">
-  <img src="https://lewistonface.com/assets/images/flow-fields/Flow_Field_20copy_seed_209131_colors_6_scale_1.png" />
-</p>
-
-With all the work I've been doing with Perlin Noise generally, something clicked with me and I understood how to make a flow field using my own code, and not with the templates I'd previously seen. It always makes more sense when you do it for yourself. 
-
-<p align="center">
-  <img src="https://lewistonface.com/assets/images/flow-fields/Flow_Field_20copy_seed_600582_colors_6_scale_1.png" />
-</p>
-
-My flow field code is simply rows/columnns of points, and then per point, a number of iterations move in the direction of the angle given from the noise field. These iterations are the vertices in each line. I experimented with random point placement, but enjoy the coverage of the grids/rows, and I could always offest those by a random displacment to make it less regular looking. 
-
-<p align="center">
-  <img src="https://lewistonface.com/assets/images/flow-fields/Flow_Field_20copy_seed_952611_colors_6_scale_1.png" />
-</p>
-
-Here's the first one I plotted, using Lyra Aqua Brush Duo watercolor markers on smooth bristol. 
-
-<p align="center">
-  <img src="https://lewistonface.com/assets/images/flow-fields/Flow-Field-Plotted.jpg" />
-</p>
-
-As per usual, you can find my code on [my github](https://github.com/lewi0622/lewi0622.github.io/blob/master/plotter_projects/Flow_Field/sketch.js). 
+Playing around with the number of layers and the split distance can give varying results, but the important thing is the lines are now grouped into layers based not on some random value, but by how close the start/end of the lines are
