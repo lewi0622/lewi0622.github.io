@@ -16,6 +16,7 @@ function gui_values(){
   parameterize("num_rings", floor(random(100,200)), 1, 1000, 1, false);
   parameterize("radius_inc", random(1,3), 0, 20, 0.1, true);
   parameterize("sin_amp", random(10,20), 0, 90, 0.1, false);
+  parameterize("pts_per_pt_stop", 1, 1, 5, 1, false);
   parameterize("pt_stop", floor(random(10,20)), 0, 100, 1, false);
   parameterize("lerp_inc_per_ring", 0.03, 0, 1, 0.01, false);
   parameterize("new_sin_offset", random(45), 0, 180, 1, false);
@@ -35,11 +36,15 @@ function setup() {
   }
   else{
     gif = false;
+    const stroke_c = color("BLACK")
+    // stroke_c.setAlpha(150);
+    stroke(stroke_c);
     animation = false;
     noLoop();
   }
   rot = random(360);
   strokeWeight(0.5*global_scale);
+  // strokeWeight(0.0944882 * 96);
   noFill();
 }
 //***************************************************
@@ -72,7 +77,11 @@ function draw() {
 
   let radius = 0;
   for(let i=0; i<num_rings; i++){
-    if(i%pt_stop == 0) pt_angles = add_pt(pt_angles);
+    if(i%pt_stop == 0){
+      for(let j=0;j<pts_per_pt_stop; j++){
+        pt_angles = add_pt(pt_angles);
+      }
+    }
 
     beginShape();
     for(let j=0; j<pt_angles.length; j++){
