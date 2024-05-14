@@ -1,11 +1,11 @@
-function validate(key, params, val){
+function validate(key, params, default_val){
     //if key exists and is not undefined, return value
     if(key in params){
         if(params[key] != undefined){
             return params[key];
         }
     }
-    return val;
+    return default_val;
 }
 
 function common_params(params){
