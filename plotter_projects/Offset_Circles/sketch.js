@@ -33,6 +33,7 @@ function draw() {
   let colors = [c1,c2]//,c3,c4];
   strokeWeight(2*global_scale);
   noFill();
+  translate(max_radius*2, max_radius*2);
   const x_noise_offset = random(-100,100);
   const y_noise_offset = random(-100,100);
   for(let z=0; z<colors.length; z++){
