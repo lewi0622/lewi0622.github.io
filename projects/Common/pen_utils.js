@@ -17,6 +17,16 @@ const COPICMARKER = 0.1*96;
 //Faber-Castell Pitt Brush Pens
 const PITTPEN = 0.04*96; //3.84
 
+//Transon Brush Sizes, measured at ferrule nearest the brush
+const TRANSON_15 = 0.374 * 96;
+const TRANSON_12 = 0.302 * 96;
+const TRANSON_10 = 0.261 * 96;
+const TRANSON_9 = 0.221 * 96;
+const TRANSON_8 = 0.184 * 96;
+const TRANSON_5 = 0.138 * 96;
+const TRANSON_4 = 0.119 * 96;
+const TRANSON_1 = 0.081 * 96;
+
 //copic marker hex codes
 const COPIC_OPACITY = 0.75;
 const COPIC_B05 = "#4EC1E6"; //process blue
