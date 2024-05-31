@@ -10,7 +10,7 @@ const suggested_palettes = [BEACHDAY, SUMMERTIME, NURSERY]
 
 
 function gui_values(){
-
+  parameterize("radius", floor(random(75,150)), 0, 200, 1, true);
 }
 
 function setup() {
@@ -34,13 +34,16 @@ function draw() {
   strokeWeight(weight);
   strokeCap(SQUARE);
 
-  const radius = floor(random(75,150))*global_scale;
   translate(canvas_x/2, canvas_y/2);
 
   const ang = floor(random(8))*45;
   rotate(ang);
 
   let c1 = random(working_palette);
+  noStroke();
+  fill(c1);
+  if(random()>0.5) rect(-canvas_x, 0, canvas_x*2, canvas_y);
+
   reduce_array(working_palette, c1);
   let c2 = random(working_palette);
   let c3 = random(working_palette);
