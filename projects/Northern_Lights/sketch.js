@@ -14,6 +14,7 @@ function gui_values(){
   parameterize("rows", round(random(100,500)), 1, 1000, 1, false);
   parameterize("damp", random([1,2,5,10,25]), 1, 100, 1, false);
   parameterize("noise_offset", 0, -100, 100, 1, false);
+  parameterize("width_mult", random([0.5,0.8,1,1,1,1]), 0, 1, 0.1, false);
 }
 
 function setup() {
@@ -33,7 +34,6 @@ function draw() {
   const c3 = color(working_palette[2]);
   const col_width = ceil(canvas_x/cols);
   const row_height = canvas_y/rows;
-  console.log(row_height);
   for(let i=0; i<cols; i++){
     push();
     translate(i * col_width, 0);
@@ -64,7 +64,7 @@ function draw() {
       }
       const c = lerpColor(c_start, c_end, c_pct);
       fill(c);
-      rect(0,0,col_width, row_height*2);
+      rect(0,0,col_width*width_mult, row_height*2);
       pop();
     }
     pop();
