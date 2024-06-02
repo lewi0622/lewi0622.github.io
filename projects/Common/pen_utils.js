@@ -19,6 +19,9 @@ const COPICMARKER = 0.1*96;
 //Faber-Castell Pitt Brush Pens
 const PITTPEN = 0.04*96; //3.84
 
+//LePen 0.3mm
+const LEPEN = 0.0118*96;
+
 //Transon Brush Sizes, measured at ferrule nearest the brush
 const TRANSON_15 = 0.374 * 96;
 const TRANSON_12 = 0.302 * 96;
