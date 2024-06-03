@@ -10,7 +10,8 @@ const suggested_palettes = [BEACHDAY, SUMMERTIME, SOUTHWEST];
 
 function gui_values(){
   parameterize("line_segments", floor(random(10,base_x/10)), 3, base_x/4, 1, false); 
-  parameterize("number_of_lines", floor(random(1,2)*base_x), 10, base_x*3, 10, false); //standard lines for fineline: 353; standard lines for angled pitt pen: 115?
+  parameterize("number_of_lines", floor(random(1,2)*base_x), 10, base_x*3, 1, false); //standard lines for fineline: 353; standard lines for angled pitt pen: 115?
+  parameterize("color_damp", random(20, 100), 1, 500, 1, false);
   parameterize("x_amp", base_x/4, 1, base_x, 1, true);
   parameterize("y_amp", base_y/6.5, 1, base_y, 1, true);
   parameterize("x_i_damp", random(base_x/4, base_x*2), 1, base_x*2, 1, true);
@@ -37,8 +38,10 @@ function draw() {
   //actual drawing stuff
   push();
   refresh_working_palette();
-  png_bg();
-  strokeWeight(1*global_scale);
+  // png_bg();
+  const weight = MICRON05*global_scale;
+  const tolerance = weight;
+  strokeWeight(weight);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
   noFill();
@@ -55,8 +58,19 @@ function draw() {
     for(let i=0; i<line_segments; i++){
       const x_loc = i*segment_step_size;
       const y_loc = y_base_loc + y_sin_amp * sin(y_theta_offset + map(i/line_segments, 0,1, 0, sin_range));
-      const x = x_loc + map(noise(x_loc/x_i_damp, y_loc/x_j_damp), 0,1, -x_amp, x_amp);
-      const y = y_loc + map(noise(x_loc/y_i_damp, y_loc/y_j_damp), 0,1, -y_amp, y_amp);
+      let x = x_loc + map(noise(x_loc/x_i_damp, y_loc/x_j_damp), 0,1, -x_amp, x_amp);
+      let y = y_loc + map(noise(x_loc/y_i_damp, y_loc/y_j_damp), 0,1, -y_amp, y_amp);
+      if(j>0 && i==4){
+        const prev_vec = createVector(...lines[j-1][i]);
+        const vec = createVector(x,y);
+        const diff = p5.Vector.sub(vec, prev_vec);
+        if(diff.mag()<tolerance){
+          console.log("HERE")
+          x = prev_vec.x + tolerance * cos(diff.heading());
+          y = prev_vec.y + tolerance * sin(diff.heading());
+          stroke("BLACK");
+        }
+      }
       pts.push([x,y]);
 
       if(x<min_x) min_x = x;
@@ -72,22 +86,27 @@ function draw() {
   const offset_y = (canvas_y - max_y-min_y)/2;
   translate(offset_x, offset_y);
 
+  let color_index = 0;
   lines.forEach((l,index) => {
-    const stroke_c = floor(noise(index/20)*working_palette.length);
-    stroke(working_palette[stroke_c]);
+    if(index/lines.length>0.5) color_index--;
+    else color_index++;
+    const stroke_c = floor(noise(color_index/color_damp)*working_palette.length);
+    const c = color(working_palette[stroke_c]);
+    c.setAlpha(150);
+    stroke(c);
     beginShape();
     if(index%2==0){
       for(let i=0; i<l.length; i++){
         const pt = l[i];
         center_rotate(rotate_per_line);
-        curveVertex(pt[0], pt[1]);
+        vertex(pt[0], pt[1]);
       }
     }
     else{
       for(let i=l.length-1; i>=0; i--){
         const pt = l[i];
         center_rotate(rotate_per_line);
-        curveVertex(pt[0], pt[1]);
+        vertex(pt[0], pt[1]);
       }
     }
     endShape();
@@ -98,3 +117,4 @@ function draw() {
 }
 //***************************************************
 //custom funcs
+// Draws an arrow between two vectors.
