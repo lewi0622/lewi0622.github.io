@@ -466,8 +466,8 @@ function seed_scale_button(control_height, control_spacing){
     if(hide) filetype_radio.style("visibility", "hidden");
 
     //START OF THIRD ROW
-    full_controls_button = create_new_button("Full Controls", "Full Controls", controls_param != "true");
-    full_controls_button.mouseClicked(change_to_full_controls);
+    // full_controls_button = create_new_button("Full Controls", "Full Controls", controls_param != "true");
+    // full_controls_button.mouseClicked(change_to_full_controls);
 
     //autoscale button calls url minus any scaler
     auto_scale_button = create_new_button("Autoscale", "Auto Scale", hide);
@@ -544,9 +544,9 @@ function seed_scale_button(control_height, control_spacing){
     //------------------------ CUTOFF FOR FULL CONTROLS ------------------------
     //START OF THIRD ROW
     //enable full controls option
-    full_controls_button.position(0, canvas_y + control_height*2);
-    full_controls_button.size(100*global_scale, control_height);
-    style_control(full_controls_button);
+    // full_controls_button.position(0, canvas_y + control_height*2);
+    // full_controls_button.size(100*global_scale, control_height);
+    // style_control(full_controls_button);
 
     //autoscale button calls url minus any scaler
     auto_scale_button.position(0, canvas_y + control_height*2);
