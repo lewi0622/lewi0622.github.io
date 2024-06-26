@@ -41,7 +41,9 @@ function draw() {
   for(let y=0; y<rows; y++){
     let xoff=0;
     for(let x=0; x<cols; x++){
-      stroke(random(working_palette));
+      const stroke_c = random(working_palette);
+      if(type == "png") stroke("BLACK");
+      else stroke(stroke_c);
       let index = x + y * cols;
       let angle = noise(xoff, yoff) * 360;
       let v = p5.Vector.fromAngle(radians(angle));
@@ -56,7 +58,8 @@ function draw() {
       out_or_back(pt1, pt2, 1);
       out_or_back(pt1, pt2, -1);
       if(shape_points.length>2){
-        fill("WHITE")
+        if(type == "png") fill(stroke_c);
+        else fill("WHITE");
         strokeWeight(0.3*global_scale);
         if(debug){
           noFill();
@@ -65,6 +68,7 @@ function draw() {
         let center_x = Math.max(...shape_points.map(o => o.x)) / 2;
         let center_y = 0;
         for(let j=0; j<num_inline; j++){
+          if(type == "png" && j>0) noStroke();
           if(j/num_inline > 0.05) curveTightness(1);
           else curveTightness(0);
           //full outline plus ears
@@ -90,7 +94,7 @@ function draw() {
           //   line(0, -pty, center_x*2, -pty);
           // }
         }
-        line(0,0,center_x*2, center_y);
+        if(num_inline>1) line(0,0,center_x*2, center_y);
 
         //whiskers
         push();
