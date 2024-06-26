@@ -1378,9 +1378,11 @@ function set_linear_gradient(colors, start_x, start_y, end_x, end_y, style){
   for(let i=0; i<colors.length; i++){
     let c = colors[i];
     if(c == undefined) continue; //cant use an undefined 
-    //check if provided color is a color object or just an array
-    if(c["mode"] == undefined) c = color(c);
-    if(c["mode"] == undefined) continue; //if you can't convert it to a color, continue with the rest
+    if(c["mode"] == undefined) c = color(c); //if c isn't a color object, try to convert it to one
+    if(c["mode"] == undefined) {
+      console.log("Couldn't add to gradient, color error: ", c);
+      continue; //if you can't convert it to a color, continue with the rest
+    }
     gradient.addColorStop(i*step_size, c);
   }
   if(style == "fill") drawingContext.fillStyle = gradient;
