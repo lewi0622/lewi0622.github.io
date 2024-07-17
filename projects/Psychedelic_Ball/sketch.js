@@ -18,7 +18,6 @@ function gui_values(){
 
 function setup() {
   common_setup();
-  // pixelDensity(15);
   gui_values();
 }
 //***************************************************
