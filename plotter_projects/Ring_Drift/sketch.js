@@ -18,6 +18,8 @@ function gui_values(){
   parameterize("max_noise_inc", 0.03, 0, 1, 0.01, false);
   parameterize("x_offset", random(200), 0, 200, 1, false);
   parameterize("z_inc", 0, 0, 1, 0.01, false);
+  parameterize("rot_per_ring", random(-0.5,0.5), -10, 10, 0.01, false);
+  parameterize("fill_shape", round(random()), 0,1,1,false);
 }
 
 function setup() {
@@ -30,7 +32,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  noFill();
+  if(!fill_shape) noFill();
   // strokeWeight(random(0.25,0.75)*global_scale);
   // strokeWeight(COPICMARKER*3/4)
   strokeWeight(0.019685*96);
@@ -41,7 +43,8 @@ function draw() {
   let max_noise = starting_max_noise;
   for(let j=0; j<number_of_rings; j++){
     push()
-    translate(map(j, 0, number_of_rings, 0, canvas_x/2),0)
+    translate(map(j, 0, number_of_rings, 0, canvas_x/2),0);
+    rotate(j*rot_per_ring);
     let line_segments = floor(random(starting_line_segments*3/4, starting_line_segments));
     beginShape();
     for(let i=0; i<line_segments; i++){
