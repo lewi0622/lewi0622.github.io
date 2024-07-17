@@ -18,6 +18,7 @@ function gui_values(){
 
 function setup() {
   common_setup();
+  // pixelDensity(15);
   gui_values();
 }
 //***************************************************
@@ -25,8 +26,7 @@ function draw() {
   global_draw_start();
 
   //apply background
-  const bg_c = random(working_palette);
-  background(bg_c);
+  const bg_c = png_bg(true);
 
   const erase_or_bg = random()>0.5;
 
@@ -42,7 +42,9 @@ function draw() {
     for(let j=0; j<=j_limit; j++){
       push();
       translate(i,j*ribbon_h);
-      fill(random(palette));
+      const fill_c = random(working_palette);
+      if(type == "png") fill(fill_c);
+      else stroke(fill_c);
       ribbon_curl(ribbon_h,ribbon_w);
       pop();
     }
@@ -56,7 +58,8 @@ function draw() {
   }
  
   noFill();
-  cutoutCircle(canvas_y/8);
+  if(type == "png") cutoutCircle(canvas_y/8);
+  // else(circle(canvas_x/2, canvas_y/2, smaller_base*3/4))
   noErase();
   
   global_draw_end();
