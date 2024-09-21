@@ -28,9 +28,16 @@ function draw() {
   let shape_1 = [{col:1, row:1}, {col:2, row:1}, {col:1, row:2}];
   shape_1 = find_upper_left_tile(shape_1, num_cols, num_rows);
 
-  show_grid(num_cols, num_rows, tile_size);
 
+  show_grid(num_cols, num_rows, tile_size);
   show_shape_tiles(shape_1, tile_size);
+
+  //start on upper left, moving to the right
+  //find next tile in moving direction
+  //specific check for inner corner
+  //if no next tile, turn corner
+  //end on upper left, moving up, generate last corner
+
 
   pop();
   
