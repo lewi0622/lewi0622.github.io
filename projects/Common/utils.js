@@ -842,6 +842,7 @@ function get_invert_stroke(x, y){
 }
 
 function gen_n_colors(n){
+  //generate n number of random colors
   let colors = [];
   while(colors.length < n){
     const c = compare_colors(colors);
