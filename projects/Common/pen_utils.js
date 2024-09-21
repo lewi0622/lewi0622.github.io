@@ -25,6 +25,15 @@ const LEPEN = 0.0118*96;
 //Pilot Precise V5
 const PILOTPRECISEV5 = 0.019685*96;
 
+//Posca PC-3M
+const POSCA = 0.0511811 * 96;
+
+//Parallel Pens
+const PARALLEL15 = 0.0590551*96;
+const PARALLEL24 = 0.0944882*96;
+const PARALLEL38 = 0.149606*96;
+const PARALLEL60 = 0.23622*96;
+
 //Transon Brush Sizes, measured at ferrule nearest the brush
 const TRANSON_15 = 0.374 * 96;
 const TRANSON_12 = 0.302 * 96;
