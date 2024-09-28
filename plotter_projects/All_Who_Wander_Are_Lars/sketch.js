@@ -9,9 +9,12 @@ const capture_time = 10;
 const suggested_palettes = [];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
+let convex_corner;
+let num_rows;
 
 function gui_values(){
   parameterize("num_cols", 10, 1, 100, 1, false);
+  parameterize("num_shapes", 5, 1, 100, 1, false);
 }
 
 function setup() {
@@ -25,35 +28,63 @@ function draw() {
   push();
 
   const tile_size = canvas_x/num_cols;
-  const num_rows = floor(canvas_y/tile_size);
-
-  let shape_1 = [{col:1, row:1}, {col:2, row:1}, {col:1, row:2}];
-  let shape_1_pts = [];
-  find_upper_left_tile(shape_1, num_cols, num_rows);
-  const start_tile = shape_1[0];
-
-  let direction = "right";
-  while(true){
-    const current_tile = shape_1[0];
-    //generate points
-    shape_1_pts.push(...generate_points(current_tile, tile_size, 2, direction));
-
-    if(direction == "up")
-      if(current_tile.col==start_tile.col && current_tile.row ==start_tile.row){
-      //TODO generate last corner
-      break;
-    }
-
-    //get new direction
-    direction = find_adjacent_tile_in_dir(shape_1, direction);
+  num_rows = floor(canvas_y/tile_size);
+  convex_corner = false;
+  // show_grid(num_cols, num_rows, tile_size);
+  const shapes = [];
+  //generate shapes
+  for(let i=0 ; i<num_shapes; i++){
+    generate_shapes(shapes);
   }
 
-  noFill();
-  console.log(shape_1_pts);
-  draw_shape(shape_1_pts);
+  //TODO
+  //consider removing redundant tiles or tiles with other tiles on all four sides
+  //convert pt creation to use noise instead of rand
+  //switch from random walker to use a noise map system
+  //concentric fill won't work well with large/complex/odd shapes, but would work well with blobs
 
-  // show_grid(num_cols, num_rows, tile_size);
-  // show_shape_tiles(shape_1, tile_size, "blue");
+  //concentric fill for a given weight
+    //convert col/row to x/y to polar coords
+    //find center of shape
+    //either
+      //lerp all radii to 0 over a certain number of steps
+    //or
+      //while loop stepping each radii down by weight until it's <weight
+  //verify shapes are closed and occult properly.
+
+  // demo shape
+  // shapes.push([{col:1, row:1}, {col:2, row:1}, {col:1, row:2}]);
+
+  for(let i=0; i<shapes.length; i++){
+    const current_shape = shapes[i];
+    let shape_pts = [];
+    find_upper_left_tile(current_shape);
+    const start_tile = current_shape[0];
+  
+    let direction = "right";
+    while(true){
+      const current_tile = current_shape[0];
+      //generate points
+      shape_pts.push(...generate_points(current_tile, tile_size, 2, direction));
+  
+      if(direction == "up")
+        if(current_tile.col==start_tile.col && current_tile.row ==start_tile.row){
+        //TODO generate last corner
+        break;
+      }
+  
+      //get new direction
+      direction = find_adjacent_tile_in_dir(current_shape, direction);
+    }
+  
+    noFill();
+    draw_shape(shape_pts);
+  
+
+    // show_shape_tiles(current_shape, tile_size, "blue");
+  }
+
+
 
   pop();
   
@@ -80,15 +111,16 @@ function show_shape_tiles(shape, tile_size, tile_fill="red"){
   fill(tile_fill);
   for(let i=0; i<shape.length; i++){
     const tile = shape[i];
+    console.log(tile.col * tile_size, tile.row * tile_size, tile_size)
     square(tile.col * tile_size, tile.row * tile_size, tile_size);
   }
   pop();  
 }
 
-function find_upper_left_tile(shape, columns, rows){
+function find_upper_left_tile(shape){
   //returns the input shape with the upper-left tile in the 0 index
-  let smallest_col = columns + 1;
-  let smallest_row = rows + 1;
+  let smallest_col = num_cols + 1;
+  let smallest_row = num_rows + 1;
   let smallest_index = -1;
   for(let i=0; i<shape.length; i++){
     const tile = shape[i];
@@ -187,10 +219,12 @@ function find_convex_corner(shape, tile, next_index, direction){
     }
   }
 
-  if(starting_index != next_index){
+  if(starting_index != next_index){ //convex corner found
+    convex_corner = true;
     direction = turn_counterclockwise(direction);
-    console.log("turn counterclockwise");
+    // console.log("turn counterclockwise");
   }
+  else convex_corner = false;
 
   return [next_index, direction];
 }
@@ -207,13 +241,11 @@ function turn_counterclockwise(direction){
 
 function generate_points(tile, tile_size, num_pts, direction){
   //generates num_pts amount of points -90 degrees from the given direciton
-  push();
   const starting_x = tile.col*tile_size;
   const starting_y = tile.row*tile_size;
   const pts = [];
-  translate(starting_x, starting_y);
   for(let i=0; i<num_pts; i++){
-    push();
+    if(convex_corner && i==0) continue;
     let magnitude;
     if(i%2==0) magnitude = random(tile_size/4, tile_size/2);
     else magnitude = random(0, tile_size/4);
@@ -238,17 +270,59 @@ function generate_points(tile, tile_size, num_pts, direction){
         starting_x - magnitude, 
         starting_y + tile_size - i * tile_size/num_pts])
     }
-    pop();
   }
-  pop();
   return pts;
 }
 
-function draw_shape(pts){
+function draw_shape(pts, shape_color = random(working_palette)){
+  push();
+  stroke(shape_color);
+  fill(shape_color);
+
   beginShape();
   for(let i=0; i<pts.length+3; i++){
     const pt = pts[i%pts.length];
     curveVertex(pt[0], pt[1]);
   }
   endShape();
+  pop();
+}
+
+function generate_shapes(shapes){
+  //random walker algo
+  const current_shape = [];
+  const num_steps = num_cols;
+  const starting_col = floor(random(num_cols));
+  const starting_row = floor(random(num_rows));
+  for(let i=0; i<num_steps; i++){
+    if(i==0){ 
+      current_shape.push({col: starting_col, row: starting_row});
+      continue;
+    }
+    let current_tile = current_shape[i-1];
+    let next_col, next_row;
+    let legal_move = false;
+    while(!legal_move){
+      let direction = random(clockwise_directions);
+      if(direction == "right"){
+        next_col = current_tile.col + 1;
+        next_row = current_tile.row;
+      }
+      else if(direction == "down"){
+        next_col = current_tile.col;
+        next_row = current_tile.row + 1;
+      }
+      else if(direction == "left"){
+        next_col = current_tile.col - 1;
+        next_row = current_tile.row;
+      }
+      else if(direction == "up"){
+        next_col = current_tile.col;
+        next_row = current_tile.row - 1;
+      }
+      legal_move = next_col<num_cols && next_row<num_rows && next_col>=0 && next_row>=0;
+    }
+    current_shape.push({col: next_col, row:next_row});
+  }
+  shapes.push(current_shape);
 }
