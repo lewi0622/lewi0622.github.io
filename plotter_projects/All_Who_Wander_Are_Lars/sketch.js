@@ -9,7 +9,7 @@ const capture_time = 10;
 const suggested_palettes = [];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
-let convex_corner, num_rows, tile_size, weight;
+let concave_corner, num_rows, tile_size, weight;
 let c_idx = 0;
 
 function gui_values(){
@@ -31,7 +31,7 @@ function draw() {
   weight = POSCA*global_scale;
   tile_size = canvas_x/num_cols;
   num_rows = floor(canvas_y/tile_size);
-  convex_corner = false;
+  concave_corner = false;
   // show_grid(num_cols, num_rows, tile_size);
 
   //generate shapes
@@ -52,7 +52,7 @@ function draw() {
   }
 
   //TODO
-  //currently we won't find a convext corner if the corner tile is missing (needs verification)
+  //currently we won't find a concave corner if the corner tile is missing (needs verification)
   //e.g. if tracing the X's, it won't trace the outer corner, but will follow the inner corner around the O
   //XX
   //XOXX
@@ -183,53 +183,48 @@ function find_adjacent_tile_in_dir(shape, direction){
     }
   }
 
-  //check for convex corner
-  [next_index, direction] = find_convex_corner(shape, next_tile, next_index, direction);
+  //check for concave corner
+  [next_index, direction] = find_concave_corner(shape, next_tile, next_index, direction);
 
   //if no next tile, turn corner
-  if(next_index == -1){
-    // console.log("turn clockwise");
-    direction = turn_clockwise(direction);
-  }
-  else{
-    shape.unshift(shape.splice(next_index, 1)[0]);
-  }
+  if(next_index == -1) direction = turn_clockwise(direction);
+  else shape.unshift(shape.splice(next_index, 1)[0]);
 
   return direction;
 }
 
-function find_convex_corner(shape, tile, next_index, direction){
+function find_concave_corner(shape, tile, next_index, direction){
   const starting_index = next_index;
   for(let i=0; i<shape.length; i++){
     const current_tile = shape[i];
-    if(direction == "right"){
-      if(tile.row-1 == current_tile.row && tile.col == current_tile.col){
+    if(direction == "right" && 
+      tile.row-1 == current_tile.row && 
+      tile.col == current_tile.col){
         next_index = i;
-      }
+        break;
     }
-    if(direction == "down"){
-      if(tile.row == current_tile.row && tile.col+1 == current_tile.col){
+    if(direction == "down" &&
+      tile.row == current_tile.row && 
+      tile.col+1 == current_tile.col){
         next_index = i;
-      }
+        break;
     }
-    if(direction == "left"){
-      if(tile.row+1 == current_tile.row && tile.col == current_tile.col){
+    if(direction == "left" && 
+      tile.row+1 == current_tile.row && 
+      tile.col == current_tile.col){
         next_index = i;
-      }
+        break;
     }
-    if(direction == "up"){
-      if(tile.row == current_tile.row && tile.col-1 == current_tile.col){
+    if(direction == "up" && 
+      tile.row == current_tile.row && 
+      tile.col-1 == current_tile.col){
         next_index = i;
-      }
+        break;
     }
   }
 
-  if(starting_index != next_index){ //convex corner found
-    convex_corner = true;
-    direction = turn_counterclockwise(direction);
-    // console.log("turn counterclockwise");
-  }
-  else convex_corner = false;
+  concave_corner = starting_index != next_index;
+  if(concave_corner) direction = turn_counterclockwise(direction);
 
   return [next_index, direction];
 }
@@ -250,31 +245,29 @@ function generate_points(tile, tile_size, num_pts, direction){
   const starting_y = tile.row*tile_size;
   const pts = [];
   for(let i=0; i<num_pts; i++){
-    if(convex_corner && i==0) continue;
+    if(concave_corner && i==0) continue;
     let magnitude;
     if(i%2==0) magnitude = random(tile_size/4, tile_size/2);
     else magnitude = random(0, tile_size/4);
 
+    let x,y;
     if(direction == "right"){
-      pts.push([
-        starting_x + i * tile_size/num_pts, 
-        starting_y - magnitude]);
+      x = starting_x + i * tile_size/num_pts; 
+      y = starting_y - magnitude;
     }
     else if(direction == "down"){
-      pts.push([
-        starting_x + magnitude + tile_size, 
-        starting_y + i * tile_size/num_pts]);
+      x = starting_x + magnitude + tile_size; 
+      y = starting_y + i * tile_size/num_pts;
     }
     else if(direction == "left"){
-      pts.push([
-        starting_x + tile_size - i * tile_size/num_pts, 
-        starting_y + magnitude + tile_size])
+      x = starting_x + tile_size - i * tile_size/num_pts;
+      y = starting_y + magnitude + tile_size;
     }
     else if(direction == "up"){
-      pts.push([
-        starting_x - magnitude, 
-        starting_y + tile_size - i * tile_size/num_pts])
+      x = starting_x - magnitude;
+      y = starting_y + tile_size - i * tile_size/num_pts;
     }
+    pts.push([x,y]);
   }
   return pts;
 }
