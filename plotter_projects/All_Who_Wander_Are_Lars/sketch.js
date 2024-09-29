@@ -9,7 +9,7 @@ const capture_time = 10;
 const suggested_palettes = [];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
-let convex_corner, num_rows, tile_size;
+let convex_corner, num_rows, tile_size, weight;
 let c_idx = 0;
 
 function gui_values(){
@@ -28,6 +28,7 @@ function draw() {
 
   push();
 
+  weight = POSCA*global_scale;
   tile_size = canvas_x/num_cols;
   num_rows = floor(canvas_y/tile_size);
   convex_corner = false;
@@ -51,13 +52,13 @@ function draw() {
   }
 
   //TODO
+  //currently we won't find a convext corner if the corner tile is missing (needs verification)
+  //e.g. if tracing the X's, it won't trace the outer corner, but will follow the inner corner around the O
+  //XX
+  //XOXX
+  //XXX
   //consider removing redundant tiles or tiles with other tiles on all eight sides
   //convert pt creation to use noise instead of rand
-  //switch from random walker to use a noise map system
-    //how to separate shapes given a list of tiles that are a given color (noise range).
-    //start with 1st tile, check for adjacent tiles
-      //move 1st tile into separate shape array, repeat with any found ones until no neighbors
-      //repeat with any remaining tiles
   //concentric fill won't work well with large/complex/odd shapes, but would work well with blobs
 
   //It might make sense to generate multiple iterations of the same color before moving onto the next color.
@@ -89,11 +90,11 @@ function trace_shape(shape){
     //generate points
     pts.push(...generate_points(current_tile, tile_size, 1, direction));
 
-    if(direction == "up")
-      if(current_tile.col==start_tile.col && current_tile.row ==start_tile.row){
-      //TODO generate last corner
-      break;
-    }
+    if(
+      direction == "up" &&
+      current_tile.col==start_tile.col  &&
+      current_tile.row ==start_tile.row
+      ) break;//end of shape
 
     //get new direction
     direction = find_adjacent_tile_in_dir(shape, direction);
@@ -103,7 +104,7 @@ function trace_shape(shape){
 
 
 function show_grid(num_cols, num_rows, tile_size){
-  //grid
+  //debug function for showing the underlying grid
   for(let i=0; i<num_cols; i++){
     for(let j=0; j<num_rows; j++){
       push();
@@ -115,7 +116,7 @@ function show_grid(num_cols, num_rows, tile_size){
 }
 
 function show_shape_tiles(shape, tile_fill="red"){
-  //shape
+  //debug function for showing the shape tiles
   push();
   fill(tile_fill);
   for(let i=0; i<shape.length; i++){
@@ -152,37 +153,33 @@ function find_adjacent_tile_in_dir(shape, direction){
   let next_index = -1;
   for(let i=1; i<shape.length; i++){
     const current_tile = shape[i];
-    if(direction == "right"){
-      if(starting_row == current_tile.row && starting_col+1 == current_tile.col){
+    if(direction == "right" &&
+      starting_row == current_tile.row && 
+      starting_col+1 == current_tile.col){
         next_tile = current_tile;
         next_index = i;
-        // console.log("found right");
         break;
-      }
     }
-    else if(direction == "down"){
-      if(starting_row+1 == current_tile.row && starting_col == current_tile.col){
+    else if(direction == "down" &&
+      starting_row+1 == current_tile.row && 
+      starting_col == current_tile.col){
         next_tile = current_tile;
         next_index = i;
-        // console.log("found down");
         break;
-      }
     }
-    else if(direction == "left"){
-      if(starting_row == current_tile.row && starting_col-1 == current_tile.col){
+    else if(direction == "left" && 
+      starting_row == current_tile.row && 
+      starting_col-1 == current_tile.col){
         next_tile = current_tile;
         next_index = i;
-        // console.log("found left");
         break;
-      }
     }
-    else if(direction == "up"){
-      if(starting_row-1 == current_tile.row && starting_col == current_tile.col){
+    else if(direction == "up" &&
+      starting_row-1 == current_tile.row && 
+      starting_col == current_tile.col){
         next_tile = current_tile;
         next_index = i;
-        // console.log("found up");
         break;
-      }
     }
   }
 
