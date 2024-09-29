@@ -14,7 +14,8 @@ let c_idx = 0;
 
 function gui_values(){
   parameterize("num_cols", 200, 1, 1000, 1, false);
-  parameterize("num_shapes", 5, 1, 100, 1, false);
+  parameterize("map_iterations", 5, 1, 100, 1, false);
+  parameterize("iteration_jump", 5, 1, 100, 1, false);
 }
 
 function setup() {
@@ -31,14 +32,26 @@ function draw() {
   num_rows = floor(canvas_y/tile_size);
   convex_corner = false;
   // show_grid(num_cols, num_rows, tile_size);
-  const shapes = [];
+
   //generate shapes
-  for(let i=0 ; i<num_shapes; i++){
+  for(let i=0 ; i<map_iterations; i++){
+    const shapes = [];
     generate_shape(shapes, i);
+
+    if(i%iteration_jump==0) c_idx++; //map iterations per color
+    const shape_color = working_palette[c_idx%working_palette.length];
+    for(let j=0; j<shapes.length; j++){
+      const current_shape = shapes[j];
+      let shape_pts = trace_shape(current_shape);
+
+      draw_shape(shape_pts, shape_color);
+    
+      // show_shape_tiles(current_shape, "blue");
+    }
   }
 
   //TODO
-  //consider removing redundant tiles or tiles with other tiles on all four sides
+  //consider removing redundant tiles or tiles with other tiles on all eight sides
   //convert pt creation to use noise instead of rand
   //switch from random walker to use a noise map system
     //how to separate shapes given a list of tiles that are a given color (noise range).
@@ -57,47 +70,37 @@ function draw() {
     //or
       //while loop stepping each radii down by weight until it's <weight
   //verify shapes are closed and occult properly.
-
-  // demo shape
-  // shapes.push([{col:1, row:1}, {col:2, row:1}, {col:1, row:2}]);
-
-  for(let i=0; i<shapes.length; i++){
-    const current_shape = shapes[i];
-    let shape_pts = [];
-    find_upper_left_tile(current_shape);
-    const start_tile = current_shape[0];
-  
-    let direction = "right";
-    while(true){
-      const current_tile = current_shape[0];
-      //generate points
-      shape_pts.push(...generate_points(current_tile, tile_size, 1, direction));
-  
-      if(direction == "up")
-        if(current_tile.col==start_tile.col && current_tile.row ==start_tile.row){
-        //TODO generate last corner
-        break;
-      }
-  
-      //get new direction
-      direction = find_adjacent_tile_in_dir(current_shape, direction);
-    }
-  
-    noFill();
-    draw_shape(shape_pts, i);
-  
-
-    // show_shape_tiles(current_shape, "blue");
-  }
-
-
-
   pop();
   
   global_draw_end();
 }
 //***************************************************
 //custom funcs
+
+function trace_shape(shape){
+  //finds outline of shape and returns generated points
+  const pts = [];
+  find_upper_left_tile(shape);
+  const start_tile = shape[0];
+
+  let direction = "right";
+  while(true){
+    const current_tile = shape[0];
+    //generate points
+    pts.push(...generate_points(current_tile, tile_size, 1, direction));
+
+    if(direction == "up")
+      if(current_tile.col==start_tile.col && current_tile.row ==start_tile.row){
+      //TODO generate last corner
+      break;
+    }
+
+    //get new direction
+    direction = find_adjacent_tile_in_dir(shape, direction);
+  }
+  return pts;
+}
+
 
 function show_grid(num_cols, num_rows, tile_size){
   //grid
@@ -279,13 +282,10 @@ function generate_points(tile, tile_size, num_pts, direction){
   return pts;
 }
 
-function draw_shape(pts, iteration, shape_color = random(working_palette)){
+function draw_shape(pts, shape_color = random(working_palette)){
   push();
-  if(iteration%5==0) c_idx++;
-  shape_color = working_palette[c_idx%working_palette.length];
   stroke(shape_color);
   fill(shape_color);
-  console.log(c_idx)
 
   beginShape();
   for(let i=0; i<pts.length+3; i++){
@@ -352,8 +352,9 @@ function create_noise_tiles(iterator, col_damp=100, row_damp=100, z_damp=10, noi
     for(let j=0; j<num_rows; j++){
       const x = i * tile_size;
       const y = j * tile_size;
-      const z = iterator; 
-      const noise_val = noise(x/col_damp, y/row_damp, z/z_damp);
+      let z = iterator + iterator%iteration_jump/z_damp;
+      if(iterator%iteration_jump != 0) z -= iterator%iteration_jump; 
+      const noise_val = noise(x/col_damp, y/row_damp, z);
       if(noise_val>=noise_min && noise_val<noise_max) shape_tiles.push({col:i, row:j});
     }
   }
