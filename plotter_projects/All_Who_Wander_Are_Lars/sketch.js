@@ -9,11 +9,11 @@ const capture_time = 10;
 const suggested_palettes = [];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
-let convex_corner;
-let num_rows;
+let convex_corner, num_rows, tile_size;
+let c_idx = 0;
 
 function gui_values(){
-  parameterize("num_cols", 10, 1, 100, 1, false);
+  parameterize("num_cols", 200, 1, 1000, 1, false);
   parameterize("num_shapes", 5, 1, 100, 1, false);
 }
 
@@ -27,21 +27,27 @@ function draw() {
 
   push();
 
-  const tile_size = canvas_x/num_cols;
+  tile_size = canvas_x/num_cols;
   num_rows = floor(canvas_y/tile_size);
   convex_corner = false;
   // show_grid(num_cols, num_rows, tile_size);
   const shapes = [];
   //generate shapes
   for(let i=0 ; i<num_shapes; i++){
-    generate_shapes(shapes);
+    generate_shape(shapes, i);
   }
 
   //TODO
   //consider removing redundant tiles or tiles with other tiles on all four sides
   //convert pt creation to use noise instead of rand
   //switch from random walker to use a noise map system
+    //how to separate shapes given a list of tiles that are a given color (noise range).
+    //start with 1st tile, check for adjacent tiles
+      //move 1st tile into separate shape array, repeat with any found ones until no neighbors
+      //repeat with any remaining tiles
   //concentric fill won't work well with large/complex/odd shapes, but would work well with blobs
+
+  //It might make sense to generate multiple iterations of the same color before moving onto the next color.
 
   //concentric fill for a given weight
     //convert col/row to x/y to polar coords
@@ -65,7 +71,7 @@ function draw() {
     while(true){
       const current_tile = current_shape[0];
       //generate points
-      shape_pts.push(...generate_points(current_tile, tile_size, 2, direction));
+      shape_pts.push(...generate_points(current_tile, tile_size, 1, direction));
   
       if(direction == "up")
         if(current_tile.col==start_tile.col && current_tile.row ==start_tile.row){
@@ -78,10 +84,10 @@ function draw() {
     }
   
     noFill();
-    draw_shape(shape_pts);
+    draw_shape(shape_pts, i);
   
 
-    // show_shape_tiles(current_shape, tile_size, "blue");
+    // show_shape_tiles(current_shape, "blue");
   }
 
 
@@ -105,13 +111,12 @@ function show_grid(num_cols, num_rows, tile_size){
   }
 }
 
-function show_shape_tiles(shape, tile_size, tile_fill="red"){
+function show_shape_tiles(shape, tile_fill="red"){
   //shape
   push();
   fill(tile_fill);
   for(let i=0; i<shape.length; i++){
     const tile = shape[i];
-    console.log(tile.col * tile_size, tile.row * tile_size, tile_size)
     square(tile.col * tile_size, tile.row * tile_size, tile_size);
   }
   pop();  
@@ -148,7 +153,7 @@ function find_adjacent_tile_in_dir(shape, direction){
       if(starting_row == current_tile.row && starting_col+1 == current_tile.col){
         next_tile = current_tile;
         next_index = i;
-        console.log("found right");
+        // console.log("found right");
         break;
       }
     }
@@ -156,7 +161,7 @@ function find_adjacent_tile_in_dir(shape, direction){
       if(starting_row+1 == current_tile.row && starting_col == current_tile.col){
         next_tile = current_tile;
         next_index = i;
-        console.log("found down");
+        // console.log("found down");
         break;
       }
     }
@@ -164,7 +169,7 @@ function find_adjacent_tile_in_dir(shape, direction){
       if(starting_row == current_tile.row && starting_col-1 == current_tile.col){
         next_tile = current_tile;
         next_index = i;
-        console.log("found left");
+        // console.log("found left");
         break;
       }
     }
@@ -172,7 +177,7 @@ function find_adjacent_tile_in_dir(shape, direction){
       if(starting_row-1 == current_tile.row && starting_col == current_tile.col){
         next_tile = current_tile;
         next_index = i;
-        console.log("found up");
+        // console.log("found up");
         break;
       }
     }
@@ -183,7 +188,7 @@ function find_adjacent_tile_in_dir(shape, direction){
 
   //if no next tile, turn corner
   if(next_index == -1){
-    console.log("turn clockwise");
+    // console.log("turn clockwise");
     direction = turn_clockwise(direction);
   }
   else{
@@ -274,10 +279,13 @@ function generate_points(tile, tile_size, num_pts, direction){
   return pts;
 }
 
-function draw_shape(pts, shape_color = random(working_palette)){
+function draw_shape(pts, iteration, shape_color = random(working_palette)){
   push();
+  if(iteration%5==0) c_idx++;
+  shape_color = working_palette[c_idx%working_palette.length];
   stroke(shape_color);
   fill(shape_color);
+  console.log(c_idx)
 
   beginShape();
   for(let i=0; i<pts.length+3; i++){
@@ -288,41 +296,99 @@ function draw_shape(pts, shape_color = random(working_palette)){
   pop();
 }
 
-function generate_shapes(shapes){
+function generate_shape(shapes, iterator){
   //random walker algo
-  const current_shape = [];
-  const num_steps = num_cols;
-  const starting_col = floor(random(num_cols));
-  const starting_row = floor(random(num_rows));
-  for(let i=0; i<num_steps; i++){
-    if(i==0){ 
-      current_shape.push({col: starting_col, row: starting_row});
-      continue;
+  // const current_shape = [];
+  // const num_steps = num_cols;
+  // const starting_col = floor(random(num_cols));
+  // const starting_row = floor(random(num_rows));
+  // for(let i=0; i<num_steps; i++){
+  //   if(i==0){ 
+  //     current_shape.push({col: starting_col, row: starting_row});
+  //     continue;
+  //   }
+  //   let current_tile = current_shape[i-1];
+  //   let next_col, next_row;
+  //   let legal_move = false;
+  //   while(!legal_move){
+  //     let direction = random(clockwise_directions);
+  //     if(direction == "right"){
+  //       next_col = current_tile.col + 1;
+  //       next_row = current_tile.row;
+  //     }
+  //     else if(direction == "down"){
+  //       next_col = current_tile.col;
+  //       next_row = current_tile.row + 1;
+  //     }
+  //     else if(direction == "left"){
+  //       next_col = current_tile.col - 1;
+  //       next_row = current_tile.row;
+  //     }
+  //     else if(direction == "up"){
+  //       next_col = current_tile.col;
+  //       next_row = current_tile.row - 1;
+  //     }
+  //     legal_move = next_col<num_cols && next_row<num_rows && next_col>=0 && next_row>=0;
+  //   }
+  //   current_shape.push({col: next_col, row:next_row});
+  // }
+  // shapes.push(current_shape);
+  const tiles = create_noise_tiles(iterator);
+  const parsed = parse_tiles(tiles);
+  shapes.push(...parsed);
+}
+
+function create_noise_tiles(iterator, col_damp=100, row_damp=100, z_damp=10, noise_min=.7, noise_max=1){
+    //noise map based
+  //need col/row damp values, start with 100
+  //for each shape generated 
+  //general idea is to take certain chunk of the noise spectrum 0.3-0.6?
+  //it turns out that a huge amount of the noise values are between 0.3 and 0.6, but it tapers off towards the tails.
+  //if you take values from the middle, you need to use a smaller min/max gap.
+  //and use that as every shape gen, but step the z for each 
+  const shape_tiles = [];
+
+  for(let i=0; i<num_cols; i++){
+    for(let j=0; j<num_rows; j++){
+      const x = i * tile_size;
+      const y = j * tile_size;
+      const z = iterator; 
+      const noise_val = noise(x/col_damp, y/row_damp, z/z_damp);
+      if(noise_val>=noise_min && noise_val<noise_max) shape_tiles.push({col:i, row:j});
     }
-    let current_tile = current_shape[i-1];
-    let next_col, next_row;
-    let legal_move = false;
-    while(!legal_move){
-      let direction = random(clockwise_directions);
-      if(direction == "right"){
-        next_col = current_tile.col + 1;
-        next_row = current_tile.row;
-      }
-      else if(direction == "down"){
-        next_col = current_tile.col;
-        next_row = current_tile.row + 1;
-      }
-      else if(direction == "left"){
-        next_col = current_tile.col - 1;
-        next_row = current_tile.row;
-      }
-      else if(direction == "up"){
-        next_col = current_tile.col;
-        next_row = current_tile.row - 1;
-      }
-      legal_move = next_col<num_cols && next_row<num_rows && next_col>=0 && next_row>=0;
-    }
-    current_shape.push({col: next_col, row:next_row});
   }
-  shapes.push(current_shape);
+  return shape_tiles;
+}
+
+function parse_tiles(tiles){
+  //takes a noise map of tiles, some contiguous, some not, and returns an array of arrays of contiguous tiles
+  const shapes = [];
+  while(tiles.length>0){
+    const shape = [];
+    const first_tile = tiles.splice(0,1)[0];
+    shape.push(first_tile);
+    shape.push(...find_adjacent(first_tile, tiles));
+    shapes.push(shape);
+  }
+  return shapes;
+}
+
+function find_adjacent(tile, tiles){
+  //recursive func that returns all adjacent tiles, adjusting the tiles arr as it goes
+  const adjacent_tiles = [];
+  for(let i=0; i<tiles.length; i++){
+    const current_tile = tiles[i];
+    if(
+      current_tile.col == tile.col + 1 && current_tile.row == tile.row ||
+      current_tile.col == tile.col - 1 && current_tile.row == tile.row ||
+      current_tile.row == tile.row + 1 && current_tile.col == tile.col ||
+      current_tile.row == tile.row - 1 && current_tile.col == tile.col 
+    ) adjacent_tiles.push(tiles.splice(i,1)[0]);
+  }
+
+  const returned_tiles = [...adjacent_tiles];
+  for(let i=0; i<adjacent_tiles.length; i++){
+    returned_tiles.push(...find_adjacent(adjacent_tiles[i], tiles));
+  }
+  return returned_tiles;
 }
