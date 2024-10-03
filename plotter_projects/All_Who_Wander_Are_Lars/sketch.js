@@ -90,18 +90,15 @@ function trace_shape(shape){
     //generate points
     pts.push(...generate_points(current_tile, tile_size, 1, direction));
 
-    if(
-      direction == "up" &&
+    if(direction == "up" &&
       current_tile.col==start_tile.col  &&
-      current_tile.row ==start_tile.row
-      ) break;//end of shape
+      current_tile.row ==start_tile.row) break;//end of shape
 
     //get new direction
     direction = find_adjacent_tile_in_dir(shape, direction);
   }
   return pts;
 }
-
 
 function show_grid(num_cols, num_rows, tile_size){
   //debug function for showing the underlying grid
@@ -246,9 +243,9 @@ function generate_points(tile, tile_size, num_pts, direction){
   const pts = [];
   for(let i=0; i<num_pts; i++){
     if(concave_corner && i==0) continue;
-    let magnitude;
-    if(i%2==0) magnitude = random(tile_size/4, tile_size/2);
-    else magnitude = random(0, tile_size/4);
+    // let magnitude = random(0, tile_size/4);
+    // if(i%2==0) magnitude = random(tile_size/4, tile_size/2);
+    let magnitude = tile_size;
 
     let x,y;
     if(direction == "right"){
@@ -267,15 +264,31 @@ function generate_points(tile, tile_size, num_pts, direction){
       x = starting_x - magnitude;
       y = starting_y + tile_size - i * tile_size/num_pts;
     }
+
+    [x,y] = flow_pts(x, y, 50);
+
     pts.push([x,y]);
   }
   return pts;
+}
+
+function flow_pts(starting_x, starting_y, iterations, x_damp=100*global_scale, y_damp=10*global_scale, x_amp=tile_size/4, y_amp=tile_size/4){
+  let x = starting_x;
+  let y = starting_y;
+  for(let i=0; i<iterations; i++){
+    x = x + map(noise(x/x_damp, y/y_damp), 0,1, -x_amp, x_amp);
+    y = y + map(noise(x/x_damp, y/y_damp), 0,1, -y_amp, y_amp);
+  }
+
+  return [x,y];
 }
 
 function draw_shape(pts, shape_color = random(working_palette)){
   push();
   stroke(shape_color);
   fill(shape_color);
+  stroke("BLACK")
+  // noFill();
 
   beginShape();
   for(let i=0; i<pts.length+3; i++){
@@ -328,7 +341,7 @@ function generate_shape(shapes, iterator){
   shapes.push(...parsed);
 }
 
-function create_noise_tiles(iterator, col_damp=100, row_damp=100, z_damp=10, noise_min=.7, noise_max=1){
+function create_noise_tiles(iterator, col_damp=200*global_scale, row_damp=200*global_scale, z_damp=50, noise_min=.7, noise_max=1){
     //noise map based
   //need col/row damp values, start with 100
   //for each shape generated 
@@ -344,7 +357,7 @@ function create_noise_tiles(iterator, col_damp=100, row_damp=100, z_damp=10, noi
       const y = j * tile_size;
       let z = iterator + iterator%iteration_jump/z_damp;
       if(iterator%iteration_jump != 0) z -= iterator%iteration_jump; 
-      const noise_val = noise(x/col_damp, y/row_damp, z);
+      const noise_val = noise(x/col_damp, y/row_damp, iterator/z_damp);
       if(noise_val>=noise_min && noise_val<noise_max) shape_tiles.push({col:i, row:j});
     }
   }
