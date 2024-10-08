@@ -13,9 +13,10 @@ let concave_corner, num_rows, tile_size, weight;
 let c_idx = 0;
 
 function gui_values(){
-  parameterize("num_cols", 200, 1, 1000, 1, false);
-  parameterize("map_iterations", 5, 1, 100, 1, false);
-  parameterize("iteration_jump", 5, 1, 100, 1, false);
+  parameterize("num_cols", 100, 1, 1000, 1, false);
+  parameterize("map_iterations", 100, 1, 200, 1, false);
+  parameterize("iteration_jump", 1, 1, 100, 1, false);
+  parameterize("min_shape_pts", 10, 1, 100, 1, false);
 }
 
 function setup() {
@@ -27,8 +28,9 @@ function draw() {
   global_draw_start();
 
   push();
-
+  png_bg(false);
   weight = POSCA*global_scale;
+  strokeWeight(weight);
   tile_size = canvas_x/num_cols;
   num_rows = floor(canvas_y/tile_size);
   concave_corner = false;
@@ -37,15 +39,14 @@ function draw() {
   //generate shapes
   for(let i=0 ; i<map_iterations; i++){
     const shapes = [];
-    generate_shape(shapes, i);
+    generate_shape(shapes, i, map_iterations);
 
     if(i%iteration_jump==0) c_idx++; //map iterations per color
     const shape_color = working_palette[c_idx%working_palette.length];
     for(let j=0; j<shapes.length; j++){
       const current_shape = shapes[j];
-      let shape_pts = trace_shape(current_shape);
-
-      draw_shape(shape_pts, shape_color);
+      let shape_pts = trace_shape(current_shape, i);
+      if(shape_pts.length>min_shape_pts) draw_shape(shape_pts, shape_color);
     
       // show_shape_tiles(current_shape, "blue");
     }
@@ -78,7 +79,7 @@ function draw() {
 //***************************************************
 //custom funcs
 
-function trace_shape(shape){
+function trace_shape(shape, iterator){
   //finds outline of shape and returns generated points
   const pts = [];
   find_upper_left_tile(shape);
@@ -88,7 +89,7 @@ function trace_shape(shape){
   while(true){
     const current_tile = shape[0];
     //generate points
-    pts.push(...generate_points(current_tile, tile_size, 1, direction));
+    pts.push(...generate_points(current_tile, tile_size, 1, direction, iterator));
 
     if(direction == "up" &&
       current_tile.col==start_tile.col  &&
@@ -97,7 +98,13 @@ function trace_shape(shape){
     //get new direction
     direction = find_adjacent_tile_in_dir(shape, direction);
   }
-  return pts;
+  //simplify shape
+  let simplified_pts = [];
+  for(let i=0; i<pts.length; i++){
+    if(i%2==1) continue;
+    else simplified_pts.push(pts[i]);
+  }
+  return simplified_pts;
 }
 
 function show_grid(num_cols, num_rows, tile_size){
@@ -236,7 +243,7 @@ function turn_counterclockwise(direction){
   return counterclockwise_directions[(idx+1)%counterclockwise_directions.length];
 }
 
-function generate_points(tile, tile_size, num_pts, direction){
+function generate_points(tile, tile_size, num_pts, direction, iterator){
   //generates num_pts amount of points -90 degrees from the given direciton
   const starting_x = tile.col*tile_size;
   const starting_y = tile.row*tile_size;
@@ -265,19 +272,21 @@ function generate_points(tile, tile_size, num_pts, direction){
       y = starting_y + tile_size - i * tile_size/num_pts;
     }
 
-    [x,y] = flow_pts(x, y, 50);
-
+    [x,y] = flow_pts(x, y, iterator, 50, 0, tile_size);
+    
     pts.push([x,y]);
   }
   return pts;
 }
 
-function flow_pts(starting_x, starting_y, iterations, x_damp=100*global_scale, y_damp=10*global_scale, x_amp=tile_size/4, y_amp=tile_size/4){
+function flow_pts(starting_x, starting_y, z, iterations, x_amp, y_amp, x_damp=1000*global_scale, y_damp=1000*global_scale, z_damp=200){
   let x = starting_x;
   let y = starting_y;
   for(let i=0; i<iterations; i++){
-    x = x + map(noise(x/x_damp, y/y_damp), 0,1, -x_amp, x_amp);
-    y = y + map(noise(x/x_damp, y/y_damp), 0,1, -y_amp, y_amp);
+    const x_diff = map(noise(x/x_damp, y/y_damp, z/z_damp), 0,1, -x_amp, x_amp);
+    const y_diff = map(noise(x/x_damp, y/y_damp, z/z_damp), 0,1, -y_amp, y_amp);
+    x += x_diff;
+    y += y_diff;
   }
 
   return [x,y];
@@ -287,11 +296,12 @@ function draw_shape(pts, shape_color = random(working_palette)){
   push();
   stroke(shape_color);
   fill(shape_color);
-  stroke("BLACK")
+  // stroke("BLACK")
   // noFill();
 
   beginShape();
   for(let i=0; i<pts.length+3; i++){
+    // if(i%2==0) continue;
     const pt = pts[i%pts.length];
     curveVertex(pt[0], pt[1]);
   }
@@ -299,7 +309,7 @@ function draw_shape(pts, shape_color = random(working_palette)){
   pop();
 }
 
-function generate_shape(shapes, iterator){
+function generate_shape(shapes, iterator, total_iterations){
   //random walker algo
   // const current_shape = [];
   // const num_steps = num_cols;
@@ -336,12 +346,16 @@ function generate_shape(shapes, iterator){
   //   current_shape.push({col: next_col, row:next_row});
   // }
   // shapes.push(current_shape);
-  const tiles = create_noise_tiles(iterator);
+  const tiles = create_noise_tiles(
+    iterator, 
+    lerp(0.5,0, iterator/total_iterations), 
+    lerp(0.5,1, iterator/total_iterations)
+  );
   const parsed = parse_tiles(tiles);
   shapes.push(...parsed);
 }
 
-function create_noise_tiles(iterator, col_damp=200*global_scale, row_damp=200*global_scale, z_damp=50, noise_min=.7, noise_max=1){
+function create_noise_tiles(iterator, lower_noise_max=.35, upper_noise_min=0.65, col_damp=500*global_scale, row_damp=500*global_scale, z_damp=1){
     //noise map based
   //need col/row damp values, start with 100
   //for each shape generated 
@@ -358,7 +372,7 @@ function create_noise_tiles(iterator, col_damp=200*global_scale, row_damp=200*gl
       let z = iterator + iterator%iteration_jump/z_damp;
       if(iterator%iteration_jump != 0) z -= iterator%iteration_jump; 
       const noise_val = noise(x/col_damp, y/row_damp, iterator/z_damp);
-      if(noise_val>=noise_min && noise_val<noise_max) shape_tiles.push({col:i, row:j});
+      if(noise_val<lower_noise_max || noise_val>upper_noise_min) shape_tiles.push({col:i, row:j});
     }
   }
   return shape_tiles;
