@@ -2,33 +2,37 @@
 //setup variables
 const gif = false;
 const animation = false;
-const fr = 30;
+const fr = 5;
 const capture = false;
-const capture_time = 10;
+const capture_time = 50/fr;
 
 const suggested_palettes = [];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
-let concave_corner, num_rows, tile_size, weight;
-let c_idx = 0;
+let concave_corner, num_rows, tile_size, weight, c_idx;
+// let map_iterations;
 
 function gui_values(){
-  parameterize("num_cols", 100, 1, 1000, 1, false);
-  parameterize("map_iterations", 100, 1, 200, 1, false);
+  parameterize("num_cols", floor(random(20, 70)), 1, 1000, 1, false);
+  parameterize("map_iterations", floor(random(5,20)), 1, 200, 1, false);
   parameterize("iteration_jump", 1, 1, 100, 1, false);
-  parameterize("min_shape_pts", 10, 1, 100, 1, false);
+  parameterize("min_shape_pts", 3, 1, 100, 1, false);
+  parameterize('flow_step_size', random(20,50), 0, 100, 1, true);
 }
 
 function setup() {
   common_setup();
   gui_values();
+  // map_iterations = 0;
+  png_bg(false);
 }
 //***************************************************
 function draw() {
-  global_draw_start();
+  global_draw_start(false);
 
   push();
-  png_bg(false);
+  c_idx = 0;
+
   weight = POSCA*global_scale;
   strokeWeight(weight);
   tile_size = canvas_x/num_cols;
@@ -46,6 +50,7 @@ function draw() {
     for(let j=0; j<shapes.length; j++){
       const current_shape = shapes[j];
       let shape_pts = trace_shape(current_shape, i);
+      curveTightness(random(-0.5,0));
       if(shape_pts.length>min_shape_pts) draw_shape(shape_pts, shape_color);
     
       // show_shape_tiles(current_shape, "blue");
@@ -53,16 +58,7 @@ function draw() {
   }
 
   //TODO
-  //currently we won't find a concave corner if the corner tile is missing (needs verification)
-  //e.g. if tracing the X's, it won't trace the outer corner, but will follow the inner corner around the O
-  //XX
-  //XOXX
-  //XXX
-  //consider removing redundant tiles or tiles with other tiles on all eight sides
-  //convert pt creation to use noise instead of rand
   //concentric fill won't work well with large/complex/odd shapes, but would work well with blobs
-
-  //It might make sense to generate multiple iterations of the same color before moving onto the next color.
 
   //concentric fill for a given weight
     //convert col/row to x/y to polar coords
@@ -73,7 +69,8 @@ function draw() {
       //while loop stepping each radii down by weight until it's <weight
   //verify shapes are closed and occult properly.
   pop();
-  
+  // map_iterations++;
+  // if(map_iterations > 100) map_iterations = 100;
   global_draw_end();
 }
 //***************************************************
@@ -271,8 +268,9 @@ function generate_points(tile, tile_size, num_pts, direction, iterator){
       x = starting_x - magnitude;
       y = starting_y + tile_size - i * tile_size/num_pts;
     }
-
-    [x,y] = flow_pts(x, y, iterator, 50, 0, tile_size);
+    // const flow_step_size = smaller_base/50 * global_scale;
+    const iterations = floor(map(noise(iterator), 0,1, 20,60));
+    [x,y] = flow_pts(x, y, iterator, iterations, 0, flow_step_size);
     
     pts.push([x,y]);
   }
@@ -294,8 +292,15 @@ function flow_pts(starting_x, starting_y, z, iterations, x_amp, y_amp, x_damp=10
 
 function draw_shape(pts, shape_color = random(working_palette)){
   push();
-  stroke(shape_color);
-  fill(shape_color);
+  if(type == 'png'){
+    noStroke();
+    fill(shape_color);
+    if(random()>0.8) blendMode(MULTIPLY);
+  }
+  else{
+    stroke(shape_color);
+  }
+
   // stroke("BLACK")
   // noFill();
 
