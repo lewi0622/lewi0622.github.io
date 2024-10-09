@@ -9,8 +9,7 @@ const capture_time = 50/fr;
 const suggested_palettes = [];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
-let concave_corner, num_rows, tile_size, weight, c_idx;
-// let map_iterations;
+let concave_corner, num_rows, tile_size, weight, c_idx, bg_c;
 
 function gui_values(){
   parameterize("num_cols", floor(random(20, 70)), 1, 1000, 1, false);
@@ -23,13 +22,13 @@ function gui_values(){
 function setup() {
   common_setup();
   gui_values();
-  // map_iterations = 0;
-  png_bg(false);
+
 }
 //***************************************************
 function draw() {
-  global_draw_start(false);
-
+  global_draw_start();
+  bg_c = color("WHITE");
+  png_bg(false);
   push();
   c_idx = 0;
 
@@ -57,17 +56,6 @@ function draw() {
     }
   }
 
-  //TODO
-  //concentric fill won't work well with large/complex/odd shapes, but would work well with blobs
-
-  //concentric fill for a given weight
-    //convert col/row to x/y to polar coords
-    //find center of shape
-    //either
-      //lerp all radii to 0 over a certain number of steps
-    //or
-      //while loop stepping each radii down by weight until it's <weight
-  //verify shapes are closed and occult properly.
   pop();
   // map_iterations++;
   // if(map_iterations > 100) map_iterations = 100;
@@ -291,6 +279,10 @@ function flow_pts(starting_x, starting_y, z, iterations, x_amp, y_amp, x_damp=10
 }
 
 function draw_shape(pts, shape_color = random(working_palette)){
+  //if SVG, it will draw concentric rings to fill the shape based on the weight
+  const max_fill_step = weight*3/4;
+  const min_fill_step = weight/3; //with the PC-3M Posca, weight/4 is too close
+
   push();
   if(type == 'png'){
     noStroke();
@@ -298,19 +290,74 @@ function draw_shape(pts, shape_color = random(working_palette)){
     if(random()>0.8) blendMode(MULTIPLY);
   }
   else{
-    stroke(shape_color);
+    const c = color(shape_color);
+    c.setAlpha(100);
+    stroke(c);
+    noFill();
   }
 
-  // stroke("BLACK")
-  // noFill();
-
-  beginShape();
-  for(let i=0; i<pts.length+3; i++){
-    // if(i%2==0) continue;
-    const pt = pts[i%pts.length];
-    curveVertex(pt[0], pt[1]);
+  //find center of object
+  let x_min = canvas_x*10;
+  let x_max = -canvas_x*10;
+  let y_min = canvas_y*10;
+  let y_max = -canvas_y*10;
+  for(let i=0; i<pts.length; i++){
+    const pt = pts[i];
+    if(pt[0]<x_min) x_min = pt[0];
+    if(pt[0]>x_max) x_max = pt[0];
+    if(pt[1]<y_min) y_min = pt[1];
+    if(pt[1]>y_max) y_max = pt[1];
   }
-  endShape();
+  const x_center = (x_max-x_min)/2 + x_min;
+  const y_center = (y_max-y_min)/2 + y_min;
+
+  //convert shape pts from cartesian to polar
+  const polar_shape = [];
+  for(let i=0; i<pts.length; i++){
+    const x = pts[i][0] - x_center;
+    const y = pts[i][1] - y_center;
+    const radius = sqrt(x*x + y*y);
+    const theta = atan2(y,x);
+    polar_shape.push({radius:radius, theta:theta});
+  }
+
+  translate(x_center, y_center);
+
+  let num_zeros = -1;
+  while(num_zeros<polar_shape.length-1){
+    let sum_radii = 0;
+    let min_radii = larger_base * 10;
+    let max_radii = 0;
+    if(num_zeros == -1) fill(bg_c);
+    else noFill();
+    beginShape();
+    for(let i=0; i<polar_shape.length+3; i++){
+      const pt = polar_shape[i%polar_shape.length];
+      const x = pt.radius * cos(pt.theta);
+      const y = pt.radius * sin(pt.theta);
+      curveVertex(x,y);
+
+      if(pt.radius<min_radii) min_radii = pt.radius;
+      if(pt.radius>max_radii) max_radii = pt.radius;
+      sum_radii += pt.radius;
+    }
+    endShape();
+
+    // const avg_raddii = sum_radii/polar_shape.length;
+  
+    num_zeros = 0;
+    for(let i=polar_shape.length-1; i>=0; i--){
+      const pt = polar_shape[i];
+      let fill_step = map(pt.radius, min_radii,max_radii, min_fill_step, max_fill_step);
+      if(max_radii-min_radii < weight) fill_step = (max_fill_step-min_fill_step)/2 + min_fill_step;
+      pt.radius -= fill_step;
+      if(pt.radius < 0){
+        pt.radius = 0;
+        num_zeros++;
+      }
+    }
+  }
+
   pop();
 }
 
@@ -361,13 +408,7 @@ function generate_shape(shapes, iterator, total_iterations){
 }
 
 function create_noise_tiles(iterator, lower_noise_max=.35, upper_noise_min=0.65, col_damp=500*global_scale, row_damp=500*global_scale, z_damp=1){
-    //noise map based
-  //need col/row damp values, start with 100
-  //for each shape generated 
-  //general idea is to take certain chunk of the noise spectrum 0.3-0.6?
-  //it turns out that a huge amount of the noise values are between 0.3 and 0.6, but it tapers off towards the tails.
-  //if you take values from the middle, you need to use a smaller min/max gap.
-  //and use that as every shape gen, but step the z for each 
+  //noise map based
   const shape_tiles = [];
 
   for(let i=0; i<num_cols; i++){
