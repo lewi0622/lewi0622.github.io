@@ -17,6 +17,7 @@ function gui_values(){
   parameterize("iteration_jump", 1, 1, 100, 1, false);
   parameterize("min_shape_pts", 3, 1, 100, 1, false);
   parameterize('flow_step_size', random(20,50), 0, 100, 1, true);
+  parameterize("alpha", 20, 0, 255, 1, false);
 }
 
 function setup() {
@@ -26,6 +27,10 @@ function setup() {
 }
 //***************************************************
 function draw() {
+  //for concentric fill, consider creating the curve in svg form, and then getting the bezier verticies from the DOM
+  //convert the function to use bezier vertices to create the shape
+  //THEN using that find a concentric fill algo that uses bezier verticies
+
   global_draw_start();
   bg_c = color("WHITE");
   png_bg(false);
@@ -52,7 +57,7 @@ function draw() {
       curveTightness(random(-0.5,0));
       if(shape_pts.length>min_shape_pts) draw_shape(shape_pts, shape_color);
     
-      // show_shape_tiles(current_shape, "blue");
+      // show_shape_tiles(current_shape, shape_color);
     }
   }
 
@@ -256,7 +261,7 @@ function generate_points(tile, tile_size, num_pts, direction, iterator){
       x = starting_x - magnitude;
       y = starting_y + tile_size - i * tile_size/num_pts;
     }
-    // const flow_step_size = smaller_base/50 * global_scale;
+
     const iterations = floor(map(noise(iterator), 0,1, 20,60));
     [x,y] = flow_pts(x, y, iterator, iterations, 0, flow_step_size);
     
@@ -291,7 +296,7 @@ function draw_shape(pts, shape_color = random(working_palette)){
   }
   else{
     const c = color(shape_color);
-    c.setAlpha(100);
+    c.setAlpha(alpha);
     stroke(c);
     noFill();
   }
@@ -301,15 +306,21 @@ function draw_shape(pts, shape_color = random(working_palette)){
   let x_max = -canvas_x*10;
   let y_min = canvas_y*10;
   let y_max = -canvas_y*10;
+  let sum_x = 0;
+  let sum_y = 0;
   for(let i=0; i<pts.length; i++){
     const pt = pts[i];
+    sum_x += pt[0];
+    sum_y += pt[1];
     if(pt[0]<x_min) x_min = pt[0];
     if(pt[0]>x_max) x_max = pt[0];
     if(pt[1]<y_min) y_min = pt[1];
     if(pt[1]>y_max) y_max = pt[1];
   }
-  const x_center = (x_max-x_min)/2 + x_min;
-  const y_center = (y_max-y_min)/2 + y_min;
+  // const x_center = (x_max-x_min)/2 + x_min;
+  // const y_center = (y_max-y_min)/2 + y_min;
+  const x_center = sum_x/pts.length;
+  const y_center = sum_y/pts.length;
 
   //convert shape pts from cartesian to polar
   const polar_shape = [];
@@ -323,13 +334,16 @@ function draw_shape(pts, shape_color = random(working_palette)){
 
   translate(x_center, y_center);
 
-  let num_zeros = -1;
-  while(num_zeros<polar_shape.length-1){
+  let first_loop = true;
+  while(polar_shape.length>3){
     let sum_radii = 0;
     let min_radii = larger_base * 10;
     let max_radii = 0;
-    if(num_zeros == -1) fill(bg_c);
-    else noFill();
+
+    if(type == "svg"){
+      if(first_loop) fill(bg_c);
+      else noFill();
+    }
     beginShape();
     for(let i=0; i<polar_shape.length+3; i++){
       const pt = polar_shape[i%polar_shape.length];
@@ -345,63 +359,29 @@ function draw_shape(pts, shape_color = random(working_palette)){
 
     // const avg_raddii = sum_radii/polar_shape.length;
   
-    num_zeros = 0;
-    for(let i=polar_shape.length-1; i>=0; i--){
-      const pt = polar_shape[i];
-      let fill_step = map(pt.radius, min_radii,max_radii, min_fill_step, max_fill_step);
-      if(max_radii-min_radii < weight) fill_step = (max_fill_step-min_fill_step)/2 + min_fill_step;
-      pt.radius -= fill_step;
-      if(pt.radius < 0){
-        pt.radius = 0;
-        num_zeros++;
+    if(type == "svg"){
+      for(let i=polar_shape.length-1; i>=0; i--){
+        const pt = polar_shape[i];
+        let fill_step = map(pt.radius, min_radii,max_radii, min_fill_step, max_fill_step);
+        if(max_radii-min_radii < weight) fill_step = (max_fill_step-min_fill_step)/2 + min_fill_step;
+        pt.radius -= fill_step;
+        if(pt.radius < weight){
+          polar_shape.splice(i,1);
+        }
       }
     }
+    first_loop = false;
+    if(type == "png") break;
   }
 
   pop();
 }
 
 function generate_shape(shapes, iterator, total_iterations){
-  //random walker algo
-  // const current_shape = [];
-  // const num_steps = num_cols;
-  // const starting_col = floor(random(num_cols));
-  // const starting_row = floor(random(num_rows));
-  // for(let i=0; i<num_steps; i++){
-  //   if(i==0){ 
-  //     current_shape.push({col: starting_col, row: starting_row});
-  //     continue;
-  //   }
-  //   let current_tile = current_shape[i-1];
-  //   let next_col, next_row;
-  //   let legal_move = false;
-  //   while(!legal_move){
-  //     let direction = random(clockwise_directions);
-  //     if(direction == "right"){
-  //       next_col = current_tile.col + 1;
-  //       next_row = current_tile.row;
-  //     }
-  //     else if(direction == "down"){
-  //       next_col = current_tile.col;
-  //       next_row = current_tile.row + 1;
-  //     }
-  //     else if(direction == "left"){
-  //       next_col = current_tile.col - 1;
-  //       next_row = current_tile.row;
-  //     }
-  //     else if(direction == "up"){
-  //       next_col = current_tile.col;
-  //       next_row = current_tile.row - 1;
-  //     }
-  //     legal_move = next_col<num_cols && next_row<num_rows && next_col>=0 && next_row>=0;
-  //   }
-  //   current_shape.push({col: next_col, row:next_row});
-  // }
-  // shapes.push(current_shape);
   const tiles = create_noise_tiles(
     iterator, 
-    lerp(0.5,0, iterator/total_iterations), 
-    lerp(0.5,1, iterator/total_iterations)
+    lerp(0.35,0, iterator/total_iterations), 
+    lerp(0.65,1, iterator/total_iterations)
   );
   const parsed = parse_tiles(tiles);
   shapes.push(...parsed);
