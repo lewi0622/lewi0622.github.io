@@ -41,7 +41,7 @@ function draw() {
   //shadow
   drawingContext.shadowBlur = noise(xoff)*global_scale*10;
 
-  for(let i=0; i<map(noise(xoff), 0, 1, 10, 110); i++){
+  for(let i=0; i<map(noise(xoff), 0, 1, 10, 40); i++){
     const c = color(working_palette[i%Math.min(3, working_palette.length)])
     drawingContext.shadowColor = c;
     stroke(c)
