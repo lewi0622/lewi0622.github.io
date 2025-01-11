@@ -11,11 +11,10 @@ const suggested_palettes = [COTTONCANDY, SOUTHWEST, SIXTIES]
 //project variables
 const inc = 0.01*60/fr;   
 const square_rate = 5; //10 frames
-let squares, xoff, rot_offset, square_inc, bg_c, symmetries, rot_inc;
-
+let squares, xoff, bg_c, last_color_id;
 
 function gui_values(){
-
+  parameterize("symmetries", floor(random(2,20)), 1, 50, 1, false);
 }
 
 function setup() {
@@ -24,15 +23,11 @@ function setup() {
 
   squares = [];
   xoff = 0;
-  square_inc = 3*global_scale;
-  rot_offset = 0;
+  last_color_id = 0;
 
   palette = controlled_shuffle(palette, true);
   bg_c = color(random(palette));
   noStroke();
-
-  symmetries = floor(random(2,11));
-  rot_inc = random([-3,0,3]);
 }
 //***************************************************
 function draw() {
@@ -43,28 +38,25 @@ function draw() {
 
   background(bg_c);
 
-  center_rotate(45)
-
   //add new squares
-  if(frameCount%square_rate==0){
-    newSquares(squares);
-  }
-  
-  squares.forEach(sq => {
+  if(frameCount%square_rate==0) newSquares(squares);
+  for(let i=0; i<squares.length; i++){
     push();
-    center_rotate(sq.rot);
+    const sq = squares[i];
     fill(sq.color);
-    square_inc = map(noise(xoff), 0,1, 2,12)*global_scale;
-    const size_inc = map(noise(xoff), 0,1, 0,square_inc);
-    sq.radius = lerp(sq.radius, sq.size, 0.001*size_inc);
+    const square_inc = noise(xoff) * 5 * global_scale
     for(let i=0; i<symmetries; i++){
       center_rotate(360/symmetries);
 
-      triangle((sq.x)*sq.size,(sq.y)*sq.size, sq.x-sq.size/2,sq.y-sq.size/2, sq.x-sq.size/2,sq.y+sq.size/2)
+      triangle(
+        sq.x*sq.size, sq.y*sq.size, 
+        sq.x-sq.size/2,sq.y-sq.size/2,
+        sq.x-sq.size/2,sq.y+sq.size/2
+      );
     }
-    sq.size += size_inc;
+    sq.size += square_inc;
     pop();
-  });
+  }
 
   cullSquares(squares);
 
@@ -76,17 +68,17 @@ function draw() {
 //***************************************************
 //custom funcs
 function newSquares(arr){
-  const c = color(random(palette))
+  let new_c_id = floor(random(palette.length));
+  while(new_c_id == last_color_id) new_c_id = floor(random(palette.length));
+  last_color_id = new_c_id;
+  const c = color(palette[new_c_id]);
   c.setAlpha(200);
   arr.push({
     x:canvas_x/4,
     y:canvas_y/4,
-    size:1*global_scale,
-    radius: 0,
-    color: c,
-    rot: rot_offset
-  })
-  rot_offset += rot_inc;
+    size:0,
+    color: c
+  });
 }
 
 function cullSquares(arr){
@@ -94,8 +86,6 @@ function cullSquares(arr){
     if(arr[i].size > canvas_x/2 || arr[i].size > canvas_y/2){
       arr[i].color.setAlpha(lerp(arr[i].color.levels[3], 0, 0.3))
     }
-    if(arr[i].color.levels[3] <= 10){
-      arr.splice(i,1);
-    }
+    if(arr[i].color.levels[3] <= 10) arr.splice(i,1);
   }
 }
