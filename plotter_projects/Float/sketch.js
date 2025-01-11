@@ -20,10 +20,12 @@ function gui_values(){
   parameterize("y_sin_amp", random(base_y), 0, base_x, 1, true);
   parameterize("sin_range", random(180), 0, 720, 1, false);
   parameterize("rotate_per_line", random(-0.003, 0.003), -0.1, 0.1, 0.001, false);
-  parameterize("x_move", 0, -400, 400, 1, true);
-  parameterize("y_move", 0, -400, 400, 1, true);
+  parameterize("x_move", 0, -base_x, base_x, 1, true);
+  parameterize("y_move", 0, -base_y, base_y, 1, true);
   parameterize("margin_x", base_x/2, -base_x/2, base_x, 1, true);
   parameterize("margin_y", base_y/4, -base_y/2, base_y/2, 1, true);
+  parameterize("orb_size", smaller_base/2, 0, larger_base, 1, true);
+  parameterize("skip_chance", random([0,0.1]), 0, 1, 0.01, false);
 } 
 
 function setup() {
@@ -39,8 +41,13 @@ function draw() {
   refresh_working_palette();
   png_bg();
   const stroke_c = random(working_palette);
+  stroke(50);
+  circle(random(orb_size/2, canvas_x-orb_size/2),orb_size/2, random(orb_size/2, orb_size));
+
   if(type == "png") stroke(stroke_c);
+  else stroke("black");
   strokeWeight(0.5*global_scale);
+  strokeWeight(LEPEN*global_scale);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
   // noFill();
@@ -76,17 +83,20 @@ function draw() {
   const offset_y = (canvas_y - max_y-min_y)/2;
   translate(offset_x, offset_y);
 
-  lines.forEach((l) => {  
+  for(let j=0; j<lines.length;j++){
+    if(random()>(1-skip_chance)) continue;
+    const l = lines[j];
+
     beginShape();
 
     let circle_drawn = false;
     for(let i=0; i<l.length; i++){
       const pt = l[i];
-      const weight = 0.0393701*96*global_scale * 3/4;
+      const weight = LEPEN*global_scale * 3/4;
       center_rotate(rotate_per_line);
       curveVertex(pt[0], pt[1]);
       push();
-      if(!circle_drawn && random()>0.999){
+      if(!circle_drawn && random()>1.9999){
         strokeWeight(weight);
         stroke("GREEN");
         const x = pt[0];
@@ -108,7 +118,7 @@ function draw() {
     endShape(CLOSE);
 
 
-  });
+  }
 
 
   pop();
