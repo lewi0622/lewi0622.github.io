@@ -55,7 +55,12 @@ function draw() {
   png_bg();
   const stroke_c = random(working_palette);
   if(type == "png") stroke(stroke_c);
-  strokeWeight(0.5*global_scale);
+  else {
+    const c = color("BLACK");
+    c.setAlpha(100);
+    stroke(c);
+  }
+  strokeWeight(LEPEN*global_scale);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
   noFill();
