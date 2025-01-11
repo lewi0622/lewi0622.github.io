@@ -9,7 +9,7 @@ const capture_time = 10;
 const suggested_palettes = [BIRDSOFPARADISE, SUMMERTIME];
 
 function gui_values(){
-  const division = random(8, 16);
+  const division = random(3, 10);
   const col_division = random([division*2, division, division, division]);
   const row_division = random([division*2, division, division, division]);
   parameterize("cols", floor(base_x/col_division), 1, base_x, 1, false);
@@ -24,7 +24,7 @@ function gui_values(){
   parameterize("y_damp", damp, 1, 1500, 1, false);
   parameterize("num_colors", round(random(1, working_palette.length-1)), 1, working_palette.length-1, 1, false);
   parameterize("simplex", round(random()), 0, 1, 1, false);
-  parameterize("eye_size", smaller_base/3, 1, larger_base, 1, true);
+  parameterize("eye_size", smaller_base/4, 1, larger_base, 1, true);
   parameterize("eye_x_displacement", 0, -smaller_base/2, smaller_base/2, 1, true);
   parameterize("eye_y_displacement", 0, -smaller_base/2, smaller_base/2, 1, true);
 }
@@ -40,13 +40,13 @@ function draw() {
   push();
   center_rotate(-90);
   noFill();
-  strokeWeight(1*global_scale);
+  strokeWeight(MICRON05*global_scale);
   const bg_c = png_bg(true);
   // background("WHITE")
   const colors = [];
   for(let i=0; i<num_colors; i++){
     colors.push(color(working_palette[i]));
-    colors[i].setAlpha(150);
+    // colors[i].setAlpha(150);
   }
   const col_step = (canvas_x-x_margin*2)/cols;
   const row_step = (canvas_y-y_margin*2)/rows;
@@ -61,17 +61,20 @@ function draw() {
         ang: NaN};
       const pts = [starting_pt];
       const reverse_pts = [starting_pt];
+      let wild_hair_offset = 0;
+      if(random()>0.95) wild_hair_offset = 0.1;
       for(let i=0; i<iterations; i++){
         const starting_pt = pts[i];
         const reverse_starting_pt = reverse_pts[i];
         let angle, reverse_angle;
+
         if(simplex){
-          angle = pnoise.simplex2(starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp) * 90;
-          reverse_angle = 180 + pnoise.simplex2(reverse_starting_pt.x/global_scale/x_damp, reverse_starting_pt.y/global_scale/y_damp) * 90;
+          angle = pnoise.simplex2(wild_hair_offset + starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp) * 90;
+          reverse_angle = 180 + pnoise.simplex2(wild_hair_offset + reverse_starting_pt.x/global_scale/x_damp, reverse_starting_pt.y/global_scale/y_damp) * 90;
         }
         else{
-          angle = noise(starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp) * 180;
-          reverse_angle = 180 + noise(reverse_starting_pt.x/global_scale/x_damp, reverse_starting_pt.y/global_scale/y_damp) * 180;
+          angle = noise(wild_hair_offset + starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp) * 180;
+          reverse_angle = 180 + noise(wild_hair_offset + reverse_starting_pt.x/global_scale/x_damp, reverse_starting_pt.y/global_scale/y_damp) * 180;
         }
         pts.push({
           x: starting_pt.x + step_size * cos(angle),
@@ -97,10 +100,11 @@ function draw() {
     size: random(eye_size/3, eye_size/2)};
   for(let j=0; j<lines.length; j++){
     const all_pts = lines[j];
-    if(j == eye_iteration || j == eye_iteration + 5){
+    if(j == eye_iteration || j == eye_iteration + 10){
       push();
+      line_blur(color("BLACK"), 0);
       translate(all_pts[0].x*0.95 + eye_x_displacement, all_pts[0].y*0.95 + eye_y_displacement);
-      noStroke();
+      fill(bg_c);
       stroke("BLACK");
       circle(0,0, eye_size);
       fill("BLACK");
@@ -116,8 +120,9 @@ function draw() {
 
     const stroke_c = random(colors);
     stroke(stroke_c);
+    // fill(stroke_c);
     if(type == "png"){
-      line_blur(stroke_c, 2*global_scale);
+      // line_blur(stroke_c, 2*global_scale);
     }
     beginShape();
     for(let i=0; i<all_pts.length; i++){
