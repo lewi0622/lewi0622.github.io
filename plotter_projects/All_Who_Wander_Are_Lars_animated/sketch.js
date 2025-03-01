@@ -6,24 +6,21 @@ const fr = 30;
 const capture = false;
 const capture_time = 50/fr;
 
-const suggested_palettes = [BIRDSOFPARADISE];
+const suggested_palettes = [BIRDSOFPARADISE, SOUTHWEST, SIXTIES, SUPPERWARE];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
 let concave_corner, num_rows, tile_size, weight, c_idx, bg_c;
 
-let time_offset=100; 
+let time_offset=100*30/fr; 
 const time_inc = 0.04;
-let x_off = 1;
-let y_off = 0;
-let last_x_off, last_y_off;
 let time_direction;
 
 function gui_values(){
   parameterize("num_cols", floor(random(20, 70)), 1, 100, 1, false);
   parameterize("map_iterations", floor(random(5,20)), 1, 200, 1, false);
   parameterize("iteration_jump", 1, 1, 100, 1, false);
-  parameterize("min_shape_pts", 3, 1, 100, 1, false);
-  parameterize('flow_step_size', random(20,50), 0, 100, 1, true);
+  parameterize("min_shape_pts", 1, 1, 100, 1, false);
+  parameterize('flow_step_size', random(30,50), 0, 100, 1, true);
 }
 
 function setup() {
@@ -38,9 +35,9 @@ function draw() {
   background(bg_c);
   push();
   c_idx = 0;
-
-  tile_size = canvas_x/num_cols;
-  num_rows = floor(canvas_y/tile_size);
+  translate(-canvas_x/4, -canvas_y/4);
+  tile_size = canvas_x*1.5/num_cols;
+  num_rows = floor(canvas_y*1.5/tile_size);
   concave_corner = false;
   // show_grid(num_cols, num_rows, tile_size);
 
@@ -54,7 +51,7 @@ function draw() {
     for(let j=0; j<shapes.length; j++){
       const current_shape = shapes[j];
       let shape_pts = trace_shape(current_shape, i);
-      line_blur("BLACK", 0, lerp(1,10,j/shapes.length)*global_scale * time_direction, 0);
+      line_blur("BLACK", 0, lerp(10,50,j/shapes.length)*global_scale * time_direction, 0);
       if(shape_pts.length>min_shape_pts) draw_shape(shape_pts, shape_color);
     }
   }
@@ -259,7 +256,7 @@ function generate_points(tile, tile_size, num_pts, direction, iterator){
     }
 
     const iterations = floor(map(noise(iterator), 0,1, 20,60));
-    [x,y] = flow_pts(x, y, iterator, iterations, 0, flow_step_size);
+    [x,y] = flow_pts(x, y, iterator, iterations, flow_step_size/2, flow_step_size);
     
     pts.push([x,y]);
   }
@@ -355,7 +352,7 @@ function create_noise_tiles(iterator, lower_noise_max=.35, upper_noise_min=0.65,
       const noise_val = noise(
         time_offset + x/col_damp, 
         y/row_damp,  
-        z/z_damp);
+        time_offset/500 + z/z_damp);
       if(noise_val<lower_noise_max || noise_val>upper_noise_min) shape_tiles.push({col:i, row:j});
     }
   }
