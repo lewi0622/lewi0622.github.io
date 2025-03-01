@@ -310,8 +310,10 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   if(controls_param == "full"){
     //declare gui before noLoop is extended in p5.gui.js
-    if(!redraw) gui = createGui('Parameters');
-    add_gui_event_handlers();
+    if(!redraw){
+      gui = createGui('Parameters');
+      add_gui_event_handlers();
+    }
     // collapse or reposition param
     retrieve_gui_settings();
   }
@@ -332,6 +334,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   if(!redraw || palette_changed){
     show_hide_pickers();
     color_pickers();
+    size_pickers(control_height, control_spacing)
   }
   if(multiplier_changed || size_changed) size_pickers(control_height, control_spacing);
 
@@ -341,9 +344,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
     //add listener for save messgae
     catch_save_message();
-  }
 
-  if(!redraw){
     angleMode(DEGREES);
 
     //Assists with loading on phones and other pixel dense screens
@@ -1267,6 +1268,11 @@ function snap_gui_to_window(){
   const gui_container = document.getElementsByClassName("qs_main")[0];
   const rect = gui_container.getBoundingClientRect();
 
+  //get absolute position instead of relative to viewport
+  const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+  rect.x += scrollLeft; 
+  rect.y += scrollTop;
   //snap GUI Params to inside window
   if(rect.x < 0) rect.x = 0;
   else if(rect.x + rect.width > window.innerWidth) rect.x = window.innerWidth - rect.width;
