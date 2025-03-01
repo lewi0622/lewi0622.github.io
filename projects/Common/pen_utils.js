@@ -27,6 +27,8 @@ const PILOTPRECISEV5 = 0.019685*96;
 
 //Posca PC-3M
 const POSCA = 0.0511811 * 96;
+//Posca PC-5M
+const POSCA_5M = 0.0984252 * 96;
 
 //Parallel Pens
 const PARALLEL15 = 0.0590551*96;
