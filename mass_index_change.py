@@ -43,7 +43,7 @@ for f in to_replace:
     <link rel="stylesheet" href="'''+os.path.join(rel_path.as_posix(), "Alwan_Color_Picker","css" ,"alwan.min.css") +'''">
     <script src="'''+os.path.join(rel_path.as_posix(), "Alwan_Color_Picker", "js", "alwan.min.js")+'''"></script>
     <!-- Open Type js library for svg handling of text -->
-    <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+    <script src="'''+os.path.join(rel_path.as_posix(), "opentype.min.js") +'''"></script>
     <!-- Global Stylesheet -->
     <link rel="stylesheet" type="text/css" href="'''+os.path.join(rel_path.as_posix(), "style.css") +'''">
     <meta charset="utf-8">
