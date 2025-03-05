@@ -21,12 +21,16 @@ function gui_values(){
 function setup() {
   common_setup();
   gui_values();
+  // pixelDensity(15);
 }
 //***************************************************
 function draw() {
   global_draw_start();
   push();
-  concentric_background(POSCA*global_scale);
+  const bg_c = png_bg(true);
+  const c1 = random(working_palette);
+  const c2 = random(working_palette)
+  concentric_background(POSCA*global_scale, bg_c);
 
   const weight = PILOTPRECISEV5*global_scale;
   strokeWeight(weight);
@@ -48,8 +52,9 @@ function draw() {
       translate(tile_size*1.5, tile_size*1.5);
       rotate(i * step_rotation);
       translate(-tile_size*1.5, -tile_size*1.5);
-      vertex(x,y);
-      // checkerboard(tile_size, num_rows, num_cols);
+      // vertex(x,y);
+      if(i%2==0) blendMode(MULTIPLY);
+      checkerboard(tile_size, num_rows, num_cols, c1, c2);
       pop();
     }
     endShape();
@@ -82,13 +87,13 @@ function checkerboard(size = 10, rows=3, cols=3, c1="WHITE", c2="BLACK"){
   translate(-size*cols/2, 0);
   let counter = 0;
   stroke(c1);
-  // fill(c1);
+  fill(c1);
   for(let i=0; i<cols; i++){
     for(let j=0; j<rows; j++){
       push();
       if(counter%2==1){
         stroke(c2);
-        // fill(c2);
+        fill(c2);
       }
       translate(i*size, j*size);
       square(0,0,size);
