@@ -10,7 +10,7 @@ const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE];
 
 function gui_values(){
   parameterize("points", floor(random(10,30)), 3, 100, 1, false);
-  parameterize("scale_factor", random(10,15), 1, 30, 0.25, false);
+  parameterize("scale_factor", random(10,15), 1, 100, 0.25, false);
   parameterize("noise_off", 50, 0, 100, 0.1, false);
   parameterize("starter_radius", smaller_base/random(4.5,8), smaller_base/10, smaller_base/3, 1 ,true);
   parameterize("dec", smaller_base/random(130,200),0.1,smaller_base/2,0.1,true);
@@ -32,7 +32,6 @@ function draw() {
 
   //actual drawing stuff
   push();
-  center_rotate(random([0,90,180,270]));
   png_bg(false);
   if(type == ("png")){
     strokeWeight(random(0.5,1)*global_scale);
@@ -41,6 +40,8 @@ function draw() {
     reduce_array(working_palette, stroke_c);
     fill(random(working_palette));
   }
+  noFill();
+  // strokeWeight(SIGNOBROAD*global_scale);
   const row_spacing = canvas_y/(rows-1);
   const col_spacing = canvas_x/(cols-1);
   let svg_color_counter = 0;
