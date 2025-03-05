@@ -16,16 +16,16 @@ let font;
 
 function gui_values(){
   parameterize("margin", 0.25*96, 0, 200, 0.25, true);
-  parameterize("font_size_body", 0.3*96, 1, 100, 1, true);
-  parameterize("x_body", 0, -20, 20, 0.5, true);
-  parameterize("y_body", 0, 0, 200, 0.5, true);
-  parameterize("font_size_address", 0.3*96, 1, 100, 1, true);
+  parameterize("font_size_body", 30, 1, 100, 1, true);
+  parameterize("x_body", 85, -20, base_x/2, 0.5, true);
+  parameterize("y_body", 330, 0, base_y, 0.5, true);
+  parameterize("font_size_address", 28, 1, 100, 1, true);
   parameterize("x_address", 0, -20, 20, 0.5, true);
   parameterize("y_address", -5, -20, 20, 0.5, true);
 }
 
 function setup() {
-  common_setup(5*96, 4*96, SVG);
+  common_setup(5.8*96, 3.8*96, SVG);
   gui_values();
 
   if(!redraw){
@@ -51,7 +51,7 @@ function draw() {
 
   white_border();
 
-  line(canvas_x/2, 0, canvas_x/2, canvas_y);
+  line(canvas_x/2, margin, canvas_x/2, canvas_y-margin);
   translate(canvas_x/2 + margin, canvas_y/2);
 
   let address_text = [];
@@ -78,17 +78,14 @@ function draw() {
   push();//Space for message text 0-canvas_x/2, 0-canvas_y - margin
 
   const body_text = [
-    "Happy Plot Party!",
-    "This design was made using p5.js",
-    "and plotted on an AxiDraw V3",
-    "@LewistonFace :)"
+    "Design by @LewistonFace"
   ]
   translate(x_body, y_body);
   for(let i=0; i<body_text.length; i++){
     push();
     translate(0, i*0.4*96);
     const path = font.getPath(body_text[i], 0,0, font_size_body);
-    translate(x_address, y_address);
+    // translate(x_address, y_address);
     draw_open_type_js_path_p5_commands(path);
     pop();
   }
