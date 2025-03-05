@@ -31,6 +31,8 @@ function draw() {
   //convert the function to use bezier vertices to create the shape
   //THEN using that find a concentric fill algo that uses bezier verticies
 
+  //draw all paths once, capture all SVG <path> objects via the DOM
+  //for each one, 
   global_draw_start();
   bg_c = color("WHITE");
   png_bg(false);
@@ -344,6 +346,8 @@ function draw_shape(pts, shape_color = random(working_palette)){
       if(first_loop) fill(bg_c);
       else noFill();
     }
+    push();
+    // if(random()>0.5) stroke("WHITE");
     beginShape();
     for(let i=0; i<polar_shape.length+3; i++){
       const pt = polar_shape[i%polar_shape.length];
@@ -356,7 +360,7 @@ function draw_shape(pts, shape_color = random(working_palette)){
       sum_radii += pt.radius;
     }
     endShape();
-
+    pop();
     // const avg_raddii = sum_radii/polar_shape.length;
   
     if(type == "svg"){
@@ -372,7 +376,9 @@ function draw_shape(pts, shape_color = random(working_palette)){
     }
     first_loop = false;
     if(type == "png") break;
+    break;
   }
+  // circle(0,0,weight);
 
   pop();
 }
