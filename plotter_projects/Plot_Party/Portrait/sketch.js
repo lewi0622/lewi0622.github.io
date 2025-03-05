@@ -80,7 +80,7 @@ function draw() {
       const iris = {x: last_pt.x+random(eye_width), y:last_pt.y+random(eye_height)};
       const iris_width = eye_width/4;
       const iris_height = eye_height/4;
-      for(let i=0; i<50; i++){
+      for(let i=0; i<5; i++){
         curveVertex(iris.x + random(iris_width), iris.y + random(iris_height));
       }
       
@@ -99,7 +99,7 @@ function draw() {
         curveVertex(eye_pt.x + eye_width/2, eye_pt.y+eye_height);
       }
       iris.x = face_width - iris.x + eye_width/2;
-      for(let i=0; i<50; i++){
+      for(let i=0; i<5; i++){
         curveVertex(iris.x + random(iris_width), iris.y + random(iris_height));
       }
     
