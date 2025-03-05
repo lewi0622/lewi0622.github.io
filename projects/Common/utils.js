@@ -1426,7 +1426,9 @@ function controlled_shuffle(array, standardize=false, len=longest_palette_length
   return array.filter(a => !arrayEquals(a, [""]));
 }
 
-function line_blur(line_color, blur_size){
+function line_blur(line_color, blur_size, offset_x=0, offset_y=0){
   drawingContext.shadowBlur=blur_size;
   drawingContext.shadowColor = color(line_color);
+  drawingContext.shadowOffsetX = offset_x;
+  drawingContext.shadowOffsetY = offset_y;
 }
