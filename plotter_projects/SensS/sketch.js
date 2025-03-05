@@ -110,7 +110,7 @@ function crawl_branches(branch, weight){
       weight: weight
     });
 
-    // theta = branch["angle"] - map(noise(frameCount, noise_offset, noise_offset), 0,1, min_branch_angle, max_branch_angle)
+    // theta = branch["angle"] - map(noise(frameCount, noise_offset), 0,1, min_branch_angle, max_branch_angle)
     theta = branch["angle"] - random(min_branch_angle, max_branch_angle);
     branch.children.push({
       x: branch["x"] + branch_length*cos(theta),
@@ -130,7 +130,7 @@ function crawl_branches(branch, weight){
       line(branch["x"], branch["y"], child["x"], child["y"]);
 
       //recurse with children branches
-      crawl_branches(child);
+      crawl_branches(child, weight);
     }
   }
 }
