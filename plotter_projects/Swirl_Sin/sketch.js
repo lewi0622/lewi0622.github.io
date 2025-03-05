@@ -13,8 +13,8 @@ const z_inc = -5;
 let bg_c, stroke_c, rot;
 
 function gui_values(){
-  parameterize("num_rings", floor(random(100,200)), 1, 1000, 1, false);
-  parameterize("radius_inc", random(1,3), 0, 20, 0.1, true);
+  parameterize("num_rings", floor(smaller_base/random(4,6)), 1, 1000, 1, false);
+  parameterize("radius_inc", random(1,5), 0, 20, 0.1, true);
   parameterize("sin_amp", random(10,20), 0, 90, 0.1, false);
   parameterize("pts_per_pt_stop", 1, 1, 5, 1, false);
   parameterize("pt_stop", floor(random(10,20)), 0, 100, 1, false);
