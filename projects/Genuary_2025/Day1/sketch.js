@@ -1,16 +1,24 @@
 'use strict';
 //setup variables
-const gif = false;
-const animation = false;
-const fr = 1;
+let gif = true;
+let animation = true;
+const fr = 30;
 const capture = false;
-const capture_time = 10;
+const capture_time = 20;
 
-const suggested_palettes = [COTTONCANDY, BIRDSOFPARADISE, SOUTHWEST]
+const suggested_palettes = [];
 
+let z = 0;
+const z_inc = 0.01;
 
 function gui_values(){
-
+  parameterize("num_lines", 100, 1, 1000, 1, false);
+  parameterize("x_amp", 10, 0, 100, 1, true);
+  parameterize("y_amp", 10, 1, 100, 1, true);
+  parameterize("i_damp", 100, 1, 1000, 1, false);
+  parameterize("j_damp", 100, 1, 1000, 1, false);
+  parameterize("z_coarse", 0, 0, 100, 10, false);
+  parameterize("z_fine", 0, 0, 10, 0.2, false);
 }
 
 function setup() {
@@ -21,48 +29,41 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  //apply background
-  let bg_c = random(working_palette)
-  background(bg_c)
-  reduce_array(working_palette, bg_c)
+  if(type == "svg") z = z_coarse + z_fine;
 
-  //actual drawing stuff
   push();
-  translate(canvas_x/2, canvas_y/2);
-  const dir = random([-1,1]);
-  for(let i=0; i<50; i++){
-    //confine start vector to circle
-    const theta = noise(i)*360;
-    const start_rad = random(20,50)*global_scale;
-    const start = createVector(start_rad*cos(theta), start_rad*sin(theta), 0);
-    const steps = random(75,150);
-    const scale_factor = 1.5*global_scale;
-    const slope = start.y/start.x;
-    let radius = random(1,10)*global_scale;
+  background("WHITE");
+  noFill();
+  strokeWeight(PILOTPRECISEV5*global_scale);
+  const line_step_size = canvas_x/num_lines;
+  translate(line_step_size/2, 0);
 
-    //init 
-    let prev_x = start.x;
-    let prev_y = start.y;
+  let offset = 0;
 
-    noStroke();
-    //get two unique colors
-    let col1 = color(random(palette));
-    let col2 = color(random(palette));
-    while(col2==col1){
-      col2=random(palette);
+  for(let i=0; i<num_lines; i++){
+    push();
+    // if(i%20==0) offset += 20;
+    translate(i * line_step_size, 0);
+    let x = 0;
+    let y = 0;
+    let counter = 0;
+    beginShape();
+    while(y<canvas_y){
+      if(counter % 2 ==0){
+        x += map(pnoise.simplex3(i/i_damp + offset, counter/j_damp + offset, z), -1,1, -x_amp, x_amp);
+      }
+      else{
+        y += map(pnoise.simplex3(i/i_damp, counter/j_damp, z), -1,1, 0, y_amp);
+      }
+      vertex(x,y);
+      counter++;
     }
+    endShape();
 
-    for(let j=0; j<steps; j++){
-      fill(lerpColor(col1, col2, j/steps));
-      const new_x = start.x + Math.sign(start.x)*j*scale_factor;
-      const new_y = new_x*slope;
-      radius += random(-2, 2)*global_scale
-      ellipse(new_x, new_y, random(radius*.75, radius*1.5), random(radius*.75, radius*1.5));
-      rotate(random(0,4)*dir);
-      prev_x = new_x;
-      prev_y = new_y;
-    }
+    pop();
   }
+
+  z += z_inc;
  
   pop();
   
