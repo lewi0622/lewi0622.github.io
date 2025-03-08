@@ -4,7 +4,7 @@ const gif = true;
 const animation = true;
 const fr = 30;
 const capture = false;
-const capture_time = 50/fr;
+const capture_time = 30;
 
 const suggested_palettes = [BIRDSOFPARADISE, SOUTHWEST, SIXTIES, SUPPERWARE];
 const clockwise_directions = ["right", "down", "left", "up"];
@@ -17,7 +17,7 @@ let time_direction;
 
 function gui_values(){
   parameterize("num_cols", floor(random(20, 70)), 1, 100, 1, false);
-  parameterize("map_iterations", floor(random(5,20)), 1, 200, 1, false);
+  parameterize("map_iterations", floor(random(3,10)), 1, 200, 1, false);
   parameterize("iteration_jump", 1, 1, 100, 1, false);
   parameterize("min_shape_pts", 1, 1, 100, 1, false);
   parameterize('flow_step_size', random(30,50), 0, 100, 1, true);
@@ -331,14 +331,16 @@ function draw_shape(pts, shape_color = random(working_palette)){
 function generate_shape(shapes, iterator, total_iterations){
   const tiles = create_noise_tiles(
     iterator, 
-    lerp(0.35,0, iterator/total_iterations), 
-    lerp(0.65,1, iterator/total_iterations)
+    0.35,
+    0.65
+    // lerp(0.35,0, iterator/total_iterations), 
+    // lerp(0.65,1, iterator/total_iterations)
   );
   const parsed = parse_tiles(tiles);
   shapes.push(...parsed);
 }
 
-function create_noise_tiles(iterator, lower_noise_max=.35, upper_noise_min=0.65, col_damp=500*global_scale, row_damp=500*global_scale, z_damp=1){
+function create_noise_tiles(iterator, lower_noise_max=.35, upper_noise_min=0.65, col_damp=500*global_scale, row_damp=250*global_scale, z_damp=1){
   //noise map based
   const shape_tiles = [];
   
