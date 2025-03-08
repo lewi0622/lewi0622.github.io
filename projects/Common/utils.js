@@ -34,6 +34,7 @@ let redraw = false;
 
 //gui vars
 let redraw_reason;
+let gui_element_changed = "";
 var gui;
 const gui_params = {};
 let gui_collapsed = false;
@@ -740,6 +741,7 @@ function global_draw_start(clear_cnv=true){
   picker_changed = false;
   size_changed = false;
   redraw_reason = "";
+  gui_element_changed = "";
 
   attach_icons(); //attach icons decides whether to add dice and slash or not
 
@@ -889,7 +891,8 @@ function arrayEquals(a, b) {
     a.every((val, index) => val === b[index]);
 }
 
-function gui_changed(){
+function gui_changed(title){
+  gui_element_changed = title;
   redraw_reason = "gui";
   redraw_sketch();
 }
@@ -1113,6 +1116,8 @@ function remove_parameters(){
 
 
 function parameterize(name, val, min, max, step, scale, midi_channel){
+  if(redraw_reason == "gui" && name != gui_element_changed) return;
+
   if(scale == undefined || scale != true) scale=false;
   if(midi_channel == undefined) midi_channel = false;
 
