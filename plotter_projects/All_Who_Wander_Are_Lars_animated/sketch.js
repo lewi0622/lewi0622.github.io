@@ -16,8 +16,8 @@ const time_inc = 0.04;
 let time_direction;
 
 function gui_values(){
-  parameterize("num_cols", floor(random(20, 70)), 1, 100, 1, false);
-  parameterize("map_iterations", floor(random(3,10)), 1, 200, 1, false);
+  parameterize("num_cols", floor(base_x/8), 1, base_x, 1, false);
+  parameterize("map_iterations", 1, 1, 200, 1, false);
   parameterize("iteration_jump", 1, 1, 100, 1, false);
   parameterize("min_shape_pts", 1, 1, 100, 1, false);
   parameterize('flow_step_size', random(30,50), 0, 100, 1, true);
@@ -26,6 +26,7 @@ function gui_values(){
 function setup() {
   common_setup();
   gui_values();
+  working_palette = controlled_shuffle(working_palette, true)
   bg_c = png_bg(true);
   time_direction = random([-1,1]);
 }
