@@ -9,23 +9,25 @@ const capture_time = 30;
 const suggested_palettes = [BIRDSOFPARADISE, SOUTHWEST, SIXTIES, SUPPERWARE];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
-let concave_corner, num_rows, tile_size, weight, c_idx, bg_c;
+let concave_corner, num_rows, tile_size, weight, c_idx, bg_c, num_cols;
 
 let time_offset=100*30/fr; 
 const time_inc = 0.04;
 let time_direction;
 
 function gui_values(){
-  parameterize("num_cols", floor(base_x/8), 1, base_x, 1, false);
-  parameterize("map_iterations", 1, 1, 200, 1, false);
+  // parameterize("num_cols", floor(base_x/8), 1, base_x, 1, false);
+  parameterize("map_iterations", floor(random(1,6)), 1, 10, 1, false);
   parameterize("iteration_jump", 1, 1, 100, 1, false);
   parameterize("min_shape_pts", 1, 1, 100, 1, false);
-  parameterize('flow_step_size', random(30,50), 0, 100, 1, true);
+  parameterize('flow_step_size', random(30,40), 15, 60, 1, true);
+  parameterize("perlin_simplex", 0, 0, 1, 1, false);
 }
 
 function setup() {
   common_setup();
   gui_values();
+  num_cols = floor(base_x/8);
   working_palette = controlled_shuffle(working_palette, true)
   bg_c = png_bg(true);
   time_direction = random([-1,1]);
@@ -47,16 +49,17 @@ function draw() {
     const shapes = [];
     generate_shape(shapes, i, map_iterations);
 
-    if(i%iteration_jump==0) c_idx++; //map iterations per color
+    c_idx++; //map iterations per color
     const shape_color = working_palette[c_idx%working_palette.length];
     for(let j=0; j<shapes.length; j++){
       const current_shape = shapes[j];
       let shape_pts = trace_shape(current_shape, i);
-      line_blur("BLACK", 0, lerp(10,50,j/shapes.length)*global_scale * time_direction, 0);
+      line_blur("BLACK", 0, lerp(10,30,j/shapes.length)*global_scale * time_direction, 0);
       if(shape_pts.length>min_shape_pts) draw_shape(shape_pts, shape_color);
     }
   }
-  time_offset += (time_inc * frameRate()/fr) * time_direction;
+  if(perlin_simplex) time_offset += (map(pnoise.simplex2(frameCount/100,0), -1,1, 0.5,0.75) * time_inc * frameRate()/fr) * time_direction;
+  else  time_offset += (map(noise(frameCount/100), 0,1, 0.75,1.15) * time_inc * frameRate()/fr) * time_direction;
   pop();
   global_draw_end();
 }
@@ -255,8 +258,9 @@ function generate_points(tile, tile_size, num_pts, direction, iterator){
       x = starting_x - magnitude;
       y = starting_y + tile_size - i * tile_size/num_pts;
     }
-
-    const iterations = floor(map(noise(iterator), 0,1, 20,60));
+    let iterations;
+    if(perlin_simplex) iterations = floor(map(pnoise.simplex2(iterator,0), -1,1, 20,60));
+    else iterations = floor(map(noise(iterator), 0,1, 20,60));
     [x,y] = flow_pts(x, y, iterator, iterations, flow_step_size/2, flow_step_size);
     
     pts.push([x,y]);
@@ -268,8 +272,15 @@ function flow_pts(starting_x, starting_y, z, iterations, x_amp, y_amp, x_damp=10
   let x = starting_x;
   let y = starting_y;
   for(let i=0; i<iterations; i++){
-    const x_diff = map(noise(x/x_damp, y/y_damp, time_offset/10 + z/z_damp), 0,1, -x_amp, x_amp);
-    const y_diff = map(noise(x/x_damp, y/y_damp, time_offset/10 + z/z_damp), 0,1, -y_amp, y_amp);
+    let x_diff, y_diff;
+    if(perlin_simplex){
+      x_diff = map(pnoise.simplex3(x/x_damp, y/y_damp, time_offset/10 + z/z_damp), -1,1, -x_amp, x_amp);
+      y_diff = map(pnoise.simplex3(x/x_damp, y/y_damp, time_offset/1000 + z/z_damp), -1,1, -y_amp, y_amp);
+    }
+    else{
+      x_diff = map(noise(x/x_damp, y/y_damp, time_offset/10 + z/z_damp), 0,1, -x_amp, x_amp);
+      y_diff = map(noise(x/x_damp, y/y_damp, time_offset/1000 + z/z_damp), 0,1, -y_amp, y_amp);
+    } 
     x += x_diff;
     y += y_diff;
   }
@@ -282,7 +293,6 @@ function draw_shape(pts, shape_color = random(working_palette)){
 
   noStroke();
   fill(shape_color);
-  // if(random()>0.8) blendMode(MULTIPLY);
 
   //find center of object
   let x_min = canvas_x*10;
@@ -330,13 +340,15 @@ function draw_shape(pts, shape_color = random(working_palette)){
 }
 
 function generate_shape(shapes, iterator, total_iterations){
-  const tiles = create_noise_tiles(
+  let tiles;
+  if(perlin_simplex) tiles = create_noise_tiles(
+    iterator, 
+    -0.65,
+    0.7);
+  else tiles = create_noise_tiles(
     iterator, 
     0.35,
-    0.65
-    // lerp(0.35,0, iterator/total_iterations), 
-    // lerp(0.65,1, iterator/total_iterations)
-  );
+    0.7);
   const parsed = parse_tiles(tiles);
   shapes.push(...parsed);
 }
@@ -349,13 +361,20 @@ function create_noise_tiles(iterator, lower_noise_max=.35, upper_noise_min=0.65,
     for(let j=0; j<num_rows; j++){
       const x = i * tile_size;
       const y = j * tile_size;
-      let z = iterator + iterator%iteration_jump/z_damp;
-      if(iterator%iteration_jump != 0) z -= iterator%iteration_jump; 
-
-      const noise_val = noise(
+      let z = iterator //+ iterator%iteration_jump/z_damp;
+      //if(iterator%iteration_jump != 0) z -= iterator%iteration_jump; 
+      let noise_val;
+      if(perlin_simplex) noise_val = pnoise.simplex3(
         time_offset + x/col_damp, 
         y/row_damp,  
         time_offset/500 + z/z_damp);
+      else  noise_val = noise(
+        time_offset + x/col_damp, 
+        y/row_damp,  
+        time_offset/500 + z/z_damp);
+
+      noise_val = round(noise_val*1000)/1000;
+      
       if(noise_val<lower_noise_max || noise_val>upper_noise_min) shape_tiles.push({col:i, row:j});
     }
   }
