@@ -43,7 +43,7 @@ function draw() {
     // colors[i].setAlpha(150);
   }
 
-  // center_rotate(rotation);
+  center_rotate(rotation);
 
   grid_step = (canvas_x-x_margin)/cols;
   const my_funcs = controlled_shuffle([draw_circle, draw_diamond, draw_x, draw_vert_lines, draw_horizontal_lines, draw_horizontal_squiggle_lines]);
