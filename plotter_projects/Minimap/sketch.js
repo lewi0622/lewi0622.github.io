@@ -43,7 +43,7 @@ function draw() {
     // colors[i].setAlpha(150);
   }
 
-  center_rotate(rotation);
+  // center_rotate(rotation);
 
   grid_step = (canvas_x-x_margin)/cols;
   const my_funcs = controlled_shuffle([draw_circle, draw_diamond, draw_x, draw_vert_lines, draw_horizontal_lines, draw_horizontal_squiggle_lines]);
@@ -56,7 +56,7 @@ function draw() {
       for(let j=0; j<rows; j++){
         push();
         translate(i*grid_step, j*grid_step);
-        const index = floor(map(noise(i/x_damp, j/y_damp, k), 0,1, 0, my_funcs.length));
+        const index = floor(map(noise(i*grid_step/x_damp, j*grid_step/y_damp, k), 0,1, 0, my_funcs.length));
         stroke(colors[index%colors.length]);
         // stroke(random(colors));
         my_funcs[index]();
@@ -73,6 +73,9 @@ function draw() {
 function draw_circle(){
   const size = grid_step;
   circle(size/2, size/2, size);
+  circle(size/2, size/2, size*2/3);
+  circle(size/2, size/2, size/3);
+  // circle(size/2*(1 + random(-0.25,0.25)), size/2*(1+random(-0.25,0.25)), size/2);
 }
 
 function draw_x(){
@@ -125,6 +128,7 @@ function draw_horizontal_squiggle_lines(){
   translate(0, step_size/2);
   for(let i=0; i<num_lines; i++){
     push();
+    noFill();
     translate(0,i*step_size);
     beginShape();
     const num_steps = 360;
