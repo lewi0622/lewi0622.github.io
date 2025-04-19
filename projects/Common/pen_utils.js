@@ -2,6 +2,9 @@
 
 //multiply inches by 96 to obtain pixel size, use this for weight
 
+//taotree
+const TAOTREE = 0.01496063*96;
+
 //Sakura Pigma Micron 05, 0.45mm, 0.01771654inches,
 //for fill, use this value/2 distance between lines
 const MICRON05 = 0.01771654*96;
