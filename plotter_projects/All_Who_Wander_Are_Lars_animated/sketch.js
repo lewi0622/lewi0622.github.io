@@ -17,11 +17,10 @@ let time_direction;
 
 function gui_values(){
   // parameterize("num_cols", floor(base_x/8), 1, base_x, 1, false);
-  parameterize("map_iterations", floor(random(1,6)), 1, 10, 1, false);
-  parameterize("iteration_jump", 1, 1, 100, 1, false);
+  parameterize("map_iterations", floor(random(1,6)), 1, 10, 1, false, grid_slider_1);
   parameterize("min_shape_pts", 1, 1, 100, 1, false);
-  parameterize('flow_step_size', random(30,40), 15, 60, 1, true);
-  parameterize("perlin_simplex", 0, 0, 1, 1, false);
+  parameterize('flow_step_size', random(30,40), 15, 60, 1, true, grid_slider_2);
+  parameterize("perlin_simplex", 0, 0, 1, 1, false, grid_slider_3);
 }
 
 function setup() {
@@ -54,7 +53,9 @@ function draw() {
     for(let j=0; j<shapes.length; j++){
       const current_shape = shapes[j];
       let shape_pts = trace_shape(current_shape, i);
-      line_blur("BLACK", 0, lerp(10,30,j/shapes.length)*global_scale * time_direction, 0);
+      const c = color("BLACK");
+      c.setAlpha(lerp(255,200, j/shapes.length));
+      line_blur(c, 0, lerp(10,30,j/shapes.length)*global_scale * time_direction, 0);
       if(shape_pts.length>min_shape_pts) draw_shape(shape_pts, shape_color);
     }
   }
@@ -361,8 +362,7 @@ function create_noise_tiles(iterator, lower_noise_max=.35, upper_noise_min=0.65,
     for(let j=0; j<num_rows; j++){
       const x = i * tile_size;
       const y = j * tile_size;
-      let z = iterator //+ iterator%iteration_jump/z_damp;
-      //if(iterator%iteration_jump != 0) z -= iterator%iteration_jump; 
+      let z = iterator;
       let noise_val;
       if(perlin_simplex) noise_val = pnoise.simplex3(
         time_offset + x/col_damp, 
