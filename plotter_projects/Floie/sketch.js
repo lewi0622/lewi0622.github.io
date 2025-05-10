@@ -13,7 +13,7 @@ function gui_values(){
   parameterize("margin_x", base_x/16, -base_x, base_x, 1, true);
   parameterize("margin_y", base_y/16, -base_y, base_y, 1, true);
   parameterize("thickness", 3, 0.1, 10, 0.1, true);
-  parameterize("skew_pct", 0.75, -1, 1, 0.01, false);
+  parameterize("skew_pct", random(-1,1), -1, 1, 0.01, false);
 }
 
 function setup() {
