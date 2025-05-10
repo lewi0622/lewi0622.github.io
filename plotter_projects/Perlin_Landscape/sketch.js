@@ -9,7 +9,7 @@ const capture_time = 10;
 const suggested_palettes = [SAGEANDCITRUS, SUPPERWARE];
 
 function gui_values(){
-  parameterize("start_y", 0, -400, 400, 1, true);
+  parameterize("start_y", 0, -base_y, base_y, 1, true);
   parameterize("step_number", 200, 10, 1000, 1, false);
   parameterize("y_slide", 1.2, 0, 5, 0.1, true);
   parameterize("noise_damp_y", random(100,500), 1, 500, 10, false);
@@ -33,7 +33,7 @@ function draw() {
   });
 
   noFill();
-  strokeWeight(1);
+  strokeWeight(LEPEN * global_scale);
   const step_size = canvas_x*2/step_number;
 
   //find a minimum value to try and center on screen
