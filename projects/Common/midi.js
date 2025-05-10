@@ -126,11 +126,11 @@ function getMIDIMessage(midiMessage) {
     select_elem.value = select_options[new_val].value;
 
     if(current_palette_index()!=int(getParamValue('colors'))) set_seed();
-    protected_session_storage_set(give_grid_chanel_name(channel), val);
+    protected_storage_set(give_grid_chanel_name(channel), val, "session");
   }
   else{
     //capture dials and sliders in session memory
-    protected_session_storage_set(give_grid_chanel_name(channel), val);
+    protected_storage_set(give_grid_chanel_name(channel), val, "session");
 
     redraw_reason = "midi";
 

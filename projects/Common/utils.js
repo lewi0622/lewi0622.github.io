@@ -735,6 +735,8 @@ function save_drawing(){
 }
 
 function global_draw_start(clear_cnv=true){
+  if(redraw_reason != "midi") attach_icons(); //attach icons decides whether to add dice and slash or not
+  
   //reset changed flags
   multiplier_changed = false;
   palette_changed = false;
@@ -742,8 +744,6 @@ function global_draw_start(clear_cnv=true){
   size_changed = false;
   redraw_reason = "";
   gui_element_changed = "";
-
-  attach_icons(); //attach icons decides whether to add dice and slash or not
 
   if(clear_cnv) clear(); //should be false for some animating pieces
   //called from top of Draw to start capturing, requires CCapture
