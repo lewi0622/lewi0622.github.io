@@ -36,7 +36,9 @@ function draw() {
   const ang_step = 360/circle_steps;
   translate(canvas_x/2, canvas_y/2);
   for(let i=0; i<num_circles; i++){
-    // rotate(map(noise(i/1000), 0,1, 0,360));
+    strokeWeight(random(1,20)*global_scale);
+    stroke(random(working_palette));
+    rotate(map(noise(i/1000), 0,1, 0,360));
     beginShape();
     let radius =  i * circle_radius_inc + radius_start;
     let actual_steps = random(circle_steps/2, circle_steps);
