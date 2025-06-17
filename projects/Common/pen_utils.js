@@ -2,6 +2,10 @@
 
 //multiply inches by 96 to obtain pixel size, use this for weight
 
+//Aquabrush duo has a 1mm fine nib and a brush nib that ranges from 1-5mm, I measured a stroke around 1.5mm
+const AQUA_BRUSH = 0.0625 * 96;
+const AQUA_FINE = 0.0393701 * 96;
+
 const SHARPIE = 0.0394 * 96;
 
 //taotree
