@@ -12,13 +12,13 @@ let shape_points;
 
 function gui_values(){
   parameterize('inc', random(0.01,0.25), 0.01, 10, 0.01, false);
-  parameterize("scl", random(20,50), 1, 100, 1, true);
+  parameterize("scl", random(20,50), 1, 300, 1, true);
   parameterize("debug", 0, 0, 1, 1, false);
   parameterize("density_multiplier", random(0.07,0.25), 0.001, 1, 0.01, false);
   parameterize("radius", 45, 1, 100, 1, true);
   parameterize("radius_variation", 0, 0, 1, 0.1, false);
   parameterize("point_skip_chance", 0, 0, 1, 0.01, false);
-  parameterize("num_inline", 50, 1, 100, 1, false);
+  parameterize("num_inline", 1, 1, 100, 1, false);
 }
 
 function setup() {
@@ -42,8 +42,8 @@ function draw() {
     let xoff=0;
     for(let x=0; x<cols; x++){
       const stroke_c = random(working_palette);
-      if(type == "png") stroke("BLACK");
-      else stroke(stroke_c);
+      // if(type == "png") stroke("BLACK");
+      // else stroke(stroke_c);
       let index = x + y * cols;
       let angle = noise(xoff, yoff) * 360;
       let v = p5.Vector.fromAngle(radians(angle));
@@ -58,9 +58,10 @@ function draw() {
       out_or_back(pt1, pt2, 1);
       out_or_back(pt1, pt2, -1);
       if(shape_points.length>2){
-        if(type == "png") fill(stroke_c);
-        else fill("WHITE");
-        strokeWeight(0.3*global_scale);
+        // if(type == "png") fill(stroke_c);
+        // else fill("WHITE");
+        // strokeWeight(0.3*global_scale);
+        strokeWeight(SHARPIE * global_scale);
         if(debug){
           noFill();
           stroke("BLACK");
@@ -96,10 +97,16 @@ function draw() {
         }
         if(num_inline>1) line(0,0,center_x*2, center_y);
 
-        //whiskers
+        // eyes
         push();
-        translate(center_x, radius * random(0.6, 0.7));
+        translate(center_x, radius * random(0.5, 0.7));
         stroke("BLACK");
+        noFill();
+        arc(radius/4,0, radius/8, radius/6, 0, 180);
+        arc(-radius/4,0, radius/8, radius/6, 0, 180);
+
+        //whiskers
+        translate(0, -radius * 0.2);
         let num_whiskers = floor(random(3,5));
         let whisker_offset = scl * random(0.03, 0.07);
         let whisker_length = scl * random(0.3,0.7);
