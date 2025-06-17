@@ -2,6 +2,8 @@
 
 //multiply inches by 96 to obtain pixel size, use this for weight
 
+const SHARPIE = 0.0394 * 96;
+
 //taotree
 const TAOTREE = 0.01496063*96;
 
