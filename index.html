@@ -13,6 +13,7 @@ header:
 tagline: "Contact me to purchase or commission custom work!"
 ---
 <script src=../plotter_portfolio.js></script>
+<script src=assets/For_Sale.js></script>
 <style>
   /* Style for images */
   .grid-container {
@@ -105,6 +106,25 @@ window.onclick = function(event) {
 }
 
 var grid = document.querySelector('.grid-container');
+const sale_paths = for_sale;
+for(let i=0; i<sale_paths.length; i++){
+  var gridItem = document.createElement('div');
+  gridItem.className = 'grid-item';
+  var img = document.createElement('img');
+  img.src = sale_paths[i].photo_url;
+
+  var anchor = document.createElement("a");
+  anchor.href = sale_paths[i].url;
+  anchor.target = "_blank"; //makes it in a new tab
+  anchor.title = "NEMAA shop listing"; //hover text
+
+  image.appendChild(anchor);
+
+  gridItem.appendChild(img);
+
+  grid.appendChild(gridItem);
+}
+
 const paths = plotter_portfolio_full_paths;
 for(let i=0; i<paths.length; i++){
   var gridItem = document.createElement('div');
@@ -119,17 +139,6 @@ for(let i=0; i<paths.length; i++){
   }
 
   gridItem.appendChild(img);
-
-  //sold banner
-  const file_parts = paths[i].split("/");
-  const file_name = file_parts[file_parts.length-1];
-  if(file_name.includes("_")){
-    const banner = document.createElement('div');
-    banner.classList.add('banner');
-    if(file_name.includes("sold")) banner.innerText = "SOLD";
-    else if(file_name.includes("na")) banner.innerText = "Not Available";
-    gridItem.appendChild(banner);
-  }
 
   grid.appendChild(gridItem);
 }
