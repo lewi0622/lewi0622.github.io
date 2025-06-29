@@ -118,9 +118,14 @@ for(let i=0; i<sale_paths.length; i++){
   anchor.target = "_blank"; //makes it in a new tab
   anchor.title = "NEMAA shop listing"; //hover text
 
-  img.appendChild(anchor);
+  const banner = document.createElement('div');
+  banner.classList.add('banner');
+  banner.innerText = "For Sale Online";
 
-  gridItem.appendChild(img);
+  anchor.appendChild(img);
+
+  gridItem.appendChild(anchor);
+  gridItem.appendChild(banner);
 
   grid.appendChild(gridItem);
 }
