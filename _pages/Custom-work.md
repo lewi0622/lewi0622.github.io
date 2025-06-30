@@ -32,6 +32,7 @@ I can do that too, if it's just an image, I will use a similar process to the Ph
 ## Details
 I'll need some info from you, depending on how hands-on you want to be in the process!
 - On what size paper?
+- Framed?
 - Color prefernces?
 - Do you want any painted bits?
 - Do you want to vet the digital design before I plot it?
