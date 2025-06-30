@@ -2,10 +2,9 @@
 
 permalink: /studio/
 
-title: "Studio"
+title: "My Studio Space!"
 
 ---
-# My Studio Space!
 ![Studio Space](../assets/images/Studio.jpg)
 
 Come see my stuff in person! I'm currently located in Studio #406 in the [Northrup King Building](https://www.northrupkingbuilding.com) in Northeast Minneapolis! I share the space with 6 other artists, and I always have something plotting during open studio times so everyone can see the robot drawing in action!

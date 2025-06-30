@@ -5,7 +5,6 @@ permalink: /custom/
 title: "Custom Work"
 
 ---
-# Custom Work!
 I have a number of different custom work offerings, so take a look and reach out via Instagram or email and I'll walk you through the process! If you don't see what you want, still reach out and we'll talk through your request.
 
 ## One of your pieces that already sold...
