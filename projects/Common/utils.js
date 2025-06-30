@@ -785,8 +785,10 @@ function capture_frame(){
 //background functions
 function png_bg(remove=true){
   const bg_c = random(working_palette);
+  if(type != "png") return bg_c;
+
   if(remove) reduce_array(working_palette, bg_c);
-  if(type == "png") background(bg_c);
+  background(bg_c);
   return bg_c;
 }
 
