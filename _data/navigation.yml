@@ -7,3 +7,7 @@ main:
     url: /posts/
   - title: "About"
     url: /about/
+  - title: "Studio"
+    url: /studio/
+  - title: "Custom Work"
+    url: /custom/
