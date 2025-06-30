@@ -3,11 +3,11 @@ main:
     url: https://lewi0622.github.io/
   - title: "Digital Designs"
     url: /digital-designs/
-  - title: "Posts"
-    url: /posts/
-  - title: "About"
-    url: /about/
   - title: "Studio"
     url: /studio/
   - title: "Custom Work"
     url: /custom/
+  - title: "About"
+    url: /about/
+  - title: "Posts"
+    url: /posts/
