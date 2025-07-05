@@ -23,6 +23,9 @@ Using a tool called [city roads](https://anvaka.github.io/city-roads) that rende
 "Can you create a plot of a photo I have?" 
 
 Yes! I use a tool called [DrawingBotV3](https://drawingbotv3.com/) that interprets photos as line drawings, with a number of different design and color options.
+Here's my wife and I rendered in a flow field style and drawn in four (CMYK) colors!
+
+![Process of plotting custom photo](../assets/images/Custom_Photo_Process.jpg)
 
 ## I have a design...
 "I have a digital design that I want plotted!" 
