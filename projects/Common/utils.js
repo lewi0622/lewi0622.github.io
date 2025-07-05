@@ -669,7 +669,7 @@ function set_seed(e){
   redraw_sketch();
 }
 
-function keyTyped(e) {
+document.onkeyup = function(e) {
   // user presses enter, it sends Custom seed and custom scale
   const event_id = e.srcElement.id;
   if(keyCode === ENTER && (event_id == "Seed" || event_id == "Scale Input" || event_id == "X Size Val" || event_id=="Y Size Val")){
