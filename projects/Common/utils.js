@@ -1102,7 +1102,7 @@ function protected_storage_remove(name, type){
   }
 }
 
-window.onunload = function(){save_parameters()}
+onpagehide = function(){save_parameters()}
 
 //create separate overwrite gui function
 
