@@ -15,6 +15,9 @@ const TAOTREE = 0.01496063*96;
 //for fill, use this value/2 distance between lines
 const MICRON05 = 0.01771654*96;
 const MICRON005 = 0.00787402*96;
+
+const GELLYROLLMOONLIGHT10 = 0.019685 * 96;
+
 //BIC Cristal 1.6mm, 0.0629921, does not fill at this weight
 const BICCRISTAL = 0.0629921*96/2;
 // const BICCRISTAL = 0.015*96;
