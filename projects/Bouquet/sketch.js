@@ -45,25 +45,30 @@ function draw() {
     let radius = map(noise(z/10), 0,1, canvas_x/8,max_radius);
     for(let i=0; i<num_rings; i++){
       push();
-      if(i%2==0) blendMode(MULTIPLY);
+      let shape_repeat = 1;
+      if(i%2==0){
+        blendMode(MULTIPLY);
+        shape_repeat = random([1,2]);
+      }
       radius = lerp(radius,0,i/num_rings);
 
-      beginShape();
-      for(let j=0; j<ring_steps; j++){
-        const theta = j/ring_steps*360;
-        const xoff = map(cos(theta),-1,1,0,max_noise);
-        const yoff = map(sin(theta),-1,1,0,max_noise);
-        const r = map(noise(xoff,yoff, (z+10)*i/10),0,1,radius/2,radius);
-        const x = r * sin(theta);
-        const y = r * cos(theta);
-        vertex(x,y);
+      for(let k=0; k<shape_repeat; k++){
+        beginShape();
+        for(let j=0; j<ring_steps; j++){
+          const theta = j/ring_steps*360;
+          const xoff = map(cos(theta),-1,1,0,max_noise);
+          const yoff = map(sin(theta),-1,1,0,max_noise);
+          const r = map(noise(xoff,yoff, (z+10)*i/10),0,1,radius/2,radius);
+          const x = r * sin(theta);
+          const y = r * cos(theta);
+          vertex(x,y);
+        }
+        endShape(CLOSE);         
       }
-      endShape(CLOSE);
       pop();
     }
     pop();
   }
-  
   
   pop();
   global_draw_end();
