@@ -26,5 +26,21 @@ const for_sale = [
     {
         "photo_url": "https://nemaa.org/wp-content/uploads/272-scaled.jpg",
         "url": "https://nemaa.org/shop/landscapes/"
+    },
+    {
+        "photo_url": "https://nemaa.org/wp-content/uploads/385.jpg",
+        "url": "https://nemaa.org/shop/rainbow-cats/"
+    },
+    {
+        "photo_url": "https://nemaa.org/wp-content/uploads/384-600x453.jpg",
+        "url": "https://nemaa.org/shop/gouache-billow/"
+    },
+    {
+        "photo_url": "https://nemaa.org/wp-content/uploads/383-600x794.jpg",
+        "url": "https://nemaa.org/shop/blueprint-silver-fabric/"
+    },
+    {
+        "photo_url": "https://nemaa.org/wp-content/uploads/382-600x447.jpg",
+        "url": "https://nemaa.org/shop/aqua-cats/"
     }
 ]
