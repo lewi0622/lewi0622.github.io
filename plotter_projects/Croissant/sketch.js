@@ -17,6 +17,7 @@ function gui_values(){
   parameterize("margin", smaller_base*0.1, -smaller_base/2, smaller_base/2, 1, true);
   parameterize("min_radius", 0.1*smaller_base, 0, smaller_base, 1, true);
   parameterize("max_radius", 0.25*smaller_base, 0, smaller_base, 1, true);
+  parameterize("repeat_shape", 2, 1, 100, 1, false);
 }
 
 function setup() {
@@ -27,9 +28,8 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  const bg_c = random(working_palette);
-  reduce_array(working_palette, bg_c);
-  if(type == "png") background(bg_c);
+  let weight = 1 * global_scale;
+  let bg_c = png_bg(true);
   const fill_c = random(working_palette);
   reduce_array(working_palette, fill_c);
   const stroke_c = random(working_palette);
@@ -93,7 +93,9 @@ function draw() {
       translate(x,y);
       rotate(overall_rotation);
       rotate(loop_count*rotation_per_shape);
-      polygon(0, 0, rad, points_per_shape);
+      for(let k=0; k<repeat_shape; k++){
+        polygon(0, 0, rad + (repeat_shape - k) * weight/2 , points_per_shape);
+      }
       pop();
       loop_count++;
     } 
