@@ -36,11 +36,23 @@ const for_sale = [
         "url": "https://nemaa.org/shop/gouache-billow/"
     },
     {
-        "photo_url": "https://nemaa.org/wp-content/uploads/383-600x794.jpg",
-        "url": "https://nemaa.org/shop/blueprint-silver-fabric/"
-    },
-    {
         "photo_url": "https://nemaa.org/wp-content/uploads/382-600x447.jpg",
         "url": "https://nemaa.org/shop/aqua-cats/"
+    },
+    {
+        "photo_url": "https://nemaa.org/wp-content/uploads/388-1024x769.jpg",
+        "url": "https://nemaa.org/shop/blue-egg/"
+    },
+    {
+        "photo_url": "https://nemaa.org/wp-content/uploads/389-1024x769.jpg",
+        "url": "https://nemaa.org/shop/red-egg/"
+    },
+    {
+        "photo_url": "https://nemaa.org/wp-content/uploads/391.jpg",
+        "url": "https://nemaa.org/shop/black-sunset/"
+    },
+    {
+        "photo_url": "https://nemaa.org/wp-content/uploads/390-1024x769.jpg",
+        "url": "https://nemaa.org/shop/purple-jellies/"
     }
 ]
