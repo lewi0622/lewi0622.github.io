@@ -56,15 +56,10 @@ function draw() {
   c3[3] = opacity;
 
   const steps = radius*100;
-  blur = random([1, 2, 24]);
-  let squish;
-  if(blur == 24){
-    squish = 0;
-  }
-  else{
-    squish = random()*20*global_scale;
-  }
-
+  const blur = random([1, 2, 24]);
+  let squish = random(20)*global_scale;
+  if(blur == 24) squish = 0;
+  
   for(let i=-steps; i<steps; i++){
     push();
       const y = radius * (i/steps);
