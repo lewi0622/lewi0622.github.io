@@ -51,6 +51,10 @@ function draw() {
     c4 = color(working_palette[3]);
     c5 = color(working_palette[4]);
   }
+  else{
+    c4 = undefined;
+    c5 = undefined;
+  }
 
   //gradient background
   const gradient = drawingContext.createLinearGradient(0,0,canvas_x, canvas_y);
