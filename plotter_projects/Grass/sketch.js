@@ -25,12 +25,15 @@ let grass_coords;
 function setup() {
   common_setup();
   gui_values();
+
   c1 = color("#713a00");
   c2 = color("#dca352");
   fill(c1);
   stroke(c2);
   weight = 1 * global_scale;
   strokeWeight(weight);
+  strokeJoin(ROUND);
+  strokeCap(ROUND);
 
   col_step = (canvas_x+grass_width*4)/col_grass;
   row_step = (canvas_y+grass_width*4)/row_grass;
@@ -85,12 +88,14 @@ function leaf_of_grass(wave_index, h, row_index){
   vertex(0,0);
   bezierVertex(0,0, grass_width/2 + wave, h, grass_width/2 + wave, h);
   bezierVertex(grass_width/2 + wave, h,grass_width,0, grass_width,0);
-  
-  endShape(CLOSE);
 
-  stroke(c1);
-  strokeWeight(weight*2);
-  line(0,0, grass_width, 0);
+  if(type == "png") endShape();
+  else{
+    endShape(CLOSE);
+    stroke(c1);
+    circle(grass_width/2, 0, grass_width);
+  }
+
   pop();
   
 }
