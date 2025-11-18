@@ -9,8 +9,8 @@ const capture_time = 10;
 const suggested_palettes = [];
 
 function gui_values(){
-  parameterize("cols", floor(base_x), 1, base_x, 1, false);
-  parameterize("rows", floor(base_y), 1, base_y, 1, false);
+  parameterize("cols", floor(base_x), 1, base_x*2, 1, false);
+  parameterize("rows", floor(base_y), 1, base_y*2, 1, false);
   parameterize("x_sin_freq_mult", random(0.5, 5), 0, 10, 0.1, false);
   parameterize("x_sin_mult", smaller_base/random(3,8), 1, smaller_base, 0.1, false);
 }
