@@ -18,9 +18,9 @@ const MICRON005 = 0.00787402*96;
 
 const GELLYROLLMOONLIGHT10 = 0.019685 * 96;
 
-//BIC Cristal 1.6mm, 0.0629921, does not fill at this weight
-const BICCRISTAL = 0.0629921*96/2;
-// const BICCRISTAL = 0.015*96;
+const BICCRISTAL = 0.00984*96; //compared against actual plot with unweighted bic pen
+const BICCRISTAL_ALPHA = 0.7 * 255;
+
 const STABILO88 = 0.015748*96;
 
 const SIGNOBROAD = 0.0393701*96;
