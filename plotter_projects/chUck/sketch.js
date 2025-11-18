@@ -40,7 +40,7 @@ function draw() {
   push();
   center_rotate(-90);
   noFill();
-  strokeWeight(MICRON05*global_scale);
+  strokeWeight(LEPEN*global_scale);
   const bg_c = png_bg(true);
   // background("WHITE")
   const colors = [];
@@ -95,12 +95,12 @@ function draw() {
   fill(bg_c);
   const eye_iteration = round(random(0.9,1.1) * lines.length/2);
   const pupil_pt = {
-    x: random(-0.1, 0.1)*eye_size,
-    y: random(-0.1, 0.1)*eye_size,
+    x: random(-0.3, 0.3)*eye_size,
+    y: random(-0.3, 0.3)*eye_size,
     size: random(eye_size/3, eye_size/2)};
   for(let j=0; j<lines.length; j++){
     const all_pts = lines[j];
-    if(j == eye_iteration || j == eye_iteration + 10){
+    if(j == eye_iteration){// || j == eye_iteration + 50){
       push();
       line_blur(color("BLACK"), 0);
       translate(all_pts[0].x*0.95 + eye_x_displacement, all_pts[0].y*0.95 + eye_y_displacement);
