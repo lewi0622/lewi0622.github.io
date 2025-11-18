@@ -43,7 +43,8 @@ function draw() {
   if(type == "png") stroke(stroke_c);
   else stroke("black");
   strokeWeight(0.5*global_scale);
-  strokeWeight(LEPEN*global_scale);
+  const weight = PITTPEN*global_scale;
+  strokeWeight(weight);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
   // noFill();
@@ -93,7 +94,7 @@ function draw() {
       continue;
     } else {
       clump_counter++;
-      translate(0, clump_counter * LEPEN*global_scale);
+      translate(0, clump_counter * weight);
     }
     const l = lines[stuck_index];
 
@@ -102,7 +103,6 @@ function draw() {
     let circle_drawn = false;
     for(let i=0; i<l.length; i++){
       const pt = l[i];
-      const weight = LEPEN*global_scale * 3/4;
       center_rotate(rotate_per_line);
       curveVertex(pt[0], pt[1]);
       push();
@@ -114,7 +114,7 @@ function draw() {
         let rad = random(30, 150)*global_scale;
         while(rad>0){
           circle(x,y, rad);
-          rad -= weight;
+          rad -= weight*3/4;
         }
         circle_drawn = true;
       }
