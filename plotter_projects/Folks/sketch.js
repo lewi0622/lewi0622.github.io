@@ -2,9 +2,9 @@
 //setup variables
 const gif = false;
 const animation = false;
-const fr = 1;
+const fr = 2;
 const capture = false;
-const capture_time = 2;
+const capture_time = 20;
 
 const suggested_palettes = [];
 
@@ -51,8 +51,10 @@ function draw() {
       translate(col_step/2, row_step/2); //move to center of grid
       rotate(random(-10,10));
       translate(-col_step/2, -row_step/2);//move back to upper left corner
-      // rectMode(CENTER);
+      rectMode(CENTER);
+      fill(bg_c);
       // rect(0,0,col_step, row_step);
+      noFill();
       folk(folk_width, folk_height, weight);
       pop();  
     }
@@ -231,7 +233,9 @@ function head(w,h, interval){
   let head_size = min(head_w, head_h);
   translate(head_size*random(-0.5,0.5), head_size*random(-0.25, 0.25));//random offset
   translate(0, -h*0.4); //normal head position
-  rotate(random(-10,10));
+  translate(0, head_h/2); //go to bottom of head
+  rotate(random(-20,20));
+  translate(0, -head_h/2);
   while(head_size>0){
     push();
     ellipse(0,0, head_w, head_h);
