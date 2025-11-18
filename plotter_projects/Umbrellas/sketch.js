@@ -21,19 +21,20 @@ function setup() {
 function draw() {
   global_draw_start();
   push();
-
+  background("BLACK")
   const weight = SIGNOBROAD * global_scale;
   strokeWeight(weight);
   noFill();
 
-  const margin = 60*weight/4;
+  const margin = 60*weight/2;
 
   for(let i=0; i<num_swirls; i++){
     push();
     stroke(random(working_palette));
     translate(random(margin, canvas_x-margin), random(margin, canvas_y-margin));
-
-    const num_arcs = floor(random(30, 60));
+    const min_arcs = 30/384 * base_y;
+    const max_arcs = 60/384 * base_y;
+    const num_arcs = floor(random(min_arcs, max_arcs)); //base total arcs on size of canvas, 30-60 is based on 4x6 postcard
     const arc_width = num_arcs * weight/2;
     rotate(random([0,180]));
     for(let j=0; j<num_arcs; j++){
