@@ -99,12 +99,21 @@ function draw() {
 
         // eyes
         push();
+        const eye_rot_amt = random(20);
+        const eye_size_adjust = random(0.5, 1.3);
         translate(center_x, radius * random(0.5, 0.7));
         stroke("BLACK");
         noFill();
-        arc(radius/4,0, radius/8, radius/6, 0, 180);
-        arc(-radius/4,0, radius/8, radius/6, 0, 180);
-
+        push();
+        translate(radius/4,0);
+        rotate(-eye_rot_amt);
+        arc(0,0, radius/8*eye_size_adjust, radius/6*eye_size_adjust, 0, 180);
+        pop();
+        push();
+        translate(-radius/4,0);
+        rotate(eye_rot_amt);
+        arc(0,0, radius/8*eye_size_adjust, radius/6*eye_size_adjust, 0, 180);
+        pop();
         //whiskers
         translate(0, -radius * 0.2);
         let num_whiskers = floor(random(3,5));
@@ -134,7 +143,8 @@ function draw() {
 function out_or_back(first_pt, second_pt, direction){
   if(debug) line(first_pt.x, first_pt.y, second_pt.x, second_pt.y);
   const pt_dist = dist(first_pt.x, first_pt.y, second_pt.x, second_pt.y);
-  const num_pts = floor(pt_dist/global_scale * density_multiplier);
+  // const num_pts = floor(pt_dist/global_scale * density_multiplier);
+  const num_pts = floor(pt_dist/global_scale * random(0.041, 0.081));
   const slope = (second_pt.y-first_pt.y)/(second_pt.x-first_pt.x);
   let skeleton_theta = acos((second_pt.x-first_pt.x)/pt_dist);
   if(slope<=0) skeleton_theta = 360-skeleton_theta;
