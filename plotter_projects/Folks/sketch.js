@@ -37,8 +37,7 @@ function draw() {
   push();
   const col_step = canvas_x/cols;
   const row_step = canvas_y/rows;
-  const folk_width = col_step*0.8;
-  const folk_height = row_step*0.8;
+
   const weight = LEPEN * global_scale;
   strokeWeight(weight);
 
@@ -47,13 +46,12 @@ function draw() {
   for(let i=0; i<cols; i++){
     for(let j=0; j<rows; j++){
       push();
+      const folk_width = col_step*random(0.6, 1);
+      const folk_height = row_step*random(0.7, 1);
       translate(i * col_step, j* row_step); //move to grid upper left corner
       translate(col_step/2, row_step/2); //move to center of grid
       rotate(random(-10,10));
       translate(-col_step/2, -row_step/2);//move back to upper left corner
-      rectMode(CENTER);
-      fill(bg_c);
-      // rect(0,0,col_step, row_step);
       noFill();
       folk(folk_width, folk_height, weight);
       pop();  
