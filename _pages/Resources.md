@@ -1,8 +1,8 @@
 ---
 
-permalink: /studio/
+permalink: /resources/
 
-title: "My Studio Space!"
+title: "Getting Started with Algorithmic Art"
 
 ---
 ![Studio Space](../assets/images/Studio.jpg)
