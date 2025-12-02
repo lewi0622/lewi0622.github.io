@@ -18,7 +18,8 @@ let bg_c;
 function gui_values(){
   parameterize("cols", 5, 1, 100, 1, false);
   parameterize("rows", 5, 1, 100, 1, false);
-  parameterize("limb_thickness", 10, 1, 50, 1, false);
+  parameterize("min_limb_thickness", 4, 1, 50, 1, false);
+  parameterize("max_limb_thickness", 15, 1, 50, 1, false);
   parameterize("limb_mult", 0.025, 0.001, 0.5, 0.001, false);
 } 
 
@@ -46,8 +47,8 @@ function draw() {
   for(let i=0; i<cols; i++){
     for(let j=0; j<rows; j++){
       push();
-      const folk_width = col_step*random(0.6, 1);
-      const folk_height = row_step*random(0.7, 1);
+      const folk_width = col_step*random(0.5, 0.8);
+      const folk_height = row_step*random(0.6, 0.8);
       translate(i * col_step, j* row_step); //move to grid upper left corner
       translate(col_step/2, row_step/2); //move to center of grid
       rotate(random(-10,10));
@@ -66,6 +67,7 @@ function draw() {
 //custom funcs
 
 function folk(w,h, weight){
+  const limb_thickness = floor(random(min_limb_thickness, max_limb_thickness));
   arms(w,h, limb_thickness);
   legs(w,h, limb_thickness);
   dress(w,h, weight);
@@ -226,7 +228,7 @@ function curved_flair(x, y, w, h){ //keith harring style movement lines
 
 // HEAD --------------------------------------
 function head(w,h, interval){
-  let head_w = random(0.7, 0.9)*w/8;
+  let head_w = random(0.6, 0.8)*w/8;
   let head_h = random(1,1.5)*head_w;
   let head_size = min(head_w, head_h);
   translate(head_size*random(-0.5,0.5), head_size*random(-0.25, 0.25));//random offset
