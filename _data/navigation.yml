@@ -11,3 +11,5 @@ main:
     url: /about/
   - title: "Posts"
     url: /posts/
+  - title: "Resources"
+    url: /Resources/

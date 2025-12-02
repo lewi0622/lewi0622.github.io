@@ -6,7 +6,7 @@ title: "About"
 
 ---
 # Eric Lewiston
-I create digital and mixed media two-dimensional visual art using a unique combination of coding (JavaScript), randomness and noise, pen plotting, and hand painted elements. I strive to create a sense of movement and fluidity in my pieces. 
+I create Algorithmic, digital and mixed media two-dimensional visual, art using a unique combination of coding (JavaScript), randomness and noise, pen plotting, and hand painted elements. I strive to create a sense of movement and fluidity in my pieces. 
 
 Even though digital art can be crafted to exacting and precise proportions, when I create my linework, I intentionally leave room in the algorithm for noise and randomness. Moving from Digital to Analog, I use an AxiDraw pen plotter to create a one-of-a-kind physical manifestation of my designs. Small imperfections are not only expected with pen plotting but embraced. Sometimes water is added, the tooth of the paper is ruined, fingerprints are left, or white ink is smeared around and scraped off; breaking rules and going against best practices is my preferred way of thinking outside the box. I am having the most fun when I find myself surprised and delighted at the outcome of each piece.
 
