@@ -6,8 +6,8 @@ title: "Getting Started with Algorithmic Art"
 
 ---
 ## Inspiration
-<iframe width="560" height="315" src="https://www.youtube.com/embed/4Se0_w0ISYk?si=Sr3K_BlBuY2uWi2J" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 One of the first videos I ever watched to learn about algorithmic art is Tim Holman's "Generative Art Speedrun". He does such a wonderful job of describing various "tools" and how to combine them to create beautiful pieces. I suggest this to everyone looking to get inspired and learn how easy it is to get started.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/4Se0_w0ISYk?si=Sr3K_BlBuY2uWi2J" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Learning and Tutorials
 To learn p5js, there's no better resource than The Coding Train. Daniel Shiffman covers all sorts of p5js related coding challenges and even provides code to get you started!
