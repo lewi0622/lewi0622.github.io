@@ -23,7 +23,7 @@ To learn p5js, there's no better resource than The Coding Train. Daniel Shiffman
 - [Generative](https://www.reddit.com/r/generative/)
 - [PlotterArt](https://www.reddit.com/r/PlotterArt/)
 
-## Some of my favorite algorithmic artists on Instagram
+## Some of my favorite pen plotter artists on Instagram
 - [di_diff_world](https://www.instagram.com/di_diff_world/)
 - [Lecia He](https://www.instagram.com/blahblahpaperblah/)
 - [Liz Melchor](https://www.instagram.com/i.draw.monkeys/)
