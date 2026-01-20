@@ -23,6 +23,7 @@ const BICCRISTAL_ALPHA = 0.7 * 255;
 
 const STABILO88 = 0.015748*96;
 
+const UNIBALLAIR = 0.0276 * 96;
 const SIGNOBROAD = 0.0393701*96;
 // approx copic SuperBrush line size.
 //for fill use this value/2 distance between lines
