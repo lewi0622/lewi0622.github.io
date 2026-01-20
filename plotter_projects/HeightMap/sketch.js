@@ -2,64 +2,120 @@
 //setup variables
 const gif = false;
 const animation = false;
-const fr = 10;
+const fr = 1;
 const capture = false;
-const capture_time = 20;
+const capture_time = 10;
 
-const suggested_palettes = [SOUTHWEST];
-let dark_c1, dark_c2, light_c1, light_c2;
+const suggested_palettes = [SOUTHWEST, BIRDSOFPARADISE, COTTONCANDY, GAMEDAY, SUPPERWARE, JAZZCUP];
+let dark_c1, dark_c2, light_c1, light_c2, squigs_per_tile, squig_steps;
 
 function gui_values(){
-  parameterize("margin_x", base_x/8, -base_x/2, base_x/2, 1, true);
-  parameterize("margin_y", base_y/8, -base_y/2, base_y/2, 1, true);
-  parameterize("columns", 20, 1, 50, 1, false);
-  parameterize("rows", 20, 1, 50, 1, false);  
-  parameterize("damp", 20, 1, 500, 1, false);
-  parameterize("particle_count", 100, 0, 1000, 1, false);
+  parameterize("margin_x", base_x/2, -base_x/2, base_x/2, 1, true);
+  parameterize("margin_y", base_y/2, -base_y/2, base_y/2, 1, true);
+  parameterize("columns", 100, 1, 200, 1, false);
+  parameterize("rows", 100, 1, 200, 1, false);  
+  parameterize("x_damp", random(10, 50), 1, 200, 1, false);
+  parameterize("y_damp", random(10, 50), 1, 200, 1, false);
+  parameterize("y_height_mult", random(0.05, 0.2), -0.5, 0.5, 0.01, false);
   parameterize("erode_amount", 0.05, 0.01, 1, 0.01, false);
-  parameterize("squig_steps", 10, 1, 100, 1, false);
-  parameterize("squigs_per_tile", 3, 1, 100, 1, false);
-  squigs_per_tile = round(squigs_per_tile);
   parameterize("tightness", 0, -5,5,0.1, false);
 }
+
 
 function setup() {
   common_setup();
   gui_values();
   noFill();
+
+  for(let i=0; i<working_palette.length; i++){
+    const c = color(working_palette[i]);
+    c.setAlpha(150);
+    working_palette[i] = c;
+  }
+
+  let selected_colors;
+
+  if(global_palette_id == SOUTHWEST){
+    const good_palettes = [
+      [2,0,4,1],
+      [ 1, 4, 3, 0 ],
+      [ 0, 1, 3, 0 ],
+      [ 0, 2, 3, 1 ],
+      [ 0, 1, 2, 0 ],
+      [ 4, 1, 2, 0 ]
+    ]
+    selected_colors = random(good_palettes);
+  } else if(global_palette_id == BIRDSOFPARADISE){
+    const good_palettes = [
+      [6,3,0,4],
+      [7,5,0,4],
+      [2,0,2,7],
+      [0,4,3,5],
+      [3,6,0,2]
+    ]
+    selected_colors = random(good_palettes);
+  } else if(global_palette_id == COTTONCANDY){
+    const good_palettes = [
+      [3,1,0,0],
+      [1,3,3,0]
+    ]
+    selected_colors = random(good_palettes);
+  } else if(global_palette_id == GAMEDAY){
+    const good_palettes = [
+      [2,2,1,2],
+      [3,0,1,2],
+      [3,2,1,2]
+    ]
+    selected_colors = random(good_palettes);
+  } else if(global_palette_id == SUPPERWARE){
+    const good_palettes = [
+      [1,0,5,1],
+      [5,3,0,0],
+      [0,0,1,4]
+    ]
+    selected_colors = random(good_palettes);
+  } else if(global_palette_id == JAZZCUP){
+    const good_palettes = [
+      [0,2,3,3]
+    ]
+    selected_colors = random(good_palettes);
+  } else{
+    selected_colors = [
+      floor(random(working_palette.length)),
+      floor(random(working_palette.length)),
+      floor(random(working_palette.length)),
+      floor(random(working_palette.length))
+    ]
+    print(selected_colors)
+  }
+  dark_c1 = working_palette[selected_colors[0]];
+  dark_c2 = working_palette[selected_colors[1]];
+  light_c1 = working_palette[selected_colors[2]];
+  light_c2 = working_palette[selected_colors[3]];
+  // pixelDensity(15);
 }
 //***************************************************
 function draw() {
   global_draw_start();
   push();
   noFill();
-  // squig_steps = map(sin(frameCount*50), -1, 1, 7, 10);
 
-  background(working_palette[2]);
-
-  for(let i=0; i<working_palette.length; i++){
-    const c = color(working_palette[i]);
-    c.setAlpha(200);
-    working_palette[i] = c;
-  }
-
-  dark_c1 = random(working_palette);
-  reduce_array(working_palette, dark_c1);
-  dark_c2 = random(working_palette);
-  reduce_array(working_palette, dark_c2);
-  light_c1 = random(working_palette);
-  reduce_array(working_palette, light_c1);
-  light_c2 = random(working_palette);
-  reduce_array(working_palette, light_c2);
+  background("#dbc3a3");
   
   //grid size
   const column_size = (canvas_x - margin_x) / columns;
   const row_size = (canvas_y - margin_y) / rows;
 
+  //squig defs
+  const tile_size = max(column_size, row_size);
+  squig_steps = 6//round(random(6,10) / 5 * tile_size);
+  squigs_per_tile = round(random(6,30) / 5 * tile_size); //six is kinda sparse, 30 is very lush
+
   //create noise based height map
   const height_map = create_height_map(columns, rows);
   
   //iteratively drop "particles" randomly
+  const particle_count = random(100, 2000) / 2500 * columns * rows;
   for(let i=0; i<particle_count; i++){
     drop_particle(height_map);
   }
@@ -72,7 +128,7 @@ function draw() {
 //custom funcs
 function squigs(w, h, n){
   //draws n squiggles
-  const height_step = h / n;
+  const height_step = h*2 / n;
   for(let i=0; i<n; i++){
     push();
     translate(0, i * height_step);
@@ -88,8 +144,8 @@ function squig(max_x, max_y, iterations){
   curveTightness(tightness);
   beginShape();
   for(let i=0; i<iterations; i++){
-    const x = x_vals[i%x_vals.length] + 0.1 * random(max_x);
-    const y = random(max_y);
+    const x = x_vals[i%x_vals.length] +  random(max_x);
+    const y = random(-max_y/2, max_y*1.5);
     curveVertex(x,y);
   }
   endShape();
@@ -101,7 +157,7 @@ function create_height_map(columns, rows){
   for(let j=0; j<rows; j++){
     const row = [];
     for(let i=0; i<columns; i++){
-      let noise_val = pnoise.simplex3((i+1)/damp, (j+1)/damp, frameCount/20);
+      let noise_val = pnoise.simplex3((i+1)/x_damp, (j+1)/y_damp, frameCount/20);
       // noise_val += 0.5 * pnoise.simplex3(2*(i+1)/damp, 2*(j+1)/damp, frameCount/20); //Unsure if adding octaves of simples makes sense like it does for perlin
       // noise_val += 0.25 * pnoise.simplex3(4*(i+1)/damp, 4*(j+1)/damp, frameCount/20);
       // noise_val = map(noise_val, -1.75, 1.75, 0, 1);
@@ -119,8 +175,12 @@ function create_height_map(columns, rows){
 
 function draw_height_map(height_map, column_size, row_size){
   translate(margin_x/2, margin_y/2);
+  let max_h = 0;
+  let min_h = 1;
   for(let j=0; j<rows; j++){
     let last_color, last_direction;
+    const color_change_loops = 4;
+    let color_change_counter = color_change_loops;
     for(let i=0; i<columns; i++){
       push();
       const h = height_map[j][i];
@@ -130,20 +190,32 @@ function draw_height_map(height_map, column_size, row_size){
 
       translate(column_size/2, row_size/2);
 
-      translate(map(pnoise.simplex2(j/50, frameCount/50), -1,1, -column_size*2, column_size*2), map(h, 0,1, -row_size*4, row_size*4));
+      //warp
+      const design_width = canvas_x - margin_x;
+      const design_height = canvas_y - margin_y;
+      const warp_x = 0.05 * design_width;
+      const warp_y = y_height_mult * design_height;
+      translate(map(pnoise.simplex2(j/50, frameCount/50), -1,1, -warp_x, warp_x), map(h, 0,1, -warp_y, warp_y));
 
       const dir = get_direction(height_map, i, j);
       //negative dir is in shadow
       let c;
       if(dir < 0) c = lerpColor(dark_c1, dark_c2, h);
       else c = lerpColor(light_c1, light_c2, h);
+      if(min_h > h) min_h = h;
+      if(max_h < h) max_h = h;
 
       if(last_color != undefined){
         const direction_changed = (dir < 0 && last_direction >= 0) || (dir >= 0 && last_direction < 0);
         if(direction_changed){
-          c = lerpColor(last_color, c, 0.5);
+          //reset color_change_counter
+          color_change_counter = 0;
         }
-      }
+        if(color_change_counter < color_change_loops){
+          c = lerpColor(last_color, c, color_change_counter * 1/color_change_loops);
+          color_change_counter++;
+        }
+      } 
       last_direction = dir;
       last_color = c;
 
