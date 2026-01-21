@@ -273,11 +273,12 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   larger_base = max(base_x, base_y);
   
   //init globals
-  file_saved = false;
-  capture_state = "init";
-
-  //set up CCapture, override num_frames in setup/draw if necessary
-  capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
+  if(!redraw){
+    file_saved = false;
+    capture_state = "init";
+    //set up CCapture, override num_frames in setup/draw if necessary
+    capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
+  }
   //set framerate
   if(!capture) frameRate(fr);
 
@@ -305,10 +306,6 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   seed_scale_button(control_height, control_spacing);
   populate_size_inputs();
 
-  //call gui_values every time, parameterize handles whether to create, overwrite, or ignore new vals
-  //needs to be called before noLoop and gui.addGlobals, needs to be called after the seed is set
-  // gui_values();
-
   if(controls_param == "full"){
     //declare gui before noLoop is extended in p5.gui.js
     if(!redraw){
@@ -321,18 +318,15 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
-  frameCount = 0; //with animations, this needs to be one of the last things changed
+  if(!(gif && !animation)) frameCount = 0; //with animations, this needs to be one of the last things changed
 
   //shift position to center canvas if base is different than 400
   if(size_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
   else cnv.position(0,0);
-  
-  // gives change for square or rounded edges, this can be overriden within the draw function
-  if(renderer != WEBGL) strokeCap(random([PROJECT,ROUND]));
 
   //set palette
-  if(!redraw || palette_changed || picker_changed) change_default_palette();
-  if(!redraw || palette_changed){
+  if(!redraw || palette_changed || picker_changed || (gif && !animation)) change_default_palette();
+  if(!redraw || palette_changed || (gif && !animation)){
     show_hide_pickers();
     color_pickers();
     size_pickers(control_height, control_spacing)
@@ -751,14 +745,14 @@ function global_draw_start(clear_cnv=true){
     capturer.start();
     capture_state = "start";
   }
-
-  //if creating a gif of different designs, re-randomize palette from suggested palettes and rerandomize gui values
-  if(gif && !animation){
-    noiseSeed(floor(random(10000))); //randomize noise seed
-
+  //if creating a gif of different designs, re-randomize palette and seed
+  if(gif && !animation && capture_state != "stop"){
+    redraw = true;
+    colors_param = build_colors();
     change_default_palette(); //redo suggested palettes
-    gui_values(); //redo parameterizations
+    randomize_seed();
   }
+  
 }
 
 function global_draw_end(){
@@ -926,7 +920,8 @@ function redraw_sketch(){
     return;
   }
   setup();
-  draw();
+  if(gif && !animation) return;
+  else draw();
 }
 
 function change_default_palette(){
