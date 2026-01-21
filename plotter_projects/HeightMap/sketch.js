@@ -2,23 +2,32 @@
 //setup variables
 const gif = false;
 const animation = false;
-const fr = 1;
+const fr = 10;
 const capture = false;
-const capture_time = 10;
+const capture_time = 5;
 
-const suggested_palettes = [SOUTHWEST, BIRDSOFPARADISE, COTTONCANDY, GAMEDAY, SUPPERWARE, JAZZCUP];
+const suggested_palettes = [COTTONCANDY, GAMEDAY, BIRDSOFPARADISE, SOUTHWEST, SUPPERWARE, JAZZCUP];
 let dark_c1, dark_c2, light_c1, light_c2, squigs_per_tile, squig_steps;
 
 function gui_values(){
-  parameterize("margin_x", base_x/2, -base_x/2, base_x/2, 1, true);
-  parameterize("margin_y", base_y/2, -base_y/2, base_y/2, 1, true);
-  parameterize("columns", 100, 1, 200, 1, false);
-  parameterize("rows", 100, 1, 200, 1, false);  
-  parameterize("x_damp", random(10, 50), 1, 200, 1, false);
-  parameterize("y_damp", random(10, 50), 1, 200, 1, false);
-  parameterize("y_height_mult", random(0.05, 0.2), -0.5, 0.5, 0.01, false);
+  parameterize("margin_x", base_x/4, -base_x/2, base_x/2, base_x/16, true);
+  parameterize("margin_y", base_y/4, -base_y/2, base_y/2, base_y/16, true);
+
+  const r = round(random(50,200));
+  const c = round(random(50,r));
+
+  parameterize("columns", c, 1, 200, 1, false);
+  parameterize("rows", r, 1, 200, 1, false);  
+
+  const x_d = random(10,50);
+  const y_d = random(10, x_d);
+
+  parameterize("x_damp", x_d, 1, 200, 1, false);
+  parameterize("y_damp", y_d, 1, 200, 1, false);
+  parameterize("y_height_mult", random(0.05, 0.2), -0.2, 0.2, 0.01, false);
   parameterize("erode_amount", 0.05, 0.01, 1, 0.01, false);
   parameterize("tightness", 0, -5,5,0.1, false);
+  parameterize("debug", 0, 0, 1, 1, false);
 }
 
 
@@ -35,7 +44,7 @@ function setup() {
 
   let selected_colors;
 
-  if(global_palette_id == SOUTHWEST){
+  if(global_palette_id == SOUTHWEST){ //fall
     const good_palettes = [
       [2,0,4,1],
       [ 1, 4, 3, 0 ],
@@ -56,27 +65,27 @@ function setup() {
     selected_colors = random(good_palettes);
   } else if(global_palette_id == COTTONCANDY){
     const good_palettes = [
-      [3,1,0,0],
-      [1,3,3,0]
+      [3,1,0,0], //sunrise
+      [1,3,3,0] //fall
     ]
     selected_colors = random(good_palettes);
   } else if(global_palette_id == GAMEDAY){
     const good_palettes = [
-      [2,2,1,2],
-      [3,0,1,2],
-      [3,2,1,2]
+      [2,2,1,2], //winter
+      [3,0,1,2], //winter
+      [3,2,1,2] //winter
     ]
     selected_colors = random(good_palettes);
   } else if(global_palette_id == SUPPERWARE){
     const good_palettes = [
       [1,0,5,1],
       [5,3,0,0],
-      [0,0,1,4]
+      [0,0,1,4] //sunset
     ]
     selected_colors = random(good_palettes);
-  } else if(global_palette_id == JAZZCUP){
+  } else if(global_palette_id == JAZZCUP){ 
     const good_palettes = [
-      [0,2,3,3]
+      [0,2,3,3] //winter
     ]
     selected_colors = random(good_palettes);
   } else{
@@ -86,22 +95,25 @@ function setup() {
       floor(random(working_palette.length)),
       floor(random(working_palette.length))
     ]
-    print(selected_colors)
   }
+  print(selected_colors)
   dark_c1 = working_palette[selected_colors[0]];
   dark_c2 = working_palette[selected_colors[1]];
   light_c1 = working_palette[selected_colors[2]];
   light_c2 = working_palette[selected_colors[3]];
-  // pixelDensity(15);
+
+  //something to think about is when the same color is selected for both darks or both lights, changing one of the colors would result in slightly more nuance, see cottoncandy 3,1,0,0
+
+
+  noFill();
 }
 //***************************************************
 function draw() {
   global_draw_start();
   push();
-  noFill();
 
   background("#dbc3a3");
-  
+
   //grid size
   const column_size = (canvas_x - margin_x) / columns;
   const row_size = (canvas_y - margin_y) / rows;
@@ -110,6 +122,8 @@ function draw() {
   const tile_size = max(column_size, row_size);
   squig_steps = 6//round(random(6,10) / 5 * tile_size);
   squigs_per_tile = round(random(6,30) / 5 * tile_size); //six is kinda sparse, 30 is very lush
+
+  if(debug) squigs_per_tile = 6;
 
   //create noise based height map
   const height_map = create_height_map(columns, rows);
@@ -153,24 +167,21 @@ function squig(max_x, max_y, iterations){
 
 
 function create_height_map(columns, rows){
-  let height_map = [];
+  const h_map = [];
   for(let j=0; j<rows; j++){
     const row = [];
     for(let i=0; i<columns; i++){
-      let noise_val = pnoise.simplex3((i+1)/x_damp, (j+1)/y_damp, frameCount/20);
-      // noise_val += 0.5 * pnoise.simplex3(2*(i+1)/damp, 2*(j+1)/damp, frameCount/20); //Unsure if adding octaves of simples makes sense like it does for perlin
-      // noise_val += 0.25 * pnoise.simplex3(4*(i+1)/damp, 4*(j+1)/damp, frameCount/20);
-      // noise_val = map(noise_val, -1.75, 1.75, 0, 1);
+      let noise_val = pnoise.simplex2((i+1)/x_damp, (j+1)/y_damp);
       noise_val = map(noise_val, -1,1, 0,1);
       row.push(noise_val);
     }
-    height_map.push(row);
+    h_map.push(row);
   }
 
   //renormalize to 0,1 range
-  renorm_heights(height_map);
+  renorm_heights(h_map);
 
-  return height_map;
+  return h_map;
 }
 
 function draw_height_map(height_map, column_size, row_size){
@@ -195,7 +206,7 @@ function draw_height_map(height_map, column_size, row_size){
       const design_height = canvas_y - margin_y;
       const warp_x = 0.05 * design_width;
       const warp_y = y_height_mult * design_height;
-      translate(map(pnoise.simplex2(j/50, frameCount/50), -1,1, -warp_x, warp_x), map(h, 0,1, -warp_y, warp_y));
+      translate(map(pnoise.simplex2(j/50, 0), -1,1, -warp_x, warp_x), map(h, 0,1, -warp_y, warp_y));
 
       const dir = get_direction(height_map, i, j);
       //negative dir is in shadow
