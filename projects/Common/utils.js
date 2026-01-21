@@ -13,7 +13,7 @@ let capturer, capture_state;
 const control_height_base = 20;
 const control_spacing_base = 5;
 let seed_input, scale_input, color_select;
-let left_button, right_button, custom_seed_button, reset_palette_button, randomize_button, full_controls_button, auto_scale_button, reset_parameters_button, save_button, filetype_radio, x_size_input, y_size_input, unit_select;
+let left_button, right_button, custom_seed_button, reset_palette_button, randomize_button, full_controls_button, auto_scale_button, reset_parameters_button, wall_button, save_button, filetype_radio, x_size_input, y_size_input, unit_select;
 
 const PALETTE_ID_DEFAULT = MUTEDEARTH;
 let global_palette_id = PALETTE_ID_DEFAULT;
@@ -26,7 +26,7 @@ let global_scale = 1;
 let previous_scale = global_scale;
 let multiplier_changed = true;
 let controls_param, seed_param, colors_param, scale_param, x_size_px_param, y_size_px_param; //global url parameters
-let randomize_time_param; //optional url parameters
+let randomize_time_param, pixel_density_param; //optional url parameters
 let timeout_set = false;
 const in_iframe = window.location !== window.parent.location;
 let type = 'png';
@@ -148,6 +148,9 @@ function first_time_setup(){
   if(getParamValue("randomize_time") == undefined) randomize_time_param =  build_randomize_time();
   else randomize_time_param = verify_randomize_time(getParamValue("randomize_time"));
 
+  if(getParamValue("pixel_density") == undefined) pixel_density_param = build_pixel_density();
+  else pixel_density_param = verify_pixel_density(getParamValue("pixel_density"));
+
   if(controls_param != "full"){
     // disable right clicks 
     document.oncontextmenu = function() { 
@@ -228,6 +231,16 @@ function verify_randomize_time(val){
   else return build_randomize_time();
 }
 
+function build_pixel_density(){
+  return 1;
+}
+
+function verify_pixel_density(val){
+  if(!isNaN(val) && parseInt(val) > 0) return val;
+  else return build_pixel_density();
+}
+
+
 function build_url(){
   let base_url = "index.html?";
   //required
@@ -240,6 +253,7 @@ function build_url(){
 
   //optional
   if(randomize_time_param > 0) base_url += "&randomize_time=" + randomize_time_param;
+  if(pixel_density_param != 1) base_url += "&pixel_density=" + pixel_density_param;
 
   return base_url;
 }
@@ -339,12 +353,12 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
     //add listener for save messgae
     catch_save_message();
-
-    angleMode(DEGREES);
-
-    //Assists with loading on phones and other pixel dense screens
-    pixelDensity(1)
   }
+  angleMode(DEGREES);
+
+  //Assists with loading on phones and other pixel dense screens
+  pixelDensity(parseInt(pixel_density_param))
+
 
   //set randomize timeout function
   if(randomize_time_param > 0 && !timeout_set){
@@ -489,6 +503,10 @@ function seed_scale_button(control_height, control_spacing){
     unit_select.id('Size Units');
     if(hide) unit_select.style("visibility", "hidden");
 
+    //wallpaper save
+    wall_button = create_new_button("WP", "WP", hide);
+    wall_button.mouseClicked(save_wallpaper);
+
     //save button
     save_button = create_new_button("Save", "Save", hide);
     save_button.mouseClicked(save_drawing);
@@ -570,6 +588,11 @@ function seed_scale_button(control_height, control_spacing){
     unit_select.position(y_size_input.position().x+y_size_input.size().width, canvas_y+control_height*2);
     unit_select.size(40*global_scale, control_height);
     style_control(unit_select);
+
+    //Wallpaper Save
+    wall_button.size(10*global_scale, control_height);
+    wall_button.position(400*global_scale-60*global_scale, canvas_x+control_height*2);
+    style_control(wall_button);
 
     //save button
     save_button.size(50*global_scale, control_height);
@@ -726,6 +749,26 @@ function save_drawing(){
   if(type == 'svg')save(filename);
   else saveCanvas(filename, type);
   file_saved = true;
+}
+
+function save_wallpaper(){
+  //changes the scale to 1, pixeldensity to 15, saves the drawing, and pops the url back to previous settings
+  const last_scale_param = scale_param;
+  const last_pixel_density_param = pixel_density_param;
+
+  scale_param = "1";
+  pixel_density_param = "15";
+  let url = build_url()
+  window.history.replaceState({}, "", url);
+  redraw_sketch();
+
+  save_drawing();
+
+  scale_param = last_scale_param;
+  pixel_density_param = last_pixel_density_param;
+  url = build_url()
+  window.history.replaceState({}, "", url);
+  redraw_sketch();
 }
 
 function global_draw_start(clear_cnv=true){
