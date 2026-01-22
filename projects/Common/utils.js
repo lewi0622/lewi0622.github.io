@@ -322,7 +322,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   if(controls_param == "full"){
     //declare gui before noLoop is extended in p5.gui.js
-    if(!redraw){
+    if(gui === undefined){
       gui = createGui('Parameters');
       add_gui_event_handlers();
     }
@@ -591,7 +591,7 @@ function seed_scale_button(control_height, control_spacing){
 
     //Wallpaper Save
     wall_button.size(10*global_scale, control_height);
-    wall_button.position(400*global_scale-60*global_scale, canvas_x+control_height*2);
+    wall_button.position(400*global_scale-60*global_scale, canvas_y+control_height*2);
     style_control(wall_button);
 
     //save button
@@ -1241,6 +1241,7 @@ function create_global_parameters(name, val, min, max, step){
 
 function gui_force_update(name, val, min, max, step){
   //force gui to update shown values
+  if(gui.prototype._controls[name] === undefined) return;
   gui.prototype._controls[name].control.min = String(min);
   gui.prototype._controls[name].control.max = String(max);
   gui.prototype._controls[name].control.step = String(step);
@@ -1351,7 +1352,7 @@ function gui_dblclick(){
 }
 
 function retrieve_gui_settings(){
-  if(controls_param != "full") return;
+  if(controls_param != "full" || gui === undefined) return;
   // retrieve gui collapsed status and location
   let stored_loc = protected_storage_get("gui_loc", "session");
   let collapsed = protected_storage_get("gui_collapsed", "session");
@@ -1477,3 +1478,15 @@ function line_blur(line_color, blur_size, offset_x=0, offset_y=0){
   drawingContext.shadowOffsetX = offset_x;
   drawingContext.shadowOffsetY = offset_y;
 }
+
+let last_four_keys = [];
+function enable_full_controls(e){
+  last_four_keys.push(e.key);
+  if(last_four_keys.length > 4) last_four_keys.shift();
+  if(controls_param != "full" && last_four_keys.join("") == "full"){
+    change_to_full_controls();
+  }
+}
+
+
+addEventListener("keydown", enable_full_controls);
