@@ -1469,6 +1469,7 @@ function line_blur(line_color, blur_size, offset_x=0, offset_y=0){
   drawingContext.shadowOffsetY = offset_y;
 }
 
+//KEYPRESS STUFF
 function keypress_handler(e){
   // user presses enter, it sends Custom seed and custom scale
   const event_id = e.target.id;
@@ -1490,5 +1491,21 @@ function enable_full_controls(key){
   }
 }
 
-
 addEventListener("keydown", keypress_handler);
+
+function noise_loop_2d(rate, seconds, granularity){
+  //frame rate, how long the loop is in seconds, noise step size
+  //traverses a circle providing a single noise value that loops back on itself
+  const circle_steps = rate * seconds;
+  const angle_steps = 360 / circle_steps;
+  const theta = frameCount % circle_steps * angle_steps;
+  const radius = granularity;
+  const xoff = map(cos(theta), -1,1, 0, radius); //noise is symmetrical about the 0 axis, so we need to move from -1,1 fully into the positive realm
+  const yoff = map(sin(theta), -1,1, 0, radius);
+  return [xoff, yoff];
+}
+
+function noise_loop_1d(rate, seconds, granularity){
+  const [xoff, yoff] = noise_loop_2d(rate, seconds, granularity);
+  return noise(xoff,yoff);
+}
