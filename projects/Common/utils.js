@@ -686,16 +686,6 @@ function set_seed(e){
   redraw_sketch();
 }
 
-document.onkeyup = function(e) {
-  // user presses enter, it sends Custom seed and custom scale
-  const event_id = e.srcElement.id;
-  if(keyCode === ENTER && (event_id == "Seed" || event_id == "Scale Input" || event_id == "X Size Val" || event_id=="Y Size Val")){
-    set_seed(e); //pass thru event details
-  }
-  else if(keyCode == 65) previous_seed(); //A key
-  else if(keyCode == 83) randomize_seed();//S key
-  else if(keyCode == 68) next_seed();     //D key
-}
 
 function set_file_type(){
   //radio button changed
@@ -1479,9 +1469,21 @@ function line_blur(line_color, blur_size, offset_x=0, offset_y=0){
   drawingContext.shadowOffsetY = offset_y;
 }
 
+function keypress_handler(e){
+  // user presses enter, it sends Custom seed and custom scale
+  const event_id = e.target.id;
+  if(e.key === "Enter" && (event_id === "Seed" || event_id === "Scale Input" || event_id === "X Size Val" || event_id === "Y Size Val")){
+    set_seed(e); //pass thru event details
+  }
+  else if(e.key == 65) previous_seed(); //A key
+  else if(e.key == 83) randomize_seed();//S key
+  else if(e.key == 68) next_seed();     //D key
+  else enable_full_controls(e.key);
+}
+
 let last_four_keys = [];
-function enable_full_controls(e){
-  last_four_keys.push(e.key);
+function enable_full_controls(key){
+  last_four_keys.push(key);
   if(last_four_keys.length > 4) last_four_keys.shift();
   if(controls_param != "full" && last_four_keys.join("") == "full"){
     change_to_full_controls();
@@ -1489,4 +1491,4 @@ function enable_full_controls(e){
 }
 
 
-addEventListener("keydown", enable_full_controls);
+addEventListener("keydown", keypress_handler);
