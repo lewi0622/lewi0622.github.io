@@ -15,7 +15,7 @@ set /p HEIGHT=<height.txt
 
 "ffmpeg" -y -r %FR% -f image2 -i "%%07d.png" -vcodec libx264 -crf 17 -pix_fmt yuv420p C:\Users\ericl\Downloads\output.mp4
 
-"C:\Dev\gifski\win\gifski.exe" --fps %FR% --width %WIDTH% --height %HEIGHT% -o C:\Users\ericl\Downloads\output.gif *.png
+"C:\Dev\gifski\win\gifski.exe" --fps %FR% --width %WIDTH% --height %HEIGHT% -o C:\Users\ericl\Downloads\output.gif *.png  || GOTO :Failure
 
 cd ..\
 
@@ -26,6 +26,6 @@ del %FILENAME%
 EXIT
 
 :Failure
-echo Unable to go to animation_temp folder, exiting...
-pause >nul
+echo Unable to process, not deleting anything, exiting...
+pause 
 EXIT
