@@ -7,7 +7,9 @@ let canvas_x, canvas_y, cnv;
 let base_x, base_y, larger_base, smaller_base;
 let file_saved = false;
 
-const num_frames = capture_time*fr;
+let capture_delay_frames = 0;
+if(typeof capture_delay_seconds !== 'undefined') capture_delay_frames = capture_delay_seconds * fr;
+const num_frames = capture_time*fr + capture_delay_frames;
 let capturer, capture_state;
 //control variables
 const control_height_base = 20;
@@ -774,7 +776,7 @@ function global_draw_start(clear_cnv=true){
 
   if(clear_cnv) clear(); //should be false for some animating pieces
   //called from top of Draw to start capturing, requires CCapture
-  if(capture && capture_state == "init"){
+  if(capture && capture_state == "init" && capture_delay_frames < frameCount){
     capturer.start();
     capture_state = "start";
   }
@@ -795,11 +797,10 @@ function global_draw_end(){
 
 function capture_frame(){ 
   if(capture){
-    if(capture_state != "stop"){
+    if(capture_state != "stop" && capture_state !="init"){
       capturer.capture(document.getElementById("defaultCanvas0"));
       capture_state = "capture";
-      
-      if(frameCount-1 == num_frames || !isLooping()){
+      if(frameCount-1 >= num_frames || !isLooping()){
         capturer.stop();
         capture_state = "stop";
         capturer.save();
@@ -1493,12 +1494,18 @@ function enable_full_controls(key){
 
 addEventListener("keydown", keypress_handler);
 
+//PERFECT LOOP FUNCTIONS
+function angle_loop(rate, seconds, number_of_loops=1){
+  //returns the angle for the current frame
+  const circle_steps = rate * seconds;
+  const angle_steps = number_of_loops * 360 / circle_steps;
+  return frameCount % circle_steps * angle_steps;
+}
+
 function noise_loop_2d(rate, seconds, granularity){
   //frame rate, how long the loop is in seconds, noise step size
   //traverses a circle providing a single noise value that loops back on itself
-  const circle_steps = rate * seconds;
-  const angle_steps = 360 / circle_steps;
-  const theta = frameCount % circle_steps * angle_steps;
+  const theta = angle_loop(rate, seconds);
   const radius = granularity;
   const xoff = map(cos(theta), -1,1, 0, radius); //noise is symmetrical about the 0 axis, so we need to move from -1,1 fully into the positive realm
   const yoff = map(sin(theta), -1,1, 0, radius);
@@ -1509,3 +1516,9 @@ function noise_loop_1d(rate, seconds, granularity){
   const [xoff, yoff] = noise_loop_2d(rate, seconds, granularity);
   return noise(xoff,yoff);
 }
+
+
+
+//Loop ideas
+//Linear loop, essentially just an out and back, could try and add easing 
+//Noise loop out and back. just don't remap the cos/sin
