@@ -46,7 +46,7 @@ function setup() {
 function draw() {
   global_draw_start();
   strokeWeight(weight);
-  background("BLACK")
+  // background("BLACK")
   translate(canvas_x/2, canvas_y/2);
 
   rotate(angle_loop(fr, capture_time, 2));

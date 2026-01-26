@@ -16,6 +16,7 @@ const time_inc = 0.04;
 let time_direction;
 
 //amazing seed 283932, 60s color, 640x360px
+//looks nice when played back at 20ish fps, but changing the fps here changes the design
 
 function gui_values(){
   // parameterize("num_cols", floor(base_x/8), 1, base_x, 1, false);
