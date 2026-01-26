@@ -1512,13 +1512,18 @@ function noise_loop_2d(rate, seconds, granularity){
   return [xoff, yoff];
 }
 
-function noise_loop_1d(rate, seconds, granularity){
-  const [xoff, yoff] = noise_loop_2d(rate, seconds, granularity);
+function noise_loop_1d(rate, seconds, granularity, simplex=false){
+  //returns a single value passed through a noise function, from 0-1
+  const [xoff, yoff] = noise_loop_2d(rate, seconds, granularity, simplex);
+  if(simplex) map(pnoise.simplex2(xoff, yoff), -1,1, 0,1);
   return noise(xoff,yoff);
 }
 
 
 
 //Loop ideas
+//Add offset options to each loop func
+//Add simplex option to each noise loop
 //Linear loop, essentially just an out and back, could try and add easing 
 //Noise loop out and back. just don't remap the cos/sin
+//sin/cos loop
