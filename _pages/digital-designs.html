@@ -47,6 +47,7 @@ tagline: "Click on a design to see an interactive version! Contact me for high q
     const project_paths = all_projects_full_paths;
     for (let i = 0; i < project_paths.length; i++) {
     const iframe_path = project_paths[i]["iframe"];
+    if(iframe_path.includes("VJ")) continue;
     const thumbnail_path = project_paths[i]["thumbnail"];
     const grid_parent = document.getElementsByClassName("grid-container")[0];
     const grid_item = document.createElement('div');
