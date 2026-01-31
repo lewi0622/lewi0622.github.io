@@ -60,8 +60,14 @@ tagline: "Contact me to purchase high quality video clips for your video install
       else if (thumbnail_path.includes(".mp4")) {
       thumbnail = document.createElement("video");
       thumbnail.muted = true;
-      thumbnail.autoplay = true;
       thumbnail.loop = true;
+      thumbnail.addEventListener("visibilitychange", ()=>{
+      if (thumbnail.hidden) {
+        thumbnail.pause();
+      } else if (playingOnHide) {
+        thumbnail.play();
+      }
+    });
       thumbnail_source = document.createElement("source");
       thumbnail_source.src = thumbnail_path;
       thumbnail.appendChild(thumbnail_source);
