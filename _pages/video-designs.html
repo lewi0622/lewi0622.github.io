@@ -1,0 +1,77 @@
+---
+
+permalink: /video-designs/
+
+title: "Animated designs in p5.js"
+
+layout: splash
+
+header:
+  overlay_image: /assets/images/splash/Billow_Digital_Designs.png
+  actions:
+    - label: "Contact Me"
+      url: /about/
+tagline: "Contact me to purchase high quality video clips for your video installation!"
+
+---
+<style>
+    .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-gap: 10px;
+    }
+    .grid-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 640px;
+    height: 360px;
+    object-fit: contain;
+    background: #141010;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    }
+    .grid-item img,
+    .grid-item video {
+    display: block;
+    }
+    </style>
+    <script src=../all_projects.js></script>
+    </head>
+    <body>
+    <div class="grid-container">
+    </div>
+    <script>
+    const project_paths = all_projects_full_paths;
+    for (let i = 0; i < project_paths.length; i++) {
+      const iframe_path = project_paths[i]["iframe"];
+      if(!iframe_path.includes("VJ")) continue;
+      const thumbnail_path = project_paths[i]["thumbnail"];
+      const grid_parent = document.getElementsByClassName("grid-container")[0];
+      const grid_item = document.createElement('div');
+      grid_item.classList.add("grid-item");
+      let thumbnail;
+      if (thumbnail_path.includes(".png") || thumbnail_path.includes(".gif")) {
+      thumbnail = document.createElement("img");
+      thumbnail.src = thumbnail_path;
+      }
+      else if (thumbnail_path.includes(".mp4")) {
+      thumbnail = document.createElement("video");
+      thumbnail.muted = true;
+      thumbnail.autoplay = true;
+      thumbnail.loop = true;
+      thumbnail_source = document.createElement("source");
+      thumbnail_source.src = thumbnail_path;
+      thumbnail.appendChild(thumbnail_source);
+      }
+      thumbnail.className = "grid-item"
+      thumbnail.onclick = function () {
+      window.open(iframe_path, '_blank').focus();
+      };
+      grid_item.appendChild(thumbnail);
+      
+      grid_parent.appendChild(grid_item);
+    }
+</script>
