@@ -1504,21 +1504,13 @@ function angle_loop(rate, seconds, number_of_loops=1){
 
 function noise_loop_2d(rate, seconds, granularity){
   //frame rate, how long the loop is in seconds, noise step size
-  //traverses a circle providing a single noise value that loops back on itself
+  //traverses a circle providing two values that can be used as noise inputs
   const theta = angle_loop(rate, seconds);
   const radius = granularity;
   const xoff = map(cos(theta), -1,1, 0, radius); //noise is symmetrical about the 0 axis, so we need to move from -1,1 fully into the positive realm
   const yoff = map(sin(theta), -1,1, 0, radius);
   return [xoff, yoff];
 }
-
-function noise_loop_1d(rate, seconds, granularity, simplex=false){
-  //returns a single value passed through a noise function, from 0-1
-  const [xoff, yoff] = noise_loop_2d(rate, seconds, granularity, simplex);
-  if(simplex) map(pnoise.simplex2(xoff, yoff), -1,1, 0,1);
-  return noise(xoff,yoff);
-}
-
 
 
 //Loop ideas
