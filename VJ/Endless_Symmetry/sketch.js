@@ -39,7 +39,7 @@ function draw() {
 
   //actual drawing stuff
   const [x_off, y_off] = noise_loop_2d(fr, capture_time, 1);
-  curveTightness(map(noise(x_off, y_off), 0, 1, -5, 0));
+  curveTightness(map(pnoise.simplex2(x_off, y_off), -1, 1, -5, 5));
   translate(canvas_x/2, canvas_y/2);
 
   const pts = [];

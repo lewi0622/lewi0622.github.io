@@ -41,7 +41,7 @@ function draw() {
 
   translate(canvas_x/2, canvas_y/2);
 
-  const loop_offset = 0;//noise_loop_1d(fr, capture_time, 0.1);
+  const loop_offset = 0;//add noise loop
 
   beginShape();
   for(let i=0; i<step_num; i+=step_size){
