@@ -54,27 +54,39 @@ tagline: "Contact me to purchase high quality video clips for your video install
       grid_item.classList.add("grid-item");
       let thumbnail;
       if (thumbnail_path.includes(".png") || thumbnail_path.includes(".gif")) {
-      thumbnail = document.createElement("img");
-      thumbnail.src = thumbnail_path;
+        thumbnail = document.createElement("img");
+        thumbnail.src = thumbnail_path;
       }
       else if (thumbnail_path.includes(".mp4")) {
-      thumbnail = document.createElement("video");
-      thumbnail.muted = true;
-      thumbnail.loop = true;
-      thumbnail.addEventListener("visibilitychange", ()=>{
-      if (thumbnail.hidden) {
-        thumbnail.pause();
-      } else if (playingOnHide) {
+        thumbnail = document.createElement("video");
+        thumbnail.muted = true;
+        thumbnail.loop = true;
+        thumbnail_source = document.createElement("source");
+        thumbnail_source.src = thumbnail_path;
+        thumbnail.appendChild(thumbnail_source);
         thumbnail.play();
-      }
-    });
-      thumbnail_source = document.createElement("source");
-      thumbnail_source.src = thumbnail_path;
-      thumbnail.appendChild(thumbnail_source);
+        //Attempt at pausing video when off screen to make more performant for mobile
+        const options = {
+          root: null, // observes intersection relative to the document's viewport
+          rootMargin: '0px',
+          threshold: 0.1 // fires when 10% of the element is visible
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.play()
+            } else {
+              entry.pause()
+            }
+          });
+        }, options);
+
+        observer.observe(thumbnail);
       }
       thumbnail.className = "grid-item"
       thumbnail.onclick = function () {
-      window.open(iframe_path, '_blank').focus();
+        window.open(iframe_path, '_blank').focus();
       };
       grid_item.appendChild(thumbnail);
       
