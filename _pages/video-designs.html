@@ -17,7 +17,7 @@ tagline: "Contact me to purchase high quality video clips for your video install
 <style>
     .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(640px, 1fr));
     grid-gap: 10px;
     }
     .grid-item {
@@ -76,9 +76,9 @@ tagline: "Contact me to purchase high quality video clips for your video install
           entries.forEach(entry => {
             console.log(entry)
             if (entry.isIntersecting) {
-              entry.play()
+              entry.target.play()
             } else {
-              entry.pause()
+              entry.target.pause()
             }
           });
         }, options);
