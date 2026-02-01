@@ -74,7 +74,6 @@ tagline: "Contact me to purchase high quality video clips for your video install
 
         const observer = new IntersectionObserver((entries, observer) => {
           entries.forEach(entry => {
-            console.log(entry)
             if (entry.isIntersecting) {
               entry.target.play()
             } else {
