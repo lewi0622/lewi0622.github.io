@@ -49,6 +49,7 @@ function setup() {
   for(let i=0; i<working_palette.length; i++){
     const c = color(working_palette[i]);
     c.setAlpha(150);
+    if(type == "svg") c.setAlpha(BICCRISTAL_ALPHA);
     working_palette[i] = c;
   }
 
@@ -112,6 +113,17 @@ function setup() {
   light_c1 = working_palette[selected_colors[2]];
   light_c2 = working_palette[selected_colors[3]];
 
+  // type = "svg"
+  if(type == "svg"){
+    dark_c1 = color(BIC_RED);
+    dark_c1.setAlpha(BICCRISTAL_ALPHA);
+    dark_c2 = color(BIC_BLACK);
+    dark_c2.setAlpha(BICCRISTAL_ALPHA);
+    light_c1 = color(BIC_LIGHTBLUE);
+    light_c1.setAlpha(BICCRISTAL_ALPHA);
+    light_c2 = color(BIC_TEAL);
+    light_c2.setAlpha(BICCRISTAL_ALPHA);
+  }
 
   noFill();
   // pixelDensity(15);
@@ -121,8 +133,7 @@ function draw() {
   global_draw_start();
   push();
 
-  background("#dbc3a3");
-
+  if(type == "png") background("#dbc3a3");
   //grid size
   const column_size = (canvas_x - margin_x) / columns;
   const row_size = (canvas_y - margin_y) / rows;
@@ -130,8 +141,12 @@ function draw() {
   //squig defs
   const tile_size = max(column_size, row_size);
   squig_steps = 6//round(random(6,10) / 5 * tile_size);
-  squigs_per_tile = round(random(6,random(6,30)) / 5 * tile_size); //six is kinda sparse, 30 is very lush
-  if(debug) squigs_per_tile = 6;
+  squigs_per_tile = 6//round(random(6,random(6,30)) / 5 * tile_size); //six is kinda sparse, 30 is very lush
+  if(debug) squigs_per_tile = 4;
+  if(type == "svg"){
+    strokeWeight(BICCRISTAL);
+    // squigs_per_tile = 20;
+  }
 
   //create noise based height map
   const height_map = create_height_map(columns, rows);
@@ -148,12 +163,16 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function squigs(w, h, n){
+function squigs(w, h, n, c1, c2, blend_pct){
   //draws n squiggles
   const height_step = h*2 / n;
   for(let i=0; i<n; i++){
     push();
     translate(0, i * height_step);
+    if(type == "svg"){
+      stroke(c1);
+      if(i/n > blend_pct) stroke(c2);
+    }
     squig(w, height_step, squig_steps);
     pop();
   }
@@ -219,8 +238,13 @@ function draw_height_map(height_map, column_size, row_size){
       const dir = get_direction(height_map, i, j);
       //negative dir is in shadow
       let c;
-      if(dir < 0) c = lerpColor(dark_c1, dark_c2, h);
-      else c = lerpColor(light_c1, light_c2, h);
+      let c1 = light_c1;
+      let c2 = light_c2;
+      if(dir < 0){
+        c1 = dark_c1;
+        c2 = dark_c2;
+      }
+      c = lerpColor(c1, c2, h);
       if(min_h > h) min_h = h;
       if(max_h < h) max_h = h;
 
@@ -247,7 +271,7 @@ function draw_height_map(height_map, column_size, row_size){
       const squiggle_height = row_size*2;
       translate((column_size - squiggle_width)/2, (row_size - squiggle_height)/2);
 
-      squigs(squiggle_width, squiggle_height, squigs_per_tile);
+      squigs(squiggle_width, squiggle_height, squigs_per_tile, c1, c2, h);
 
       pop();
     }
