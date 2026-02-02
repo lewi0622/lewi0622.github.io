@@ -20,6 +20,14 @@ const GELLYROLLMOONLIGHT10 = 0.019685 * 96;
 
 const BICCRISTAL = 0.00984*96; //compared against actual plot with unweighted bic pen
 const BICCRISTAL_ALPHA = 0.7 * 255;
+const BIC_BLACK = "#030303";
+const BIC_PINK = "#CF2972";
+const BIC_RED = "#cb0911";
+const BIC_BLUE = "#2b2cb0";
+const BIC_LIGHTBLUE = "#78bfe5";
+const BIC_PURPLE = "#64328a"
+const BIC_LIGHTGREEN = "#a0d245";
+const BIC_TEAL = "#018174";
 
 const STABILO88 = 0.015748*96;
 
