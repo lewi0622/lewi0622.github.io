@@ -27,9 +27,19 @@ function gui_values(){
   parameterize("y_height_mult", random(0.05, 0.2), -0.2, 0.2, 0.01, false);
   parameterize("erode_amount", 0.05, 0.01, 1, 0.01, false);
   parameterize("tightness", 0, -5,5,0.1, false);
+  parameterize("blend_colors", 0, 0, 1, 1, false);
   parameterize("debug", 0, 0, 1, 1, false);
 }
 
+//consider controlling for max distance from previous pt
+//for each pt (except first row) look up prev pt above and 
+//only allow a max movement to reduce gapping in highly vertical designs
+
+//something to think about is when the same color is selected for both darks or both lights, 
+// changing one of the colors would result in slightly more nuance, see cottoncandy 3,1,0,0
+
+//to make plottable add option to swap between lerpColor and manually blending amt of each color in each tile
+//so lerp, not between colors, but proportion of c1/c2
 
 function setup() {
   common_setup();
@@ -102,10 +112,9 @@ function setup() {
   light_c1 = working_palette[selected_colors[2]];
   light_c2 = working_palette[selected_colors[3]];
 
-  //something to think about is when the same color is selected for both darks or both lights, changing one of the colors would result in slightly more nuance, see cottoncandy 3,1,0,0
-
 
   noFill();
+  // pixelDensity(15);
 }
 //***************************************************
 function draw() {
@@ -121,8 +130,7 @@ function draw() {
   //squig defs
   const tile_size = max(column_size, row_size);
   squig_steps = 6//round(random(6,10) / 5 * tile_size);
-  squigs_per_tile = round(random(6,30) / 5 * tile_size); //six is kinda sparse, 30 is very lush
-
+  squigs_per_tile = round(random(6,random(6,30)) / 5 * tile_size); //six is kinda sparse, 30 is very lush
   if(debug) squigs_per_tile = 6;
 
   //create noise based height map
@@ -190,7 +198,7 @@ function draw_height_map(height_map, column_size, row_size){
   let min_h = 1;
   for(let j=0; j<rows; j++){
     let last_color, last_direction;
-    const color_change_loops = 4;
+    const color_change_loops = 4; //minimum 2 to see anything
     let color_change_counter = color_change_loops;
     for(let i=0; i<columns; i++){
       push();
@@ -222,7 +230,7 @@ function draw_height_map(height_map, column_size, row_size){
           //reset color_change_counter
           color_change_counter = 0;
         }
-        if(color_change_counter < color_change_loops){
+        if(color_change_counter < color_change_loops){ //blending over borders between light and dark
           c = lerpColor(last_color, c, color_change_counter * 1/color_change_loops);
           color_change_counter++;
         }
