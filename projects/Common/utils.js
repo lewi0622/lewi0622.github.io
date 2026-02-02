@@ -293,7 +293,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
     file_saved = false;
     capture_state = "init";
     //set up CCapture, override num_frames in setup/draw if necessary
-    capturer = new CCapture({format:'png', name:String(fr), framerate:fr});
+    capturer = new CCapture({format:'png', name:String(fr), framerate:fr, autoSaveTime:30});
   }
   //set framerate
   if(!capture) frameRate(fr);
