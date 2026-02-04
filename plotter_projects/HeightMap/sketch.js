@@ -7,23 +7,24 @@ const capture = false;
 const capture_time = 5;
 
 const suggested_palettes = [COTTONCANDY, GAMEDAY, BIRDSOFPARADISE, SOUTHWEST, SUPPERWARE, JAZZCUP];
-let dark_c1, dark_c2, light_c1, light_c2, squigs_per_tile, squig_steps;
+let dark_c1, dark_c2, light_c1, light_c2, squig_steps;
 
 function gui_values(){
   parameterize("margin_x", base_x/4, -base_x/2, base_x/2, base_x/16, true);
   parameterize("margin_y", base_y/4, -base_y/2, base_y/2, base_y/16, true);
 
-  const r = round(random(50,200));
-  const c = round(random(50,r));
+  const r = round(random(base_x/8,base_x/2));
+  const c = round(random(base_x/8,r));
 
-  parameterize("columns", c, 1, 200, 1, false);
-  parameterize("rows", r, 1, 200, 1, false);  
+  parameterize("columns", c, 1, base_x/2, 1, false);
+  parameterize("rows", r, 1, base_y/2, 1, false);  
 
   const x_d = random(10,50);
   const y_d = random(10, x_d);
 
   parameterize("x_damp", x_d, 1, 200, 1, false);
   parameterize("y_damp", y_d, 1, 200, 1, false);
+  parameterize("squigs_per_tile", 4, 1, 30, 1, false);
   parameterize("y_height_mult", random(0.05, 0.2), -0.2, 0.2, 0.01, false);
   parameterize("erode_amount", 0.05, 0.01, 1, 0.01, false);
   parameterize("tightness", 0, -5,5,0.1, false);
@@ -141,10 +142,11 @@ function draw() {
   //squig defs
   const tile_size = max(column_size, row_size);
   squig_steps = 6//round(random(6,10) / 5 * tile_size);
-  squigs_per_tile = 6//round(random(6,random(6,30)) / 5 * tile_size); //six is kinda sparse, 30 is very lush
-  if(debug) squigs_per_tile = 4;
+  //squigs_per_tile = 10//round(random(6,random(6,30)) / 5 * tile_size); //six is kinda sparse, 30 is very lush
+  // if(debug) squigs_per_tile = 4;
+  strokeWeight(BICCRISTAL);
   if(type == "svg"){
-    strokeWeight(BICCRISTAL);
+
     // squigs_per_tile = 20;
   }
 
@@ -169,11 +171,13 @@ function squigs(w, h, n, c1, c2, blend_pct){
   for(let i=0; i<n; i++){
     push();
     translate(0, i * height_step);
-    if(type == "svg"){
+    if(true){
       stroke(c1);
       if(i/n > blend_pct) stroke(c2);
     }
-    squig(w, height_step, squig_steps);
+    if(i/n < blend_pct){
+      squig(w, height_step, squig_steps);
+    }
     pop();
   }
 }
@@ -272,7 +276,6 @@ function draw_height_map(height_map, column_size, row_size){
       translate((column_size - squiggle_width)/2, (row_size - squiggle_height)/2);
 
       squigs(squiggle_width, squiggle_height, squigs_per_tile, c1, c2, h);
-
       pop();
     }
   }
