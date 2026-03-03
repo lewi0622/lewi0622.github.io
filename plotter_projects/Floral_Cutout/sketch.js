@@ -33,6 +33,8 @@ function draw() {
   const radius_step = weight;
   let min_y = 0;
   let max_y = 0;
+  let min_x = 0;
+  let max_x = 0;
   for(let i=0; i<num_rings; i++){
     beginShape();
     for(let j=0; j<=ring_steps; j++){
@@ -44,6 +46,8 @@ function draw() {
       vertex(x,y);
       if(y > max_y) max_y = y;
       if(y < min_y) min_y = y;
+      if(x > max_x) max_x = x;
+      if(x < min_x) min_x = x;
     }
     endShape(CLOSE);
   }
@@ -59,10 +63,10 @@ function draw() {
   
   curveTightness(random(-3,2));
   beginShape();
-  curveVertex(-width/2, y_1);
-  curveVertex(width/2, y_2);
-  curveVertex(width/2, y_3);
-  curveVertex(-width/2, y_4);
+  curveVertex(min_x-canvas_x/8, y_1);
+  curveVertex(max_x+canvas_x/8, y_2);
+  curveVertex(max_x+canvas_x/8, y_3);
+  curveVertex(min_x-canvas_x/8, y_4);
   endShape(CLOSE);
 
   pop();
