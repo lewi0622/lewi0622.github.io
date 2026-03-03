@@ -19,6 +19,8 @@ function gui_values(){
   parameterize("radius_variation", 0, 0, 1, 0.1, false);
   parameterize("point_skip_chance", 0, 0, 1, 0.01, false);
   parameterize("num_inline", 1, 1, 100, 1, false);
+  parameterize("x_margin", -base_x/2, -base_x/2, base_x/2, 1, true);
+  parameterize("y_margin", -base_y/2, -base_y/2, base_y/2, 1, true);
 }
 
 function setup() {
@@ -29,14 +31,14 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  let rows = floor(canvas_y*2 / scl);
-  let cols = floor(canvas_x*2 / scl);
+  let rows = floor((canvas_y - 2 * y_margin) / scl);
+  let cols = floor((canvas_x - 2 * x_margin) / scl);
   //actual drawing stuff
 
   //todo remake the cat shape from scratch with a square base,, bezier curves with ear sharpness/roundess factors, and fill 
-
+  png_bg(true);
   push();
-  translate(-canvas_x/2, -canvas_y/2);
+  translate(x_margin, y_margin);
   let yoff=0;
   for(let y=0; y<rows; y++){
     let xoff=0;
@@ -144,7 +146,7 @@ function out_or_back(first_pt, second_pt, direction){
   if(debug) line(first_pt.x, first_pt.y, second_pt.x, second_pt.y);
   const pt_dist = dist(first_pt.x, first_pt.y, second_pt.x, second_pt.y);
   // const num_pts = floor(pt_dist/global_scale * density_multiplier);
-  const num_pts = floor(pt_dist/global_scale * random(0.041, 0.081));
+  const num_pts = floor(pt_dist/global_scale * random(0.025, 0.1));
   const slope = (second_pt.y-first_pt.y)/(second_pt.x-first_pt.x);
   let skeleton_theta = acos((second_pt.x-first_pt.x)/pt_dist);
   if(slope<=0) skeleton_theta = 360-skeleton_theta;
