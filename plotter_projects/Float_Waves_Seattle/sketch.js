@@ -42,9 +42,8 @@ function draw() {
 
   if(type == "png") stroke(stroke_c);
   else stroke("black");
-  strokeWeight(0.5*global_scale);
-  const weight = PITTPEN*global_scale;
-  strokeWeight(weight);
+  const weight = LEPEN*global_scale;
+  // strokeWeight(0.5*global_scale);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
   // noFill();
