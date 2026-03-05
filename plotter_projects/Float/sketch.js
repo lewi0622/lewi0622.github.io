@@ -36,13 +36,15 @@ function setup() {
 function draw() {
   global_draw_start();
 
+  //Prolly a real improvement here:
+  //decrease size of offscreen portion per line so that there's less overlapping happening offscreen, and thereby decreasing time to process
   //actual drawing stuff
   push();
   refresh_working_palette();
   png_bg();
   const stroke_c = random(working_palette);
   stroke(50);
-  circle(random(orb_size/2, canvas_x-orb_size/2),orb_size/2, random(orb_size/2, orb_size));
+  // circle(random(orb_size/2, canvas_x-orb_size/2),orb_size/2, random(orb_size/2, orb_size));
 
   if(type == "png") stroke(stroke_c);
   else stroke("black");
@@ -50,7 +52,9 @@ function draw() {
   strokeWeight(LEPEN*global_scale);
   translate(x_move, y_move);
   const y_theta_offset = random(360);
-  // noFill();
+  // const fill_c = color("red");
+  // fill_c.setAlpha(100);
+  // fill(fill_c);
   const segment_step_size = (canvas_x+margin_x*2)/line_segments;
   const line_step_size = (canvas_y+margin_y*2)/number_of_lines;
   let min_x = canvas_x;
@@ -89,12 +93,15 @@ function draw() {
 
     beginShape();
 
-    let circle_drawn = false;
+    let circle_drawn = true//false;
+    let last_x, last_y;
     for(let i=0; i<l.length; i++){
       const pt = l[i];
       const weight = LEPEN*global_scale * 3/4;
       center_rotate(rotate_per_line);
       curveVertex(pt[0], pt[1]);
+      last_x = pt[0];
+      last_y = pt[1];
       push();
       if(!circle_drawn && random()>1.9999){
         strokeWeight(weight);
@@ -111,9 +118,21 @@ function draw() {
       pop();
     }
 
-    vertex(canvas_x*2, canvas_y*2);
-    vertex(-canvas_x*2, canvas_y*2);
+    const shrink_pct = j/lines.length;
+    vertex(
+      lerp(last_x + canvas_x, last_x, shrink_pct),
+      last_y
+    );
 
+    vertex(
+      lerp(last_x + canvas_x, last_x, shrink_pct),
+      lerp(max_y + canvas_y*2, max_y + canvas_y, shrink_pct)
+    );
+
+    vertex(
+      lerp(-canvas_x*2, -canvas_x, shrink_pct),
+      lerp(max_y + canvas_y*2, max_y + canvas_y, shrink_pct)
+    );
 
     endShape(CLOSE);
 
