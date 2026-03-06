@@ -1502,20 +1502,33 @@ function angle_loop(rate, seconds, number_of_loops=1){
   return frameCount % circle_steps * angle_steps;
 }
 
-function noise_loop_2d(rate, seconds, granularity){
+function noise_loop_2d(rate, seconds, x_granularity, y_granularity=null){
   //frame rate, how long the loop is in seconds, noise step size
   //traverses a circle providing two values that can be used as noise inputs
+  if(y_granularity == null) y_granularity = x_granularity;
   const theta = angle_loop(rate, seconds);
-  const radius = granularity;
-  const xoff = map(cos(theta), -1,1, 0, radius); //noise is symmetrical about the 0 axis, so we need to move from -1,1 fully into the positive realm
-  const yoff = map(sin(theta), -1,1, 0, radius);
+  const x_radius = x_granularity;
+  const y_radius = y_granularity;
+  const xoff = map(cos(theta), -1,1, 0, x_radius); //noise is symmetrical about the 0 axis, so we need to move from -1,1 fully into the positive realm
+  const yoff = map(sin(theta), -1,1, 0, y_radius);
   return [xoff, yoff];
 }
 
+function noise_loop_3d(rate, seconds, x_granularity, y_granularity=null, z_granularity=null){
+  if(y_granularity == null) y_granularity = x_granularity;
+  if(z_granularity == null) z_granularity = x_granularity;
+
+  const [xoff, yoff] = noise_loop_2d(rate, seconds, x_granularity, y_granularity);
+  const theta = angle_loop(rate, seconds);
+  const z_radius = z_granularity;
+  const zoff = map(cos(theta + 30), -1,1, 0, z_radius);
+  return [xoff, yoff, zoff];
+}
 
 //Loop ideas
+//
+//Add validation of input values
 //Add offset options to each loop func
-//Add simplex option to each noise loop
 //Linear loop, essentially just an out and back, could try and add easing 
 //Noise loop out and back. just don't remap the cos/sin
 //sin/cos loop
