@@ -811,11 +811,14 @@ function capture_frame(){
 }
 
 //background functions
-function png_bg(remove=true){
-  const bg_c = random(working_palette);
+function png_bg(remove=true, force=-1){
+  let bg_c = random(working_palette);
+
+  if(force != -1) bg_c = force;
+
   if(type != "png") return bg_c;
 
-  if(remove) reduce_array(working_palette, bg_c);
+  if(remove && force == -1) reduce_array(working_palette, bg_c);
   background(bg_c);
   return bg_c;
 }
