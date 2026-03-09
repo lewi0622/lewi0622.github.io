@@ -22,14 +22,16 @@ function setup() {
 function draw() {
   global_draw_start();
   push();
-  background("WHITE")
+  png_bg(false, "WHITE");
   const weight = PITTPEN * global_scale;
   strokeWeight(weight);
   const nominal_step = 5 * weight;
 
-  const c1 = color("ORANGE");
-  const c2 = color("BLACK");
-  const c3 = color("BLUE");
+  working_palette = controlled_shuffle(working_palette, true);
+
+  const c1 = color(working_palette[0%working_palette.length]);
+  const c2 = color(working_palette[1%working_palette.length]);
+  const c3 = color(working_palette[2%working_palette.length]);
   c1.setAlpha(125);
   c2.setAlpha(125);
   c3.setAlpha(125);
@@ -54,12 +56,13 @@ function draw() {
   translate(0, pct_one_third * total_y);
   let current_x = 0;
   let i =0;
-  while(current_x <= total_x){
+  while(current_x < total_x){
     line(current_x,0,current_x, (pct_two_third - pct_one_third)* total_y);
     const step = map(noise(i/5), 0,1, weight/4, weight);
     current_x += step;
     i++;
   }
+  line(total_x, 0, total_x, (pct_two_third - pct_one_third)* total_y);
   pop();
   push();
   stroke(c3);
