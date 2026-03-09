@@ -14,7 +14,7 @@ function preload() {
 }
 
 function gui_values(){
-  parameterize("rows", round(base_y/2), 1, base_y, 1, false);
+  parameterize("rows", round(base_y/4), 1, base_y, 1, false);
   parameterize("font_size", round(smaller_base * 3/4), 1, smaller_base*2, 1, true);
   parameterize("max_angle", 180, 0, 360, 1, false);
   parameterize("x_damp", 100, 1, 500, 1, false);
@@ -37,7 +37,7 @@ function draw() {
   const cols = round(canvas_x / grid_size);
 
 
-  const points = font.textToPoints(random(["Q"]), 0,0, font_size, { sampleFactor:  2 });
+  const points = font.textToPoints(random(["Z"]), 0,0, font_size, { sampleFactor:  2 });
   const letter_map = map_letter_edges(points, rows, cols, grid_size)
 
   //find upper left starting tile
