@@ -22,7 +22,7 @@ function draw() {
   push();
   noFill();
   const weight = 2;
-  png_bg(true);
+  png_bg();
   strokeWeight(weight);
   for(let i=0; i<num_leaves; i++){
     stroke(random(working_palette));
