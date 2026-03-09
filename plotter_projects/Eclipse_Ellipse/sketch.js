@@ -10,7 +10,7 @@ const suggested_palettes = [];
 
 
 function gui_values(){
-  parameterize("cols", 100, 1, 1000, 1, false);
+  parameterize("cols", round(base_x/4 * random(0.5, 1.2)), 1, 1000, 1, false);
   parameterize("rows", floor(random(3,10)), 1, 20, 1, false);
 }
 
@@ -25,8 +25,16 @@ function draw() {
   //actual drawing stuff
   push();
 
+  const bg_c = png_bg();
+  working_palette = controlled_shuffle(working_palette, true);
+
+  const c1 = color(working_palette[0%working_palette.length]);
+  const c2 = color(working_palette[1%working_palette.length]);
+
+  stroke(c1);
   noFill();
-  strokeWeight(LEPEN * global_scale);
+  const weight = LEPEN * global_scale;
+  strokeWeight(weight);
   const highlighted_row = floor(random(rows));
   const row_step = height/rows;
   let col_step = (width - row_step)/cols;
@@ -42,15 +50,15 @@ function draw() {
         last_x = i * col_step;
         translate(last_x, 0);
         if(i+1==cols){
-          stroke("WHITE");
-          fill("WHITE");
+          stroke(bg_c);
+          fill(bg_c);
         }
-        ellipse(0, 0, lerp(0, row_step, i/cols), row_step);
+        ellipse(0, 0, lerp(weight*2, row_step, i/cols), row_step);
         pop();
     }
     if(j == highlighted_row) {
-      stroke("ORANGE");
-      fill("ORANGE");
+      stroke(c2);
+      fill(c2);
       circle(last_x, 0, row_step * 0.9);
     }
     pop();
