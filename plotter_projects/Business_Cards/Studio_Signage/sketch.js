@@ -54,7 +54,7 @@ function draw() {
   const line1 = font.getPath("Robot", 0,0, text_size);
   const line2 = font.getPath("Drawing", 0,0, text_size);
   const line3 = font.getPath("Demos", 0,0, text_size);
-  const line4 = font.getPath("Studio #406", 0,0, text_size);
+  const line4 = font.getPath("Studio #195", 0,0, text_size);
   translate(x_loc, y_loc);
   draw_open_type_js_path_p5_commands(line1);
   translate(x2_loc, y2_loc);
