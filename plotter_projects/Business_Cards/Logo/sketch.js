@@ -11,14 +11,19 @@ let font;
 function gui_values(){
   parameterize("guide_lines", 0, 0, 1, 1, false);
   parameterize("text_size", 96, 1, 500, 1, true);
-  parameterize("x_loc", 16, -base_x, base_x, 1, true);
-  parameterize("y_loc", 112, -base_y, base_y, 1, true);
+  parameterize("x_loc", 7, -base_x, base_x, 1, true);
+  parameterize("y_loc", 77, -base_y, base_y, 1, true);
   parameterize("face_x_loc", 228, -base_x, base_x, 1, true);
   parameterize("face_y_loc", -49, -base_y, base_y, 1, true);
+  parameterize("face_text_x_loc", -137, -base_x, base_x, 1, true);
+  parameterize("face_text_y_loc", 145, -base_y, base_y, 1, true);
 }
 
+//Standard Business Cards are 3.5"x2"
+//I shortened it to 3.25" to match the size of a credit card
+
 function setup() {
-  common_setup(3.5*96, 2*96);
+  common_setup(3.25*96, 2*96); 
   gui_values();
 
   if(!redraw){
@@ -38,6 +43,8 @@ function draw() {
   global_draw_start();
   push();
 
+  strokeWeight(SHARPIE * global_scale);
+
   if(guide_lines){
     rect(0,0,canvas_x, canvas_y);
     line(canvas_x/2, 0, canvas_x/2, canvas_y);
@@ -49,10 +56,17 @@ function draw() {
 
   const lewiston_path = font.getPath("Lewiston", 0,0, text_size);
   const face_path = font.getPath(":D", 0,0, text_size);
+  const face_text_path = font.getPath("Face", 0,0,text_size);
   draw_open_type_js_path_p5_commands(lewiston_path);
   translate(face_x_loc, face_y_loc);
+  push();
   rotate(80);
   draw_open_type_js_path_p5_commands(face_path);
+
+  pop();
+
+  translate(face_text_x_loc, face_text_y_loc);
+  draw_open_type_js_path_p5_commands(face_text_path);
   // textSize(text_size);
   // translate(0*global_scale, canvas_y/2)
   // text("Lewiston", 0,0);
