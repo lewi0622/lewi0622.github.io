@@ -27,7 +27,10 @@ function setup() {
 function draw() {
   global_draw_start();
   push();
-  
+  png_bg(true);
+  const c1 = random(working_palette);
+  reduce_array(working_palette, c1);
+  const c2 = random(working_palette);
   noFill();
   const weight = LEPEN * global_scale;
   strokeWeight(weight);
@@ -64,13 +67,13 @@ function draw() {
       vec_next_pt.setMag(vec_next_pt.mag() - absolute_spacing * variance);
 
       translate(current_pt.x, current_pt.y);
-      stroke("BLACK")
+      stroke(c1)
       line(0,0, vec_prev_pt.x, vec_prev_pt.y);
       line(0,0, vec_next_pt.x, vec_next_pt.y);
       vertex(current_pt.x,current_pt.y);
       pop();
     }
-    stroke("GOLD")
+    stroke(c2)
     endShape();
   }
 
