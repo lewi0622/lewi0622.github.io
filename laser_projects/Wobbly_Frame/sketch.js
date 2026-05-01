@@ -10,16 +10,17 @@ const suggested_palettes = [];
 
 function gui_values(){
   parameterize("pt_offset_pct", 0.1, 0, 0.5, 0.01, false);
-  parameterize("inner_pt_offset_pct", 0.2, 0, 0.5, 0.01, false);
+  parameterize("inner_pt_offset_pct", 0.5, 0, 1, 0.01, false);
   parameterize("step_size", 40, 1, 100, 1, false);
   parameterize("noise_radius", 8, 1, 100, 1, false);
   parameterize("noise_amp", 100, 0, 100, 1, true);
   parameterize("angle_damp", 1, 1, 200, 1, false);
+  parameterize("rounded_rect", 96, 0, 4*96, 1, true);
   // parameterize("debug", 0, 0, 1, 1, false);
 }
 
 function setup() {
-  common_setup(6*96, 8*96); //multiply by 6 to get actual size
+  common_setup(12*96, 16*96); //multiply by 6 to get actual size
   gui_values();
   noFill();
 }
@@ -27,12 +28,25 @@ function setup() {
 function draw() {
   global_draw_start();
 
-  png_bg(true);
+  // png_bg(true);
   push();
   
   outline(pt_offset_pct);
-  outline(inner_pt_offset_pct);
 
+  translate(canvas_x/2, canvas_y/2);
+  rectMode(CENTER);
+  rect(
+    0,0, 
+    canvas_x * (1-inner_pt_offset_pct), canvas_y * (1-inner_pt_offset_pct),
+    rounded_rect
+  );
+
+  if(type=="png"){
+    stroke("RED");
+    rect(0,0,3*96*global_scale, 4*96*global_scale); //18x24 paper
+    rect(0,0,6*96, 8*96) //36x48 frame
+    rect(0,0,(35/6)*96, (47/6)*96) //36x48 frame
+  }
 
   pop();  
   
@@ -47,13 +61,13 @@ function outline(offset_pct){
   const TL_pt = {x:canvas_x * offset_pct, y:canvas_y * offset_pct};
 
   beginShape();
-  a_to_b(TR_pt, BR_pt, 0);
+  a_to_b(TR_pt, BR_pt, 360);
   corner(BR_pt, 0)
-  a_to_b(BR_pt, BL_pt, 90);
+  a_to_b(BR_pt, BL_pt, 450);
   corner(BL_pt, 90)
-  a_to_b(BL_pt, TL_pt, 180);
+  a_to_b(BL_pt, TL_pt, 540);
   corner(TL_pt, 180)
-  a_to_b(TL_pt, TR_pt, 270);
+  a_to_b(TL_pt, TR_pt, 630);
   corner(TR_pt, 270)
   endShape(CLOSE);
 }
