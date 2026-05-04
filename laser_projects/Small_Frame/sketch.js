@@ -16,10 +16,11 @@ function gui_values(){
   parameterize("num_thetas", 5, 1, 20, 1, false);
   parameterize("shape_x", 0, -base_x/2, base_x/2, 1, true);
   parameterize("shape_y", 0, -base_y/2, base_y/2, 1, true);
+  parameterize("rotation", 0, 0, 360, 1, false);
 }
 
 function setup() {
-  common_setup(24*96, 30*96);
+  common_setup(17*96/2, 23*96/2);
   gui_values();
   noFill();
 }
@@ -31,8 +32,8 @@ function draw() {
   translate(shape_x, shape_y);
 
   translate(canvas_x/2 ,canvas_y/2);
+  rotate(rotation);
   const angle_step_size = 360 / angle_steps;
-  // rotate(random(360));
 
   const theta_mults = [];
   const theta_offsets = [];
@@ -77,10 +78,13 @@ function draw() {
   push();
   translate(canvas_x/2, canvas_y/2);
   rectMode(CENTER);
+  stroke("BLUE");
+  rect(0,0,9*96/2*global_scale, 12*96/2*global_scale); //page
   stroke("RED");
-  rect(0,0, 9*96, 12*96);
+  if(type == "png") rect(4*96/2*global_scale,0, 0.5*96/2*global_scale, 11*96/2*global_scale); //right bar
+  if(type == "png") rect(-4*96/2*global_scale,0, 0.5*96/2*global_scale, 11*96/2*global_scale); //left bar
   stroke("BLACK")
-  rect(0,0, 8*96, 11*96);
+  rect(0,0, 7.5*96/2*global_scale, 10.5*96/2*global_scale);
 
   pop();  
   
