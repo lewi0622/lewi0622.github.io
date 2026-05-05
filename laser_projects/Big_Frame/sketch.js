@@ -15,12 +15,10 @@ function gui_values(){
   parameterize("noise_radius", 8, 1, 100, 1, false);
   parameterize("noise_amp", 100, 0, 100, 1, true);
   parameterize("angle_damp", 1, 1, 200, 1, false);
-  parameterize("rounded_rect", 96, 0, 4*96, 1, true);
-  // parameterize("debug", 0, 0, 1, 1, false);
 }
 
 function setup() {
-  common_setup(12*96, 16*96); //multiply by 6 to get actual size
+  common_setup(6*96, 8*96); //multiply by 4 to get actual size
   gui_values();
   noFill();
 }
@@ -31,22 +29,24 @@ function draw() {
   // png_bg(true);
   push();
   
+  const scale_factor = 96*global_scale/4;
+
   outline(pt_offset_pct);
 
   translate(canvas_x/2, canvas_y/2);
   rectMode(CENTER);
-  rect(
-    0,0, 
-    canvas_x * (1-inner_pt_offset_pct), canvas_y * (1-inner_pt_offset_pct),
-    rounded_rect
-  );
+
 
   if(type=="png"){
+    stroke("BLUE")
+    rect(0,0,18*scale_factor, 24*scale_factor); //18x24 paper
     stroke("RED");
-    rect(0,0,3*96*global_scale, 4*96*global_scale); //18x24 paper
-    rect(0,0,6*96, 8*96) //36x48 frame
-    rect(0,0,(35/6)*96, (47/6)*96) //36x48 frame
+    rect(-17/2*scale_factor, 0, 0.5*scale_factor, 23*scale_factor) //36x48 frame
+    rect(17/2*scale_factor, 0, 0.5*scale_factor, 23*scale_factor) //36x48 frame
   }
+
+  stroke("BLACK")
+  rect(0,0, 16.5*scale_factor, 22.5*scale_factor);
 
   pop();  
   
