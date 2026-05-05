@@ -7,15 +7,15 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
-const suggested_palettes = [];
+const suggested_palettes = [SIXTIES];
 
 function gui_values(){
-  parameterize("num_rects", 500, 1, 10000, 1, false);
+  parameterize("num_rects", 250, 1, 10000, 1, false);
   parameterize("min_size", 20, 0, smaller_base, 1, true);
-  parameterize("max_size", 100, 0, smaller_base, 1, true);
-  parameterize("min_lines", 3, 1, 50, 1, false);
-  parameterize("max_lines", 10, 1, 100, 1, false);
-  parameterize("rect_margin", 10, -base_x, base_x, 1, true);
+  parameterize("max_size", 200, 0, smaller_base, 1, true);
+  parameterize("min_lines", 10, 1, 50, 1, false);
+  parameterize("max_lines", 20, 1, 100, 1, false);
+  parameterize("rect_margin", smaller_base/50, -base_x, base_x, 1, true);
 }
 
 function setup() {
@@ -26,13 +26,18 @@ function setup() {
 function draw() {
   global_draw_start();
   push();
-  png_bg(true);
+  png_bg(false);
   strokeCap(PROJECT);
   const fill_c = random(working_palette);
   noStroke();
   strokeWeight(0.0944882*96*global_scale);
   fill("WHITE");
-  const colors = [color("YELLOW"), color("CYAN"), color("MAGENTA")];
+  working_palette = controlled_shuffle(working_palette);//[color("YELLOW"), color("CYAN"), color("MAGENTA")];
+
+  let colors = [];
+  for(let i=0; i<working_palette.length; i++){
+    colors.push(color(working_palette[i]));
+  }
 
   for(let i=0; i<num_rects; i++){
     push();
