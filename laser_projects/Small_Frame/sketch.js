@@ -14,13 +14,15 @@ function gui_values(){
   parameterize("angle_steps", 360, 1, 360, 1, false);
   parameterize("x_damp", 1, 0.1, 10, 0.1, false);
   parameterize("y_damp", 1, 0.1, 10, 0.1, false);
-  parameterize("my_radius", 2.5, -20, 20, 0.1, true);
+  parameterize("my_radius", 20, 0, 60, 0.1, true);
   parameterize("num_thetas", 5, 1, 20, 1, false);
   parameterize("shape_x", 0, -base_x/2, base_x/2, 1, true);
   parameterize("shape_y", 0, -base_y/2, base_y/2, 1, true);
   parameterize("rotation", 0, 0, 360, 1, false);
-  parameterize("rad_lerp", 0.06, 0, 0.5, 0.01, false);
+  parameterize("rad_lerp", 0.5, 0, 0.5, 0.01, false);
   parameterize("rad_start_pct", 1.07, -5, 5, 0.01, false);
+  parameterize("sm_rad_pct", 1, 0, 2, 0.01, false);
+  parameterize("lg_rad_pct", 1.5, 0, 2, 0.01, false);
 }
 
 function setup() {
@@ -37,8 +39,8 @@ function draw() {
 
   const scale_factor = 96/4*global_scale
 
-  const sm_min_radius = 7.5*scale_factor/2;
-  const lg_min_radius = 10.5*scale_factor/2;
+  const sm_min_radius = 7.5*scale_factor/2 * sm_rad_pct;
+  const lg_min_radius = 10.5*scale_factor/2 * lg_rad_pct;
 
   const sm_max_radius = canvas_x;
   const lg_max_radius = canvas_y;
