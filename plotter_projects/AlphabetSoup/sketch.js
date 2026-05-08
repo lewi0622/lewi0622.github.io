@@ -198,3 +198,19 @@ function map_letter_edges(pts, rows, cols, grid_step_size){
 
   return edge_map;
 }
+
+function just_ON(letter_map, cols, rows, grid_size){
+  const on_map = [];
+  for(let j=0; j<cols; j++){
+    for(let i=0; i<rows; i++){
+      const tile = letter_map[j][i];
+      if(tile == 1){
+        on_map.push({
+          x:j * grid_size, 
+          y:i * grid_size
+        })
+      }
+    }
+  }
+  return on_map;
+}
