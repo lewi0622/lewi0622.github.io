@@ -7,29 +7,38 @@ const capture = false;
 const capture_time = 50/fr;
 
 let bg_c, shapes, weight, z;
-
+let smallest_rad, largest_rad;
 
 const suggested_palettes = [];
 function gui_values(){
   parameterize("rows", floor(base_y/16), 1, floor(base_y/2), 1, false);
   parameterize("step_size", 2, 1, smaller_base/50, 1, true);
   parameterize("frame_split", 30, 1, fr * 10, 1, false);
-  parameterize("num_per_frame", 20, 1, 100, 1, false);
+  parameterize("num_per_frame", 50, 1, 100, 1, false);
+  parameterize("num_circles", floor(random(5,30)), 2, 50, 1, false);
 }
+
+//get rid of small circles as their own
+//spawn small circles as eddies along the way
+
 
 function setup() {
   common_setup();
+  loop();
   gui_values();
 
   z = 0;
 
   shapes = [];
 
-  for(let i=0; i<20; i++){
+  for(let i=0; i<num_circles; i++){
     shapes.push(create_plume());
   }
 
   shapes.sort((a, b) => b.radius - a.radius);
+
+  smallest_rad = shapes[0].radius;
+  largest_rad = shapes[shapes.length-1].radius;
 
   bg_c = png_bg(true);
   fill(bg_c);
@@ -61,9 +70,10 @@ function draw() {
     for(let i=0; i<shapes.length; i++){
       const current_shape = shapes[i];
 
-      if(current_shape.radius < weight*4) remove_index.push(i)
+      const pct_y = 1-(current_shape.y/canvas_y);
+      const pct_rad = map(current_shape.radius, smallest_rad, largest_rad, 0, 1);
 
-      const max_angle = lerp(90, 180, (canvas_y - current_shape.y)/current_shape.y);
+      const max_angle = lerp(90, 720, pct_rad*pct_y);
       const angle = -90 + map(noise(current_shape.noise_offset, z/100), 0,1, -max_angle, max_angle);
 
       current_shape.x += current_shape.step_size * cos(angle);
@@ -72,18 +82,21 @@ function draw() {
       if(off_page(current_shape)){
         remove_index.push(i)
       } else{
-        if(z % 2 == 0) stroke("BLACK");
-        else stroke(bg_c);
+        if(z % 2 == 0) stroke(bg_c);
+        else stroke("BLACK");
         push();
-        translate(current_shape.step_size * random(-1,1), current_shape.step_size * random(-1,1));
-        circle(current_shape.x, current_shape.y, current_shape.radius * 2);
+        const rnd_amt = 1;
+        translate(current_shape.step_size * random(-rnd_amt, rnd_amt), current_shape.step_size * random(-rnd_amt, rnd_amt));
+
+        const diameter = lerp(current_shape.radius/2, current_shape.radius*2, pct_y);
+        circle(current_shape.x, current_shape.y, diameter);
         pop();
       }
     }
 
     for(let i=shapes.length-1; i>=0; i--){
       if(remove_index.includes(i)){
-        shapes.splice(i,1)
+        shapes.splice(i,1);
       }
     }
 
@@ -95,7 +108,13 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function create_plume(parent, step_min=2*global_scale, step_max=6*global_scale){
+function create_plume(
+  parent, 
+  rad_min=smaller_base/50*global_scale, 
+  rad_max=smaller_base/3*global_scale,
+  step_min=2*global_scale, 
+  step_max=6*global_scale
+){
   if(parent == null){
     const plume = {
       x: canvas_x/2,
@@ -103,7 +122,7 @@ function create_plume(parent, step_min=2*global_scale, step_max=6*global_scale){
       step_size: random(step_min, step_max),
       noise_offset: random(1000)
     }
-    plume.radius = lerp(smaller_base/100, smaller_base/16, map(plume.step_size, step_min,step_max, 0,1));
+    plume.radius = lerp(rad_min, rad_max, map(plume.step_size, step_min,step_max, 0,1));
     return plume
   }
 
