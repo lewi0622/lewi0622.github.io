@@ -82,8 +82,6 @@ function draw() {
     const pt = {x:x, y:y};
     pts.push(pt);
 
-    // if(i == 0) circle(x,y,100)
-
     if(theta == 45) pt_45 = pt;
     else if(theta == 135) pt_135 = pt;
     else if(theta == 225) pt_225 = pt;
@@ -98,8 +96,6 @@ function draw() {
   endShape(CLOSE);
 
   //corners
-  line()
-
   pop();
 
   push();
