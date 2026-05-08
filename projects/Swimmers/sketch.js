@@ -86,7 +86,7 @@ function draw() {
 
 function spawn_swimmers(tail_legnth){
   const x = random(canvas_x/4, canvas_x*3/4);
-  const y = random(canvas_x/4, canvas_x*3/4);
+  const y = random(canvas_y/4, canvas_y*3/4);
 
   let swimmer = {};
   swimmer.heading = random(360);
