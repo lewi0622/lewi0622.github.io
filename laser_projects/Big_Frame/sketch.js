@@ -46,7 +46,7 @@ function draw() {
   }
 
   stroke("BLACK")
-  rect(0,0, 16.5*scale_factor, 22.5*scale_factor);
+  rect(0,0, 16.5*scale_factor, 22.5*scale_factor, 0.25*scale_factor);
 
   pop();  
   
