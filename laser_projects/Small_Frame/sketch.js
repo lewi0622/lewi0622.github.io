@@ -11,6 +11,7 @@ const suggested_palettes = [];
 function gui_values(){
   parameterize("total_x", 0, -base_x, base_x, 1, true);
   parameterize("total_y", 0, -base_y, base_y, 1, true);
+  parameterize("total_rotation", 0, 0, 360, 1, false);
   parameterize("angle_steps", 360, 1, 360, 1, false);
   parameterize("x_damp", 1, 0.1, 10, 0.1, false);
   parameterize("y_damp", 1, 0.1, 10, 0.1, false);
@@ -36,6 +37,7 @@ function draw() {
 
   push();
   translate(total_x, total_y);
+  center_rotate(total_rotation);
 
   const scale_factor = 96/4*global_scale
 
@@ -100,18 +102,20 @@ function draw() {
 
   push();
   translate(total_x, total_y);
+  center_rotate(total_rotation);
   translate(canvas_x/2, canvas_y/2);
   rectMode(CENTER);
   stroke("BLUE");
   if(type == "png"){
     rect(0,0,9*scale_factor, 12*scale_factor); //page
+    rect(0,0,8*scale_factor, 10*scale_factor); //8x10 page
     stroke("RED");
-    rect(4*scale_factor,0, 0.5*scale_factor, 11*scale_factor); //right bar
-    rect(-4*scale_factor,0, 0.5*scale_factor, 11*scale_factor); //left bar
+    rect(3.75*scale_factor,0, 0.5*scale_factor, 8.75*scale_factor); //right bar
+    rect(-3.75*scale_factor,0, 0.5*scale_factor, 8.75*scale_factor); //left bar
   }
 
   stroke("BLACK")
-  rect(0,0, 7.5*scale_factor, 10.5*scale_factor);
+  rect(0,0, 7*scale_factor, 8.75*scale_factor, 0.25*scale_factor);
 
   pop();  
   
