@@ -14,8 +14,8 @@ const suggested_palettes = [];
 let col_step, row_step, last_boot_pt, last_boot_tile, boot_spacing, boot_count, weight;
 
 function gui_values(){
-  parameterize("cols", floor(base_x * random(1/8, 1/2)), 1, base_x, 1, false);
-  parameterize("rows", floor(base_y * random(1/8, 1/2)), 1, base_y, 1, false);
+  parameterize("cols", floor(base_x * random(1/4, 1/2)), 1, base_x, 1, false);
+  parameterize("rows", floor(base_y * random(1/4, 1/2)), 1, base_y, 1, false);
   parameterize("shadow_angle", random(-45,0) + random([0,-135]), -360, 0, 1, false);
   parameterize("shadow_len_pct", random(2,5), 0, 10, 0.1, false);
 }
@@ -178,8 +178,8 @@ function boots(x,y){
 
   const boot_variation = 0.5;
   
-  let w = col_step/3;
-  let h = row_step/3;  
+  let w = max(col_step, row_step)/3;
+  let h = min(col_step, row_step)/3;  
   
   push();
 
