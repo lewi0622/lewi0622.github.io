@@ -1480,9 +1480,9 @@ function keypress_handler(e){
   if(e.key === "Enter" && (event_id === "Seed" || event_id === "Scale Input" || event_id === "X Size Val" || event_id === "Y Size Val")){
     set_seed(e); //pass thru event details
   }
-  else if(e.key == 65) previous_seed(); //A key
-  else if(e.key == 83) randomize_seed();//S key
-  else if(e.key == 68) next_seed();     //D key
+  else if(e.key == "a") previous_seed(); //A key
+  else if(e.key == "s") randomize_seed();//S key
+  else if(e.key == "d") next_seed();     //D key
   else enable_full_controls(e.key);
 }
 
