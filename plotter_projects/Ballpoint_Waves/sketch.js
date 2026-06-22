@@ -24,9 +24,11 @@ function setup() {
   gui_values();
   noFill();
   randomize_params();
+  noLoop();
 }
 //***************************************************
 function draw() {
+  if(!isLooping()) return; //despite the noLoop command above, it still executes once
   global_draw_start(false);
   push();
     const c = color("RED");
