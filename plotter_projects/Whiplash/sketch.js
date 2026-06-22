@@ -12,9 +12,9 @@ function gui_values(){
   parameterize("i_mult_inc", 0.000003, 0.000001, 0.000100, 0.000001, false);
   parameterize("noise_maximum", 2, 0, 5, 0.1, false);
   parameterize("step_size", 3, 1, 50, 1, false);
-  parameterize("step_num", 720, 10, 1500, 20, false);
+  parameterize("step_num", 720, 10, 3000, 20, false);
   parameterize("rotation", 0, 0, 360, 1, false);
-  parameterize("line_size", 300, 100, 1500, 10, true);
+  parameterize("line_size", 300, 100, 2500, 10, true);
   parameterize("phase_off", 20, 0, 20, 0.1, false);
   parameterize("octaves", 4, 1, 20, 1, false);
   parameterize("falloff", 0.5, 0, 1, 0.01, false);
