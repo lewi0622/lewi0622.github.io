@@ -82,6 +82,7 @@ function lerp_coords(){
 }
 
 function mouseClicked(){
+  if(mouseX < 0 || mouseY < 0 || mouseX > canvas_x || mouseY > canvas_y) return;
   if(isLooping()) noLoop();
   else{
     randomize_params();
