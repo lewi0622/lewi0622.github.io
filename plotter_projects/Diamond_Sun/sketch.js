@@ -17,8 +17,9 @@ function gui_values(){
   parameterize("pct_h", random(0.3,0.5), 0, 1, 0.01, false);
   parameterize("offset_w", random(-0.35, 0.35), -1, 1, 0.01, false);
   parameterize("offset_h", random(-0.35, 0.35), -1, 1, 0.01, false);
-  parameterize("wobble_amp", smaller_base * random(0.25, 1.5), 0, 1000, 1, true);
-  parameterize("step_size", smaller_base / random(8,40), 5, 50, 1, true);
+  parameterize("wobble_amp", smaller_base / random(3,6), 0, smaller_base * 2, 1, true);
+  parameterize("step_size", 5, 5, 50, 1, true);
+  parameterize("outline_weight", 10, 1, 100, 1, true);
 } 
 
 function setup() {
@@ -63,9 +64,8 @@ function draw() {
 
   pop();
   stroke(c1);
-  let outline_weight = 10*global_scale;
   if(type == "png") strokeWeight(outline_weight);
-  mask(outline_weight);-
+  mask(outline_weight);
 
   pop();
   global_draw_end();
@@ -83,12 +83,13 @@ function mask(outline_weight = 1*global_scale, w=canvas_x * pct_w, h=canvas_y * 
     stroke(c2);
     if(i==iterations && type == "svg") stroke("GREEN");
   
-    const inc = i * weight;
+    const w_inc = i * weight * 2 * pct_w;
+    const h_inc = i * weight * 2 * pct_h;
     beginShape();
-    vertex(w -inc, 0);
-    vertex(0, h-inc);
-    vertex(-w+inc, 0);
-    vertex(0, -h+inc);
+    vertex(w - w_inc, 0);
+    vertex(0, h - h_inc);
+    vertex(-w + w_inc, 0);
+    vertex(0, -h + h_inc);
     endShape(CLOSE);
   }
 }
