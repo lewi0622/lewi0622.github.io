@@ -18,7 +18,7 @@ const MICRON005 = 0.00787402*96;
 
 const GELLYROLLMOONLIGHT10 = 0.019685 * 96;
 
-const BICCRISTAL = 0.00984*96; //compared against actual plot with unweighted bic pen
+const BICCRISTAL = 0.00787402*96; //compared against actual plot with unweighted bic pen
 const BICCRISTAL_ALPHA = 0.7 * 255;
 const BIC_BLACK = "#030303";
 const BIC_PINK = "#CF2972";
