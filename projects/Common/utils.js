@@ -1119,6 +1119,7 @@ function protected_storage_set(name, val, type){
     else console.log("storage type not properly specified");
   }
   catch(err){
+    console.log(err.name);
     console.log("Cannot access " + type + " storage to set item, probably an ad blocker issue");
   }
 }
