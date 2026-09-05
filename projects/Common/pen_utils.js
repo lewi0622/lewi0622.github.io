@@ -16,6 +16,7 @@ const TAOTREE = 0.01496063*96;
 const MICRON05 = 0.01771654*96;
 const MICRON005 = 0.00787402*96;
 
+const GELLYROLLMOONLIGHT06 = 0.011811 * 96;
 const GELLYROLLMOONLIGHT10 = 0.019685 * 96;
 
 const BICCRISTAL = 0.00787402*96; //compared against actual plot with unweighted bic pen
