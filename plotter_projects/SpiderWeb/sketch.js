@@ -9,10 +9,10 @@ const capture_time = 10;
 const suggested_palettes = [];
 
 function gui_values(){
-  parameterize("starting_rad", base_x, 0, base_x*2, 1, true);
+  parameterize("starting_rad", larger_base, 0, larger_base*2, 1, true);
   parameterize("circ_pts", 12, 1, 60, 1, false);
   parameterize("line_pts", 20, 1, 100, 1, false);
-  parameterize("iterations", 100, 1, 500, 1, false);
+  parameterize("iterations", 100, 1, 10000, 1, false);
   parameterize("i_damp", 1, 0.1, 100, 0.1, false);
   parameterize("j_damp", 100, 1, 1000, 1, false);
   parameterize("k_damp", 10, 1, 100, 1, false);
@@ -28,6 +28,12 @@ function draw() {
   //actual drawing stuff
   push();
   strokeWeight(2*global_scale);
+
+  strokeWeight(BICCRISTAL * global_scale);
+  const c = color(BIC_BLACK);
+  c.setAlpha(BICCRISTAL_ALPHA);
+  stroke(c);
+
   png_bg(false);
   noFill();
   translate(canvas_x/2, canvas_y/2);
