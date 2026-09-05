@@ -17,7 +17,7 @@ function gui_values(){
   parameterize("max_noise_angle", random(50), 0, 180, 1, false); //small sin on this looks like swaying in the wind
   parameterize("noise_damp", random(1,15), 1, 100, 1, false);
   parameterize("stalk_segment_move", random(1, 5), 0, 10, 0.1, true);
-  parameterize("max_hair_repeats", round(random(5,10)), 1, 20, 1, false);
+  parameterize("max_hair_repeats", 2, 1, 20, 1, false);
   parameterize("max_hair_length", random(2,30), 0, 50, 0.1, true);
   parameterize("hair_start_pct", random(0.4,0.9), 0, 1, 0.01, false);
   parameterize("hair_move", random(0,5), 0, 20, 0.1, true);
@@ -122,6 +122,7 @@ function hairs(pt1, pt2, hair_length, repeat = 2) {
   for(let i=0; i<repeat; i++){
     push();
     stroke(hair_c);
+    strokeWeight(GELLYROLLMOONLIGHT06 * global_scale);
     translate(hair_move * random(-1,1), hair_move * random(-1,1));
     translate(p1.x, p1.y);
     rotate(v.heading());
