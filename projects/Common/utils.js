@@ -1,6 +1,6 @@
 "use strict";
 // globals
-const project_path = window.location.pathname.split('/')
+const project_path = window.location.pathname.split('/');
 const project_name = project_path[project_path.length-2];
 const parameter_storage_name = project_name + "_gui_params";
 let canvas_x, canvas_y, cnv;
@@ -159,16 +159,6 @@ function first_time_setup(){
       return false; 
     };
   }
-
-  //retrieve stored gui_params
-  let stored_params = protected_storage_get(parameter_storage_name, "session");
-  if(stored_params != null){
-    stored_params = JSON.parse(stored_params);
-    for(const key in stored_params){
-      gui_params[key] = stored_params[key];
-    }
-  }
-
 }
 
 function build_controls(){
@@ -244,20 +234,21 @@ function verify_pixel_density(val){
 
 
 function build_url(){
+  const url_params = new URLSearchParams(window.location.search);
   let base_url = "index.html?";
   //required
-  base_url += "controls=" + controls_param;
-  base_url += "&seed=" + seed_param;
-  base_url += "&colors=" + colors_param;
-  base_url += "&scale=" + scale_param;
-  base_url += "&x_size_px=" + x_size_px_param;
-  base_url += "&y_size_px=" + y_size_px_param;
+  url_params.set("controls", controls_param);
+  url_params.set("seed", seed_param);
+  url_params.set("colors", colors_param);
+  url_params.set("scale", scale_param);
+  url_params.set("x_size_px", x_size_px_param);
+  url_params.set("y_size_px", y_size_px_param);
 
   //optional
-  if(randomize_time_param > 0) base_url += "&randomize_time=" + randomize_time_param;
-  if(pixel_density_param != 1) base_url += "&pixel_density=" + pixel_density_param;
+  if(randomize_time_param > 0) url_params.set("randomize_time", randomize_time_param);
+  if(pixel_density_param != 1) url_params.set("pixel_density", pixel_density_param);
 
-  return base_url;
+  return base_url + url_params.toString();
 }
 
 function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P2D){
@@ -936,7 +927,6 @@ function clear_params(){
   }
 
   clearMIDIvalues();
-  remove_parameters();
 
   redraw_reason = "reset_parameters";
   redraw_sketch();
@@ -1135,23 +1125,43 @@ function protected_storage_remove(name, type){
   }
 }
 
-onpagehide = function(){save_parameters()}
-
-//create separate overwrite gui function
-
-function save_parameters(){
-  //called from onunload event when the page changes
-  protected_storage_set(parameter_storage_name, JSON.stringify(gui_params), "session");
+function check_param_in_URL(name){
+  // check to see if name exists in params, return the value
+  const url = new URLSearchParams(window.location.search);
+  const my_param = url.get(name);
+  if(my_param != null) return parseFloat(my_param);
+  return null
 }
-
-function remove_parameters(){
-  //when Reset Parameters
-  protected_storage_remove(parameter_storage_name, "session");
-}
-
 
 function parameterize(name, val, min, max, step, scale, midi_channel){
   if(redraw_reason == "gui" && name != gui_element_changed) return;
+
+  let freeze_new_param = false;
+
+  const url_val = check_param_in_URL(name)
+  //if not redraw, replace val with param value
+  if(!redraw && url_val != null){
+    if(val != url_val){
+      if(gui_params[name] == undefined) freeze_new_param = true;
+      else{
+        gui_params[name].frozen = true;
+        gui_params[name].value = url_val;
+      }
+    }
+    val = url_val;
+  }
+  // populate url with val
+  const url_params = new URLSearchParams(window.location.search);
+  if(url_val != null) url_params.delete(name);
+  if(redraw && gui_params[name].frozen){
+    let gui_val = gui.prototype._controls[name].getValue();
+    if(scale){
+      if(multiplier_changed) gui_val = gui_val/previous_scale;
+      else gui_val = gui_val/global_scale;
+    }
+    url_params.append(name, gui_val);
+  } else url_params.append(name, val);
+  window.history.replaceState({}, "", window.location.origin + window.location.pathname + "?" + url_params.toString()); 
 
   if(scale == undefined || scale != true) scale=false;
   if(midi_channel == undefined) midi_channel = false;
@@ -1192,7 +1202,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       max:max,
       step:step,
       scale:scale,
-      frozen:false
+      frozen:freeze_new_param
     };
   }
   else{
