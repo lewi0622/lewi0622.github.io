@@ -325,7 +325,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
-  if(!(gif && !animation)) frameCount = 0; //with animations, this needs to be one of the last things changed
+  if(!gif || animation) frameCount = 0; //with animations, this needs to be one of the last things changed
 
   //shift position to center canvas if base is different than 400
   if(size_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
@@ -1259,7 +1259,7 @@ function attach_icons(){
   //<a href="https://www.flaticon.com/free-icons/dice" title="dice icons">Dice icons created by Freepik - Flaticon</a>
 
   const gui_containers = document.getElementsByClassName("qs_container");
-  gui_containers.forEach(container => {
+  [...gui_containers].forEach(container => {
     let gui_label = container.getElementsByClassName("qs_label")[0];
     if(gui_label == undefined){
       //check if checkbox
