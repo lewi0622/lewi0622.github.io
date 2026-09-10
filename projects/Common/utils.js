@@ -1152,15 +1152,14 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
   }
   // populate url with val
   const url_params = new URLSearchParams(window.location.search);
-  if(url_val != null) url_params.delete(name);
   if(redraw && gui_params[name].frozen){
     let gui_val = gui.prototype._controls[name].getValue();
     if(scale){
       if(multiplier_changed) gui_val = gui_val/previous_scale;
       else gui_val = gui_val/global_scale;
     }
-    url_params.append(name, gui_val);
-  } else url_params.append(name, val);
+    url_params.set(name, gui_val);
+  } else url_params.set(name, val);
   window.history.replaceState({}, "", window.location.origin + window.location.pathname + "?" + url_params.toString()); 
 
   if(scale == undefined || scale != true) scale=false;
