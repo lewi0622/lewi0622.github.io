@@ -33,6 +33,7 @@ let timeout_set = false;
 const in_iframe = window.location !== window.parent.location;
 let type = 'png';
 let redrawn = false;
+let my_frameCount = 0;
 
 //gui vars
 let redraw_reason;
@@ -325,7 +326,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   if(!redrawn) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
-  if(!gif || animation) frameCount = 0; //with animations, this needs to be one of the last things changed
+  if(!gif || animation) my_frameCount = 0; //with animations, this needs to be one of the last things changed
 
   //shift position to center canvas if base is different than 400
   if(size_x<=400) cnv.position((400*global_scale-canvas_x)/2, 0);
@@ -778,6 +779,7 @@ function global_draw_start(clear_cnv=true){
 }
 
 function global_draw_end(){
+  my_frameCount += 1;
 }
 
 async function exportVideo() {
@@ -785,17 +787,24 @@ async function exportVideo() {
 
   await capturer.start();
   capture_state = "start";
-  function tick() {
-    if (frameCount > num_frames) {
+  async function tick() {
+    if (my_frameCount > num_frames) {
       capturer.stop();
       capture_state = "stop";
       capturer.save();
-      console.log("done");
       return;
     }
     capturer.capture(cnv.elt);
     capture_state = "capture";
-    redraw();
+    const val = draw();
+    if(val == -1){
+      capturer.stop();
+      capturer.dispose();
+      capturer = new CCapture({format:'png', name:String(fr), framerate:fr, autoSaveTime:30});
+      await capturer.start();
+      capture_state = "start";
+      my_frameCount = 0;
+    }
     requestAnimationFrame(tick);
   }
 
@@ -1519,7 +1528,7 @@ function angle_loop(rate, seconds, number_of_loops=1){
   //returns the angle for the current frame
   const circle_steps = rate * seconds;
   const angle_steps = number_of_loops * 360 / circle_steps;
-  return frameCount % circle_steps * angle_steps;
+  return my_frameCount % circle_steps * angle_steps;
 }
 
 function noise_loop_2d(rate, seconds, x_granularity, y_granularity=null){
