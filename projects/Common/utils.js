@@ -802,6 +802,7 @@ async function exportVideo() {
 
     const val = draw();
     if(val == -1){
+      //not ready to capture, reset
       capturer.stop();
       capturer.dispose();
       capturer = new CCapture({format:'png', name:String(fr), framerate:fr, autoSaveTime:30});
