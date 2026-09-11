@@ -42,7 +42,7 @@ function draw() {
 
   translate(canvas_x/2, canvas_y/2);
 
-  const pct_change = frameCount/(capture_time * fr);
+  const pct_change = my_frameCount/(capture_time * fr);
 
   //change values by pct_change
   //reduce over time:
@@ -60,7 +60,7 @@ function draw() {
   crawl_branches(right_branch, weight);
   crawl_branches(left_branch, weight);
 
-  if(frameCount > capture_time * fr) noLoop();
+  if(my_frameCount > capture_time * fr) noLoop();
 
   global_draw_end();
 }
@@ -76,7 +76,7 @@ function init_branches(){
 
 function crawl_branches(branch, weight){
   if(branch["children"].length == 0){
-    if(frameCount%branching_frames != 0) return; //check if we can add branches this frame
+    if(my_frameCount%branching_frames != 0) return; //check if we can add branches this frame
     let theta = branch["angle"] + random(min_branch_angle, max_branch_angle);
     branch.children.push({
       x: branch["x"] + branch_length*cos(theta),

@@ -38,7 +38,7 @@ function draw() {
   push();
   
   const num_lines = floor(map(sin(angle_loop(fr, capture_time, 1)), -1,1, 200, 300));
-  // if(frameCount%30 == 0) ang = random(360);
+  // if(my_frameCount%30 == 0) ang = random(360);
   const rot_per_iteration = sin(angle_loop(fr, capture_time, 1)) * ang;
   strokeWeight(0.5*global_scale);
   for(let j=0; j<iterations; j++){

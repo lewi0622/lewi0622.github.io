@@ -36,7 +36,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  if(!font) return;
+  if(!font) return -1; 
   global_draw_start();
   push();
 

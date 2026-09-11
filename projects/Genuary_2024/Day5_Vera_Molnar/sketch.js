@@ -64,7 +64,7 @@ function draw() {
     }
   }
 
-  if(frameCount % 3 == 0){
+  if(my_frameCount % 3 == 0){
     if(rows < 10){
       rows++;
       cols++;

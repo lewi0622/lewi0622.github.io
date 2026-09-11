@@ -27,7 +27,7 @@ function draw() {
   global_draw_start();
 
   //apply background
-  if(frameCount == 1){
+  if(my_frameCount == 1){
     bg_c = random(working_palette);
     if(working_palette.length>3){
       reduce_array(working_palette, bg_c);
@@ -40,7 +40,7 @@ function draw() {
     c = [front_c, side_c, top_c];
   }
 
-  if(frameCount % 10 == 0){
+  if(my_frameCount % 10 == 0){
     c.push(c.shift());
   }
 

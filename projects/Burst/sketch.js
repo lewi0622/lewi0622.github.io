@@ -72,7 +72,7 @@ function draw() {
       fill(pcts[i].c);
     }
     // if(random()>lerp(0.7,1,i/num_lines)) blendMode(ADD);
-    rotate(map(sin(frameCount*2), -1,1, 0, 60));
+    rotate(map(sin(my_frameCount*2), -1,1, 0, 60));
     drawingContext.shadowBlur = lerp(0,5, 1-(pcts[i].l/max_line_len))*global_scale;
     drawingContext.shadowColor = pcts[i].c;
     circle(pcts[i].l, 0, lerp(30, 10, i/num_lines)*global_scale);

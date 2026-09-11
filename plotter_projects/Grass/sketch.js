@@ -71,7 +71,7 @@ function draw() {
       push();
       const coords = grass_coords[i][j];
       translate(coords[0], coords[1]);
-      leaf_of_grass(grass_width, coords[2], i/100 + j/100 + frameCount/40, (i+1)/10);
+      leaf_of_grass(grass_width, coords[2], i/100 + j/100 + my_frameCount/40, (i+1)/10);
       pop();
     }
   }

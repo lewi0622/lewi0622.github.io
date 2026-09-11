@@ -39,7 +39,7 @@ function draw() {
   background(bg_c);
 
   //add new squares
-  if(frameCount%square_rate==0) newSquares(squares);
+  if(my_frameCount%square_rate==0) newSquares(squares);
   for(let i=0; i<squares.length; i++){
     push();
     const sq = squares[i];

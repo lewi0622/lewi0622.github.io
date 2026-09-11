@@ -46,11 +46,11 @@ function draw() {
   global_draw_start();
   
   //apply background
-  if(frameCount == 1){
+  if(my_frameCount == 1){
     moon_c = random(working_palette);
   }
 
-  if(frameCount % mt_spacing == 0) create_mt();
+  if(my_frameCount % mt_spacing == 0) create_mt();
 
   //actual drawing stuff
   push();

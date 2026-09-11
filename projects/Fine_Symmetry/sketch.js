@@ -74,7 +74,7 @@ function draw() {
 
   pop();
 
-  if(frameCount>len) noLoop();  //stop drawing
+  if(my_frameCount>len) noLoop();  //stop drawing
   
   global_draw_end();
 }

@@ -33,11 +33,11 @@ function setup() {
 
   pts = [];
   for(let i=0; i<line_segs; i++){
-    frameCount = fr * capture_time - (line_segs-i);
+    my_frameCount = fr * capture_time - (line_segs-i);
     const [x,y] = create_pt();
     pts.push({x:x, y:y});
   }
-  frameCount = 0;
+  my_frameCount = 0;
 
   document.body.style.background = "BLACK";
   pixelDensity(2);

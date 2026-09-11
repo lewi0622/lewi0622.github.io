@@ -55,7 +55,7 @@ function draw() {
   translate(canvas_x/2, canvas_y/2);
 
   push();
-  if(frameCount > 1) line_c.setAlpha(100);
+  if(my_frameCount > 1) line_c.setAlpha(100);
   fill(line_c);
   noStroke();
   circle(0,0, canvas_x*0.95);
@@ -87,7 +87,7 @@ function draw() {
   pop();
 
   pop();
-  if(frameCount>=60) randomize_seed();
+  if(my_frameCount>=60) randomize_seed();
 
   rotation_amount += rot_inc;
   global_draw_end();

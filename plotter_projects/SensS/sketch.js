@@ -48,9 +48,9 @@ function draw() {
 
   translate(canvas_x/2, canvas_y/2);
 
-  const pct_change = frameCount%bw_swap_frames/bw_swap_frames;
+  const pct_change = my_frameCount%bw_swap_frames/bw_swap_frames;
   //change states
-  if(frameCount%bw_swap_frames == 0){
+  if(my_frameCount%bw_swap_frames == 0){
     bw_state_index++;
     init_branches(state_array[bw_state_index%state_array.length]);
   }
@@ -99,8 +99,8 @@ function init_branches(state){
 
 function crawl_branches(branch, weight){
   if(branch["children"].length == 0){
-    if(frameCount%branching_frames != 0) return; //check if we can add branches this frame
-    // let theta = branch["angle"] + map(noise(frameCount, noise_offset), 0,1, min_branch_angle, max_branch_angle);
+    if(my_frameCount%branching_frames != 0) return; //check if we can add branches this frame
+    // let theta = branch["angle"] + map(noise(my_frameCount, noise_offset), 0,1, min_branch_angle, max_branch_angle);
     let theta = branch["angle"] + random(min_branch_angle, max_branch_angle);
     branch.children.push({
       x: branch["x"] + branch_length*cos(theta),
@@ -110,7 +110,7 @@ function crawl_branches(branch, weight){
       weight: weight
     });
 
-    // theta = branch["angle"] - map(noise(frameCount, noise_offset), 0,1, min_branch_angle, max_branch_angle)
+    // theta = branch["angle"] - map(noise(my_frameCount, noise_offset), 0,1, min_branch_angle, max_branch_angle)
     theta = branch["angle"] - random(min_branch_angle, max_branch_angle);
     branch.children.push({
       x: branch["x"] + branch_length*cos(theta),

@@ -48,7 +48,7 @@ function draw() {
   push();
 
   //move pts
-  const get_new_pts = frameCount%frame_switch == 0;
+  const get_new_pts = my_frameCount%frame_switch == 0;
 
   pts.forEach(pt => {
     if(!pt.moving || get_new_pts){

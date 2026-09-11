@@ -54,14 +54,14 @@ function draw() {
   translate(canvas_x/2, canvas_y/2);
   rotate(rotation_amount);
 
-  if(frameCount<30){
+  if(my_frameCount<30){
     draw_butthole(true);
-    line_length = lerp(50,150, frameCount/30) * global_scale;
-    weight = lerp(7, 50, frameCount/30) * global_scale;
+    line_length = lerp(50,150, my_frameCount/30) * global_scale;
+    weight = lerp(7, 50, my_frameCount/30) * global_scale;
   }
   else{
     draw_butthole(true);
-    const pct = map(frameCount, 30, 60, 0, 1);
+    const pct = map(my_frameCount, 30, 60, 0, 1);
     line_length = lerp(150,300, pct) * global_scale;
     weight = lerp(50, 225, pct) * global_scale;
     push();
@@ -75,7 +75,7 @@ function draw() {
   }
   pop();
 
-  if(frameCount>=60) randomize_seed();
+  if(my_frameCount>=60) randomize_seed();
 
   rotation_amount += rot_inc;
   global_draw_end();

@@ -39,7 +39,7 @@ function draw() {
   // background(bg_c);
 
 
-  if(frameCount%5==0) c = random(working_palette);
+  if(my_frameCount%5==0) c = random(working_palette);
   fill(c);
 
   const x_margin = canvas_x/2;

@@ -34,25 +34,25 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  if(capture_delay) capture = frameCount>capture_delay_seconds*fr;
+  if(capture_delay) capture = my_frameCount>capture_delay_seconds*fr;
   global_draw_start();
 
   push();
-  center_rotate(map(sin(frameCount*0.75), -1,1, -360,360));
+  center_rotate(map(sin(my_frameCount*0.75), -1,1, -360,360));
   background("BLACK");
 
-  let weight = map(noise(frameCount/10), 0,1, 5,12)*global_scale;
-  strokeWeight(map(sin(frameCount*10), -1,1, weight,weight*1.5));
+  let weight = map(noise(my_frameCount/10), 0,1, 5,12)*global_scale;
+  strokeWeight(map(sin(my_frameCount*10), -1,1, weight,weight*1.5));
 
   let color_frame_count = 40;
-  if(frameCount%color_frame_count==0){
+  if(my_frameCount%color_frame_count==0){
     color_count = 0;
     old_c = new_c;
     new_c = color(random(working_palette));
   }
   c = lerpColor(old_c, new_c, color_count*color_frame_count/1000);
   color_count++;
-  drawingContext.shadowBlur=map(sin(frameCount*10), -1,1, 2,5)*global_scale;
+  drawingContext.shadowBlur=map(sin(my_frameCount*10), -1,1, 2,5)*global_scale;
   drawingContext.shadowColor = c;
 
   stroke(c);
@@ -128,7 +128,7 @@ function draw() {
       drawingContext.shadowBlur=0;
       drawingContext.filter = "brightness(100%)";
       stroke("BLACK");
-      strokeWeight(map(sin(frameCount*10), -1,1, weight*0.5,weight*0.75));
+      strokeWeight(map(sin(my_frameCount*10), -1,1, weight*0.5,weight*0.75));
     }
     beginShape();
     for(let i=0; i<pts.length; i++){

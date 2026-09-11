@@ -47,7 +47,7 @@ function draw() {
   strokeWeight(map(sin(theta * 10), -1,1, weight,weight*1.5));
 
   let color_frame_count = 40;
-  if(frameCount%color_frame_count==0){
+  if(my_frameCount%color_frame_count==0){
     color_count = 0;
     old_c = new_c;
     new_c = color(random(working_palette));
@@ -122,7 +122,7 @@ function draw() {
       drawingContext.shadowBlur=0;
       drawingContext.filter = "brightness(100%)";
       stroke("BLACK");
-      strokeWeight(map(sin(frameCount*10), -1,1, weight*0.5,weight*0.75));
+      strokeWeight(map(sin(my_frameCount*10), -1,1, weight*0.5,weight*0.75));
     }
     beginShape();
     for(let i=0; i<pts.length; i++){

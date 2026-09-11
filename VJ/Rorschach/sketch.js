@@ -47,7 +47,7 @@ function draw() {
       push();
       translate(i * tile_size, j * tile_size);
 
-      const diameter = 1 * tile_size// * map(noise(i/100, j/100, frameCount/100), 0,1, 0.5, 1.5);
+      const diameter = 1 * tile_size// * map(noise(i/100, j/100, my_frameCount/100), 0,1, 0.5, 1.5);
       if(pnoise.simplex3(i/10, j/10, xoff) > 0)
         circle(0,0,diameter);
       pop();

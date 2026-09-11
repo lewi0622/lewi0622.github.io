@@ -26,7 +26,7 @@ function setup() {
   init();
   
   for(let j=0; j<num_stored_lines; j++){
-    frameCount = fr * capture_time - (num_stored_lines-j);
+    my_frameCount = fr * capture_time - (num_stored_lines-j);
     const [xoff, yoff] = noise_loop_2d(fr, capture_time, granularity);
     for(let i=0; i<container.length; i++){
       const current_lines = container[i];
@@ -37,7 +37,7 @@ function setup() {
     }
   }
 
-  frameCount = 0;
+  my_frameCount = 0;
 
   stroke("WHITE");
   strokeWeight(1*global_scale);

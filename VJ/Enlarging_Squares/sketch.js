@@ -44,7 +44,7 @@ function draw() {
   // background(bg_c);
 
   //add new squares
-  if(frameCount%square_rate==0){
+  if(my_frameCount%square_rate==0){
     newSquares(squares);
   }
   

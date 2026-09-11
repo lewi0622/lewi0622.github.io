@@ -83,7 +83,7 @@ function draw() {
   //save svg as small lines instead of squares, use vpype to connect them using nearest points
 
   k += k_inc;
-  if(frameCount%30==0) k += 100; //jump discontinuity in k
+  if(my_frameCount%30==0) k += 100; //jump discontinuity in k
   if(continue_count/(cols*rows)>0.9){
     noLoop();
   }

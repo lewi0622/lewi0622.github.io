@@ -83,7 +83,7 @@ function grass(count, steps = 100){
   while (pct_end < 1) {
     push();
     rotate(map(noise(count, pct_end/noise_damp), 0,1,-max_noise_angle,max_noise_angle));
-    rotate(map(noise(count, pct_end/noise_damp, frameCount/10),0,1, -10, 10) * sin(frameCount*wind_speed));
+    rotate(map(noise(count, pct_end/noise_damp, my_frameCount/10),0,1, -10, 10) * sin(my_frameCount*wind_speed));
     translate(stalk_segment_move * random(-1,1), stalk_segment_move * random(-1,1));
     pct_end = pct_start;
     const pct_add = random(pct_min_step, pct_max_step);

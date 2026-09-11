@@ -31,7 +31,7 @@ function draw() {
   global_draw_start();
 
   //apply background
-  if(frameCount == 1) bg_c = random(working_palette);
+  if(my_frameCount == 1) bg_c = random(working_palette);
   background(bg_c)
 
   //actual drawing stuff

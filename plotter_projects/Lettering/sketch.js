@@ -33,7 +33,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  if(!font) return;
+  if(!font) return -1; 
   global_draw_start();
 
   push();
@@ -41,10 +41,10 @@ function draw() {
   stroke(stroke_c);
   strokeWeight(1*global_scale);
   line_blur(color(stroke_c), 2*global_scale);
-  if(frameCount % 10 == 0) fill_c = random(working_palette);
+  if(my_frameCount % 10 == 0) fill_c = random(working_palette);
   fill(fill_c);
 
-  const amp = map(sin(frameCount), -1,1, 0, max_amp);
+  const amp = map(sin(my_frameCount), -1,1, 0, max_amp);
 
   let msg = "HEY THERE"; // text to write
   let path = font.getPath(msg, 0,0, font_size);

@@ -61,9 +61,9 @@ function draw() {
 
   for(let i=0; i<num_circles; i++){ 
     push();
-    let x = map(sin(frameCount), -1,1, drift_x_end, drift_x_start);
+    let x = map(sin(my_frameCount), -1,1, drift_x_end, drift_x_start);
     x = lerp(0,x,i/num_circles);
-    let y = map(cos(frameCount), -1,1, drift_y_end, drift_y_start);
+    let y = map(cos(my_frameCount), -1,1, drift_y_end, drift_y_start);
     y = lerp(0,y,i/num_circles);
     const lerped_color = lerpColor(bg_c, c, constrain(i/num_circles, 0.3, 1));
     // stroke(lerped_color);

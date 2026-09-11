@@ -64,7 +64,7 @@ function draw() {
   square_rotation += square_rotation_inc;
 
   if(type != "svg"){
-    if(cols < 100 && frameCount % 10 == 0){
+    if(cols < 100 && my_frameCount % 10 == 0){
       if(cols < 20) cols += 2;
       else cols += 10;
     }

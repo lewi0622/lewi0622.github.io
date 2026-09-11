@@ -19,7 +19,7 @@ function setup() {
   xoff = 0;
   xinc = 0.001*60/fr;
   offset = 50;
-  frameCount = 0;
+  my_frameCount = 0;
 
   steps = floor(random(3,8));
   steps = 3;
@@ -31,7 +31,7 @@ function setup() {
 //***************************************************
 function draw() {
   global_draw_start(false);
-  stroke(frameCount%360, 100, 100);
+  stroke(my_frameCount%360, 100, 100);
 
   //actual drawing stuff
   push();
@@ -73,7 +73,7 @@ function draw() {
   xoff+=xinc;
   pop();
 
-  if(frameCount ==num_frames){
+  if(my_frameCount ==num_frames){
     noLoop();
     capture_frame(capture, num_frames-1);
   }

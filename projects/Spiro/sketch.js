@@ -65,7 +65,7 @@ function draw() {
 //***************************************************
 //custom funcs
 function draw_pts(pt_length){
-  if(frameCount/fr > 7) randomize_seed();
+  if(my_frameCount/fr > 7) randomize_seed();
   
   if(type == "png") background(bg_c);
 

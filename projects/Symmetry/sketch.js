@@ -69,7 +69,7 @@ function draw() {
   pop();
 
   //stop drawing
-  if(frameCount>len){
+  if(my_frameCount>len){
     noLoop();
   }
   

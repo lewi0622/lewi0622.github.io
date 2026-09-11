@@ -57,12 +57,12 @@ function draw() {
   push();
   translate(0, offset_y); //offset correction
   
-  translate(width/2, row_size * frameCount);
-  rotate(map(noise(frameCount/10), 0,1, -2,2));
-  translate(-width/2, -row_size * frameCount);
+  translate(width/2, row_size * my_frameCount);
+  rotate(map(noise(my_frameCount/10), 0,1, -2,2));
+  translate(-width/2, -row_size * my_frameCount);
   
   set_color();
-  const pct = frameCount/(rows);
+  const pct = my_frameCount/(rows);
   
   if(pct < 0.25) amplitude = lerp(height_vals[0], height_vals[1], map(pct, 0, 0.25, 0,1));
   else if (pct < 0.50) amplitude = lerp(height_vals[1], height_vals[2], map(pct, 0.25, 0.5, 0,1));
@@ -96,11 +96,11 @@ function generate_noise_curve(amplitude = 0) {
   
   for (let i = 0; i < cols; i++) {
     const x = i * col_size;
-    let y = frameCount * row_size;
-    y += map(noise(i / 200, frameCount / 100),
+    let y = my_frameCount * row_size;
+    y += map(noise(i / 200, my_frameCount / 100),
         0,1,
         -a, 0);
-    y += map(noise((i + 50) / 50, (frameCount + 50) / 50),
+    y += map(noise((i + 50) / 50, (my_frameCount + 50) / 50),
         0,1,
         -a / 10,a / 10);
     pts.push({ x: x, y: y });
@@ -129,7 +129,7 @@ function draw_pts(pts, fill_down = 30) {
       if(add_shadows){
         if(i + 1 != pts.length) direction = Math.sign(pts[i+1].y - pts[i].y);
 
-        const relative_y = abs(pts[i].y - frameCount * row_size); 
+        const relative_y = abs(pts[i].y - my_frameCount * row_size); 
         const n = noise(pts[i].x/10, pts[i].y/10);
         const shadow_depth = map(n, 0,1, 0, 100);
         const brightness_peak = map(n, 0,1, 100, 200);
@@ -140,7 +140,7 @@ function draw_pts(pts, fill_down = 30) {
         }
       }
 
-      const on = round(noise(i/100, j/100, frameCount/10));
+      const on = round(noise(i/100, j/100, my_frameCount/10));
       if(on) set_color(1);
       rect(pts[i].x, pts[i].y + j * row_size, col_size, row_size);
       pop();
@@ -156,7 +156,7 @@ function reset_palette(){
 
 function set_color(index_offset = 0) {
   if (color_swap == undefined) color_swap = floor(random(band_min, band_max));
-  if (frameCount % color_swap == 0) {
+  if (my_frameCount % color_swap == 0) {
     if (random() < 0.6) color_index++;
     else color_index--;
     color_swap = floor(random(band_min, band_max));

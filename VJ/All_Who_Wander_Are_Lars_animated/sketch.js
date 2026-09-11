@@ -63,8 +63,8 @@ function draw() {
       if(shape_pts.length>min_shape_pts) draw_shape(shape_pts, shape_color);
     }
   }
-  if(perlin_simplex) time_offset += (map(pnoise.simplex2(frameCount/100,0), -1,1, 0.5,0.75) * time_inc * frameRate()/fr) * time_direction;
-  else  time_offset += (map(noise(frameCount/100), 0,1, 0.75,1.15) * time_inc * frameRate()/fr) * time_direction;
+  if(perlin_simplex) time_offset += (map(pnoise.simplex2(my_frameCount/100,0), -1,1, 0.5,0.75) * time_inc * frameRate()/fr) * time_direction;
+  else  time_offset += (map(noise(my_frameCount/100), 0,1, 0.75,1.15) * time_inc * frameRate()/fr) * time_direction;
   pop();
   global_draw_end();
 }
