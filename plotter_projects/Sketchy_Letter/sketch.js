@@ -30,7 +30,7 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  if(!font) return;
+  if(!font) return -1; 
   global_draw_start();
 
   //actual drawing stuff
@@ -57,7 +57,7 @@ function draw() {
     translate(random(-location_variance, location_variance)*text_size, random(-location_variance, location_variance)*text_size);
     rotate(random(-1,1));
     line1 = font.getPath(letters, 0,0, random(text_size*0.9, text_size));
-    draw_letter(line1);
+    draw_open_type_js_path_p5_commands(line1);
     pop();
   }
   pop();
@@ -66,17 +66,3 @@ function draw() {
 }
 //***************************************************
 //custom funcs
-function draw_letter(path){
-  for (let cmd of path.commands) {
-    if (cmd.type === 'M') { //move to
-      beginShape();
-      vertex(cmd.x, cmd.y);
-    } 
-    else if (cmd.type === 'L')vertex(cmd.x, cmd.y); //line to
-    else if (cmd.type === 'C') bezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y); // bezier to 
-    else if (cmd.type === 'Q') quadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y); //quadratic to
-    else if (cmd.type === 'Z'){
-      endShape(CLOSE); // close shape
-    }
-  } 
-}
