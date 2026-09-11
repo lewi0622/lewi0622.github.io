@@ -802,21 +802,6 @@ async function exportVideo() {
   tick();
 }
 
-// function capture_frame(){ 
-//   if(capture){
-//     if(capture_state != "stop" && capture_state !="init"){
-//       capturer.capture(document.getElementById("defaultCanvas0"));
-//       capture_state = "capture";
-//       if(frameCount-1 >= num_frames || !isLooping()){
-//         capturer.stop();
-//         capture_state = "stop";
-//         capturer.save();
-//       } 
-//     }
-//     if(capture_state == "stop") noLoop(); //CCapture executes an extra loop every time
-//   }
-// }
-
 //background functions
 function png_bg(remove=true, force=-1){
   let bg_c = random(working_palette);
