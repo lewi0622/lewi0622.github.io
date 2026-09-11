@@ -25,22 +25,16 @@ function setup() {
   gui_values();
 
   if(!redrawn){
-    opentype.load('..\\..\\..\\fonts\\SquarePeg-Regular.ttf', function (err, f) {
-      if (err) {
-        alert('Font could not be loaded: ' + err);
-      } else {
-        logo_font = f;
-        draw();
-      }
-    })
-    opentype.load('..\\..\\..\\fonts\\Roboto-Black.ttf', function (err, f) {
-      if (err) {
-        alert('Font could not be loaded: ' + err);
-      } else {
-        sub_text_font = f;
-        draw();
-      }
-    })
+    const buffer = fetch('..\\..\\..\\fonts\\SquarePeg-Regular.ttf').then(res => res.arrayBuffer());
+    buffer.then(data => {
+      logo_font = opentype.parse(data);
+      draw();
+    });
+    const buffer1 = fetch('..\\..\\..\\fonts\\Roboto-Black.ttf').then(res => res.arrayBuffer());
+    buffer1.then(data => {
+      sub_text_font = opentype.parse(data);
+      draw();
+    });
   }
 }
 //***************************************************

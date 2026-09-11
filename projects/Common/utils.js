@@ -1412,20 +1412,26 @@ function nTimes(func, arg, n) {
 
 function draw_open_type_js_path_p5_commands(path, inc_color=false, color_start=10){  
   //Draw a path from the opentype.js lib. expects path to be generated using func font.getpath
+  //latest fontpaths don't contain Z types, just M's
+  let started = false;
   for (let cmd of path.commands) {
     if(inc_color) stroke(color_start);
     if (cmd.type === 'M') { //move to
+      if(started) endShape(CLOSE);
+      if(inc_color) color_start += 1;
       beginShape();
+      started = true;
       vertex(cmd.x, cmd.y);
     } 
     else if (cmd.type === 'L')vertex(cmd.x, cmd.y); //line to
     else if (cmd.type === 'C') bezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y); // bezier to 
     else if (cmd.type === 'Q') quadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y); //quadratic to
-    else if (cmd.type === 'Z'){
+    else if (cmd.type === 'Z'){ //likely deprecated, but will leave in just in case
       endShape(CLOSE); // close shape
       if(inc_color) color_start += 1;
     }
   } 
+  endShape(CLOSE);
 }
 
 

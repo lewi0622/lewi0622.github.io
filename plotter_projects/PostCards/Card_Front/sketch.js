@@ -21,14 +21,11 @@ function setup() {
   gui_values();
 
   if(!redrawn){
-    opentype.load('..\\..\\..\\fonts\\Roboto-Black.ttf', function (err, f) {
-      if (err) {
-        alert('Font could not be loaded: ' + err);
-      } else {
-        font = f;
-        draw();
-      }
-    })
+    const buffer = fetch('..\\..\\..\\fonts\\Roboto-Black.ttf').then(res => res.arrayBuffer());
+    buffer.then(data => {
+      font = opentype.parse(data);
+      draw();
+    });
   }
 }
 //***************************************************

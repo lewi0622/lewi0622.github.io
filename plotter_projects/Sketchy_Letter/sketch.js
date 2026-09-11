@@ -19,14 +19,11 @@ function setup() {
   common_setup();
   gui_values();
   if(!redrawn){
-    opentype.load('..\\..\\fonts\\Porcine-Heavy.ttf', function (err, f) {
-      if (err) {
-        alert('Font could not be loaded: ' + err);
-      } else {
-        font = f;
-        draw();
-      }
-    })
+    const buffer = fetch('..\\..\\fonts\\Porcine-Heavy.ttf').then(res => res.arrayBuffer());
+    buffer.then(data => {
+      font = opentype.parse(data);
+      draw();
+    });
   }
   bg_c = png_bg(true);
   stroke(random(working_palette));

@@ -22,15 +22,11 @@ function setup() {
   common_setup();
   gui_values();
 
-  opentype.load('..\\..\\fonts\\SquarePeg-Regular.ttf', function (err, f) {
-    if (err) {
-      alert('Font could not be loaded: ' + err);
-    } else {
-      font = f
-      console.log('font ready')
-      draw();
-    }
-  })
+  const buffer = fetch('..\\..\\fonts\\SquarePeg-Regular.ttf').then(res => res.arrayBuffer());
+  buffer.then(data => {
+    font = opentype.parse(data);
+    draw();
+  });
 }
 //***************************************************
 function draw() {
