@@ -24,7 +24,7 @@ function setup() {
   common_setup(3.5*96, 2*96);
   gui_values();
 
-  if(!redraw){
+  if(!redrawn){
     opentype.load('..\\..\\..\\fonts\\SquarePeg-Regular.ttf', function (err, f) {
       if (err) {
         alert('Font could not be loaded: ' + err);

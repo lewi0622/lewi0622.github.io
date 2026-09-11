@@ -18,7 +18,7 @@ function gui_values(){
 function setup() {
   common_setup();
   gui_values();
-  if(!redraw){
+  if(!redrawn){
     opentype.load('..\\..\\fonts\\Porcine-Heavy.ttf', function (err, f) {
       if (err) {
         alert('Font could not be loaded: ' + err);

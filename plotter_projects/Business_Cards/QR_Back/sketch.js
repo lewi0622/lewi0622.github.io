@@ -31,7 +31,7 @@ function setup() {
   common_setup(3.25*96, 2*96, SVG);
   gui_values();
 
-  if(!redraw){
+  if(!redrawn){
     // opentype.load('..\\..\\..\\fonts\\SquarePeg-Regular.ttf', function (err, f) {
     opentype.load('..\\..\\..\\fonts\\Roboto-Black.ttf', function (err, f) {
       if (err) {
