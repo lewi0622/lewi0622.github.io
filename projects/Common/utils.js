@@ -32,7 +32,7 @@ let randomize_time_param, pixel_density_param; //optional url parameters
 let timeout_set = false;
 const in_iframe = window.location !== window.parent.location;
 let type = 'png';
-let redraw = false;
+let redrawn = false;
 
 //gui vars
 let redraw_reason;
@@ -258,17 +258,17 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
     size_x = 400;
     x_size_px_param = "400";
   }
-  else if(redraw) size_x = parseInt(x_size_px_param);
+  else if(redrawn) size_x = parseInt(x_size_px_param);
   else x_size_px_param = String(size_x);
 
   if(size_y <= 0){
     size_y = 400;
     y_size_px_param = "400";
   }
-  else if(redraw) size_y = parseInt(y_size_px_param);
+  else if(redrawn) size_y = parseInt(y_size_px_param);
   else y_size_px_param = String(size_y);
 
-  if(!redraw){
+  if(!redrawn){
     //replace initial url with one with full params 
     const url = build_url();
     window.history.replaceState({}, "", url); 
@@ -280,7 +280,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   larger_base = max(base_x, base_y);
   
   //init globals
-  if(!redraw){
+  if(!redrawn){
     file_saved = false;
     capture_state = "init";
     //set up CCapture, override num_frames in setup/draw if necessary
@@ -323,7 +323,7 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
     retrieve_gui_settings();
   }
 
-  if(!redraw) cnv = createCanvas(canvas_x, canvas_y, renderer);
+  if(!redrawn) cnv = createCanvas(canvas_x, canvas_y, renderer);
   else resizeCanvas(canvas_x, canvas_y, true);
   if(!gif || animation) frameCount = 0; //with animations, this needs to be one of the last things changed
 
@@ -332,15 +332,15 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   else cnv.position(0,0);
 
   //set palette
-  if(!redraw || palette_changed || picker_changed || (gif && !animation)) change_default_palette();
-  if(!redraw || palette_changed || (gif && !animation)){
+  if(!redrawn || palette_changed || picker_changed || (gif && !animation)) change_default_palette();
+  if(!redrawn || palette_changed || (gif && !animation)){
     show_hide_pickers();
     color_pickers();
     size_pickers(control_height, control_spacing)
   }
   if(multiplier_changed || size_changed) size_pickers(control_height, control_spacing);
 
-  if(!redraw){
+  if(!redrawn){
      //post details
     message_details();
 
@@ -364,9 +364,11 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
 
   refresh_working_palette();
 
-  if(gif || animation) loop(); 
+  //if ccapturing, redraw is called manually and noLoop is necessary
+  if((gif || animation) && !capture) loop();
   //else necessary when redrawing timed pieces
   else noLoop();
+  setTimeout(exportVideo,0);
 }
 
 function setParams(){
@@ -410,7 +412,7 @@ function style_control(control){
 }
 
 function seed_scale_button(control_height, control_spacing){
-  if(!redraw){
+  if(!redrawn){
     //declare unchanging properties
     //START OF TOP ROW
     let hide = controls_param == "false"; 
@@ -505,7 +507,7 @@ function seed_scale_button(control_height, control_spacing){
     save_button.mouseClicked(save_drawing);
   }
 
-  if(!redraw || multiplier_changed || size_changed || redraw_reason == "window"){
+  if(!redrawn || multiplier_changed || size_changed || redraw_reason == "window"){
     //resize for given global scale
     //START OF TOP ROW
     //left/right buttons for easy seed nav
@@ -766,40 +768,54 @@ function global_draw_start(clear_cnv=true){
   gui_element_changed = "";
 
   if(clear_cnv) clear(); //should be false for some animating pieces
-  //called from top of Draw to start capturing, requires CCapture
-  if(capture && capture_state == "init" && capture_delay_frames < frameCount){
-    capturer.start();
-    capture_state = "start";
-  }
   //if creating a gif of different designs, re-randomize palette and seed
   if(gif && !animation && capture_state != "stop"){
-    redraw = true;
+    redrawn = true;
     colors_param = build_colors();
     change_default_palette(); //redo suggested palettes
     randomize_seed();
   }
-  
 }
 
 function global_draw_end(){
-  capture_frame();
 }
 
+async function exportVideo() {
+  if(!capture) return;
 
-function capture_frame(){ 
-  if(capture){
-    if(capture_state != "stop" && capture_state !="init"){
-      capturer.capture(document.getElementById("defaultCanvas0"));
-      capture_state = "capture";
-      if(frameCount-1 >= num_frames || !isLooping()){
-        capturer.stop();
-        capture_state = "stop";
-        capturer.save();
-      } 
+  await capturer.start();
+  capture_state = "start";
+  function tick() {
+    if (frameCount > num_frames) {
+      capturer.stop();
+      capture_state = "stop";
+      capturer.save();
+      console.log("done");
+      return;
     }
-    if(capture_state == "stop") noLoop(); //CCapture executes an extra loop every time
+    capturer.capture(cnv.elt);
+    capture_state = "capture";
+    redraw();
+    requestAnimationFrame(tick);
   }
+
+  tick();
 }
+
+// function capture_frame(){ 
+//   if(capture){
+//     if(capture_state != "stop" && capture_state !="init"){
+//       capturer.capture(document.getElementById("defaultCanvas0"));
+//       capture_state = "capture";
+//       if(frameCount-1 >= num_frames || !isLooping()){
+//         capturer.stop();
+//         capture_state = "stop";
+//         capturer.save();
+//       } 
+//     }
+//     if(capture_state == "stop") noLoop(); //CCapture executes an extra loop every time
+//   }
+// }
 
 //background functions
 function png_bg(remove=true, force=-1){
@@ -941,7 +957,7 @@ function windowResized(e) {
 }
 
 function redraw_sketch(){
-  redraw = true;
+  redrawn = true;
   if(gif && animation && (redraw_reason == "gui" || redraw_reason == "midi")){
     gui_values();
     return;
@@ -1140,7 +1156,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
 
   const url_val = check_param_in_URL(name)
   //if not redraw, replace val with param value
-  if(!redraw && url_val != null){
+  if(!redrawn && url_val != null){
     if(val != url_val){
       if(gui_params[name] == undefined) freeze_new_param = true;
       else{
@@ -1152,7 +1168,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
   }
   // populate url with val
   const url_params = new URLSearchParams(window.location.search);
-  if(redraw && gui_params[name].frozen){
+  if(redrawn && gui_params[name].frozen){
     let gui_val = gui.prototype._controls[name].getValue();
     if(scale){
       if(multiplier_changed) gui_val = gui_val/previous_scale;
@@ -1173,7 +1189,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
       val = round(val/step)*step; //coerce to nearest step val
     }
   }
-  if(redraw && controls_param == "full"){
+  if(redrawn && controls_param == "full"){
     for(const control_name in gui.prototype._controls){
       if(control_name != name) continue;
   
@@ -1205,7 +1221,7 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
     };
   }
   else{
-    if(!redraw && gui_params[name].frozen) val = gui_params[name].value; //retrieve stored value
+    if(!redrawn && gui_params[name].frozen) val = gui_params[name].value; //retrieve stored value
     gui_params[name].value = val;
     gui_params[name].min = min;
     gui_params[name].max = max;
@@ -1238,9 +1254,9 @@ function create_global_parameters(name, val, min, max, step){
     if(max != undefined) eval('globalThis.' + name +"Max =" + max);
     if(step != undefined) eval('globalThis.' + name +"Step =" + step);
 
-    if(redraw && controls_param == "full") gui_force_update(name, val, min, max, step);
+    if(redrawn && controls_param == "full") gui_force_update(name, val, min, max, step);
   }
-  if(!redraw && controls_param == "full")gui.addGlobals(name);
+  if(!redrawn && controls_param == "full")gui.addGlobals(name);
 }
 
 function gui_force_update(name, val, min, max, step){
@@ -1372,7 +1388,7 @@ function retrieve_gui_settings(){
   if(collapsed != null){
     collapsed = JSON.parse(collapsed);
     //recollapse new gui if previously collapsed
-    if(collapsed && !redraw){
+    if(collapsed && !redrawn){
       gui.prototype._doubleClickTitle();
       gui_collapsed = true;
     }
