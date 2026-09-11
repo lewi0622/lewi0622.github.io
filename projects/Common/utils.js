@@ -794,8 +794,12 @@ async function exportVideo() {
       capturer.save();
       return;
     }
-    capturer.capture(cnv.elt);
-    capture_state = "capture";
+
+    if(my_frameCount > capture_delay_frames){
+      capturer.capture(cnv.elt);
+      capture_state = "capture";
+    }
+
     const val = draw();
     if(val == -1){
       capturer.stop();
