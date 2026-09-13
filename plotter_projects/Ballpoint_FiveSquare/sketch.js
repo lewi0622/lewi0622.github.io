@@ -10,7 +10,7 @@ const suggested_palettes = [];
 
 
 function gui_values(){
-  parameterize("lines_per_ring", 360, 1, 1000, 1, false);
+  parameterize("lines_per_ring", 360, 1, 2000, 1, false);
   parameterize("rings", 10, 1, 100, 1, false);
   parameterize("min_line_length", 10, 1, 100, 1, true);
   parameterize("max_line_length", 30, 1, 200, 1, true);
