@@ -1,163 +1,596 @@
-/*
-//
-//       _____        _       _    _____           
-//      | ____|      | |     | |  / ____|          
-//  _ __| |__   _ __ | | ___ | |_| (_____   ____ _ 
-// | '_ \___ \ | '_ \| |/ _ \| __|\___ \ \ / / _` |
-// | |_) |__) || |_) | | (_) | |_ ____) \ V / (_| |
-// | .__/____(_) .__/|_|\___/ \__|_____/ \_/ \__, |
-// | |         | |                            __/ |
-// |_|         |_|                           |___/ 
-//
-//
-*/
 // p5.plotSvg: a Plotter-Oriented SVG Exporter for p5.js
-// by Golan Levin (@golanlevin)
-// v.0.1.3, January 26, 2025
+// https://github.com/golanlevin/p5.plotSvg
+// Initiated by Golan Levin (@golanlevin)
+// v.0.3.0, June 22, 2026
+// Known to work with p5.js versions 1.4.2–1.11.13
+// Basic 2D geometry export is tested with p5.js version 2.3.0 as well.
 
 (function(global) {
   // Create a namespace for the library
   const p5plotSvg = {};
 
   // Attach constants to the p5plotSvg namespace
+  p5plotSvg.VERSION = "0.3.0";
   p5plotSvg.SVG_INDENT_NONE = 0;
   p5plotSvg.SVG_INDENT_SPACES = 1;
   p5plotSvg.SVG_INDENT_TABS = 2;
+  p5plotSvg.SVG_UNITS_IN = 0;
+  p5plotSvg.SVG_UNITS_CM = 1;
 
-  // Internal properties set using setter functions
-  let _bFlattenTransforms = false; // false is default
-  let _bTransformsExist = false;
-  let _svgFilename = "output.svg"; 
-  let _svgCurveTightness = 0.0;
-  let _svgCoordPrecision = 4; 
-  let _svgTransformPrecision = 6; 
-  let _svgIndentType = p5plotSvg.SVG_INDENT_SPACES; 
-  let _svgIndentAmount = 2; 
-  let _svgPointRadius = 0.25; // Default radius for point representation
-  let _svgDPI = 96; // Default DPI value. Set from DPCM if needed.
-  let _svgWidth = 816; // Default width for SVG output (8.5" at 96 DPI)
-  let _svgHeight = 1056; // Default height for SVG output (11" at 96 DPI)
-  let _svgDefaultStrokeColor = 'black';
-  let _svgCurrentStrokeColor = _svgDefaultStrokeColor;
-  let _svgDefaultStrokeWeight = 1;
+  const SVG_COMMAND = Object.freeze({
+    ARC: 'arc',
+    BEZIER: 'bezier',
+    CIRCLE: 'circle',
+    CURVE: 'curve',
+    SPLINE: 'spline',
+    ELLIPSE: 'ellipse',
+    LINE: 'line',
+    POINT: 'point',
+    QUAD: 'quad',
+    RECT: 'rect',
+    TRIANGLE: 'triangle',
+    POLYLINE: 'polyline',
+    PATH: 'path',
+    POINTS: 'points',
+    LINES: 'lines',
+    TRIANGLES: 'triangles',
+    TRIANGLE_FAN: 'triangle_fan',
+    TRIANGLE_STRIP: 'triangle_strip',
+    QUADS: 'quads',
+    QUAD_STRIP: 'quad_strip',
+    DESCRIPTION: 'description',
+    BEGIN_GROUP: 'beginGroup',
+    END_GROUP: 'endGroup',
+    PUSH: 'push',
+    POP: 'pop',
+    SCALE: 'scale',
+    TRANSLATE: 'translate',
+    ROTATE: 'rotate',
+    SHEAR_X: 'shearx',
+    SHEAR_Y: 'sheary',
+    TEXT: 'text',
+    STROKE: 'stroke'
+  });
 
-  // Internal variables, not to be accessed directly
-  let _p5Instance; 
-  let _p5PixelDensity = 1; 
-  let _commands = [];
-  let _svgGroupLevel = 0; 
-  let _vertexStack = []; // Temp stack for polyline/polygon vertices 
-  let _shapeMode = "simple"; // Track mode: "simple" or "complex"
-  let _shapeKind = "poly";
-  let _bRecordingSvg = false; 
-  let _bRecordingSvgBegun = false;
-  let _bCustomSizeSet = false;
-  let _pointsSetCount = 0; 
-  let _linesSetCount = 0; 
-  let _trianglesSetCount = 0; 
-  let _triangleFanSetCount = 0; 
-  let _triangleStripSetCount = 0; 
-  let _quadsSetCount = 0;
-  let _quadStripSetCount = 0; 
+  const SVG_SEGMENT = Object.freeze({
+    VERTEX: 'vertex',
+    BEZIER: 'bezier',
+    BEZIER_POINT: 'bezierPoint',
+    QUADRATIC: 'quadratic',
+    CURVE: 'curve',
+    SPLINE: 'spline',
+    CONTOUR_START: 'contourStart',
+    CONTOUR_END: 'contourEnd'
+  });
 
-  let _originalArcFunc;
-  let _originalBezierFunc;
-  let _originalCircleFunc;
-  let _originalCurveFunc;
-  let _originalEllipseFunc;
-  let _originalLineFunc;
-  let _originalPointFunc;
-  let _originalQuadFunc;
-  let _originalRectFunc;
-  let _originalSquareFunc;
-  let _originalTriangleFunc;
-  let _originalBezierDetailFunc;
-  let _originalCurveTightnessFunc;
-  let _originalBeginShapeFunc;
-  let _originalVertexFunc;
-  let _originalBezierVertexFunc;
-  let _originalQuadraticVertexFunc;
-  let _originalCurveVertexFunc; 
-  let _originalEndShapeFunc; 
-  let _originalDescribeFunc; 
-  let _originalPushFunc; 
-  let _originalPopFunc; 
-  let _originalScaleFunc; 
-  let _originalTranslateFunc; 
-  let _originalRotateFunc;
-  let _originalShearXFunc;
-  let _originalShearYFunc;
-  let _originalTextFunc;
-  let _originalStrokeFunc; 
-  let _originalColorModeFunc;
+  Object.defineProperty(p5plotSvg, 'SVG_COMMAND', {
+    value: SVG_COMMAND,
+    enumerable: true
+  });
+  Object.defineProperty(p5plotSvg, 'SVG_SEGMENT', {
+    value: SVG_SEGMENT,
+    enumerable: true
+  });
+
+
+  // Internal configuration set using public API functions.
+  const config = {
+    flattenTransforms: false,
+    exportPolylinesAsPaths: false,
+    filename: "output.svg",
+    coordPrecision: 4,
+    transformPrecision: 6,
+    indentType: p5plotSvg.SVG_INDENT_SPACES,
+    indentAmount: 2,
+    pointRadius: 0.25,
+    dpi: 96,
+    unitMode: p5plotSvg.SVG_UNITS_IN,
+    width: 816,
+    height: 1056,
+    customSizeSet: false,
+    defaultStrokeColor: 'black',
+    backgroundColor: null,
+    defaultStrokeWeight: 1,
+    mergeNamedGroups: true,
+    groupByStrokeColor: false,
+    inkscapeCompatibility: true,
+    exportMalformedNumbersWithSanitizations: true,
+    clampLargeCoordinates: true,
+    coordinateClampMagnitude: 1000000
+  };
+
+  const cssColorValidationCache = new Map();
+
+  // Internal recording state. Override bookkeeping remains separate for now.
+  const session = {
+    commands: [],
+    vertexStack: [], // Temp stack for polyline/polygon vertices
+    groupStack: [],  // Stack for tracking open groups (for unclosed group detection)
+    injectedHeaderAttributes: [], // Attributes to inject into the SVG header
+    injectedDefs: [],
+    pointsSetCount: 0,
+    linesSetCount: 0,
+    trianglesSetCount: 0,
+    triangleFanSetCount: 0,
+    triangleStripSetCount: 0,
+    quadsSetCount: 0,
+    quadStripSetCount: 0,
+    transformsExist: false,
+    recording: false,
+    recordingBegun: false,
+    recordingSessionId: 0,
+    shapeMode: "simple",
+    shapeKind: "poly",
+    p5Instance: undefined,
+    p5PixelDensity: 1,
+    p5MajorVersion: 1,
+    usingGlobalMode: false,
+    curveTightness: 0.0,
+    bezierOrder: 3, // p5.js v2 bezierVertex() point-stream order
+    splineEndsMode: null, // p5.js v2 splineProperty('ends') value
+    curveVertexCompatActive: false,
+    curveVertexCompatPreviousEndsMode: undefined,
+    layers: {
+      inkscapeLayerMap: new Map(),   // Maps group names to layer numbers
+      inkscapeUsedLabels: new Map(), // Tracks used label values for collision detection
+      inkscapeNextLayerNumber: 1  // Counter for auto-incrementing
+    },
+    overrides: {
+      restoreStack: [],
+      originals: {
+        arc: undefined,
+        bezier: undefined,
+        circle: undefined,
+        curve: undefined,
+        spline: undefined,
+        ellipse: undefined,
+        line: undefined,
+        point: undefined,
+        quad: undefined,
+        rect: undefined,
+        square: undefined,
+        triangle: undefined,
+        bezierDetail: undefined,
+        curveTightness: undefined,
+        bezierOrder: undefined,
+        splineProperty: undefined,
+        splineProperties: undefined,
+        beginShape: undefined,
+        vertex: undefined,
+        bezierVertex: undefined,
+        quadraticVertex: undefined,
+        curveVertex: undefined,
+        splineVertex: undefined,
+        beginContour: undefined,
+        endContour: undefined,
+        endShape: undefined,
+        describe: undefined,
+        push: undefined,
+        pop: undefined,
+        scale: undefined,
+        translate: undefined,
+        rotate: undefined,
+        shearX: undefined,
+        shearY: undefined,
+        text: undefined,
+        stroke: undefined,
+        colorMode: undefined,
+        clip: undefined
+      }
+    }
+  };
+
+  // Warn-once state is intentionally module-level, not session-local.
+  const warnings = {
+    p5v2Shown: false,
+    curveV2Shown: false,
+    curveTightnessV2Shown: false,
+    clipShown: false,
+    incompleteBezierPointSegmentShown: false,
+    mixedSplineSegmentShown: false,
+    unsupportedPathSegmentShown: false,
+    nonFiniteNumberShown: false,
+    malformedCommandSkippedShown: false,
+    largeCoordinateClampedShown: false
+  };
+
+  /**
+   * @private
+   * Resets per-recording Inkscape layer bookkeeping.
+   * Layer labels and numeric prefixes are session state; they must not leak
+   * between independent SVG exports.
+   */
+  function resetSessionLayers() {
+    session.layers.inkscapeLayerMap = new Map();
+    session.layers.inkscapeUsedLabels = new Map();
+    session.layers.inkscapeNextLayerNumber = 1;
+  }
+
+  /**
+   * @private
+   * Overrides a function on a target object, handling p5.js v2's non-writable properties.
+   * In p5.js v2, global functions are defined with writable:false, so simple assignment fails.
+   * This helper uses Object.defineProperty when needed to ensure the override takes effect.
+   * @param {object} target - The object to override the function on (e.g., window or session.p5Instance)
+   * @param {string} funcName - The name of the function to override
+   * @param {function} newFunc - The new function to use
+   */
+  function overrideFunction(target, funcName, newFunc) {
+    if (!target) return;
+    const globalTarget = getGlobalTarget();
+    if (target === globalTarget && !session.usingGlobalMode) return;
+
+    let restoreInfo = session.overrides.restoreStack.find(item =>
+      item.target === target && item.funcName === funcName
+    );
+    if (!restoreInfo) {
+      const hadOwnProperty = Object.prototype.hasOwnProperty.call(target, funcName);
+      restoreInfo = {
+        target,
+        funcName,
+        hadOwnProperty,
+        descriptor: hadOwnProperty ? Object.getOwnPropertyDescriptor(target, funcName) : undefined,
+        replacementFunc: newFunc
+      };
+      session.overrides.restoreStack.push(restoreInfo);
+    } else {
+      restoreInfo.replacementFunc = newFunc;
+    }
+
+    const currentDescriptor = Object.getOwnPropertyDescriptor(target, funcName);
+    Object.defineProperty(target, funcName, {
+      value: newFunc,
+      writable: true,
+      configurable: true,
+      enumerable: currentDescriptor ? currentDescriptor.enumerable : true
+    });
+  }
+
+
+  /**
+   * @private
+   * Restores all p5 functions overridden during the current recording session.
+   * Exact own-property descriptors are restored; temporary own properties are
+   * deleted so inherited p5 instance methods remain inherited.
+   */
+  function restoreOverriddenFunctions() {
+    for (let i = session.overrides.restoreStack.length - 1; i >= 0; i--) {
+      const item = session.overrides.restoreStack[i];
+      if (!item.target) continue;
+      // Warn if another library/user replaced our temporary override while recording.
+      if (item.replacementFunc && item.target[item.funcName] !== item.replacementFunc) {
+        console.warn(`p5.plotSvg: ${item.funcName} changed during SVG recording; another library may have overwritten the temporary override.`);
+      }
+      if (item.hadOwnProperty) {
+        Object.defineProperty(item.target, item.funcName, item.descriptor);
+      } else {
+        delete item.target[item.funcName];
+      }
+    }
+    session.overrides.restoreStack = [];
+  }
+
+
+  /**
+   * @private
+   * Returns the browser global object used by p5 global mode.
+   */
+  function getGlobalTarget() {
+    if (typeof window !== 'undefined') return window;
+    if (typeof globalThis !== 'undefined') return globalThis;
+    if (typeof global !== 'undefined') return global;
+    return undefined;
+  }
+
+
+  /**
+   * @private
+   * Escapes text for use inside XML element content.
+   */
+  function escapeXmlText(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+
+  /**
+   * @private
+   * Escapes text for use inside double-quoted XML attribute values.
+   */
+  function escapeXmlAttribute(value) {
+    return escapeXmlText(value)
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+
+  /**
+   * @private
+   * XML tag and attribute names cannot be escaped into validity; reject unsafe
+   * names instead of emitting malformed SVG.
+   */
+  function normalizeXmlName(name, context) {
+    const trimmedName = String(name).trim();
+    if (/^[A-Za-z_][A-Za-z0-9_.:-]*$/.test(trimmedName)) {
+      return trimmedName;
+    }
+    console.warn(`p5.plotSvg: Ignoring invalid ${context} "${trimmedName}".`);
+    return null;
+  }
+
+
+  /**
+   * @private
+   * Serializes an array of { name, value } pairs into escaped SVG attributes.
+   */
+  function attrsToString(attrs, context, options = {}) {
+    if (!Array.isArray(attrs)) return '';
+
+    let str = '';
+    for (let attr of attrs) {
+      if (!attr || typeof attr.name === 'undefined') continue;
+      if (options.skip && options.skip(attr)) continue;
+
+      const attrName = normalizeXmlName(attr.name, context);
+      if (!attrName) continue;
+
+      if (options.onAttr) {
+        options.onAttr(attr, attrName);
+      }
+      str += `${options.trailingSpace ? '' : ' '}${attrName}="${escapeXmlAttribute(attr.value)}"${options.trailingSpace ? ' ' : ''}`;
+    }
+    return str;
+  }
+
+
+  /**
+   * @private
+   * Returns the p5.js version without requiring a global p5 symbol.
+   */
+  function getP5Version(p5Instance = session.p5Instance) {
+    if (p5Instance?.constructor?.VERSION) {
+      return p5Instance.constructor.VERSION;
+    }
+    if (typeof p5 !== 'undefined' && p5.VERSION) {
+      return p5.VERSION;
+    }
+    return '1.0.0';
+  }
+
+
+  /**
+   * @private
+   * Retrieves an original p5 function from the active instance, falling back to
+   * global mode if needed. Instance mode does not always define window aliases.
+   */
+  function getOriginalFunction(funcName) {
+    const globalTarget = getGlobalTarget();
+    if (session.usingGlobalMode && globalTarget && typeof globalTarget[funcName] === 'function') {
+      return globalTarget[funcName];
+    }
+    if (session.p5Instance && typeof session.p5Instance[funcName] === 'function') {
+      return session.p5Instance[funcName];
+    }
+    if (globalTarget && typeof globalTarget[funcName] === 'function') {
+      return globalTarget[funcName];
+    }
+    return undefined;
+  }
+
+
+  /**
+   * @private
+   * Calls p5's original implementation without recording p5 internals. This is
+   * important in p5.js v2, where some public APIs delegate through shape APIs
+   * that p5.plotSvg also overrides.
+   */
+  function callOriginalFunction(originalFunc, thisArg, args) {
+    if (typeof originalFunc !== 'function') return undefined;
+    const wasRecording = session.recording;
+    session.recording = false;
+    try {
+      return originalFunc.apply(thisArg, args);
+    } finally {
+      session.recording = wasRecording;
+    }
+  }
+
+
+  /**
+   * @private
+   * Checks for WEBGL rendering without assuming WebGLRenderingContext exists.
+   */
+  function isWebGLDrawingContext() {
+    const WebGLCtor = (typeof WebGLRenderingContext !== 'undefined') ? WebGLRenderingContext : null;
+    return !!(WebGLCtor && session.p5Instance?._renderer?.drawingContext instanceof WebGLCtor);
+  }
+
+
+  /**
+   * @private
+   * Whether a value looks like a p5 sketch instance.
+   */
+  function isP5InstanceLike(value) {
+    return !!(value && typeof value === 'object' && typeof value.pixelDensity === 'function');
+  }
+
+
+  /**
+   * @private
+   * Finds the active global-mode p5 sketch for argument-flexible APIs.
+   */
+  function getGlobalP5Instance() {
+    const globalTarget = getGlobalTarget();
+    if (globalTarget && isP5InstanceLike(globalTarget)) {
+      return globalTarget;
+    }
+    if (typeof p5 !== 'undefined' && isP5InstanceLike(p5.instance)) {
+      return globalTarget || p5.instance;
+    }
+    if (globalTarget?.p5 && isP5InstanceLike(globalTarget.p5.instance)) {
+      return globalTarget || globalTarget.p5.instance;
+    }
+    return undefined;
+  }
+
+
+  /**
+   * @private
+   * Whether a p5 instance is the active global-mode sketch instance.
+   */
+  function isGlobalP5Instance(value) {
+    const globalTarget = getGlobalTarget();
+    if (!isP5InstanceLike(value) || !globalTarget) return false;
+    if (typeof p5 !== 'undefined' && p5.instance === value) return true;
+    if (globalTarget.p5 && globalTarget.p5.instance === value) return true;
+    return false;
+  }
+
+
+  /**
+   * @private
+   * Normalizes old and add-on-style beginRecordSvg() argument forms.
+   */
+  function normalizeBeginRecordSvgArgs(p5InstanceOrFilename, maybeFilename) {
+    if (isP5InstanceLike(p5InstanceOrFilename) || p5InstanceOrFilename === getGlobalTarget()) {
+      return {
+        p5Instance: p5InstanceOrFilename,
+        filename: maybeFilename
+      };
+    }
+    return {
+      p5Instance: getGlobalP5Instance(),
+      filename: p5InstanceOrFilename
+    };
+  }
 
 
   /**
    * Begins recording SVG output for a p5.js sketch.
    * Initializes recording state, validates and sets the output filename,
    * and overrides p5.js drawing functions to capture drawing commands for SVG export.
-   * @param {object} p5Instance - A reference to the current p5.js sketch (e.g. `this`).
-   * @param {string} [fn] - Optional filename for the output SVG file.
-   * Defaults to "output.svg" if not provided or invalid.
+   * Behavior is as follows:
+   * beginRecordSvg(this); // saves to output.svg (default)
+   * beginRecordSvg(this, "file.svg"); // saves to file.svg
+   * beginRecordSvg(this, null); // DOES NOT save any file!
+   * beginRecordSvg("file.svg"); // global-mode add-on style
+   * beginRecordSvg(null); // global-mode add-on style, does not save a file
+   * @param {object|string|null} p5Instance - A p5 sketch instance, or a filename in global-mode add-on style.
+   * @param {string|null} [fn] - Optional filename for explicit-instance usage.
    */
-  p5plotSvg.beginRecordSVG = function(p5Instance, fn) {
+  p5plotSvg.beginRecordSvg = function(p5InstanceOrFilename, maybeFilename) {
+    const normalizedArgs = normalizeBeginRecordSvgArgs(p5InstanceOrFilename, maybeFilename);
+    const p5Instance = normalizedArgs.p5Instance;
+    let fn = normalizedArgs.filename;
+
     // Validate the p5 instance
     if (!p5Instance) {
-      throw new Error("Invalid p5 instance provided to beginRecordSVG().");
+      throw new Error("Invalid p5 instance provided to beginRecordSvg().");
     }
 
+    // Detect p5.js version for compatibility handling
+    const p5Version = getP5Version(p5Instance);
+    session.p5MajorVersion = parseInt(p5Version.split('.')[0]);
+
     // Store a reference to the p5 instance for use in other functions
-    _p5Instance = p5Instance;
-    _p5PixelDensity = p5Instance.pixelDensity(); 
+    // In p5.js v2 global mode, 'this' in draw() is window, not the p5 instance
+    // Use p5.instance instead when available and p5Instance appears to be window
+    const globalTarget = getGlobalTarget();
+    session.usingGlobalMode = (p5Instance === globalTarget);
+    if (session.p5MajorVersion >= 2 && session.usingGlobalMode && typeof p5 !== 'undefined' && typeof p5.instance !== 'undefined') {
+      session.p5Instance = p5.instance;
+    } else {
+      session.p5Instance = p5Instance;
+    }
+    session.p5PixelDensity = session.p5Instance.pixelDensity();
+    session.bezierOrder = getCurrentBezierOrder();
+    session.curveTightness = getCurrentSplineTightness();
+    session.splineEndsMode = getCurrentSplineEndsMode();
+    session.curveVertexCompatActive = false;
+    session.curveVertexCompatPreviousEndsMode = undefined;
+
+    // Warn if using v2 (only once per session)
+    if (!warnings.p5v2Shown && session.p5MajorVersion >= 2) {
+      console.warn(
+        `p5.plotSvg: Detected p5.js version ${p5Version}. ` +
+        `p5.js v2 compatibility is experimental. Basic 2D geometry export is supported, ` +
+        `including v2 spline() and splineVertex(), but some p5.js v2 API changes may ` +
+        `still produce differences from p5.js v1 output.`
+      );
+      warnings.p5v2Shown = true;
+    }
 
     // Check if filename is provided and valid
-    if (typeof fn === 'string' && fn.length > 0) {
-      // Ensure ".svg" is present before stripping invalid characters
+    if (fn === null) {
+      // if fn is null, explicit opt-out: do NOT save a file
+      config.filename = null;
+
+    } else if (typeof fn === 'string' && fn.length > 0) {
+      // Ensure ".svg" extension is present
       if (!fn.endsWith(".svg")) {
         fn += ".svg";
       }
-
-      // Strip out illegal characters
-      // (allow only letters, numbers, dashes, dots, and underscores)
-      // Ensure the filename has at least one character after stripping
+      // Strip out illegal filename characters (keep alphanumeric, hyphen, underscore, dot)
       fn = fn.replace(/[^a-zA-Z0-9-_\.]/g, '');
-      _svgFilename = (fn.length > 0) ? fn : "output.svg";
+
+      // Get the base name (without .svg extension)
+      let base = fn.slice(0, -4);
+      // Check if base has any real content (not just dots)
+      let hasContent = base.replace(/\./g, '').length > 0;
+
+      // If base is empty or only dots, fall back to default
+      if (!hasContent) {
+        config.filename = "output.svg";
+      } else {
+        config.filename = fn;
+      }
+
     } else {
-      // Use default filename if `fn` is invalid or not provided
-      _svgFilename = "output.svg";
+      // Default behavior: undefined or invalid fn → output.svg
+      config.filename = "output.svg";
     }
 
     // Initialize SVG settings and override functions
-    _bRecordingSvg = true;
-    _bRecordingSvgBegun = true; 
-    _bTransformsExist = false;
-    _commands = [];
-    _svgGroupLevel = 0;
-    _pointsSetCount = 0;
-    _linesSetCount = 0;
-    _trianglesSetCount = 0;
-    _triangleFanSetCount = 0;
-    _triangleStripSetCount = 0;
-    _quadsSetCount = 0;
-    _quadStripSetCount = 0;
-    _svgCurrentStrokeColor = _svgDefaultStrokeColor;
+    session.recording = true;
+    session.recordingBegun = true;
+    session.transformsExist = false;
+    session.commands = [];
+
+    // Experimental extension hook: expose the live command array while
+    // recording so advanced external add-ons can inspect or inject commands.
+    p5plotSvg._commands = session.commands;
+
+    session.vertexStack = [];
+    session.groupStack = [];
+    session.injectedHeaderAttributes = [];
+    session.injectedDefs = [];
+    session.pointsSetCount = 0;
+    session.linesSetCount = 0;
+    session.trianglesSetCount = 0;
+    session.triangleFanSetCount = 0;
+    session.triangleStripSetCount = 0;
+    session.quadsSetCount = 0;
+    session.quadStripSetCount = 0;
+    resetSessionLayers();
     overrideP5Functions();
   }
 
 
   /**
    * Pauses or unpauses recording of SVG output for a p5.js sketch,
-   * depending on whether the bPause argument is true or false. 
+   * depending on whether the bPause argument is true or false.
    */
-  p5plotSvg.pauseRecordSVG = function(bPause) {
-    if (!_bRecordingSvgBegun){
-      console.warn("You must beginRecordSVG() before you can pauseRecordSVG().");
-      return; 
+  p5plotSvg.pauseRecordSvg = function(bPause) {
+    if (!session.recordingBegun){
+      console.warn("You must beginRecordSvg() before you can pauseRecordSvg().");
+      return;
     } else {
       if (bPause === true){
-        _bRecordingSvg = false;
+        session.recording = false;
       } else if (bPause === false){
-        _bRecordingSvg = true;
+        session.recording = true;
       }
     }
   }
@@ -165,15 +598,50 @@
 
   /**
    * Ends recording of SVG output for a p5.js sketch.
-   * Calls the export function to generate the SVG output 
+   * Calls the export function to generate the SVG output
    * and restores the original p5.js functions.
+   * Returns the text of the SVG file as a string.
+   */
+  p5plotSvg.endRecordSvg = function() {
+    let svgStr = exportSVG();
+    restoreP5Functions();
+    session.recording = false;
+    session.recordingBegun = false;
+
+    session.recordingSessionId++;
+    p5plotSvg._recordingSessionId = session.recordingSessionId;
+    return svgStr;
+  }
+
+  /**
+   * @public
+   * @deprecated Use p5plotSvg.beginRecordSvg() instead.
+   * Backward-compatible wrapper for the original capitalized API name.
+   */
+  p5plotSvg.beginRecordSVG = function() {
+    console.warn("beginRecordSVG() is deprecated. The new name is beginRecordSvg().");
+    return p5plotSvg.beginRecordSvg.apply(p5plotSvg, arguments);
+  };
+
+  /**
+   * @public
+   * @deprecated Use p5plotSvg.pauseRecordSvg() instead.
+   * Backward-compatible wrapper for the original capitalized API name.
+   */
+  p5plotSvg.pauseRecordSVG = function() {
+    console.warn("pauseRecordSVG() is deprecated. The new name is pauseRecordSvg().");
+    return p5plotSvg.pauseRecordSvg.apply(p5plotSvg, arguments);
+  };
+
+  /**
+   * @public
+   * @deprecated Use p5plotSvg.endRecordSvg() instead.
+   * Backward-compatible wrapper for the original capitalized API name.
    */
   p5plotSvg.endRecordSVG = function() {
-    exportSVG();
-    restoreP5Functions(); 
-    _bRecordingSvg = false;
-    _bRecordingSvgBegun = false; 
-  }
+    console.warn("endRecordSVG() is deprecated. The new name is endRecordSvg().");
+    return p5plotSvg.endRecordSvg.apply(p5plotSvg, arguments);
+  };
 
 
   /**
@@ -182,38 +650,46 @@
    * Includes support for shapes, vertices, transformations, and text functions.
    */
   function overrideP5Functions() {
-    overrideArcFunction(); 
-    overrideBezierFunction(); 
-    overrideCircleFunction(); 
-    overrideCurveFunction(); 
-    overrideEllipseFunction(); 
-    overrideLineFunction(); 
-    overridePointFunction(); 
-    overrideQuadFunction(); 
-    overrideRectFunction(); 
-    overrideSquareFunction(); 
-    overrideTriangleFunction(); 
-    overrideBezierDetailFunction(); 
-    overrideCurveTightnessFunction(); 
-    
-    overrideBeginShapeFunction(); 
-    overrideVertexFunction(); 
+    overrideArcFunction();
+    overrideBezierFunction();
+    overrideCircleFunction();
+    overrideCurveFunction();
+    overrideSplineFunction();
+    overrideEllipseFunction();
+    overrideLineFunction();
+    overridePointFunction();
+    overrideQuadFunction();
+    overrideRectFunction();
+    overrideSquareFunction();
+    overrideTriangleFunction();
+    overrideBezierDetailFunction();
+    overrideCurveTightnessFunction();
+    overrideBezierOrderFunction();
+    overrideSplinePropertyFunction();
+    overrideSplinePropertiesFunction();
+
+    overrideBeginShapeFunction();
+    overrideVertexFunction();
     overrideBezierVertexFunction();
-    overrideQuadraticVertexFunction(); 
+    overrideQuadraticVertexFunction();
     overrideCurveVertexFunction();
-    overrideEndShapeFunction(); 
-    
-    overrideDescribeFunction(); 
-    overridePushFunction(); 
+    overrideSplineVertexFunction();
+    overrideBeginContourFunction();
+    overrideEndContourFunction();
+    overrideEndShapeFunction();
+
+    overrideDescribeFunction();
+    overridePushFunction();
     overridePopFunction();
-    overrideScaleFunction(); 
-    overrideTranslateFunction(); 
-    overrideRotateFunction(); 
-    overrideShearXFunction(); 
-    overrideShearYFunction(); 
+    overrideScaleFunction();
+    overrideTranslateFunction();
+    overrideRotateFunction();
+    overrideShearXFunction();
+    overrideShearYFunction();
     overrideTextFunction();
-    overrideStrokeFunction(); 
-    overrideColorModeFunction(); 
+    overrideStrokeFunction();
+    overrideColorModeFunction();
+    overrideClipFunction();
   }
 
 
@@ -223,143 +699,205 @@
    * Reverts all overrides, returning p5.js functions to their standard behavior.
    */
   function restoreP5Functions(){
-    window.arc = _originalArcFunc;
-    window.bezier = _originalBezierFunc;
-    window.circle = _originalCircleFunc;
-    window.curve = _originalCurveFunc;
-    window.ellipse = _originalEllipseFunc;
-    window.line = _originalLineFunc;
-    window.point = _originalPointFunc;
-    window.quad = _originalQuadFunc;
-    window.rect = _originalRectFunc;
-    window.square = _originalSquareFunc;
-    window.triangle = _originalTriangleFunc;
-    window.bezierDetail = _originalBezierDetailFunc;
-    window.curveTightness = _originalCurveTightnessFunc;
-    
-    window.beginShape = _originalBeginShapeFunc;
-    window.vertex = _originalVertexFunc;
-    window.bezierVertex = _originalBezierVertexFunc;
-    window.quadraticVertex = _originalQuadraticVertexFunc;
-    window.curveVertex = _originalCurveVertexFunc; 
-    window.endShape = _originalEndShapeFunc; 
-    
-    window.describe = _originalDescribeFunc; 
-    window.push = _originalPushFunc; 
-    window.pop = _originalPopFunc; 
-    window.scale = _originalScaleFunc; 
-    window.translate = _originalTranslateFunc; 
-    window.rotate = _originalRotateFunc;
-    window.shearX = _originalShearXFunc;
-    window.shearY = _originalShearYFunc;
-    window.text = _originalTextFunc;
-    window.stroke = _originalStrokeFunc; 
-    window.colorMode = _originalColorModeFunc; 
+    restoreOverriddenFunctions();
   }
 
 
   /**
    * @private
    * Overrides the p5.js arc function to capture SVG arc commands for export.
-   * Supports different arc modes. Warns about optional detail parameter in WEBGL context. 
-   * Stores arc parameters in the `_commands` array when recording SVG output.
+   * Supports different arc modes. Warns about optional detail parameter in WEBGL context.
+   * Stores arc parameters in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/arc/}
    */
   function overrideArcFunction() {
-    _originalArcFunc = window.arc;
-    window.arc = function(x, y, w, h, start, stop, mode = OPEN, detail = 0) {
-      if (_bRecordingSvg) {
-        if (detail !== undefined && p5.instance._renderer.drawingContext instanceof WebGLRenderingContext) {
+    // Save the original window.arc for proper restoration in v2
+    session.overrides.originals.arc = getOriginalFunction('arc');
+    const newArcFunc = function(x, y, w, h, start, stop, mode, detail = 0) {
+      if (session.recording) {
+        if (detail !== undefined && isWebGLDrawingContext()) {
           console.warn("arc() detail is currently unsupported in SVG output.");
         }
+
+        // Get ellipseMode: v2 stores in states.ellipseMode, v1 in _ellipseMode
+        const ellipseMode = session.p5Instance._renderer?.states?.ellipseMode ||
+                           session.p5Instance._renderer?._ellipseMode ||
+                           'center';
+
+        // Adjust x, y, w, h based on ellipseMode (arc follows ellipse mode)
+        if (ellipseMode === 'center') {
+          // No adjustment needed for 'center'
+        } else if (ellipseMode === 'corner') {
+          x += w / 2;
+          y += h / 2;
+        } else if (ellipseMode === 'radius') {
+          w *= 2;
+          h *= 2;
+        } else if (ellipseMode === 'corners') {
+          let px = Math.min(x, w);
+          let qx = Math.max(x, w);
+          let py = Math.min(y, h);
+          let qy = Math.max(y, h);
+          x = px + (qx - px) / 2;
+          y = py + (qy - py) / 2;
+          w = qx - px;
+          h = qy - py;
+        }
+
         let transformMatrix = captureCurrentTransformMatrix();
-        _commands.push({ type: 'arc', x, y, w, h, start, stop, mode, transformMatrix });
+        const svgMode = (typeof mode === 'undefined') ? getP5Constant('OPEN') : mode;
+        session.commands.push({ type: SVG_COMMAND.ARC, x, y, w, h, start, stop, mode: svgMode, transformMatrix });
       }
-      _originalArcFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.arc, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'arc', newArcFunc);
+    overrideFunction(getGlobalTarget(), 'arc', newArcFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js bezier function to capture SVG bezier curve commands for export.
-   * Stores bezier curve control points in the `_commands` array when recording SVG output.
+   * Stores bezier curve control points in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/bezier/}
    */
   function overrideBezierFunction(){
-    _originalBezierFunc = window.bezier;
-    window.bezier = function(x1, y1, x2, y2, x3, y3, x4, y4) {
-      if (_bRecordingSvg) {
+    // Save the original window.bezier for proper restoration in v2
+    session.overrides.originals.bezier = getOriginalFunction('bezier');
+    const newBezierFunc = function(x1, y1, x2, y2, x3, y3, x4, y4) {
+      if (session.recording) {
         let transformMatrix = captureCurrentTransformMatrix();
-        _commands.push({ type: 'bezier', x1, y1, x2, y2, x3, y3, x4, y4, transformMatrix });
+        session.commands.push({ type: SVG_COMMAND.BEZIER, x1, y1, x2, y2, x3, y3, x4, y4, transformMatrix });
       }
-      _originalBezierFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.bezier, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'bezier', newBezierFunc);
+    overrideFunction(getGlobalTarget(), 'bezier', newBezierFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js circle function to capture SVG circle commands for export.
-   * Handles different ellipse modes (center, corner, radius, corners) 
+   * Handles different ellipse modes (center, corner, radius, corners)
    * to convert circle parameters appropriately.
-   * Stores circle or ellipse parameters in the `_commands` array when recording SVG output.
+   * Stores circle or ellipse parameters in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/circle/}
    */
   function overrideCircleFunction(){
-    _originalCircleFunc = window.circle;
-    window.circle = function(x, y, d) {
-      if (_bRecordingSvg) { 
+    // Save the original window.circle for proper restoration in v2
+    session.overrides.originals.circle = getOriginalFunction('circle');
+    const newCircleFunc = function(x, y, d) {
+      let argumentsCopy = [...arguments];  // safe snapshot
+      if (session.recording) {
         let transformMatrix = captureCurrentTransformMatrix();
-        
-        if (_p5Instance._renderer._ellipseMode === 'center'){
-          _commands.push({ type: 'circle', x, y, d, transformMatrix });
-        } else if (_p5Instance._renderer._ellipseMode === 'corner'){
+        // Get ellipseMode: v2 stores in states.ellipseMode, v1 in _ellipseMode
+        const ellipseMode = session.p5Instance._renderer?.states?.ellipseMode ||
+                            session.p5Instance._renderer?._ellipseMode ||
+                            'center';
+
+        if (ellipseMode === 'center'){
+          session.commands.push({ type: SVG_COMMAND.CIRCLE, x, y, d, transformMatrix });
+        } else if (ellipseMode === 'corner'){
           x += d/2;
           y += d/2;
-          _commands.push({ type: 'circle', x, y, d, transformMatrix });
-        } else if (_p5Instance._renderer._ellipseMode === 'radius'){
+          session.commands.push({ type: SVG_COMMAND.CIRCLE, x, y, d, transformMatrix });
+        } else if (ellipseMode === 'radius'){
           d *= 2;
-          _commands.push({ type: 'circle', x, y, d, transformMatrix });
-        } else if (_p5Instance._renderer._ellipseMode === 'corners'){
-          let w = d - x; 
+          session.commands.push({ type: SVG_COMMAND.CIRCLE, x, y, d, transformMatrix });
+        } else if (ellipseMode === 'corners'){
+          let w = d - x;
           let h = d - y;
           x += w/2;
           y += h/2;
-          _commands.push({ type: 'ellipse', x, y, w, h, transformMatrix });
+          session.commands.push({ type: SVG_COMMAND.ELLIPSE, x, y, w, h, transformMatrix });
         }
       }
-      
-      _originalCircleFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.circle, session.p5Instance, argumentsCopy);
     };
+    overrideFunction(session.p5Instance, 'circle', newCircleFunc);
+    overrideFunction(getGlobalTarget(), 'circle', newCircleFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js curve function to capture SVG curve commands for export.
-   * Adjusts control points based on the current curve tightness setting before storing
-   * curve parameters in the `_commands` array when recording SVG output.
+   * Stores curve parameters and current tightness in the `session.commands` array.
    * @see {@link https://p5js.org/reference/#/p5/curve}
    */
   function overrideCurveFunction() {
-    _originalCurveFunc = window.curve;
-    window.curve = function(x1, y1, x2, y2, x3, y3, x4, y4) {
-      if (_bRecordingSvg) {
-        
-        // Adjust control points based on the current tightness setting
-        const [adjX1, adjY1, adjX2, adjY2, adjX3, adjY3, adjX4, adjY4] = 
-          adjustControlPointsForTightness(x1, y1, x2, y2, x3, y3, x4, y4, _svgCurveTightness);
-        
-        x1 = adjX1; y1 = adjY1;
-        x2 = adjX2; y2 = adjY2;
-        x3 = adjX3; y3 = adjY3;
-        x4 = adjX4; y4 = adjY4;
+    session.overrides.originals.curve = getOriginalFunction('curve');
+    if (session.p5MajorVersion >= 2) {
+      const curveCompatFunc = function(x1, y1, x2, y2, x3, y3, x4, y4) {
+        let argumentsCopy = [...arguments];
+        if (!warnings.curveV2Shown) {
+          console.warn("p5.plotSvg: curve() is no longer part of p5.js v2; using a p5.plotSvg compatibility shim during SVG recording.");
+          warnings.curveV2Shown = true;
+        }
+        if (session.recording) {
+          let transformMatrix = captureCurrentTransformMatrix();
+          let tightness = getCurrentSplineTightness();
+          session.commands.push({ type: SVG_COMMAND.CURVE, x1, y1, x2, y2, x3, y3, x4, y4, tightness, transformMatrix });
+        }
+
+        const drawCurve = () => callOriginalFunction(session.overrides.originals.spline, session.p5Instance, argumentsCopy);
+        if (typeof session.overrides.originals.spline === 'function') {
+          withTemporarySplineEndsMode(getP5Constant('EXCLUDE'), drawCurve);
+        }
+      };
+      overrideFunction(session.p5Instance, 'curve', curveCompatFunc);
+      overrideFunction(getGlobalTarget(), 'curve', curveCompatFunc);
+      return;
+    }
+
+    // p5.js v1 - normal override
+    const newCurveFunc = function(x1, y1, x2, y2, x3, y3, x4, y4) {
+      let argumentsCopy = [...arguments];  // safe snapshot
+      if (session.recording) {
         let transformMatrix = captureCurrentTransformMatrix();
-        _commands.push({ type: 'curve', x1, y1, x2, y2, x3, y3, x4, y4, transformMatrix });
+        let tightness = session.curveTightness; // Capture current tightness (set via curveTightness override)
+        session.commands.push({ type: SVG_COMMAND.CURVE, x1, y1, x2, y2, x3, y3, x4, y4, tightness, transformMatrix });
       }
-      _originalCurveFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.curve, session.p5Instance, argumentsCopy);
     };
+    overrideFunction(session.p5Instance, 'curve', newCurveFunc);
+    overrideFunction(getGlobalTarget(), 'curve', newCurveFunc);
+  }
+
+
+  /**
+   * @private
+   * Overrides p5.js v2's spline function. p5.js v1 uses curve() instead.
+   */
+  function overrideSplineFunction() {
+    session.overrides.originals.spline = getOriginalFunction('spline');
+    if (typeof session.overrides.originals.spline !== 'function') return;
+
+    const newSplineFunc = function(x1, y1, x2, y2, x3, y3, x4, y4) {
+      let argumentsCopy = [...arguments];
+      if (session.recording) {
+        let transformMatrix = captureCurrentTransformMatrix();
+        let tightness = getCurrentSplineTightness();
+        let endsMode = getCurrentSplineEndsMode();
+        session.commands.push({
+          type: SVG_COMMAND.SPLINE,
+          points: [
+            { x: x1, y: y1 },
+            { x: x2, y: y2 },
+            { x: x3, y: y3 },
+            { x: x4, y: y4 }
+          ],
+          closed: false,
+          tightness,
+          endsMode,
+          transformMatrix
+        });
+      }
+      callOriginalFunction(session.overrides.originals.spline, session.p5Instance, argumentsCopy);
+    };
+    overrideFunction(session.p5Instance, 'spline', newSplineFunc);
+    overrideFunction(getGlobalTarget(), 'spline', newSplineFunc);
   }
 
 
@@ -368,97 +906,114 @@
    * Overrides the p5.js ellipse function to capture SVG ellipse commands for export.
    * Handles different ellipse modes (center, corner, radius, corners) and warns
    * when detail is used in WEBGL context as it is unsupported for SVG output.
-   * Stores ellipse parameters in the `_commands` array when recording SVG output.
+   * Stores ellipse parameters in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/ellipse/}
   */
   function overrideEllipseFunction(){
-    _originalEllipseFunc = window.ellipse;
-    window.ellipse = function(x, y, w, h, detail = 0) {
-      if (_bRecordingSvg) {
-        if (detail !== undefined && _p5Instance._renderer.drawingContext instanceof WebGLRenderingContext) {
+    // Save the original window.ellipse for proper restoration in v2
+    session.overrides.originals.ellipse = getOriginalFunction('ellipse');
+    const newEllipseFunc = function(x, y, w, h, detail = 0) {
+      let argumentsCopy = [...arguments];  // safe snapshot
+      if (session.recording) {
+        if (detail !== undefined && isWebGLDrawingContext()) {
           console.warn("ellipse() detail is currently unsupported in SVG output.");
         }
-        
-        // We can't use _p5Instance.ellipseMode() for reasons :(
-        if (_p5Instance._renderer._ellipseMode === 'center'){
+
+        // Get ellipseMode: v2 stores in states.ellipseMode, v1 in _ellipseMode
+        const ellipseMode = session.p5Instance._renderer?.states?.ellipseMode ||
+                            session.p5Instance._renderer?._ellipseMode ||
+                            'center';
+
+        if (ellipseMode === 'center'){
           ;
-        } else if (_p5Instance._renderer._ellipseMode === 'corner'){
+        } else if (ellipseMode === 'corner'){
           x += w/2;
           y += h/2;
-        } else if (_p5Instance._renderer._ellipseMode === 'radius'){
+        } else if (ellipseMode === 'radius'){
           w *= 2;
-          h *= 2; 
-        } else if (_p5Instance._renderer._ellipseMode === 'corners'){
-          let px = Math.min(x, w); 
-          let qx = Math.max(x, w); 
-          let py = Math.min(y, h); 
-          let qy = Math.max(y, h); 
-          x = px; 
-          y = py; 
-          w = qx - px; 
+          h *= 2;
+        } else if (ellipseMode === 'corners'){
+          let px = Math.min(x, w);
+          let qx = Math.max(x, w);
+          let py = Math.min(y, h);
+          let qy = Math.max(y, h);
+          x = px;
+          y = py;
+          w = qx - px;
           h = qy - py;
           x += w/2;
           y += h/2;
         }
         let transformMatrix = captureCurrentTransformMatrix();
-        _commands.push({ type: 'ellipse', x, y, w, h, transformMatrix });
+        session.commands.push({ type: SVG_COMMAND.ELLIPSE, x, y, w, h, transformMatrix });
       }
-      _originalEllipseFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.ellipse, session.p5Instance, argumentsCopy);
     };
+    overrideFunction(session.p5Instance, 'ellipse', newEllipseFunc);
+    overrideFunction(getGlobalTarget(), 'ellipse', newEllipseFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js line function to capture SVG line commands for export.
-   * Stores line parameters in the `_commands` array when recording SVG output.
+   * Stores line parameters in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/line/}
    */
   function overrideLineFunction() {
-    _originalLineFunc = window.line;
-    window.line = function(x1, y1, x2, y2) {
-      if (_bRecordingSvg) { 
+    // Save the original window.line for proper restoration in v2
+    session.overrides.originals.line = getOriginalFunction('line');
+    const newLineFunc = function(x1, y1, x2, y2) {
+      if (session.recording) {
         let transformMatrix = captureCurrentTransformMatrix();
-        _commands.push({ type: 'line', x1, y1, x2, y2, transformMatrix });
+        session.commands.push({ type: SVG_COMMAND.LINE, x1, y1, x2, y2, transformMatrix });
       }
-      _originalLineFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.line, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'line', newLineFunc);
+    overrideFunction(getGlobalTarget(), 'line', newLineFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js point function to capture SVG point commands for export.
-   * Stores point parameters as small circles in the `_commands` array when recording SVG output.
+   * Stores point parameters as small circles in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/point/}
    */
   function overridePointFunction() {
-    _originalPointFunc = window.point;
-    window.point = function(x, y) {
-      if (_bRecordingSvg) {
+    // Save the original window.point for proper restoration in v2
+    session.overrides.originals.point = getOriginalFunction('point');
+    const newPointFunc = function(x, y) {
+      if (session.recording) {
         let transformMatrix = captureCurrentTransformMatrix();
-        _commands.push({ type: 'point', x, y, radius: _svgPointRadius, transformMatrix });
+        session.commands.push({ type: SVG_COMMAND.POINT, x, y, radius: config.pointRadius, transformMatrix });
       }
-      _originalPointFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.point, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'point', newPointFunc);
+    overrideFunction(getGlobalTarget(), 'point', newPointFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js quad function to capture SVG quad commands for export.
-   * Stores quad parameters in the `_commands` array when recording SVG output.
+   * Stores quad parameters in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/quad/}
    */
   function overrideQuadFunction(){
-    _originalQuadFunc = window.quad;
-    window.quad = function(x1, y1, x2, y2, x3, y3, x4, y4) {
-      if (_bRecordingSvg) { 
+    // Save the original window.quad for proper restoration in v2
+    session.overrides.originals.quad = getOriginalFunction('quad');
+    const newQuadFunc = function(x1, y1, x2, y2, x3, y3, x4, y4) {
+      if (session.recording) {
         let transformMatrix = captureCurrentTransformMatrix();
-        _commands.push({ type: 'quad', x1, y1, x2, y2, x3, y3, x4, y4, transformMatrix });
+        session.commands.push({ type: SVG_COMMAND.QUAD, x1, y1, x2, y2, x3, y3, x4, y4, transformMatrix });
       }
-      _originalQuadFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.quad, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'quad', newQuadFunc);
+    overrideFunction(getGlobalTarget(), 'quad', newQuadFunc);
   }
 
 
@@ -467,27 +1022,34 @@
    * Overrides the p5.js rect function to capture SVG rect commands for export.
    * Handles different rect modes (corner, center, radius, corners) and supports
    * rectangles with optional uniform or individual corner radii.
-   * Stores rect parameters in the `_commands` array when recording SVG output.
+   * Stores rect parameters in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/rect/}
    */
   function overrideRectFunction() {
-    _originalRectFunc = window.rect;
-    window.rect = function(x, y, w, h, tl, tr, br, bl) {
-      if (_bRecordingSvg) {
+    // Save the original window.rect for proper restoration in v2
+    session.overrides.originals.rect = getOriginalFunction('rect');
+    const newRectFunc = function(x, y, w, h, tl, tr, br, bl) {
+      let argumentsCopy = [...arguments];  // safe snapshot
+      if (session.recording) {
         if (arguments.length === 3) { h = w; }
-        
+
+        // Get rectMode: v2 stores in states.rectMode, v1 in _rectMode
+        const rectMode = session.p5Instance._renderer?.states?.rectMode ||
+                         session.p5Instance._renderer?._rectMode ||
+                         'corner';
+
         // Handle different rect modes
-        if (_p5Instance._renderer._rectMode === 'corner') {
+        if (rectMode === 'corner') {
           // No adjustment needed for 'corner'
-        } else if (_p5Instance._renderer._rectMode === 'center') {
+        } else if (rectMode === 'center') {
           x = x - w / 2;
           y = y - h / 2;
-        } else if (_p5Instance._renderer._rectMode === 'radius') {
+        } else if (rectMode === 'radius') {
           x = x - w;
           y = y - h;
           w = 2 * w;
           h = 2 * h;
-        } else if (_p5Instance._renderer._rectMode === 'corners') {
+        } else if (rectMode === 'corners') {
           let px = Math.min(x, w);
           let qx = Math.max(x, w);
           let py = Math.min(y, h);
@@ -501,15 +1063,17 @@
         let transformMatrix = captureCurrentTransformMatrix();
         // Check for corner radii
         if (arguments.length === 5) { // Single corner radius
-          _commands.push({ type: 'rect', x, y, w, h, tl, transformMatrix });
+          session.commands.push({ type: SVG_COMMAND.RECT, x, y, w, h, tl, transformMatrix });
         } else if (arguments.length === 8) { // Individual corner radii
-          _commands.push({ type: 'rect', x, y, w, h, tl,tr,br,bl, transformMatrix });
+          session.commands.push({ type: SVG_COMMAND.RECT, x, y, w, h, tl,tr,br,bl, transformMatrix });
         } else { // Standard rectangle
-          _commands.push({ type: 'rect', x, y, w, h, transformMatrix });
+          session.commands.push({ type: SVG_COMMAND.RECT, x, y, w, h, transformMatrix });
         }
       }
-      _originalRectFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.rect, session.p5Instance, argumentsCopy);
     };
+    overrideFunction(session.p5Instance, 'rect', newRectFunc);
+    overrideFunction(getGlobalTarget(), 'rect', newRectFunc);
   }
 
 
@@ -519,66 +1083,78 @@
    * Handles different rect modes (corner, center, radius, corners) and supports
    * squares with optional uniform or individual corner radii.
    * Converts square parameters to equivalent rectangle parameters and stores them
-   * in the `_commands` array when recording SVG output.
+   * in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/square/}
    */
   function overrideSquareFunction(){
-    _originalSquareFunc = window.square;
-    window.square = function(x, y, s, tl,tr,br,bl) {
-      if (_bRecordingSvg) { 
-        let w = s; 
-        let h = s; 
+    // Save the original window.square for proper restoration in v2
+    session.overrides.originals.square = getOriginalFunction('square');
+    const newSquareFunc = function(x, y, s, tl, tr, br, bl) {
+      let argumentsCopy = [...arguments];  // safe snapshot
+      if (session.recording) {
+        let w = s;
+        let h = s;
 
-        if (_p5Instance._renderer._rectMode === 'corner'){
+        // Get rectMode: v2 stores in states.rectMode, v1 in _rectMode
+        const rectMode = session.p5Instance._renderer?.states?.rectMode ||
+                         session.p5Instance._renderer?._rectMode ||
+                         'corner';
+
+        if (rectMode === 'corner'){
           ;
-        } else if (_p5Instance._renderer._rectMode === 'center'){
-          x = x - w/2; 
-          y = y - h/2; 
-        } else if (_p5Instance._renderer._rectMode === 'radius'){
-          x = x - w; 
-          y = y - h; 
-          w = 2*w; 
-          h = 2*h; 
-        } else if (_p5Instance._renderer._rectMode === 'corners'){
-          let px = Math.min(x, s); 
-          let qx = Math.max(x, s); 
-          let py = Math.min(y, s); 
-          let qy = Math.max(y, s); 
-          x = px; 
-          y = py; 
-          w = qx - px; 
+        } else if (rectMode === 'center'){
+          x = x - w/2;
+          y = y - h/2;
+        } else if (rectMode === 'radius'){
+          x = x - w;
+          y = y - h;
+          w = 2*w;
+          h = 2*h;
+        } else if (rectMode === 'corners'){
+          let px = Math.min(x, s);
+          let qx = Math.max(x, s);
+          let py = Math.min(y, s);
+          let qy = Math.max(y, s);
+          x = px;
+          y = py;
+          w = qx - px;
           h = qy - py;
         }
-        
+
         let transformMatrix = captureCurrentTransformMatrix();
         if (arguments.length === 3) { // standard square
-          _commands.push({ type: 'rect', x, y, w, h, transformMatrix });
+          session.commands.push({ type: SVG_COMMAND.RECT, x, y, w, h, transformMatrix });
         } else if (arguments.length === 4) { // rounded square
-          _commands.push({ type: 'rect', x, y, w, h, tl, transformMatrix });
+          session.commands.push({ type: SVG_COMMAND.RECT, x, y, w, h, tl, transformMatrix });
         } else if (arguments.length === 7) {
-          _commands.push({ type: 'rect', x, y, w, h, tl,tr,br,bl, transformMatrix });
+          session.commands.push({ type: SVG_COMMAND.RECT, x, y, w, h, tl, tr, br, bl, transformMatrix });
         }
       }
-      _originalSquareFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.square, session.p5Instance, argumentsCopy);
     };
+    overrideFunction(session.p5Instance, 'square', newSquareFunc);
+    overrideFunction(getGlobalTarget(), 'square', newSquareFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js triangle function to capture SVG triangle commands for export.
-   * Stores triangle vertex coordinates in the `_commands` array when recording SVG output.
+   * Stores triangle vertex coordinates in the `session.commands` array when recording SVG output.
    * @see {@link https://p5js.org/reference/p5/triangle/}
    */
   function overrideTriangleFunction(){
-    _originalTriangleFunc = window.triangle;
-    window.triangle = function(x1, y1, x2, y2, x3, y3) {
-      if (_bRecordingSvg) {
+    // Save the original window.triangle for proper restoration in v2
+    session.overrides.originals.triangle = getOriginalFunction('triangle');
+    const newTriangleFunc = function(x1, y1, x2, y2, x3, y3) {
+      if (session.recording) {
         let transformMatrix = captureCurrentTransformMatrix();
-        _commands.push({ type: 'triangle', x1, y1, x2, y2, x3, y3, transformMatrix });
+        session.commands.push({ type: SVG_COMMAND.TRIANGLE, x1, y1, x2, y2, x3, y3, transformMatrix });
       }
-      _originalTriangleFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.triangle, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'triangle', newTriangleFunc);
+    overrideFunction(getGlobalTarget(), 'triangle', newTriangleFunc);
   }
 
 
@@ -589,30 +1165,119 @@
    * https://p5js.org/reference/p5/bezierDetail/
    */
   function overrideBezierDetailFunction() {
-    _originalBezierDetailFunc = window.bezierDetail;
-    window.bezierDetail = function(detailLevel) { // Check if the renderer is WEBGL
-      if (p5.instance._renderer.drawingContext instanceof WebGLRenderingContext) {
+    session.overrides.originals.bezierDetail = getOriginalFunction('bezierDetail');
+    if (typeof session.overrides.originals.bezierDetail !== 'function') return;
+    const newBezierDetailFunc = function(detailLevel) { // Check if the renderer is WEBGL
+      if (isWebGLDrawingContext()) {
         console.warn("bezierDetail() is currently unsupported in SVG output.");
       }
-      _originalBezierDetailFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.bezierDetail, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'bezierDetail', newBezierDetailFunc);
+    overrideFunction(getGlobalTarget(), 'bezierDetail', newBezierDetailFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js curveTightness function to capture curve tightness settings for SVG export.
-   * Updates the `_svgCurveTightness` variable to reflect the specified tightness value.
+   * Updates the recorded curve tightness to reflect the specified tightness value.
    * @see {@link https://p5js.org/reference/p5/curveTightness/}
    */
   function overrideCurveTightnessFunction() {
-    _originalCurveTightnessFunc = window.curveTightness;
-    window.curveTightness = function(tightness) {
-      if (_bRecordingSvg) { 
-        _svgCurveTightness = tightness;
+    session.overrides.originals.curveTightness = getOriginalFunction('curveTightness');
+    if (session.p5MajorVersion >= 2) {
+      const curveTightnessCompatFunc = function(tightness) {
+        session.curveTightness = tightness;
+        setOriginalSplineProperty('tightness', tightness);
+        if (!warnings.curveTightnessV2Shown) {
+          console.warn("p5.plotSvg: curveTightness() is no longer part of p5.js v2; mapping it to splineProperty('tightness', value) during SVG recording.");
+          warnings.curveTightnessV2Shown = true;
+        }
+        return session.p5Instance;
+      };
+      overrideFunction(session.p5Instance, 'curveTightness', curveTightnessCompatFunc);
+      overrideFunction(getGlobalTarget(), 'curveTightness', curveTightnessCompatFunc);
+      return;
+    }
+
+    // p5.js v1 - normal override
+    const newCurveTightnessFunc = function(tightness) {
+      if (session.recording) {
+        session.curveTightness = tightness;
       }
-      _originalCurveTightnessFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.curveTightness, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'curveTightness', newCurveTightnessFunc);
+    overrideFunction(getGlobalTarget(), 'curveTightness', newCurveTightnessFunc);
+  }
+
+
+  /**
+   * @private
+   * Tracks p5.js v2's current Bezier order for bezierVertex() point streams.
+   */
+  function overrideBezierOrderFunction() {
+    session.overrides.originals.bezierOrder = getOriginalFunction('bezierOrder');
+    if (typeof session.overrides.originals.bezierOrder !== 'function') return;
+
+    const newBezierOrderFunc = function(order) {
+      if (typeof order !== 'undefined') {
+        session.bezierOrder = order;
+      }
+      return callOriginalFunction(session.overrides.originals.bezierOrder, session.p5Instance, arguments);
+    };
+    overrideFunction(session.p5Instance, 'bezierOrder', newBezierOrderFunc);
+    overrideFunction(getGlobalTarget(), 'bezierOrder', newBezierOrderFunc);
+  }
+
+
+  /**
+   * @private
+   * Tracks p5.js v2 spline settings that affect exported spline geometry.
+   */
+  function overrideSplinePropertyFunction() {
+    session.overrides.originals.splineProperty = getOriginalFunction('splineProperty');
+    if (typeof session.overrides.originals.splineProperty !== 'function') return;
+
+    const newSplinePropertyFunc = function(property, value) {
+      const ret = callOriginalFunction(session.overrides.originals.splineProperty, session.p5Instance, arguments);
+      if (typeof value !== 'undefined') {
+        if (property === 'tightness') {
+          session.curveTightness = value;
+        } else if (property === 'ends') {
+          session.splineEndsMode = value;
+        }
+      }
+      return ret;
+    };
+    overrideFunction(session.p5Instance, 'splineProperty', newSplinePropertyFunc);
+    overrideFunction(getGlobalTarget(), 'splineProperty', newSplinePropertyFunc);
+  }
+
+
+  /**
+   * @private
+   * Tracks p5.js v2 spline settings assigned in bulk.
+   */
+  function overrideSplinePropertiesFunction() {
+    session.overrides.originals.splineProperties = getOriginalFunction('splineProperties');
+    if (typeof session.overrides.originals.splineProperties !== 'function') return;
+
+    const newSplinePropertiesFunc = function(values) {
+      const ret = callOriginalFunction(session.overrides.originals.splineProperties, session.p5Instance, arguments);
+      if (values && typeof values === 'object') {
+        if (Object.prototype.hasOwnProperty.call(values, 'tightness')) {
+          session.curveTightness = values.tightness;
+        }
+        if (Object.prototype.hasOwnProperty.call(values, 'ends')) {
+          session.splineEndsMode = values.ends;
+        }
+      }
+      return ret;
+    };
+    overrideFunction(session.p5Instance, 'splineProperties', newSplinePropertiesFunc);
+    overrideFunction(getGlobalTarget(), 'splineProperties', newSplinePropertiesFunc);
   }
 
 
@@ -623,112 +1288,214 @@
    * @see {@link https://p5js.org/reference/p5/beginShape/}
    */
   function overrideBeginShapeFunction() {
-    _originalBeginShapeFunc = window.beginShape;
-    window.beginShape = function(kind) {
-      if (_bRecordingSvg) { 
-        _vertexStack = []; // Start with an empty vertex stack
-        _shapeMode = "simple"; // Assume simple mode initially
-        
-        if ((kind !== null) && (kind === 0)) {
-          _shapeKind = 'points'; 
-        } else if (kind === null){
-          _shapeKind = 'poly'; // default to "poly" for polyline/polygon
+    session.overrides.originals.beginShape = getOriginalFunction('beginShape');
+    const newBeginShapeFunc = function(kind) {
+      if (session.recording) {
+        session.vertexStack = []; // Start with an empty vertex stack
+        session.shapeMode = "simple"; // Assume simple mode initially
+
+        if ((kind !== null) && (kind === 0 || (typeof session.p5Instance.POINTS !== 'undefined' && kind === session.p5Instance.POINTS))) {
+          session.shapeKind = SVG_COMMAND.POINTS;
+        } else if (kind === null || typeof kind === 'undefined'){
+          session.shapeKind = 'poly'; // default to "poly" for polyline/polygon
         } else {
-          _shapeKind = kind;
+          session.shapeKind = kind;
         }
       }
-      _originalBeginShapeFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.beginShape, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'beginShape', newBeginShapeFunc);
+    overrideFunction(getGlobalTarget(), 'beginShape', newBeginShapeFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js vertex function to capture vertex coordinates for SVG export.
-   * Pushes simple vertex data to the `_vertexStack` when recording is active.
+   * Pushes simple vertex data to the `session.vertexStack` when recording is active.
    * @see {@link https://p5js.org/reference/p5/vertex/}
    */
   function overrideVertexFunction() {
-    _originalVertexFunc = window.vertex;
-    window.vertex = function(x, y) {
-      if (_bRecordingSvg) {
-        _vertexStack.push({ type: 'vertex', x, y });
+    session.overrides.originals.vertex = getOriginalFunction('vertex');
+    const newVertexFunc = function(x, y) {
+      if (session.recording) {
+        session.vertexStack.push({ type: SVG_SEGMENT.VERTEX, x, y });
       }
-      _originalVertexFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.vertex, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'vertex', newVertexFunc);
+    overrideFunction(getGlobalTarget(), 'vertex', newVertexFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js bezierVertex function to capture Bézier control points for SVG export.
-   * Marks the current shape as complex and stores Bézier vertex data in the `_vertexStack`.
+   * Marks the current shape as complex and stores Bézier vertex data in the `session.vertexStack`.
    * @see {@link https://p5js.org/reference/p5/bezierVertex/}
    */
   function overrideBezierVertexFunction() {
     // Override `bezierVertex()` and mark shape as complex
-    _originalBezierVertexFunc = window.bezierVertex;
-    window.bezierVertex = function(x2, y2, x3, y3, x4, y4) {
-      if (_bRecordingSvg) {
-        _shapeMode = 'complex'; // Switch to complex mode
-        _vertexStack.push({ type: 'bezier', x2, y2, x3, y3, x4, y4 });
+    session.overrides.originals.bezierVertex = getOriginalFunction('bezierVertex');
+    const newBezierVertexFunc = function(x2, y2, x3, y3, x4, y4) {
+      if (session.recording) {
+        session.shapeMode = 'complex'; // Switch to complex mode
+        if (session.p5MajorVersion >= 2 && arguments.length <= 5) {
+          session.vertexStack.push({
+            type: SVG_SEGMENT.BEZIER_POINT,
+            x: x2,
+            y: y2,
+            order: getCurrentBezierOrder()
+          });
+        } else {
+          session.vertexStack.push({ type: SVG_SEGMENT.BEZIER, x2, y2, x3, y3, x4, y4 });
+        }
       }
-      _originalBezierVertexFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.bezierVertex, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'bezierVertex', newBezierVertexFunc);
+    overrideFunction(getGlobalTarget(), 'bezierVertex', newBezierVertexFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js quadraticVertex function to capture quadratic Bézier control points for SVG export.
-   * Marks the current shape as complex and stores quadratic vertex data in the `_vertexStack`.
+   * Marks the current shape as complex and stores quadratic vertex data in the `session.vertexStack`.
    * @see {@link https://p5js.org/reference/p5/quadraticVertex/}
    */
   function overrideQuadraticVertexFunction() {
     // Override `quadraticVertex()` and mark shape as complex
-    _originalQuadraticVertexFunc = window.quadraticVertex;
-    window.quadraticVertex = function(cx, cy, x, y) {
-      if (_bRecordingSvg) {
-        _shapeMode = 'complex'; // Switch to complex mode
-        _vertexStack.push({ type: 'quadratic', cx, cy, x, y });
+    session.overrides.originals.quadraticVertex = getOriginalFunction('quadraticVertex');
+    if (typeof session.overrides.originals.quadraticVertex !== 'function' && session.p5MajorVersion < 2) return;
+    const newQuadraticVertexFunc = function(cx, cy, x, y) {
+      if (session.recording) {
+        session.shapeMode = 'complex'; // Switch to complex mode
+        session.vertexStack.push({ type: SVG_SEGMENT.QUADRATIC, cx, cy, x, y });
       }
-      _originalQuadraticVertexFunc.apply(this, arguments);
+      if (session.p5MajorVersion >= 2) {
+        const previousOrder = getCurrentBezierOrder();
+        setOriginalBezierOrder(2);
+        callOriginalFunction(session.overrides.originals.bezierVertex, session.p5Instance, [cx, cy]);
+        callOriginalFunction(session.overrides.originals.bezierVertex, session.p5Instance, [x, y]);
+        setOriginalBezierOrder(previousOrder);
+      } else {
+        callOriginalFunction(session.overrides.originals.quadraticVertex, session.p5Instance, arguments);
+      }
     };
+    overrideFunction(session.p5Instance, 'quadraticVertex', newQuadraticVertexFunc);
+    overrideFunction(getGlobalTarget(), 'quadraticVertex', newQuadraticVertexFunc);
   }
 
 
   /**
    * @private
    * Overrides the p5.js curveVertex function to capture Catmull-Rom curve control points for SVG export.
-   * Marks the current shape as complex and handles specific kludge logic for initial vertices.
+   * Marks the current shape as complex and preserves the legacy v1-style endpoint behavior.
    * @see {@link https://p5js.org/reference/p5/curveVertex/}
    */
   function overrideCurveVertexFunction() {
     // Override `curveVertex()` and mark shape as complex
-    _originalCurveVertexFunc = window.curveVertex;
-    window.curveVertex = function(x, y) {
-      if (_bRecordingSvg) {
-        _shapeMode = 'complex'; // Switch to complex mode
-        
-        let bDoKludge = true; // TODO: Revisit
-        if (bDoKludge){
-          if (_vertexStack.length === 1){
-            if(_vertexStack[0].type === 'curve'){
-              let x0 = _vertexStack[0].x; 
-              let y0 = _vertexStack[0].y; 
-              let dist01 = Math.hypot(x-x0, y-y0); 
-              if (dist01 > 0){
-                _vertexStack.shift();
-                _vertexStack.push({ type: 'curve', x, y });
-              }
+    session.overrides.originals.curveVertex = getOriginalFunction('curveVertex');
+    if (typeof session.overrides.originals.curveVertex !== 'function' && session.p5MajorVersion < 2) return;
+    const newCurveVertexFunc = function(x, y) {
+      if (session.recording) {
+        session.shapeMode = 'complex'; // Switch to complex mode
+        let tightness = session.curveTightness; // Capture current tightness
+
+        // For open Catmull-Rom paths, duplicate the first distinct curve point
+        // so the SVG conversion receives the endpoint context expected by p5 v1.
+        if (session.vertexStack.length === 1){
+          if(session.vertexStack[0].type === SVG_SEGMENT.CURVE){
+            let x0 = session.vertexStack[0].x;
+            let y0 = session.vertexStack[0].y;
+            let dist01 = Math.hypot(x-x0, y-y0);
+            if (dist01 > 0){
+              session.vertexStack.shift();
+              session.vertexStack.push({ type: SVG_SEGMENT.CURVE, x, y, tightness });
             }
           }
         }
-        _vertexStack.push({ type: 'curve', x, y });
+        session.vertexStack.push({ type: SVG_SEGMENT.CURVE, x, y, tightness });
       }
-      _originalCurveVertexFunc.apply(this, arguments);
+      if (session.p5MajorVersion >= 2) {
+        beginCurveVertexCompatIfNeeded();
+        callOriginalFunction(session.overrides.originals.splineVertex, session.p5Instance, arguments);
+      } else {
+        callOriginalFunction(session.overrides.originals.curveVertex, session.p5Instance, arguments);
+      }
     };
+    overrideFunction(session.p5Instance, 'curveVertex', newCurveVertexFunc);
+    overrideFunction(getGlobalTarget(), 'curveVertex', newCurveVertexFunc);
   }
+
+
+  /**
+   * @private
+   * Overrides p5.js v2's splineVertex function. p5.js v1 uses curveVertex().
+   */
+  function overrideSplineVertexFunction() {
+    session.overrides.originals.splineVertex = getOriginalFunction('splineVertex');
+    if (typeof session.overrides.originals.splineVertex !== 'function') return;
+
+    const newSplineVertexFunc = function(x, y) {
+      if (session.recording) {
+        session.shapeMode = 'complex';
+        session.vertexStack.push({
+          type: SVG_SEGMENT.SPLINE,
+          x,
+          y,
+          tightness: getCurrentSplineTightness(),
+          endsMode: getCurrentSplineEndsMode()
+        });
+      }
+      callOriginalFunction(session.overrides.originals.splineVertex, session.p5Instance, arguments);
+    };
+    overrideFunction(session.p5Instance, 'splineVertex', newSplineVertexFunc);
+    overrideFunction(getGlobalTarget(), 'splineVertex', newSplineVertexFunc);
+  }
+
+
+  /**
+   * @private
+   * Overrides the p5.js beginContour function to mark the start of an inner contour.
+   * Pushes a contour start marker to the vertex stack for multi-contour shape support.
+   * @see {@link https://p5js.org/reference/p5/beginContour/}
+   */
+  function overrideBeginContourFunction() {
+    session.overrides.originals.beginContour = getOriginalFunction('beginContour');
+    if (typeof session.overrides.originals.beginContour !== 'function') return;
+    const newBeginContourFunc = function() {
+      if (session.recording) {
+        session.vertexStack.push({ type: SVG_SEGMENT.CONTOUR_START });
+      }
+      callOriginalFunction(session.overrides.originals.beginContour, session.p5Instance, arguments);
+    };
+    overrideFunction(session.p5Instance, 'beginContour', newBeginContourFunc);
+    overrideFunction(getGlobalTarget(), 'beginContour', newBeginContourFunc);
+  }
+
+
+  /**
+   * @private
+   * Overrides the p5.js endContour function to mark the end of an inner contour.
+   * Pushes a contour end marker with closure info to the vertex stack.
+   * @see {@link https://p5js.org/reference/p5/endContour/}
+   */
+  function overrideEndContourFunction() {
+    session.overrides.originals.endContour = getOriginalFunction('endContour');
+    if (typeof session.overrides.originals.endContour !== 'function') return;
+    const newEndContourFunc = function(mode) {
+      if (session.recording) {
+        let isClosed = (mode === session.p5Instance.CLOSE);
+        session.vertexStack.push({ type: SVG_SEGMENT.CONTOUR_END, closed: isClosed });
+      }
+      callOriginalFunction(session.overrides.originals.endContour, session.p5Instance, arguments);
+    };
+    overrideFunction(session.p5Instance, 'endContour', newEndContourFunc);
+    overrideFunction(getGlobalTarget(), 'endContour', newEndContourFunc);
+  }
+
 
   /**
    * @private
@@ -740,63 +1507,75 @@
    * @see {@link https://p5js.org/reference/p5/endShape/}
    */
   function overrideEndShapeFunction() {
-    _originalEndShapeFunc = window.endShape;
-    window.endShape = function(mode) {
-      if (_bRecordingSvg && _vertexStack.length > 0) {
+    session.overrides.originals.endShape = getOriginalFunction('endShape');
+    const newEndShapeFunc = function(mode) {
+      if (session.recording && session.vertexStack.length > 0) {
         let transformMatrix = captureCurrentTransformMatrix();
-        
-        // Dispatch based on `_shapeKind`
-        switch (_shapeKind) {
-          case 'points':
-            _commands.push({ type: 'points', vertices: [..._vertexStack], transformMatrix });
+
+        // Dispatch based on the active shape kind.
+        switch (session.shapeKind) {
+          case SVG_COMMAND.POINTS:
+            session.commands.push({ type: SVG_COMMAND.POINTS, vertices: [...session.vertexStack], transformMatrix });
             break;
-          case _p5Instance.LINES:
-            _commands.push({ type: 'lines', vertices: [..._vertexStack], transformMatrix });
+          case session.p5Instance.LINES:
+            session.commands.push({ type: SVG_COMMAND.LINES, vertices: [...session.vertexStack], transformMatrix });
             break;
-          case _p5Instance.TRIANGLES:
-            _commands.push({ type: 'triangles', vertices: [..._vertexStack], transformMatrix });
+          case session.p5Instance.TRIANGLES:
+            session.commands.push({ type: SVG_COMMAND.TRIANGLES, vertices: [...session.vertexStack], transformMatrix });
             break;
-          case _p5Instance.TRIANGLE_FAN:
-            _commands.push({ type: 'triangle_fan', vertices: [..._vertexStack], transformMatrix });
+          case session.p5Instance.TRIANGLE_FAN:
+            session.commands.push({ type: SVG_COMMAND.TRIANGLE_FAN, vertices: [...session.vertexStack], transformMatrix });
             break;
-          case _p5Instance.TRIANGLE_STRIP:
-            _commands.push({ type: 'triangle_strip', vertices: [..._vertexStack], transformMatrix });
+          case session.p5Instance.TRIANGLE_STRIP:
+            session.commands.push({ type: SVG_COMMAND.TRIANGLE_STRIP, vertices: [...session.vertexStack], transformMatrix });
             break;
-          case _p5Instance.QUADS:
-            _commands.push({ type: 'quads', vertices: [..._vertexStack], transformMatrix });
+          case session.p5Instance.QUADS:
+            session.commands.push({ type: SVG_COMMAND.QUADS, vertices: [...session.vertexStack], transformMatrix });
             break;
-          case _p5Instance.QUAD_STRIP:
-            _commands.push({ type: 'quad_strip', vertices: [..._vertexStack], transformMatrix });
+          case session.p5Instance.QUAD_STRIP:
+            session.commands.push({ type: SVG_COMMAND.QUAD_STRIP, vertices: [...session.vertexStack], transformMatrix });
             break;
-            
-          case 'poly': 
+
+          case 'poly':
           default:
             // Handle the default polyline/polygon behavior
-            let isClosed = (mode === _p5Instance.CLOSE);
-            if (_shapeMode === "simple") {
-              _commands.push({
-                type: 'polyline',
-                vertices: [..._vertexStack],
+            let isClosed = (mode === session.p5Instance.CLOSE);
+            // Check if shape has contours (for multi-contour path support)
+            let hasContours = session.vertexStack.some(v => v.type === SVG_SEGMENT.CONTOUR_START);
+            if (session.shapeMode === "simple") {
+              session.commands.push({
+                type: SVG_COMMAND.POLYLINE,
+                vertices: [...session.vertexStack],
                 closed: isClosed,
+                hasContours,
                 transformMatrix
               });
             } else {
-              _commands.push({
-                type: 'path',
-                segments: [..._vertexStack],
+              session.commands.push({
+                type: SVG_COMMAND.PATH,
+                segments: [...session.vertexStack],
                 closed: isClosed,
+                hasContours,
                 transformMatrix
               });
             }
             break;
         }
 
-        _vertexStack = []; // Clear stack after pushing
-        _shapeMode = 'simple'; // Reset _shapeMode
-        _shapeKind = 'poly'; // Reset _shapeKind
+        session.vertexStack = []; // Clear stack after pushing
+        session.shapeMode = 'simple';
+        session.shapeKind = 'poly';
       }
-      _originalEndShapeFunc.apply(this, arguments);
+      try {
+        callOriginalFunction(session.overrides.originals.endShape, session.p5Instance, arguments);
+      } finally {
+        if (session.p5MajorVersion >= 2) {
+          endCurveVertexCompatIfNeeded();
+        }
+      }
     };
+    overrideFunction(session.p5Instance, 'endShape', newEndShapeFunc);
+    overrideFunction(getGlobalTarget(), 'endShape', newEndShapeFunc);
   }
 
 
@@ -807,16 +1586,19 @@
    * @see {@link https://p5js.org/reference/p5/describe/}
    */
   function overrideDescribeFunction() {
-    _originalDescribeFunc = window.describe;
-    window.describe = function(description) {
-      if (_bRecordingSvg) {
+    session.overrides.originals.describe = getOriginalFunction('describe');
+    if (typeof session.overrides.originals.describe !== 'function') return;
+    const newDescribeFunc = function(description) {
+      if (session.recording) {
         if (description && description.trim().length > 0){
           // Push a command to the stack for generating an SVG `desc` element
-          _commands.push({ type: 'description', text: description });
+          session.commands.push({ type: SVG_COMMAND.DESCRIPTION, text: description });
         }
       }
-      _originalDescribeFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.describe, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'describe', newDescribeFunc);
+    overrideFunction(getGlobalTarget(), 'describe', newDescribeFunc);
   }
 
 
@@ -827,14 +1609,16 @@
    * @see {@link https://p5js.org/reference/p5/push/}
    */
   function overridePushFunction(){
-    _originalPushFunc = window.push;
-    _bTransformsExist = true; 
-    window.push = function() {
-      if (_bRecordingSvg) {
-        _commands.push({ type: 'push' });
+    session.overrides.originals.push = getOriginalFunction('push');
+    session.transformsExist = true;
+    const newPushFunc = function() {
+      if (session.recording) {
+        session.commands.push({ type: SVG_COMMAND.PUSH });
       }
-      _originalPushFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.push, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'push', newPushFunc);
+    overrideFunction(getGlobalTarget(), 'push', newPushFunc);
   }
 
 
@@ -845,14 +1629,16 @@
    * @see {@link https://p5js.org/reference/p5/pop/}
    */
   function overridePopFunction(){
-    _originalPopFunc = window.pop;
-    _bTransformsExist = true; 
-    window.pop = function() {
-      if (_bRecordingSvg) {
-        _commands.push({ type: 'pop' });
+    session.overrides.originals.pop = getOriginalFunction('pop');
+    session.transformsExist = true;
+    const newPopFunc = function() {
+      if (session.recording) {
+        session.commands.push({ type: SVG_COMMAND.POP });
       }
-      _originalPopFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.pop, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'pop', newPopFunc);
+    overrideFunction(getGlobalTarget(), 'pop', newPopFunc);
   }
 
 
@@ -863,14 +1649,16 @@
    * @see {@link https://p5js.org/reference/p5/scale/}
    */
   function overrideScaleFunction(){
-    _originalScaleFunc = window.scale;
-    _bTransformsExist = true; 
-    window.scale = function(sx, sy) {
-      if (_bRecordingSvg) {
-        _commands.push({ type: 'scale', sx, sy: sy || sx });
+    session.overrides.originals.scale = getOriginalFunction('scale');
+    session.transformsExist = true;
+    const newScaleFunc = function(sx, sy) {
+      if (session.recording) {
+        session.commands.push({ type: SVG_COMMAND.SCALE, sx, sy: sy || sx });
       }
-      _originalScaleFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.scale, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'scale', newScaleFunc);
+    overrideFunction(getGlobalTarget(), 'scale', newScaleFunc);
   }
 
 
@@ -881,14 +1669,16 @@
    * @see {@link https://p5js.org/reference/p5/translate/}
    */
   function overrideTranslateFunction(){
-    _originalTranslateFunc = window.translate;
-    _bTransformsExist = true; 
-    window.translate = function(tx, ty) {
-      if (_bRecordingSvg) {
-        _commands.push({ type: 'translate', tx, ty });
+    session.overrides.originals.translate = getOriginalFunction('translate');
+    session.transformsExist = true;
+    const newTranslateFunc = function(tx, ty) {
+      if (session.recording) {
+        session.commands.push({ type: SVG_COMMAND.TRANSLATE, tx, ty });
       }
-      _originalTranslateFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.translate, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'translate', newTranslateFunc);
+    overrideFunction(getGlobalTarget(), 'translate', newTranslateFunc);
   }
 
 
@@ -899,14 +1689,16 @@
    * https://p5js.org/reference/p5/rotate/
    */
   function overrideRotateFunction(){
-    _originalRotateFunc = window.rotate;
-    _bTransformsExist = true; 
-    window.rotate = function(angle) {
-      if (_bRecordingSvg) {
-        _commands.push({ type: 'rotate', angle });
+    session.overrides.originals.rotate = getOriginalFunction('rotate');
+    session.transformsExist = true;
+    const newRotateFunc = function(angle) {
+      if (session.recording) {
+        session.commands.push({ type: SVG_COMMAND.ROTATE, angle });
       }
-      _originalRotateFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.rotate, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'rotate', newRotateFunc);
+    overrideFunction(getGlobalTarget(), 'rotate', newRotateFunc);
   }
 
 
@@ -917,14 +1709,16 @@
    * @see {@link https://p5js.org/reference/p5/shearX/}
    */
   function overrideShearXFunction(){
-    _originalShearXFunc = window.shearX;
-    _bTransformsExist = true; 
-    window.shearX = function(angle) {
-      if (_bRecordingSvg) {
-        _commands.push({ type: 'shearx', angle });
+    session.overrides.originals.shearX = getOriginalFunction('shearX');
+    session.transformsExist = true;
+    const newShearXFunc = function(angle) {
+      if (session.recording) {
+        session.commands.push({ type: SVG_COMMAND.SHEAR_X, angle });
       }
-      _originalShearXFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.shearX, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'shearX', newShearXFunc);
+    overrideFunction(getGlobalTarget(), 'shearX', newShearXFunc);
   }
 
 
@@ -935,15 +1729,18 @@
    * @see {@link https://p5js.org/reference/p5/shearY/}
    */
   function overrideShearYFunction(){
-    _originalShearYFunc = window.shearY;
-    _bTransformsExist = true; 
-    window.shearY = function(angle) {
-      if (_bRecordingSvg) {
-        _commands.push({ type: 'sheary', angle });
+    session.overrides.originals.shearY = getOriginalFunction('shearY');
+    session.transformsExist = true;
+    const newShearYFunc = function(angle) {
+      if (session.recording) {
+        session.commands.push({ type: SVG_COMMAND.SHEAR_Y, angle });
       }
-      _originalShearYFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.shearY, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'shearY', newShearYFunc);
+    overrideFunction(getGlobalTarget(), 'shearY', newShearYFunc);
   }
+
 
 
   /**
@@ -955,219 +1752,546 @@
    * @see {@link https://p5js.org/reference/p5/text/}
    */
   function overrideTextFunction() {
-    _originalTextFunc = window.text;
-    window.text = function(content, x, y, maxWidth, maxHeight) {
-      if (_bRecordingSvg) {
+    session.overrides.originals.text = getOriginalFunction('text');
+    const newTextFunc = function(content, x, y, maxWidth, maxHeight) {
+      if (session.recording) {
+
         // Warn if maxWidth or maxHeight are provided
         if (typeof maxWidth !== 'undefined' || typeof maxHeight !== 'undefined') {
-          console.warn('The SVG export function currently does not support maxWidth or maxHeight for text rendering.');
+          console.warn('The SVG export does not yet support maxWidth or maxHeight for text rendering.');
         }
 
-        // Capture font, size, alignment, and style using _p5Instance
-        const font = _p5Instance.textFont().font ? 
-              _p5Instance.textFont().font.names.fullName : _p5Instance.textFont();
-        const fontSize = _p5Instance.textSize();
-        const alignX   = _p5Instance.textAlign().horizontal;
-        const alignY   = _p5Instance.textAlign().vertical;
-        const style    = _p5Instance.textStyle();
-        const leading  = _p5Instance.textLeading(); 
-        const ascent   = _p5Instance.textAscent(); 
-        const descent  = _p5Instance.textDescent(); 
+        // --- BEGIN @blvrd's FONT FIX ------------------------------------
+        // https://github.com/golanlevin/p5.plotSvg/issues/17
+        let font;
+        const currentFont = session.p5Instance.textFont();
+
+        if (typeof currentFont === 'string') {
+          // User gave a raw string to textFont()
+          font = currentFont;
+
+        } else if (currentFont && currentFont.font && currentFont.font.names) {
+          const names = currentFont.font.names;
+          // Helper to resolve objects like { en: "...", jp: "..." }
+          const resolve = v =>
+            (typeof v === "string") ? v :
+            (v && typeof v === "object") ? (v.en || v[Object.keys(v)[0]]) : "";
+          // ORDER OF PREFERENCE (for SVG portability):
+          // 1. fontFamily      → "Berkeley Mono Trial"
+          // 2. fullName        → "Berkeley Mono Trial Regular"
+          // 3. postScriptName  → "BerkeleyMonoTrial-Regular"
+          let fontName =
+            resolve(names.fontFamily) ||
+            resolve(names.fullName) ||
+            resolve(names.postScriptName) || "";
+          font = fontName;
+
+        } else {
+          // Fallback
+          font = String(currentFont || "");
+        }
+        // Sanitize accidental embedded quotes
+        if (font) {
+          font = font.replace(/"/g, "");
+        }
+
+        // --- END @blvrd FONT FIX --------------------------------------
+
+        const fontSize = session.p5Instance.textSize();
+        const alignX   = session.p5Instance.textAlign().horizontal;
+        const alignY   = session.p5Instance.textAlign().vertical;
+        const style    = session.p5Instance.textStyle();
+        const leading  = session.p5Instance.textLeading();
+        const ascent   = session.p5Instance.textAscent();
+        const descent  = session.p5Instance.textDescent();
         let transformMatrix = captureCurrentTransformMatrix();
 
         // Push text command with properties
-        _commands.push({ type: 'text', content, x, y, 
-                        font, fontSize, alignX, alignY, style, leading, ascent, descent, transformMatrix });
+        session.commands.push({
+          type: SVG_COMMAND.TEXT,
+          content, x, y,
+          font, fontSize, alignX, alignY,
+          style, leading, ascent, descent,
+          transformMatrix
+        });
       }
-      _originalTextFunc.apply(this, arguments);
+
+      callOriginalFunction(session.overrides.originals.text, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'text', newTextFunc);
+    overrideFunction(getGlobalTarget(), 'text', newTextFunc);
   }
 
 
   /**
    * @private
    * Exports the recorded p5.js drawing commands as an SVG file.
-   * Generates an SVG string from the recorded drawing commands, 
-   * including any applied transforms, styles, and shape data. 
-   * Creates an SVG file and triggers a download for the generated 
+   * Generates an SVG string from the recorded drawing commands,
+   * including any applied transforms, styles, and shape data.
+   * Creates an SVG file and triggers a download for the generated
    * SVG. Resets the internal recording state upon completion.
    */
   function exportSVG() {
     let svgContent = "";
-    
-    svgContent += `<!-- ${_svgFilename} -->\n`; 
-    svgContent += `<!-- Generated using p5.plotSvg: -->\n`;
-    svgContent += `<!-- A Plotter-Oriented SVG Exporter for p5.js -->\n`;
-    svgContent += `<!-- ${new Date().toString()} -->\n`;
-    svgContent += `<!-- DPI: ${_svgDPI} -->\n`;
-    
-    let svgW = _bCustomSizeSet ? _svgWidth : _p5Instance.width; 
-    let svgH = _bCustomSizeSet ? _svgHeight : _p5Instance.height;
-    let widthInches = svgW / _svgDPI;
-    let heightInches = svgH / _svgDPI;
-    svgContent += `<svg xmlns="http://www.w3.org/2000/svg" `;
-    svgContent += `width="${widthInches}in" height="${heightInches}in" `;
-    svgContent += `viewBox="0 0 ${svgW} ${svgH}"`;
-    svgContent += `>\n`;
-    
+
+    // Check for unclosed groups and auto-close them with a warning
+    if (session.groupStack.length > 0) {
+      const unclosedNames = session.groupStack.slice().reverse();
+      console.warn(`p5.plotSvg warning: ${session.groupStack.length} unclosed group(s) detected. ` +
+        `Missing endSvgGroup() for: ${unclosedNames.map(n => `"${n}"`).join(', ')}. ` +
+        `Auto-closing to produce valid SVG.`);
+      // Auto-close the unclosed groups
+      while (session.groupStack.length > 0) {
+        session.commands.push({ type: SVG_COMMAND.END_GROUP });
+        session.groupStack.pop();
+      }
+    }
+
+    // Auto-inject Inkscape namespace if compatibility mode is enabled and groups exist
+    if (config.inkscapeCompatibility) {
+      const hasGroups = session.commands.some(cmd => cmd.type === SVG_COMMAND.BEGIN_GROUP);
+      if (hasGroups || config.groupByStrokeColor) {
+        p5plotSvg.injectSvgHeaderAttribute('xmlns:inkscape',
+          'http://www.inkscape.org/namespaces/inkscape');
+        p5plotSvg.injectSvgHeaderAttribute('inkscape:version', '1.4');
+      }
+    }
+
+    let svgW = config.customSizeSet ? config.width : session.p5Instance.width;
+    let svgH = config.customSizeSet ? config.height : session.p5Instance.height;
+    let widthInches = svgW / config.dpi;
+    let heightInches = svgH / config.dpi;
+
+    // Determine dimensions and unit suffix based on unit mode
+    let dimWidth, dimHeight, unitSuffix;
+    if (config.unitMode === p5plotSvg.SVG_UNITS_CM) {
+      dimWidth = widthInches * 2.54;
+      dimHeight = heightInches * 2.54;
+      unitSuffix = 'cm';
+    } else {
+      dimWidth = widthInches;
+      dimHeight = heightInches;
+      unitSuffix = 'in';
+    }
+
+    // The <svg> tag
+    svgContent += `<svg `;
+    svgContent += ` version="1.1" `;
+    svgContent += ` xmlns="http://www.w3.org/2000/svg" `;
+    svgContent += attrsToString(
+      session.injectedHeaderAttributes,
+      'SVG header attribute name',
+      { trailingSpace: true }
+    );
+    svgContent += ` width="${dimWidth}${unitSuffix}" height="${dimHeight}${unitSuffix}" `;
+    svgContent += ` viewBox="0 0 ${svgW} ${svgH}" `;
+    if (config.backgroundColor) {
+      svgContent += ` style="background-color: ${config.backgroundColor}" `;
+    }
+    svgContent += `>\n`;  // close the <svg> tag
+
+    // The <defs> tag
+    if (session.injectedDefs.length > 0) {
+      svgContent += `  <defs>\n`;
+      for (let def of session.injectedDefs) {
+        const defType = normalizeXmlName(def.type, 'SVG defs element name');
+        if (!defType) continue;
+        svgContent += `    <${defType} `;
+        svgContent += attrsToString(def.attributes, 'SVG defs attribute name', { trailingSpace: true });
+        svgContent += ` />\n`;
+      }
+      svgContent += `  </defs>\n`;
+    }
+
+    // The <style> tag
     svgContent += `  <style>
       circle, ellipse, line, path, polygon, polyline, rect, quad, text {
         fill: none;
-        stroke: ${_svgDefaultStrokeColor};
-        stroke-width: ${_svgDefaultStrokeWeight};
+        stroke: ${config.defaultStrokeColor};
+        stroke-width: ${config.defaultStrokeWeight};
         stroke-linecap: round;
         stroke-linejoin: round;
         vector-effect: non-scaling-stroke;
       }
     </style>\n`;
-    
-    // The SVG file wraps everything in a group with a non-scaling stroke effect:
-    svgContent += `<g vector-effect="non-scaling-stroke">\n`;
-    _svgGroupLevel++;
 
-    let transformGroupStack = []; 
-    for (let cmd of _commands) {
+    const renderContext = {
+      groupLevel: 0,
+      currentStrokeColor: config.defaultStrokeColor,
+      hasNonDefaultStrokeColor: false,
+      transformGroupStack: []
+    };
+    for (let cmd of session.commands) {
+      if (!config.exportMalformedNumbersWithSanitizations &&
+          hasNonFiniteNumber(cmd)) {
+        if (!warnings.malformedCommandSkippedShown) {
+          console.warn("p5.plotSvg: Command with non-finite numeric value skipped during SVG export.");
+          warnings.malformedCommandSkippedShown = true;
+        }
+        continue;
+      }
 
-      if (cmd.type === 'push' ||
-          cmd.type === 'pop' ||
-          cmd.type === 'scale' || 
-          cmd.type === 'translate' || 
-          cmd.type === 'rotate' || 
-          cmd.type === 'shearx' || 
-          cmd.type === 'sheary') {
-      
-        if (!_bFlattenTransforms && _bTransformsExist) {
-          if (cmd.type === 'push') {
+      const commandMayEmitNoGeometry =
+        cmd.type === SVG_COMMAND.POLYLINE || cmd.type === SVG_COMMAND.PATH;
+
+      if (cmd.type === SVG_COMMAND.PUSH ||
+          cmd.type === SVG_COMMAND.POP ||
+          cmd.type === SVG_COMMAND.SCALE ||
+          cmd.type === SVG_COMMAND.TRANSLATE ||
+          cmd.type === SVG_COMMAND.ROTATE ||
+          cmd.type === SVG_COMMAND.SHEAR_X ||
+          cmd.type === SVG_COMMAND.SHEAR_Y) {
+
+        if (!config.flattenTransforms && session.transformsExist) {
+          if (cmd.type === SVG_COMMAND.PUSH) {
             // Open a new group
-            svgContent += getIndentStr();
+            svgContent += getIndentStr(renderContext);
             svgContent += `<g>\n`;
-            transformGroupStack.push(1); 
-            _svgGroupLevel++;
+            renderContext.transformGroupStack.push(1);
+            renderContext.groupLevel++;
 
-          } else if (cmd.type === 'pop') {
+          } else if (cmd.type === SVG_COMMAND.POP) {
             // Close the most recent group
-            if (transformGroupStack.length > 0) {
-              while (transformGroupStack[transformGroupStack.length - 1] > 0){
-                transformGroupStack[transformGroupStack.length - 1]--; 
-                _svgGroupLevel = Math.max(0, _svgGroupLevel - 1);
-                svgContent += getIndentStr();
+            if (renderContext.transformGroupStack.length > 0) {
+              while (renderContext.transformGroupStack[renderContext.transformGroupStack.length - 1] > 0){
+                renderContext.transformGroupStack[renderContext.transformGroupStack.length - 1]--;
+                renderContext.groupLevel = Math.max(0, renderContext.groupLevel - 1);
+                svgContent += getIndentStr(renderContext);
                 svgContent += `</g>\n`;
               }
-              transformGroupStack.pop();
+              renderContext.transformGroupStack.pop();
             }
 
           } else {
             // Handle transformations by creating a group with a transform attribute
             let transformStr = '';
-            if (cmd.type === 'scale') {
-              transformStr = getSvgStrScale(cmd); 
-            } else if (cmd.type === 'translate') {
+            if (cmd.type === SVG_COMMAND.SCALE) {
+              transformStr = getSvgStrScale(cmd);
+            } else if (cmd.type === SVG_COMMAND.TRANSLATE) {
               transformStr = getSvgStrTranslate(cmd);
-            } else if (cmd.type === 'rotate') {
-              transformStr = getSvgStrRotate(cmd); 
-            } else if (cmd.type === 'shearx') {
-              transformStr = getSvgStrShearX(cmd); 
-            } else if (cmd.type === 'sheary') {
+            } else if (cmd.type === SVG_COMMAND.ROTATE) {
+              transformStr = getSvgStrRotate(cmd);
+            } else if (cmd.type === SVG_COMMAND.SHEAR_X) {
+              transformStr = getSvgStrShearX(cmd);
+            } else if (cmd.type === SVG_COMMAND.SHEAR_Y) {
               transformStr = getSvgStrShearY(cmd);
             }
 
-            svgContent += getIndentStr();
+            svgContent += getIndentStr(renderContext);
             svgContent += `<g transform="${transformStr}">\n`;
-            if (transformGroupStack.length > 0){
-              transformGroupStack[transformGroupStack.length - 1]++;
+
+            if (renderContext.transformGroupStack.length > 0){
+              renderContext.transformGroupStack[renderContext.transformGroupStack.length - 1]++;
             } else {
-              transformGroupStack.push(1);
+              renderContext.transformGroupStack.push(1);
             }
-            _svgGroupLevel++;
+            renderContext.groupLevel++;
           }
         }
-        
-      } else if (cmd.type === 'stroke') {
-        handleSvgStrokeCommand(cmd);
-      } else {
-        svgContent += getIndentStr();
-      }
-      
-      if (cmd.type === 'description') {
-        svgContent += getSvgStrDescription(cmd); 
-      } else if (cmd.type === 'beginGroup') {
-        svgContent += getSvgStrBeginGroup(cmd);      
-      } else if (cmd.type === 'endGroup') {
-        svgContent += getSvgStrEndGroup(cmd);
-      } else if (cmd.type === 'arc') {
-        svgContent += getSvgStrArc(cmd);
-      } else if (cmd.type === 'bezier') {
-        svgContent += getSvgStrBezier(cmd); 
-      } else if (cmd.type === 'circle') {
-        svgContent += getSvgStrCircle(cmd);
-      } else if (cmd.type === 'curve') {
-        svgContent += getSvgStrCurve(cmd); 
-      } else if (cmd.type === 'ellipse') {
-        svgContent += getSvgStrEllipse(cmd); 
-      } else if (cmd.type === 'line') {
-        svgContent += getSvgStrLine(cmd);
-      } else if (cmd.type === 'point') {
-        svgContent += getSvgStrPoint(cmd);
-      } else if (cmd.type === 'quad') {
-        svgContent += getSvgStrQuad(cmd);
-      } else if (cmd.type === 'rect') {
-        svgContent += getSvgStrRect(cmd);
-      } else if (cmd.type === 'triangle') {
-        svgContent += getSvgStrTriangle(cmd);
-      } else if (cmd.type === 'text'){
-        svgContent += getSvgStrText(cmd);
 
-      } else if (cmd.type === 'polyline'){
-        svgContent += getSvgStrPoly(cmd);
-      } else if (cmd.type === 'path'){
-        svgContent += getSvgStrPoly(cmd);
-      } else if (cmd.type === 'points') {
-        svgContent += getSvgStrPoints(cmd);
-      } else if (cmd.type === 'lines') {
-        svgContent += getSvgStrLines(cmd);
-      } else if (cmd.type === 'triangles') {
-        svgContent += getSvgStrTriangles(cmd);
-      } else if (cmd.type === 'triangle_fan') {
-        svgContent += getSvgStrTriangleFan(cmd);
-      } else if (cmd.type === 'triangle_strip') {
-        svgContent += getSvgStrTriangleStrip(cmd);
-      } else if (cmd.type === 'quads') {
-        svgContent += getSvgStrQuads(cmd);
-      } else if (cmd.type === 'quad_strip') {
-        svgContent += getSvgStrQuadStrip(cmd);
-      } 
+      } else if (cmd.type === SVG_COMMAND.STROKE) {
+        handleSvgStrokeCommand(cmd, renderContext);
+      } else {
+        // Polyline/path commands can be degenerate no-ops. Add indentation only
+        // if the serializer actually emits an SVG element.
+        if (!commandMayEmitNoGeometry) {
+          svgContent += getIndentStr(renderContext);
+        }
+      }
+
+      if (cmd.type === SVG_COMMAND.DESCRIPTION) {
+        svgContent += getSvgStrDescription(cmd);
+      } else if (cmd.type === SVG_COMMAND.BEGIN_GROUP) {
+        svgContent += getSvgStrBeginGroup(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.END_GROUP) {
+        svgContent += getSvgStrEndGroup(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.ARC) {
+        svgContent += getSvgStrArc(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.BEZIER) {
+        svgContent += getSvgStrBezier(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.CIRCLE) {
+        svgContent += getSvgStrCircle(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.CURVE) {
+        svgContent += getSvgStrCurve(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.SPLINE) {
+        svgContent += getSvgStrSpline(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.ELLIPSE) {
+        svgContent += getSvgStrEllipse(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.LINE) {
+        svgContent += getSvgStrLine(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.POINT) {
+        svgContent += getSvgStrPoint(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.QUAD) {
+        svgContent += getSvgStrQuad(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.RECT) {
+        svgContent += getSvgStrRect(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.TRIANGLE) {
+        svgContent += getSvgStrTriangle(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.TEXT){
+        svgContent += getSvgStrText(cmd, renderContext);
+
+      } else if (cmd.type === SVG_COMMAND.POLYLINE){
+        const polyStr = getSvgStrPoly(cmd, renderContext);
+        if (polyStr) svgContent += getIndentStr(renderContext) + polyStr;
+      } else if (cmd.type === SVG_COMMAND.PATH){
+        const polyStr = getSvgStrPoly(cmd, renderContext);
+        if (polyStr) svgContent += getIndentStr(renderContext) + polyStr;
+      } else if (cmd.type === SVG_COMMAND.POINTS) {
+        svgContent += getSvgStrPoints(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.LINES) {
+        svgContent += getSvgStrLines(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.TRIANGLES) {
+        svgContent += getSvgStrTriangles(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.TRIANGLE_FAN) {
+        svgContent += getSvgStrTriangleFan(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.TRIANGLE_STRIP) {
+        svgContent += getSvgStrTriangleStrip(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.QUADS) {
+        svgContent += getSvgStrQuads(cmd, renderContext);
+      } else if (cmd.type === SVG_COMMAND.QUAD_STRIP) {
+        svgContent += getSvgStrQuadStrip(cmd, renderContext);
+      }
     }
-    
+
     // Close any remaining groups
-    if (!_bFlattenTransforms) {
-      while (transformGroupStack.length > 0) {
-        while (transformGroupStack[transformGroupStack.length - 1] > 0){
-          transformGroupStack[transformGroupStack.length - 1]--; 
-          _svgGroupLevel = Math.max(0, _svgGroupLevel - 1);
-          svgContent += getIndentStr();
+    if (!config.flattenTransforms) {
+      while (renderContext.transformGroupStack.length > 0) {
+        while (renderContext.transformGroupStack[renderContext.transformGroupStack.length - 1] > 0){
+          renderContext.transformGroupStack[renderContext.transformGroupStack.length - 1]--;
+          renderContext.groupLevel = Math.max(0, renderContext.groupLevel - 1);
+          svgContent += getIndentStr(renderContext);
           svgContent += `</g>\n`;
         }
-        transformGroupStack.pop();
+        renderContext.transformGroupStack.pop();
       }
     }
-    
-    svgContent += `</g>\n`; // Close the `non-scaling-stroke` group
+
     svgContent += `</svg>`;
 
-    const blob = new Blob([svgContent], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = _svgFilename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    svgContent = ""; 
-    _commands = [];
-    _vertexStack = []; 
-    _transformStack = [];
+    svgContent = postProcessSvgString(svgContent);
+
+    let headerContent = ``;
+    if (config.filename){ headerContent += `<!-- ${config.filename} -->\n`; }
+    headerContent += `<!-- Generated using p5.js v.${getP5Version()} and p5.plotSvg v.${p5plotSvg.VERSION}: -->\n`;
+    headerContent += `<!-- A Plotter-Oriented SVG Exporter for p5.js -->\n`;
+    headerContent += `<!-- ${new Date().toString()} -->\n`;
+    headerContent += `<!-- DPI: ${config.dpi} -->\n`;
+    svgContent = headerContent + svgContent;
+
+    if (config.filename !== null) {
+      const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = config.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+    } else {
+      // config.filename is explicitly null; do not save any file.
+      // Probably you're using the returned SVG string in some other way.
+    }
+
+    session.vertexStack = [];
+    session.injectedHeaderAttributes = [];
+    session.injectedDefs = [];
+
+    // Clear the public extension hook after export; it is only valid while recording.
+    if (Array.isArray(session.commands)) session.commands.length = 0;
+    session.commands = null;
+    p5plotSvg._commands = null;
+    return svgContent;
+  }
+
+
+  /**
+   * @private
+   * Applies DOMParser-based SVG post-processing to the generated SVG string.
+   */
+  function postProcessSvgString(svgContent) {
+    if (config.mergeNamedGroups) {
+      svgContent = mergeNamedGroupsInSvg(svgContent);
+    }
+
+    if (config.groupByStrokeColor) {
+      svgContent = groupSvgElementsByStrokeColor(svgContent);
+    }
+
+    return svgContent;
+  }
+
+
+  /**
+   * @private
+   * Merges named groups in an SVG string by combining sibling groups with the same ID.
+   * @param {string} svgString
+   * @returns A SVG string with merged named groups.
+   */
+  function mergeNamedGroupsInSvg(svgString){
+    const doc = new DOMParser().parseFromString(svgString, "image/svg+xml");
+
+    function processElement(element) {
+      const children = Array.from(element.children);
+      children.forEach((child) => processElement(child));
+      const groupsById = new Map();
+      const nodesToRemove = [];
+
+      children.forEach((child) => {
+        if (child.tagName === "g" && child.hasAttribute("id")) {
+          const id = child.getAttribute("id");
+          if (id !== "") {
+            if (!groupsById.has(id)) {
+              groupsById.set(id, []);
+            }
+            groupsById.get(id).push(child);
+          }
+        }
+      });
+
+      groupsById.forEach((groups, id) => {
+        if (groups.length > 1) {
+          const firstGroup = groups[0];
+          const firstGroupDepth = getGroupDepth(firstGroup);
+
+          for (let i = 1; i < groups.length; i++) {
+            const groupToMerge = groups[i];
+            const indent = '\n' + getIndentStr(firstGroupDepth + 1);
+
+            while (groupToMerge.firstChild) {
+              const child = groupToMerge.firstChild;
+              if (child.nodeType === Node.ELEMENT_NODE) {
+                firstGroup.appendChild(doc.createTextNode(indent));
+                firstGroup.appendChild(child);
+              } else {
+                groupToMerge.removeChild(child);
+              }
+            }
+
+            nodesToRemove.push(groupToMerge);
+          }
+
+          // Add a closing newline
+          const closingIndent = '\n' + getIndentStr(firstGroupDepth);
+          firstGroup.appendChild(doc.createTextNode(closingIndent));
+        }
+      });
+
+      nodesToRemove.forEach((node) => {
+        const next = node.nextSibling;
+        // remove any empty text nodes left after the element to remove
+        if (next && next.nodeType === Node.TEXT_NODE && /^\s*$/.test(next.nodeValue)) {
+          element.removeChild(next);
+        }
+        element.removeChild(node);
+      });
+    }
+
+    processElement(doc.documentElement);
+    return new XMLSerializer().serializeToString(doc);
+  }
+
+  /**
+   * @private
+   * Group sibling elements by stroke color in an SVG string.
+   * @param {string} svgString
+   * @returns A SVG string with sibling elements grouped by stroke color.
+   */
+  function groupSvgElementsByStrokeColor(svgString) {
+    const doc = new DOMParser().parseFromString(svgString, "image/svg+xml");
+
+    function processElement(element) {
+      const children = Array.from(element.children);
+      const colorGroups = new Map();
+      const nodesToRemove = [];
+
+      children.forEach((child) => processElement(child));
+
+      children.forEach((child) => {
+        const strokeColor = getStrokeColor(child);
+        if (strokeColor && child.tagName !== 'g') {
+          if (!colorGroups.has(strokeColor)) {
+            colorGroups.set(strokeColor, []);
+          }
+          colorGroups.get(strokeColor).push(child);
+          nodesToRemove.push(child);
+        }
+      });
+
+      nodesToRemove.forEach((node) => {
+        const next = node.nextSibling;
+        // remove any empty text nodes left after the element to remove
+        if (next && next.nodeType === Node.TEXT_NODE && /^\s*$/.test(next.nodeValue)) {
+          element.removeChild(next);
+        }
+        element.removeChild(node);
+      });
+
+      colorGroups.forEach((elements, col) => {
+        if (elements.length > 0) {
+          const group = doc.createElementNS("http://www.w3.org/2000/svg", "g");
+          const groupName = `stroke-color-group-${col.replace(/[^a-zA-Z0-9]/g, '-')}`;
+          group.setAttribute('id', groupName);
+
+          // Add Inkscape layer attributes if compatibility mode is enabled
+          if (config.inkscapeCompatibility) {
+            const layerNum = getOrAssignInkscapeLayerNumber(groupName);
+            const labelValue = `${layerNum}_${groupName}`;
+            group.setAttribute('inkscape:groupmode', 'layer');
+            group.setAttribute('inkscape:label', labelValue);
+          }
+
+          element.appendChild(group);
+          elements.forEach(elem => {
+            group.appendChild(elem);
+          });
+        }
+      });
+    }
+
+    processElement(doc.documentElement);
+    return new XMLSerializer().serializeToString(doc);
+  }
+
+  /**
+   * @private
+   * Extracts the effective stroke color from an SVG element for post-processing.
+   * Checks the direct stroke attribute first, then falls back to an inline style
+   * declaration. Returns null for missing strokes and explicit "none" strokes.
+   * @param {Element} element - SVG DOM element to inspect.
+   * @returns {?string} The stroke color string, or null if no usable stroke is present.
+   */
+  function getStrokeColor(element) {
+    if (element.hasAttribute('stroke')) {
+      const stroke = element.getAttribute('stroke');
+      if (stroke && stroke !== 'none') {
+        return stroke;
+      }
+    }
+
+    if (element.hasAttribute('style')) {
+      const style = element.getAttribute('style');
+      const strokeMatch = style.match(/stroke\s*:\s*([^;]+)/);
+      if (strokeMatch && strokeMatch[1] && strokeMatch[1].trim() !== 'none') {
+        return strokeMatch[1].trim();
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * @private
+   * Helper function. Returns the current depth of an SVG group level.
+   */
+  function getGroupDepth(el) {
+    let depth = 0;
+    while (el.parentNode && el.parentNode.tagName === 'g') {
+      depth++;
+      el = el.parentNode;
+    }
+    return depth;
   }
 
 
@@ -1181,10 +2305,10 @@
    * @returns {string} The SVG scale transform string.
    */
   function getSvgStrScale(cmd){
-    let sxStr = formatNumber(cmd.sx, _svgTransformPrecision);
-    let syStr = formatNumber(cmd.sy, _svgTransformPrecision);
+    let sxStr = formatNumber(cmd.sx, config.transformPrecision);
+    let syStr = formatNumber(cmd.sy, config.transformPrecision);
     let str = `scale(${sxStr}, ${syStr})`;
-    return str; 
+    return str;
   }
 
 
@@ -1198,10 +2322,10 @@
    * @returns {string} The SVG translate transform string.
    */
   function getSvgStrTranslate(cmd){
-    let txStr = formatNumber(cmd.tx, _svgTransformPrecision);
-    let tyStr = formatNumber(cmd.ty, _svgTransformPrecision);
+    let txStr = formatNumber(cmd.tx, config.transformPrecision);
+    let tyStr = formatNumber(cmd.ty, config.transformPrecision);
     let str = `translate(${txStr}, ${tyStr})`;
-    return str; 
+    return str;
   }
 
 
@@ -1216,12 +2340,12 @@
    */
   function getSvgStrRotate(cmd){
     let angle = cmd.angle;
-    if (_p5Instance.angleMode() === _p5Instance.RADIANS) {
+    if (session.p5Instance.angleMode() === session.p5Instance.RADIANS) {
       angle = (cmd.angle * 180) / Math.PI; // Convert radians to degrees
     }
-    let angStr = formatNumber(angle, _svgTransformPrecision);
+    let angStr = formatNumber(angle, config.transformPrecision);
     let str = `rotate(${angStr})`;
-    return str; 
+    return str;
   }
 
 
@@ -1236,10 +2360,10 @@
    */
   function getSvgStrShearX(cmd) {
     let angle = cmd.angle;
-    if (_p5Instance.angleMode() === _p5Instance.RADIANS) {
+    if (session.p5Instance.angleMode() === session.p5Instance.RADIANS) {
       angle = (cmd.angle * 180) / Math.PI; // Convert radians to degrees
     }
-    let angStr = formatNumber(angle, _svgTransformPrecision);
+    let angStr = formatNumber(angle, config.transformPrecision);
     let str = `skewX(${angStr})`;
     return str;
   }
@@ -1256,10 +2380,10 @@
    */
   function getSvgStrShearY(cmd) {
     let angle = cmd.angle;
-    if (_p5Instance.angleMode() === _p5Instance.RADIANS) {
+    if (session.p5Instance.angleMode() === session.p5Instance.RADIANS) {
       angle = (cmd.angle * 180) / Math.PI; // Convert radians to degrees
     }
-    let angStr = formatNumber(angle, _svgTransformPrecision);
+    let angStr = formatNumber(angle, config.transformPrecision);
     let str = `skewY(${angStr})`;
     return str;
   }
@@ -1276,25 +2400,44 @@
    * @returns {string} The SVG <desc> element string with the provided description text.
    */
   function getSvgStrDescription(cmd){
-    let str = `<desc>${cmd.text}</desc>\n`;
-    return str; 
-  } 
+    let str = `<desc>${escapeXmlText(cmd.text)}</desc>\n`;
+    return str;
+  }
+
 
 
   /**
    * @private
    * Generates an SVG string to start a new user-defined group element.
    * If a group name is provided, adds it as an ID attribute for the group.
+   * If additional attributes are provided, they are included as well.
    * @param {Object} cmd - The command object containing group properties.
    * @param {string} [cmd.gname] - Optional group name used as the ID for the SVG group.
+   * @param {Array} [cmd.attributes] - Optional array of additional attributes as { name, value } pairs.
    * @returns {string} The SVG string to open a new group.
    */
-  function getSvgStrBeginGroup(cmd){
-    // Start a new group, adding an ID if `gname` is provided
-    let str = cmd.gname ? `<g id="${cmd.gname}">\n` : `<g>\n`;
-    _svgGroupLevel++;
-    return str; 
+  function getSvgStrBeginGroup(cmd, renderContext) {
+    let attrStr = '';
+
+    // Include group name as ID if present
+    if (cmd.gname) {
+      attrStr += ` id="${escapeXmlAttribute(cmd.gname)}"`;
+    }
+    attrStr += attrsToString(cmd.attributes, 'SVG group attribute name', {
+      skip: attr => attr.name === 'id' && cmd.gname,
+      onAttr: (attr, attrName) => {
+        if (attrName === 'style') {
+          console.warn("Warning: Group 'style' attributes are overridden by CSS defaults in the SVG. Use e.g. stroke() instead.");
+        }
+      }
+    });
+
+    let str = getIndentStr(renderContext);
+    str += `<g${attrStr}>\n`;
+    renderContext.groupLevel++;
+    return str;
   }
+
 
 
   /**
@@ -1304,40 +2447,40 @@
    * @param {Object} cmd - The command object (not used but included for consistency).
    * @returns {string} The SVG string to close the group.
    */
-  function getSvgStrEndGroup(cmd){
+  function getSvgStrEndGroup(cmd, renderContext){
     // Close the current group
-    _svgGroupLevel = Math.max(0, _svgGroupLevel-1); 
+    renderContext.groupLevel = Math.max(0, renderContext.groupLevel - 1);
     let str = `</g>\n`;
-    return str; 
+    return str;
   }
 
 
   /**
    * @private
-   * Generates an SVG <path> element string representing an elliptical arc, 
+   * Generates an SVG <path> element string representing an elliptical arc,
    * based on the given command object. Supports optional modes for chord and pie-slice shapes.
    * @param {Object} cmd - The command object containing arc parameters and optional mode.
    * @returns {string} The SVG <path> element string with formatted arc data.
    */
-  function getSvgStrArc(cmd) {
+  function getSvgStrArc(cmd, renderContext) {
     // Generate the base arc path using p5ArcToSvgPath()
     let svgArcData = p5ArcToSvgPath(cmd.x, cmd.y, cmd.w, cmd.h, cmd.start, cmd.stop);
     let transformStr = generateTransformString(cmd);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let str = `<path d="` + svgArcData;
 
     // Extract the end point of the arc from svgArcData
     let endPoint = svgArcData.split(" ").slice(-2).join(" ");
 
-    if (cmd.mode === _p5Instance.CHORD) {
+    if (cmd.mode === session.p5Instance.CHORD) {
       // Add a line segment to connect the arc endpoints
       str += ` L ${endPoint}`;
       str += ` Z`; // Close the path
 
-    } else if (cmd.mode === _p5Instance.PIE) {
+    } else if (cmd.mode === session.p5Instance.PIE) {
       // Add lines from the center to the end point to form a "pie" slice
-      let ctrX = formatNumber(cmd.x); 
-      let ctrY = formatNumber(cmd.y); 
+      let ctrX = formatNumber(cmd.x);
+      let ctrY = formatNumber(cmd.y);
       str += ` L ${endPoint} L ${ctrX} ${ctrY} Z`; // Connect end to center
     }
 
@@ -1348,12 +2491,12 @@
 
   /**
    * @private
-   * Generates an SVG <path> element string representing a cubic Bézier curve, 
+   * Generates an SVG <path> element string representing a cubic Bézier curve,
    * based on the given command object.
    * @param {Object} cmd - The command object containing Bézier curve control points.
    * @returns {string} The SVG <path> element string with formatted control points.
    */
-  function getSvgStrBezier(cmd){
+  function getSvgStrBezier(cmd, renderContext){
     let x1Str = formatNumber(cmd.x1);
     let y1Str = formatNumber(cmd.y1);
     let x2Str = formatNumber(cmd.x2);
@@ -1362,10 +2505,10 @@
     let y3Str = formatNumber(cmd.y3);
     let x4Str = formatNumber(cmd.x4);
     let y4Str = formatNumber(cmd.y4);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let str = `<path d="M ${x1Str},${y1Str} C ${x2Str},${y2Str} ${x3Str},${y3Str} ${x4Str},${y4Str}"${styleStr}${transformStr}/>\n`;
-    return str; 
+    return str;
   }
 
 
@@ -1376,14 +2519,14 @@
    * @param {Object} cmd - The command object containing circle parameters.
    * @returns {string} The SVG <circle> element string with formatted position and radius.
    */
-  function getSvgStrCircle(cmd){
+  function getSvgStrCircle(cmd, renderContext){
     let xStr = formatNumber(cmd.x);
     let yStr = formatNumber(cmd.y);
     let rStr = formatNumber(cmd.d/2.0);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let str = `<circle cx="${xStr}" cy="${yStr}" r="${rStr}"${styleStr}${transformStr}/>\n`;
-    return str; 
+    return str;
   }
 
 
@@ -1393,13 +2536,13 @@
    * @param {Object} cmd - The command object containing control points for the curve.
    * @returns {string} The SVG <path> element string with the necessary Bézier segment.
    */
-  function getSvgStrCurve(cmd){
+  function getSvgStrCurve(cmd, renderContext){
     // Prepare the control points for the Catmull-Rom to Bézier conversion
     let crp = [cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x3, cmd.y3, cmd.x4, cmd.y4];
     let bClosed = false; // `false` for an open curve
 
-    // Convert to Bézier segments
-    let bezierSegments = catmullRom2bezier(crp, bClosed);
+    // Convert to Bézier segments using the tightness stored with this command
+    let bezierSegments = catmullRom2bezier(crp, bClosed, cmd.tightness);
 
     // The segment we need is the one between (x2, y2) and (x3, y3)
     let targetSegment = bezierSegments[1];
@@ -1415,7 +2558,7 @@
     let cy2Str = formatNumber(targetSegment[3]);
     let x3Str = formatNumber(targetSegment[4]);
     let y3Str = formatNumber(targetSegment[5]);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
 
     // Construct the SVG path string with only the necessary segment
@@ -1426,20 +2569,38 @@
 
   /**
    * @private
+   * Generates an SVG <path> for p5.js v2 spline() commands.
+   */
+  function getSvgStrSpline(cmd, renderContext) {
+    let styleStr = getSvgStrStroke(renderContext);
+    let transformStr = generateTransformString(cmd);
+    let d = getSplinePathData(
+      cmd.points,
+      cmd.closed,
+      cmd.tightness,
+      shouldIncludeSplineEnds(cmd.endsMode)
+    );
+    if (!d) return '';
+    return `<path d="${d}"${styleStr}${transformStr}/>\n`;
+  }
+
+
+  /**
+   * @private
    * Generates an SVG <ellipse> element string based on the given command object.
-   * See https://developer.mozilla.org/en-US/docs/Web/SVG/Element/ellipse 
+   * See https://developer.mozilla.org/en-US/docs/Web/SVG/Element/ellipse
    * @param {Object} cmd - The command object containing ellipse parameters.
    * @returns {string} The SVG <ellipse> element string with formatted center and radii.
    */
-  function getSvgStrEllipse(cmd){
+  function getSvgStrEllipse(cmd, renderContext){
     let xStr = formatNumber(cmd.x);
     let yStr = formatNumber(cmd.y);
     let rxStr = formatNumber(cmd.w/2);
     let ryStr = formatNumber(cmd.h/2);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let str = `<ellipse cx="${xStr}" cy="${yStr}" rx="${rxStr}" ry="${ryStr}"${styleStr}${transformStr}/>\n`;
-    return str; 
+    return str;
   }
 
 
@@ -1450,12 +2611,12 @@
    * @param {Object} cmd - The command object containing line endpoints.
    * @returns {string} The SVG <line> element string with formatted endpoints.
    */
-  function getSvgStrLine(cmd) {
+  function getSvgStrLine(cmd, renderContext) {
     let x1Str = formatNumber(cmd.x1);
     let y1Str = formatNumber(cmd.y1);
     let x2Str = formatNumber(cmd.x2);
     let y2Str = formatNumber(cmd.y2);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let str = `<line x1="${x1Str}" y1="${y1Str}" x2="${x2Str}" y2="${y2Str}"${styleStr}${transformStr}/>\n`;
     return str;
@@ -1468,26 +2629,26 @@
    * @param {Object} cmd - The command object containing point position and radius.
    * @returns {string} The SVG <circle> element string with formatted position and radius.
    */
-  function getSvgStrPoint(cmd){
+  function getSvgStrPoint(cmd, renderContext){
     let xStr = formatNumber(cmd.x);
     let yStr = formatNumber(cmd.y);
     let rStr = formatNumber(cmd.radius);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let str = `<circle cx="${xStr}" cy="${yStr}" r="${rStr}"${styleStr}${transformStr}/>\n`;
-    return str; 
+    return str;
   }
 
 
   /**
    * @private
-   * Generates an SVG <polygon> element string representing a quadrilateral, 
+   * Generates an SVG <polygon> element string representing a quadrilateral,
    * based on the given command object.
    * See https://developer.mozilla.org/en-US/docs/Web/SVG/Element/polygon
    * @param {Object} cmd - The command object containing quad vertices.
    * @returns {string} The SVG <polygon> element string with formatted vertex coordinates.
    */
-  function getSvgStrQuad(cmd){
+  function getSvgStrQuad(cmd, renderContext){
     let x1Str = formatNumber(cmd.x1);
     let y1Str = formatNumber(cmd.y1);
     let x2Str = formatNumber(cmd.x2);
@@ -1496,10 +2657,10 @@
     let y3Str = formatNumber(cmd.y3);
     let x4Str = formatNumber(cmd.x4);
     let y4Str = formatNumber(cmd.y4);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let str = `<polygon points="${x1Str},${y1Str} ${x2Str},${y2Str} ${x3Str},${y3Str} ${x4Str},${y4Str}"${styleStr}${transformStr}/>\n`;
-    return str; 
+    return str;
   }
 
 
@@ -1510,17 +2671,17 @@
    * @param {Object} cmd - The command object containing rectangle parameters and optional corner radii.
    * @returns {string} The SVG <rect> or <path> element string with formatted position, size, and corners.
    */
-  function getSvgStrRect(cmd) {
+  function getSvgStrRect(cmd, renderContext) {
     let xStr = formatNumber(cmd.x);
     let yStr = formatNumber(cmd.y);
     let wStr = formatNumber(cmd.w);
     let hStr = formatNumber(cmd.h);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let maxRadius = Math.min(cmd.w, cmd.h) / 2;
     let str = "";
-    
-    if (cmd.tl !== undefined && cmd.tr !== undefined && 
+
+    if (cmd.tl !== undefined && cmd.tr !== undefined &&
         cmd.br !== undefined && cmd.bl !== undefined) {
 
       // If all four are exactly equal, do a simple rounded rectangle
@@ -1561,7 +2722,7 @@
         // Construct the path using cubic Bézier curves for each corner
         str = `<path d="M ${formatNumber(xtl)},${formatNumber(cmd.y)} ` +
           `H ${formatNumber(xtr)} ` +
-          `C ${formatNumber(xtr + ctrX)},${formatNumber(cmd.y)}` + 
+          `C ${formatNumber(xtr + ctrX)},${formatNumber(cmd.y)}` +
           ` ${formatNumber(cmd.x + cmd.w)},${formatNumber(ytr - ctrY)}`+
           ` ${formatNumber(cmd.x + cmd.w)},${formatNumber(ytr)} ` + // Top-right corner
           `V ${formatNumber(ybr)} ` +
@@ -1577,13 +2738,13 @@
           ` ${formatNumber(xtl - ctlX)},${formatNumber(cmd.y)}`+
           ` ${formatNumber(xtl)},${formatNumber(cmd.y)} Z"${styleStr}${transformStr}/>\n`;
       }
-      
+
     } else if (cmd.tl !== undefined) {
       // Use a single rounded radius for all corners
       cmd.tl = Math.min(cmd.tl, maxRadius);
       let rStr = formatNumber(cmd.tl);
       str = `<rect x="${xStr}" y="${yStr}" width="${wStr}" height="${hStr}" rx="${rStr}" ry="${rStr}"${styleStr}${transformStr}/>\n`;
-      
+
     } else {
       // Standard rectangle without rounded corners
       str = `<rect x="${xStr}" y="${yStr}" width="${wStr}" height="${hStr}"${styleStr}${transformStr}/>\n`;
@@ -1599,17 +2760,98 @@
    * @param {Object} cmd - The command object containing triangle vertices.
    * @returns {string} The SVG <polygon> element string with formatted vertex coordinates.
    */
-  function getSvgStrTriangle(cmd){
+  function getSvgStrTriangle(cmd, renderContext){
     let x1Str = formatNumber(cmd.x1);
     let y1Str = formatNumber(cmd.y1);
     let x2Str = formatNumber(cmd.x2);
     let y2Str = formatNumber(cmd.y2);
     let x3Str = formatNumber(cmd.x3);
     let y3Str = formatNumber(cmd.y3);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let str = `<polygon points="${x1Str},${y1Str} ${x2Str},${y2Str} ${x3Str},${y3Str}"${styleStr}${transformStr}/>\n`;
-    return str; 
+    return str;
+  }
+
+
+  /**
+   * Set whether or not to merge SVG groups with the same name.
+   * @param {boolean} bEnabled - Enable or disables merging of named SVG groups.
+   * Default is `true`: groups with the same name, at the same level, will be merged.
+   */
+  p5plotSvg.setSvgMergeNamedGroups = function(bEnabled) {
+    if (bEnabled === true){
+      config.mergeNamedGroups = true;
+    } else {
+      config.mergeNamedGroups = false;
+    }
+  }
+
+
+  /**
+   * Enables or disables Inkscape-compatible layer attributes for SVG groups.
+   * When enabled (default), groups created with beginSvgGroup() will include
+   * inkscape:groupmode="layer" and auto-numbered inkscape:label attributes,
+   * making them compatible with Inkscape, vpype, and AxiDraw software.
+   * @param {boolean} bEnabled - Enable or disable Inkscape layer compatibility.
+   * Default is `true`: groups will include Inkscape layer attributes.
+   */
+  p5plotSvg.setSvgInkscapeCompatibility = function(bEnabled) {
+    if (bEnabled === true) {
+      config.inkscapeCompatibility = true;
+    } else {
+      config.inkscapeCompatibility = false;
+    }
+  }
+
+
+  /**
+   * Set whether or not to group elements by stroke color.
+   * @param {boolean} bEnabled - Enable or disables grouping of elements by stroke color.
+   * Default is `false`: elements with the same stroke color, at the same level, will be grouped.
+   */
+  p5plotSvg.setSvgGroupByStrokeColor = function(bEnabled) {
+    if (bEnabled === true){
+      config.groupByStrokeColor = true;
+    } else {
+      config.groupByStrokeColor = false;
+    }
+  }
+
+
+  /**
+   * Sets whether malformed numeric values are sanitized or cause whole
+   * commands to be omitted from SVG output.
+   * Default is `true`: NaN and Infinity are clobbered to 0 at serialization time.
+   * When false, any command containing a non-finite numeric value is skipped.
+   * @param {boolean} bEnabled - Enable or disable sanitized malformed-number export.
+   */
+  p5plotSvg.setSvgExportMalformedNumbersWithSanitizations = function(bEnabled) {
+    config.exportMalformedNumbersWithSanitizations = (bEnabled === true);
+  }
+
+
+  /**
+   * Sets whether very large finite SVG coordinate values are clamped before export.
+   * Default is `true`, using the magnitude configured by setSvgCoordinateClampMagnitude().
+   * @param {boolean} bEnabled - Enable or disable large-coordinate clamping.
+   */
+  p5plotSvg.setSvgClampLargeCoordinates = function(bEnabled) {
+    config.clampLargeCoordinates = (bEnabled === true);
+  }
+
+
+  /**
+   * Sets the absolute coordinate magnitude used by large-coordinate clamping.
+   * Default is 1000000, which clamps serialized values to [-1000000, 1000000].
+   * @param {number} magnitude - Positive finite maximum absolute coordinate value.
+   */
+  p5plotSvg.setSvgCoordinateClampMagnitude = function(magnitude) {
+    if (typeof magnitude === 'number' && Number.isFinite(magnitude) && magnitude > 0) {
+      config.coordinateClampMagnitude = magnitude;
+    } else {
+      console.warn("Invalid coordinate clamp magnitude. Please provide a positive finite number.");
+    }
   }
 
 
@@ -1619,7 +2861,7 @@
    */
   p5plotSvg.setSvgDefaultStrokeWeight = function(wei) {
     if (typeof wei === 'number' && wei >= 0) {
-      _svgDefaultStrokeWeight = wei;
+      config.defaultStrokeWeight = wei;
     } else {
       console.warn("Invalid stroke weight. Please provide a positive number.");
     }
@@ -1631,15 +2873,8 @@
    * @param {string} col - The stroke color to set, in valid CSS color format.
    */
   p5plotSvg.setSvgDefaultStrokeColor = function(col) {
-    // Use a temporary element to validate if the provided color is valid
-    const isColorValid = (color) => {
-      const temp = document.createElement('div');
-      temp.style.color = color;
-      return temp.style.color !== ''; // If valid, the style will apply
-    };
-
-    if (typeof col === 'string' && isColorValid(col)) {
-      _svgDefaultStrokeColor = col;
+    if (isValidCssColor(col)) {
+      config.defaultStrokeColor = col;
     } else {
       console.warn("Invalid stroke color. Provide a valid CSS color string (e.g., 'red', '#ff0000', 'rgb(255,0,0)').");
     }
@@ -1648,19 +2883,46 @@
 
   /**
    * @public
-   * Sets the dimensions of the SVG document in pixels/dots. 
+   * Sets the background color for the exported SVG.
+   * This adds a `style="background-color: ..."` attribute to the root <svg> element.
+   * This color does not interfere with plotter output and is purely for visualization.
+   * Note that this color may not be visible in all SVG viewers.
+   * @param {string} col - The background color to set, in valid CSS color format.
+   */
+  p5plotSvg.setSvgBackgroundColor = function(col) {
+    if (isValidCssColor(col)) {
+      config.backgroundColor = col;
+    } else {
+      console.warn("Invalid background color. Provide a valid CSS color string (e.g., 'ivory', '#FFFFF0', 'rgb(255,255,240)').");
+    }
+  }
+
+  /**
+   * @public
+   * Sets the dimensions of the SVG document in pixels/dots.
    * Note that graphics are not scaled to fit this size; they may extend beyond the specified dimensions.
    * If this is not set, the system will default to the main canvas dimensions (i.e. from `createCanvas()`).
    * @param {number} w - The SVG document width in pixels/dots. Must be a positive number.
    * @param {number} h - The SVG document height in pixels/dots. Must be a positive number.
    */
-  p5plotSvg.setSVGDocumentSize = function (w, h){
+  p5plotSvg.setSvgDocumentSize = function (w, h){
     if ((typeof w === 'number' && w > 0) && (typeof h === 'number' && h > 0)){
-      _bCustomSizeSet = true;
-      _svgWidth = w;
-      _svgHeight = h;
+      config.customSizeSet = true;
+      config.width = w;
+      config.height = h;
     }
   }
+
+  /**
+   * @public
+   * @deprecated Use p5plotSvg.setSvgDocumentSize() instead.
+   * Backward-compatible wrapper for the original capitalized API name.
+   */
+  p5plotSvg.setSVGDocumentSize = function() {
+    console.warn("setSVGDocumentSize() is deprecated. The new name is setSvgDocumentSize().");
+    return p5plotSvg.setSvgDocumentSize.apply(p5plotSvg, arguments);
+  };
+
 
   /**
    * @public
@@ -1670,7 +2932,8 @@
    */
   p5plotSvg.setSvgResolutionDPI = function(dpi) {
     if (typeof dpi === 'number' && dpi > 0) {
-      _svgDPI = dpi;
+      config.dpi = dpi;
+      config.unitMode = p5plotSvg.SVG_UNITS_IN;
     } else {
       console.warn("Invalid DPI value. Please provide a positive number.");
     }
@@ -1680,13 +2943,14 @@
   /**
    * @public
    * Sets the resolution for the exported SVG file in dots per centimeter (DPCM).
-   * This value is used to determine the scaling of units (pixels to physical dimensions) in the SVG output. 
-   * The default resolution is 243.84 dpcm (equivalent to 96 dpi). 
+   * This value is used to determine the scaling of units (pixels to physical dimensions) in the SVG output.
+   * The default resolution is approximately 37.79527559 dpcm (equivalent to 96 dpi).
    * @param {number} dpcm - The resolution in dots per centimeter. Must be a positive number.
    */
   p5plotSvg.setSvgResolutionDPCM = function(dpcm) {
-    if (typeof dpcm === 'number' && dpi > 0) {
-      _svgDPI = dpcm * 2.54;
+    if (typeof dpcm === 'number' && dpcm > 0) {
+      config.dpi = dpcm * 2.54;
+      config.unitMode = p5plotSvg.SVG_UNITS_CM;
     } else {
       console.warn("Invalid DPCM value. Please provide a positive number.");
     }
@@ -1696,36 +2960,36 @@
   /**
    * Sets the type and amount of indentation used for formatting SVG output.
    * The function allows for spaces, tabs, or no indentation.
-   * @param {string} itype - The type of indentation to use. Valid values are 
+   * @param {string} itype - The type of indentation to use. Valid values are
    * 'SVG_INDENT_SPACES', 'SVG_INDENT_TABS', or 'SVG_INDENT_NONE'.
-   * @param {number} [inum] - Optional number of spaces or tabs to use for indentation. 
+   * @param {number} [inum] - Optional number of spaces or tabs to use for indentation.
    * Must be a non-negative integer if provided. Defaults to 2 for spaces and 1 for tabs.
    */
   p5plotSvg.setSvgIndent = function(itype, inum) {
     // Set indent type if it matches one of the predefined constants
-    if (itype === p5plotSvg.SVG_INDENT_SPACES || 
-        itype === p5plotSvg.SVG_INDENT_TABS || 
+    if (itype === p5plotSvg.SVG_INDENT_SPACES ||
+        itype === p5plotSvg.SVG_INDENT_TABS ||
         itype === p5plotSvg.SVG_INDENT_NONE) {
-      _svgIndentType = itype;
+      config.indentType = itype;
     } else {
       console.warn("Invalid indent type. Use SVG_INDENT_SPACES, SVG_INDENT_TABS, or SVG_INDENT_NONE.");
     }
-    
+
     // Set indent amount if `inum` is provided
     if (inum !== undefined && Number.isInteger(inum) && inum >= 0) {
-      if (_svgIndentType === p5plotSvg.SVG_INDENT_NONE){
-        _svgIndentAmount = 0; 
+      if (config.indentType === p5plotSvg.SVG_INDENT_NONE){
+        config.indentAmount = 0;
       } else {
-        _svgIndentAmount = inum;
+        config.indentAmount = inum;
       }
     } else {
       // Defaults
-      if (_svgIndentType === p5plotSvg.SVG_INDENT_SPACES){
-        _svgIndentAmount = 2; 
-      } else if (_svgIndentType === p5plotSvg.SVG_INDENT_TABS){
-        _svgIndentAmount = 1; 
-      } else if (_svgIndentType === p5plotSvg.SVG_INDENT_NONE){
-        _svgIndentAmount = 0; 
+      if (config.indentType === p5plotSvg.SVG_INDENT_SPACES){
+        config.indentAmount = 2;
+      } else if (config.indentType === p5plotSvg.SVG_INDENT_TABS){
+        config.indentAmount = 1;
+      } else if (config.indentType === p5plotSvg.SVG_INDENT_NONE){
+        config.indentAmount = 0;
       }
     }
   }
@@ -1733,39 +2997,44 @@
 
   /**
    * @private
-   * Generates a string representing the current level of indentation 
-   * based on the set indentation type and amount. This is used to 
-   * format SVG output.
-   * @returns {string} A string containing the appropriate number of spaces 
-   * or tabs for the current indentation level, or an empty string if no 
+   * Generates a string representing the current level of indentation.
+   * Optionally accepts a manual depth override.
+   * @param {Object|number} [renderContext] - Current render context, or a depth override for post-processing callers.
+   * @param {number} [depthOverride] - Optional; if provided, overrides the current group depth.
+   * @returns {string} A string containing the appropriate number of spaces
+   * or tabs for the current indentation level, or an empty string if no
    * indentation is set.
    */
-  function getIndentStr(){
-    let out = ''; 
-    if ((_svgIndentType != p5plotSvg.SVG_INDENT_NONE) && (_svgIndentAmount > 0)){
-      let c = (_svgIndentType === p5plotSvg.SVG_INDENT_SPACES) ? ' ' : '\t'; 
-      if (_svgGroupLevel > 0){
-        for (let i=0; i<_svgGroupLevel; i++){
-          for (let j=0; j<_svgIndentAmount; j++){
-            out += c; 
-          }
+  function getIndentStr(renderContext, depthOverride) {
+    if (typeof renderContext === 'number' && typeof depthOverride === 'undefined') {
+      depthOverride = renderContext;
+      renderContext = null;
+    }
+    let out = '';
+    let depth = (typeof depthOverride === 'number') ? depthOverride : (renderContext ? renderContext.groupLevel : 0);
+
+    if ((config.indentType !== p5plotSvg.SVG_INDENT_NONE) && (config.indentAmount > 0)) {
+      const c = (config.indentType === p5plotSvg.SVG_INDENT_SPACES) ? ' ' : '\t';
+      for (let i = 0; i < depth; i++) {
+        for (let j = 0; j < config.indentAmount; j++) {
+          out += c;
         }
       }
     }
-    return out; 
+    return out;
   }
 
 
   /**
-   * Set whether or not to use a stack to encode matrix transforms. 
+   * Set whether or not to use a stack to encode matrix transforms.
    * setSvgFlattenTransforms(true) -- larger SVG files, greater fidelity to original
    * setSvgFlattenTransforms(false) -- smaller SVG files, potentially less fidelity
    */
   p5plotSvg.setSvgFlattenTransforms = function(b) {
     if (b === true){
-      _bFlattenTransforms = true; 
+      config.flattenTransforms = true;
     } else {
-      _bFlattenTransforms = false; 
+      config.flattenTransforms = false;
     }
   }
 
@@ -1779,7 +3048,7 @@
   p5plotSvg.setSvgCoordinatePrecision = function(p) {
     // Check if p` is a number and an integer
     if (typeof p === 'number' && Number.isInteger(p) && (p >= 0)) {
-      _svgCoordPrecision = p;
+      config.coordPrecision = p;
     } else {
       console.warn('Invalid precision value.');
     }
@@ -1795,7 +3064,7 @@
   p5plotSvg.setSvgTransformPrecision = function(p) {
     // Check if p` is a number and an integer
     if (typeof p === 'number' && Number.isInteger(p) && (p >= 0)) {
-      _svgTransformPrecision = p;
+      config.transformPrecision = p;
     } else {
       console.warn('Invalid precision value.');
     }
@@ -1809,7 +3078,7 @@
    */
   p5plotSvg.setSvgPointRadius = function(radius) {
     if (typeof radius === 'number' && radius > 0) {
-      _svgPointRadius = radius;
+      config.pointRadius = radius;
     } else {
       console.warn("Invalid radius. Please provide a positive number.");
     }
@@ -1817,14 +3086,173 @@
 
 
   /**
-   * Begins a new user-defined grouping of SVG elements.
-   * Optionally associates a group name to the SVG group.
-   * Be sure to call `endSvgGroup()` later or the SVG file will report errors.
-   * @param {string} [gname] - Optional group name used as an ID for the SVG group.
+   * Sets whether to export all polylines as <path> elements instead.
+   * This is useful for extension code or downstream tools that need path elements.
+   * @param {boolean} b - true to export polylines as <path>, false to keep as <polyline>
    */
-  p5plotSvg.beginSvgGroup = function(gname) {
-    _commands.push({ type: 'beginGroup', gname });
+  p5plotSvg.setSvgExportPolylinesAsPaths = function(b) {
+    if (b === true){
+      config.exportPolylinesAsPaths = true;
+    } else {
+      config.exportPolylinesAsPaths = false;
+    }
   }
+
+
+  /**
+   * @private
+   * Gets or assigns a layer number for a group name.
+   * If the group name has been seen before, returns its existing layer number.
+   * Otherwise, assigns the next available layer number (skipping any that
+   * are already in use from explicit user assignments).
+   * @param {string|undefined} gname - The group name (may be undefined for unnamed groups)
+   * @returns {number} The layer number for this group
+   */
+  function getOrAssignInkscapeLayerNumber(gname) {
+    if (!gname) {
+      // Unnamed groups get a new number each time
+      // Skip numbers that are already in use
+      while (session.layers.inkscapeUsedLabels.has(String(session.layers.inkscapeNextLayerNumber))) {
+        session.layers.inkscapeNextLayerNumber++;
+      }
+      const num = session.layers.inkscapeNextLayerNumber;
+      const labelValue = String(num);
+      // Store both the number and full label for collision detection
+      session.layers.inkscapeUsedLabels.set(String(num), '(unnamed group)');
+      session.layers.inkscapeUsedLabels.set(labelValue, '(unnamed group)');
+      session.layers.inkscapeNextLayerNumber++;
+      return num;
+    }
+
+    // Named groups: check if we've seen this name before
+    if (session.layers.inkscapeLayerMap.has(gname)) {
+      return session.layers.inkscapeLayerMap.get(gname);
+    }
+
+    // New group name - skip numbers already in use (from explicit labels)
+    while (session.layers.inkscapeUsedLabels.has(String(session.layers.inkscapeNextLayerNumber))) {
+      session.layers.inkscapeNextLayerNumber++;
+    }
+    const num = session.layers.inkscapeNextLayerNumber;
+    const labelValue = `${num}_${gname}`;
+    session.layers.inkscapeLayerMap.set(gname, num);
+    // Store both the number (for skip logic) and full label (for collision detection)
+    session.layers.inkscapeUsedLabels.set(String(num), gname);
+    session.layers.inkscapeUsedLabels.set(labelValue, gname);
+    session.layers.inkscapeNextLayerNumber++;
+    return num;
+  }
+
+
+  /**
+   * @private
+   * Checks for collision with an explicitly provided inkscape:label.
+   * Warns if the same label is being used by a different group name.
+   * @param {string} label - The inkscape:label value provided by user
+   * @param {string|undefined} gname - The current group's name
+   */
+  function checkInkscapeLabelCollision(label, gname) {
+    const labelStr = String(label);
+    const existingOwner = session.layers.inkscapeUsedLabels.get(labelStr);
+    if (existingOwner && existingOwner !== gname) {
+      console.warn(`p5.plotSvg warning: inkscape:label "${labelStr}" is already ` +
+        `used by group "${existingOwner}". Duplicate labels may cause unexpected ` +
+        `behavior in Inkscape/plotter software.`);
+    }
+  }
+
+
+  /**
+   * Begins a new user-defined grouping of SVG elements.
+   * Optionally assigns a group name (as an SVG ID), and/or custom attributes.
+   * Be sure to call `endSvgGroup()` later or the SVG file will report errors.
+   *
+   * @param {string|object} [gnameOrAttrs] - Optional group name as a string,
+   *   or an attributes object if no name is needed.
+   * @param {object} [attrs] - Optional object containing additional attributes.
+   */
+  p5plotSvg.beginSvgGroup = function(gnameOrAttrs, attrs) {
+    if (session.recording) {
+      let group = { type: SVG_COMMAND.BEGIN_GROUP };
+      let userProvidedInkscapeLabel = null;
+      let userProvidedInkscapeGroupmode = false;
+
+      if (typeof gnameOrAttrs === 'string') {
+        const trimmedName = gnameOrAttrs.trim();
+        if (trimmedName.length > 0) {
+          group.gname = trimmedName;
+        }
+        if (attrs && typeof attrs === 'object') {
+          const attrArray = [];
+          for (let key in attrs) {
+            if (Object.prototype.hasOwnProperty.call(attrs, key)) {
+              attrArray.push({ name: key, value: String(attrs[key]) });
+              // Track user-provided Inkscape attributes
+              if (key === 'inkscape:label') {
+                userProvidedInkscapeLabel = String(attrs[key]);
+              }
+              if (key === 'inkscape:groupmode') {
+                userProvidedInkscapeGroupmode = true;
+              }
+            }
+          }
+          if (attrArray.length > 0) {
+            group.attributes = attrArray;
+          }
+        }
+      } else if (typeof gnameOrAttrs === 'object' && gnameOrAttrs !== null) {
+        // Only attributes provided, no group name
+        const attrArray = [];
+        for (let key in gnameOrAttrs) {
+          if (Object.prototype.hasOwnProperty.call(gnameOrAttrs, key)) {
+            attrArray.push({ name: key, value: String(gnameOrAttrs[key]) });
+            // Track user-provided Inkscape attributes
+            if (key === 'inkscape:label') {
+              userProvidedInkscapeLabel = String(gnameOrAttrs[key]);
+            }
+            if (key === 'inkscape:groupmode') {
+              userProvidedInkscapeGroupmode = true;
+            }
+            // Extract id as group name if provided in object form
+            if (key === 'id') {
+              group.gname = String(gnameOrAttrs[key]);
+            }
+          }
+        }
+        if (attrArray.length > 0) {
+          group.attributes = attrArray;
+        }
+      }
+
+      // Auto-inject Inkscape attributes if compatibility mode is enabled
+      if (config.inkscapeCompatibility) {
+        if (!group.attributes) {
+          group.attributes = [];
+        }
+
+        // Auto-add groupmode="layer" if not provided by user
+        if (!userProvidedInkscapeGroupmode) {
+          group.attributes.push({ name: 'inkscape:groupmode', value: 'layer' });
+        }
+
+        // Handle inkscape:label assignment
+        if (userProvidedInkscapeLabel !== null) {
+          // User provided explicit label - check for collision and mark as used
+          checkInkscapeLabelCollision(userProvidedInkscapeLabel, group.gname);
+          session.layers.inkscapeUsedLabels.set(userProvidedInkscapeLabel, group.gname || '(unnamed group)');
+        } else {
+          // Auto-generate label from layer number and group name
+          const layerNum = getOrAssignInkscapeLayerNumber(group.gname);
+          const labelValue = group.gname ? `${layerNum}_${group.gname}` : String(layerNum);
+          group.attributes.push({ name: 'inkscape:label', value: labelValue });
+        }
+      }
+
+      session.commands.push(group);
+      session.groupStack.push(group.gname || '(unnamed group)');
+    }
+  };
+
 
 
   /**
@@ -1832,7 +3260,12 @@
    */
   p5plotSvg.endSvgGroup = function() {
     // Push an 'endGroup' command to signify closing the group
-    _commands.push({ type: 'endGroup' });
+    if (session.recording) {
+      session.commands.push({ type: SVG_COMMAND.END_GROUP });
+      if (session.groupStack.length > 0) {
+        session.groupStack.pop();
+      }
+    }
   }
 
 
@@ -1841,7 +3274,7 @@
    * Converts a p5.js-style arc into an SVG elliptical arc path string.
    * Handles discrepancies between p5.js and SVG elliptical arc conventions,
    * including angle transformations and aspect ratio adjustments.
-   * Converts degrees to radians depending on p5's angleMode(). 
+   * Converts degrees to radians depending on p5's angleMode().
    *
    * @param {number} x - The x-coordinate of the arc's center.
    * @param {number} y - The y-coordinate of the arc's center.
@@ -1857,21 +3290,21 @@
 
     let startRadians = start;
     let stopRadians = stop;
-    if (_p5Instance.angleMode() === 'degrees') {
+    if (session.p5Instance.angleMode() === session.p5Instance.DEGREES) {
       startRadians = degreesToRadians(start);
       stopRadians = degreesToRadians(stop);
     }
-    
+
     // Cope with discrepancies between how p5 & SVG do elliptical arcs.
-    // p5 sets the angle absolutely; SVG stretches the angle by aspect ratio. 
+    // p5 sets the angle absolutely; SVG stretches the angle by aspect ratio.
     if ((h > 0) && (w > 0) && (w != h)){
-      let dxA = cos(startRadians); 
-      let dyA = sin(startRadians); 
-      startRadians = atan2(dyA, dxA/(w/h)); 
-      
-      let dxB = cos(stopRadians); 
-      let dyB = sin(stopRadians); 
-      stopRadians = atan2(dyB, dxB/(w/h)); 
+      let dxA = Math.cos(startRadians);
+      let dyA = Math.sin(startRadians);
+      startRadians = Math.atan2(dyA, dxA/(w/h));
+
+      let dxB = Math.cos(stopRadians);
+      let dyB = Math.sin(stopRadians);
+      stopRadians = Math.atan2(dyB, dxB/(w/h));
     }
 
     // Calculate start and end points
@@ -1903,17 +3336,20 @@
   }
 
 
-  function adjustControlPointsForTightness(x1, y1, x2, y2, x3, y3, x4, y4, tightness) {
-    let adjustedX1 = x1 + (x3 - x1) * tightness;
-    let adjustedY1 = y1 + (y3 - y1) * tightness;
-    let adjustedX4 = x4 + (x2 - x4) * tightness;
-    let adjustedY4 = y4 + (y2 - y4) * tightness;
-    return [adjustedX1, adjustedY1, x2, y2, x3, y3, adjustedX4, adjustedY4];
-  }
-
-
-  // https://github.com/processing/p5.js/blob/e32b45367baad694b1f4eeec0586b910bfcf0724/src/typography/p5.Font.js#L1099
-  function catmullRom2bezier(crp, z) {
+  /**
+   * @private
+   * Converts a flat Catmull-Rom point list into SVG cubic Bezier segments.
+   * Based on p5.Font's curve conversion and modified to honor p5's
+   * curveTightness() value.
+   * Source reference:
+   * https://github.com/processing/p5.js/blob/e32b45367baad694b1f4eeec0586b910bfcf0724/src/typography/p5.Font.js#L1099
+   * @param {number[]} crp - Flat point list in [x0, y0, x1, y1, ...] order.
+   * @param {boolean} z - Whether the Catmull-Rom path is closed.
+   * @param {number} [tightness=0] - p5 curve tightness value.
+   * @returns {number[][]} Cubic Bezier segments as [x1, y1, x2, y2, x, y].
+   */
+  function catmullRom2bezier(crp, z, tightness = 0) {
+    const s = 1 - tightness; // Scale factor for control point influence
     const d = [];
     for (let i = 0, iLen = crp.length; iLen - 2 * !z > i; i += 2) {
       const p = [
@@ -1938,16 +3374,438 @@
           p[0] = { x: crp[i], y: crp[i + 1] };
         }
       }
+      // Control points scaled by s = (1 - tightness)
+      // First control point: p[1] + s * (p[2] - p[0]) / 6
+      // Second control point: p[2] + s * (p[1] - p[3]) / 6
       d.push([
-        (-p[0].x + 6.0 * p[1].x + p[2].x) / 6.0,
-        (-p[0].y + 6.0 * p[1].y + p[2].y) / 6.0,
-        ( p[1].x + 6.0 * p[2].x - p[3].x) / 6.0,
-        ( p[1].y + 6.0 * p[2].y - p[3].y) / 6.0,
-        ( p[2].x),
-        ( p[2].y),
+        p[1].x + s * (p[2].x - p[0].x) / 6.0,
+        p[1].y + s * (p[2].y - p[0].y) / 6.0,
+        p[2].x + s * (p[1].x - p[3].x) / 6.0,
+        p[2].y + s * (p[1].y - p[3].y) / 6.0,
+        p[2].x,
+        p[2].y,
         ]);
     }
     return d;
+  }
+
+
+  /**
+   * @private
+   * Converts a list of p5.js v2 spline points to SVG cubic Bezier path data.
+   */
+  function getSplinePathData(points, closed, tightness = 0, includeEnds = true) {
+    if (!Array.isArray(points) || points.length < 2) return '';
+    const cleanPoints = points.filter(pt =>
+      pt && Number.isFinite(pt.x) && Number.isFinite(pt.y)
+    );
+    if (cleanPoints.length < 2) return '';
+
+    const s = 1 - tightness;
+    const lastIndex = cleanPoints.length - 1;
+    let startIndex = includeEnds ? 0 : 1;
+    let endIndex = includeEnds ? lastIndex - 1 : lastIndex - 2;
+
+    if (closed) {
+      startIndex = 0;
+      endIndex = lastIndex;
+    }
+    if (startIndex > endIndex) return '';
+
+    const pointAt = (idx) => {
+      if (closed) {
+        const len = cleanPoints.length;
+        return cleanPoints[((idx % len) + len) % len];
+      }
+      return cleanPoints[Math.max(0, Math.min(lastIndex, idx))];
+    };
+
+    const startPoint = pointAt(startIndex);
+    const parts = [];
+    appendPathMoveTo(parts, startPoint.x, startPoint.y);
+    for (let i = startIndex; i <= endIndex; i++) {
+      const p0 = pointAt(i - 1);
+      const p1 = pointAt(i);
+      const p2 = pointAt(i + 1);
+      const p3 = pointAt(i + 2);
+      const c1x = p1.x + s * (p2.x - p0.x) / 6.0;
+      const c1y = p1.y + s * (p2.y - p0.y) / 6.0;
+      const c2x = p2.x + s * (p1.x - p3.x) / 6.0;
+      const c2y = p2.y + s * (p1.y - p3.y) / 6.0;
+      appendPathCubicTo(parts, c1x, c1y, c2x, c2y, p2.x, p2.y);
+    }
+    if (closed) appendPathClose(parts);
+    return joinPathData(parts);
+  }
+
+
+  /**
+   * @private
+   * Appends an SVG path move command to a path fragment array.
+   * @param {string[]} parts - Mutable array of serialized path fragments.
+   * @param {number} x - Destination x coordinate.
+   * @param {number} y - Destination y coordinate.
+   */
+  function appendPathMoveTo(parts, x, y) {
+    parts.push(`M ${formatNumber(x)},${formatNumber(y)}`);
+  }
+
+
+  /**
+   * @private
+   * Appends an SVG path line command to a path fragment array.
+   * @param {string[]} parts - Mutable array of serialized path fragments.
+   * @param {number} x - Destination x coordinate.
+   * @param {number} y - Destination y coordinate.
+   */
+  function appendPathLineTo(parts, x, y) {
+    parts.push(` L ${formatNumber(x)},${formatNumber(y)}`);
+  }
+
+
+  /**
+   * @private
+   * Appends an SVG cubic Bezier path command to a path fragment array.
+   * @param {string[]} parts - Mutable array of serialized path fragments.
+   * @param {number} x1 - First control point x coordinate.
+   * @param {number} y1 - First control point y coordinate.
+   * @param {number} x2 - Second control point x coordinate.
+   * @param {number} y2 - Second control point y coordinate.
+   * @param {number} x - Destination x coordinate.
+   * @param {number} y - Destination y coordinate.
+   */
+  function appendPathCubicTo(parts, x1, y1, x2, y2, x, y) {
+    parts.push(` C ${formatNumber(x1)},${formatNumber(y1)}`);
+    parts.push(` ${formatNumber(x2)},${formatNumber(y2)}`);
+    parts.push(` ${formatNumber(x)},${formatNumber(y)}`);
+  }
+
+
+  /**
+   * @private
+   * Appends an SVG quadratic Bezier path command to a path fragment array.
+   * @param {string[]} parts - Mutable array of serialized path fragments.
+   * @param {number} cx - Control point x coordinate.
+   * @param {number} cy - Control point y coordinate.
+   * @param {number} x - Destination x coordinate.
+   * @param {number} y - Destination y coordinate.
+   */
+  function appendPathQuadraticTo(parts, cx, cy, x, y) {
+    parts.push(` Q ${formatNumber(cx)},${formatNumber(cy)}`);
+    parts.push(` ${formatNumber(x)},${formatNumber(y)}`);
+  }
+
+
+  /**
+   * @private
+   * Appends an SVG closepath command to a path fragment array.
+   * @param {string[]} parts - Mutable array of serialized path fragments.
+   */
+  function appendPathClose(parts) {
+    parts.push(' Z');
+  }
+
+
+  /**
+   * @private
+   * Joins serialized SVG path fragments into one path data string.
+   * @param {string[]} parts - Serialized path fragments.
+   * @returns {string} SVG path data.
+   */
+  function joinPathData(parts) {
+    return parts.join('');
+  }
+
+
+  /**
+   * @private
+   * Checks whether SVG path data contains any drawing command.
+   * Empty paths, move-only paths, and move/close-only paths do not make marks
+   * and should not be emitted as plottable SVG geometry.
+   * @param {string} d - SVG path data.
+   * @returns {boolean} True if the path data contains drawable geometry.
+   */
+  function hasDrawablePathData(d) {
+    return /[LHVCSQTA]/i.test(String(d || ''));
+  }
+
+
+  /**
+   * @private
+   * Checks an object tree for NaN, Infinity, or -Infinity numeric values.
+   * Used to omit whole malformed commands when sanitizing is disabled.
+   * @param {*} value - Value to inspect.
+   * @param {Set} [seen] - Internal cycle guard.
+   * @returns {boolean} True if any non-finite number is present.
+   */
+  function hasNonFiniteNumber(value, seen = new Set()) {
+    if (typeof value === 'number') {
+      return !Number.isFinite(value);
+    }
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    if (seen.has(value)) {
+      return false;
+    }
+    seen.add(value);
+
+    if (Array.isArray(value)) {
+      return value.some(item => hasNonFiniteNumber(item, seen));
+    }
+
+    return Object.keys(value).some(key => hasNonFiniteNumber(value[key], seen));
+  }
+
+
+  /**
+   * @private
+   * Generates SVG path data for a simple vertex-only contour.
+   * This handles recorded vertex() commands that do not include curve or
+   * Bezier segment metadata.
+   * @param {Object[]} vertices - Vertex records with x and y properties.
+   * @param {boolean} closed - Whether to close the path with Z.
+   * @returns {string} SVG path data.
+   */
+  function generateVertexPathData(vertices, closed) {
+    if (!Array.isArray(vertices) || vertices.length === 0) return '';
+
+    const parts = [];
+    for (let i = 0; i < vertices.length; i++) {
+      let v = vertices[i];
+      if (i === 0) {
+        appendPathMoveTo(parts, v.x, v.y);
+      } else {
+        appendPathLineTo(parts, v.x, v.y);
+      }
+    }
+    if (closed) appendPathClose(parts);
+    return joinPathData(parts);
+  }
+
+
+  /**
+   * @private
+   * Emits a warning for an unsupported path segment, optionally using a
+   * warn-once flag from the module-level warnings object.
+   * @param {string} message - Warning text to send to console.warn().
+   * @param {string} [flagName] - Optional warnings object key used to suppress repeats.
+   */
+  function warnUnsupportedPathSegment(message, flagName) {
+    if (flagName && warnings[flagName]) return;
+    console.warn(message);
+    if (flagName) warnings[flagName] = true;
+  }
+
+
+  /**
+   * @private
+   * Appends path data for one recorded segment in a complex beginShape() path.
+   * Some recorded p5 commands consume more than one segment record; in those
+   * cases the returned index advances past the consumed records.
+   * @param {string[]} parts - Mutable array of serialized path fragments.
+   * @param {Object[]} segments - Recorded segment stream.
+   * @param {number} index - Index of the segment to process.
+   * @returns {number} Index of the last consumed segment.
+   */
+  function appendSegmentPathData(parts, segments, index) {
+    let seg = segments[index];
+    if (!seg || !seg.type) {
+      warnUnsupportedPathSegment(
+        "p5.plotSvg: Unsupported empty path segment skipped during SVG export.",
+        'unsupportedPathSegmentShown'
+      );
+      return index;
+    }
+
+    if (seg.type === SVG_SEGMENT.VERTEX) {
+      appendPathLineTo(parts, seg.x, seg.y);
+    } else if (seg.type === SVG_SEGMENT.BEZIER) {
+      appendPathCubicTo(parts, seg.x2, seg.y2, seg.x3, seg.y3, seg.x4, seg.y4);
+    } else if (seg.type === SVG_SEGMENT.BEZIER_POINT) {
+      let order = seg.order || session.bezierOrder;
+      if (order === 2 && index + 1 < segments.length) {
+        let endPt = segments[index + 1];
+        appendPathQuadraticTo(parts, seg.x, seg.y, endPt.x, endPt.y);
+        return index + 1;
+      } else if (index + 2 < segments.length) {
+        let c2 = segments[index + 1];
+        let endPt = segments[index + 2];
+        appendPathCubicTo(parts, seg.x, seg.y, c2.x, c2.y, endPt.x, endPt.y);
+        return index + 2;
+      }
+      warnUnsupportedPathSegment(
+        "p5.plotSvg: Incomplete bezierVertex() point-stream segment skipped during SVG export.",
+        'incompleteBezierPointSegmentShown'
+      );
+    } else if (seg.type === SVG_SEGMENT.QUADRATIC) {
+      appendPathQuadraticTo(parts, seg.cx, seg.cy, seg.x, seg.y);
+    } else if (seg.type === SVG_SEGMENT.CURVE) {
+      // Convert Catmull-Rom to cubic Bezier.
+      if (index > 2) {
+        let sx1 = segments[Math.max(0, index - 3)].x;
+        let sy1 = segments[Math.max(0, index - 3)].y;
+        let sx2 = segments[Math.max(0, index - 2)].x;
+        let sy2 = segments[Math.max(0, index - 2)].y;
+        let sx3 = segments[index - 1].x;
+        let sy3 = segments[index - 1].y;
+        let sx4 = segments[index].x;
+        let sy4 = segments[index].y;
+        let crp = [sx1, sy1, sx2, sy2, sx3, sy3, sx4, sy4];
+
+        let bClosedCatmull = false;
+        let segmentTightness = (seg.tightness !== undefined) ? seg.tightness : 0;
+        let bezierSegments = catmullRom2bezier(crp, bClosedCatmull, segmentTightness);
+        let targetSegment = bezierSegments[1];
+
+        appendPathCubicTo(
+          parts,
+          targetSegment[0],
+          targetSegment[1],
+          targetSegment[2],
+          targetSegment[3],
+          targetSegment[4],
+          targetSegment[5]
+        );
+      }
+    } else if (seg.type === SVG_SEGMENT.SPLINE) {
+      warnUnsupportedPathSegment(
+        "p5.plotSvg: Mixed splineVertex() path segments are not yet supported in SVG export. Pure spline paths are supported.",
+        'mixedSplineSegmentShown'
+      );
+    } else {
+      warnUnsupportedPathSegment(
+        `p5.plotSvg: Unsupported path segment type "${seg.type}" skipped during SVG export.`,
+        'unsupportedPathSegmentShown'
+      );
+    }
+    return index;
+  }
+
+
+  /**
+   * @private
+   * Generates SVG path data for a recorded complex beginShape() path.
+   * Supports vertex, bezierVertex, quadraticVertex, v1 curveVertex-derived
+   * Catmull-Rom segments, and pure v2 spline paths. Mixed or unsupported v2
+   * segment forms are skipped with warnings until explicitly implemented.
+   * @param {Object[]} segments - Recorded path segment stream.
+   * @param {boolean} closed - Whether to close the path with Z.
+   * @returns {string} SVG path data.
+   */
+  function generateSegmentPathData(segments, closed) {
+    if (!Array.isArray(segments) || segments.length === 0) return '';
+
+    if (segments.every(seg => seg.type === SVG_SEGMENT.SPLINE)) {
+      let firstSpline = segments[0];
+      return getSplinePathData(
+        segments,
+        closed,
+        firstSpline.tightness,
+        shouldIncludeSplineEnds(firstSpline.endsMode)
+      );
+    }
+
+    const parts = [];
+    appendPathMoveTo(parts, segments[0].x, segments[0].y);
+
+    for (let i = 1; i < segments.length; i++) {
+      i = appendSegmentPathData(parts, segments, i);
+    }
+    if (closed) appendPathClose(parts);
+    return joinPathData(parts);
+  }
+
+
+  /**
+   * @private
+   * Generates an SVG <path> element string for shapes with multiple contours.
+   * Each contour becomes a separate sub-path (M...Z) within a single <path> element.
+   * Supports both simple vertex-only contours and complex contours with bezier/quadratic vertices.
+   * @param {Object} cmd - The command object containing vertices/segments with contour markers.
+   * @param {string} styleStr - Pre-computed style string for the element.
+   * @param {string} transformStr - Pre-computed transform string for the element.
+   * @returns {string} The SVG <path> element string with multiple sub-paths.
+   */
+  function getSvgStrMultiContourPath(cmd, styleStr, transformStr) {
+    // Get the vertex/segment array (polyline uses vertices, path uses segments)
+    let items = cmd.type === SVG_COMMAND.POLYLINE ? cmd.vertices : cmd.segments;
+    if (!items || items.length === 0) {
+      return '';
+    }
+
+    // Split into contours based on contourStart/contourEnd markers
+    let contours = [];
+    let currentContour = { vertices: [], closed: cmd.closed }; // Main contour uses shape's closed flag
+
+    for (let i = 0; i < items.length; i++) {
+      let item = items[i];
+      if (item.type === SVG_SEGMENT.CONTOUR_START) {
+        // Save current contour and start a new one
+        if (currentContour.vertices.length > 0) {
+          contours.push(currentContour);
+        }
+        currentContour = { vertices: [], closed: false };
+      } else if (item.type === SVG_SEGMENT.CONTOUR_END) {
+        // Mark contour closure and prepare for next
+        currentContour.closed = item.closed;
+        if (currentContour.vertices.length > 0) {
+          contours.push(currentContour);
+        }
+        currentContour = { vertices: [], closed: cmd.closed };
+      } else {
+        // Regular vertex/segment
+        currentContour.vertices.push(item);
+      }
+    }
+    // Don't forget any remaining vertices after the last contourEnd
+    if (currentContour.vertices.length > 0) {
+      contours.push(currentContour);
+    }
+
+    // Build the path data string with all contours as sub-paths
+    let d = '';
+    for (let contour of contours) {
+      if (contour.vertices.length === 0) continue;
+
+      if (cmd.type === SVG_COMMAND.POLYLINE) {
+        // Simple case: all vertices are simple {x, y} points
+        d += generateSimpleContourPath(contour);
+      } else {
+        // Complex case: vertices may include bezier, quadratic, curve types
+        d += generateComplexContourPath(contour);
+      }
+    }
+
+    if (!hasDrawablePathData(d)) return '';
+
+    // Build the final path element
+    let str = `<path d="${d.trim()}"${styleStr}${transformStr}`;
+    str += attrsToString(cmd.attributes, 'SVG path attribute name');
+    str += `/>\n`;
+    return str;
+  }
+
+
+  /**
+   * @private
+   * Generates path data for a simple contour (vertex-only, no curves).
+   * @param {Object} contour - Object with vertices array and closed boolean.
+   * @returns {string} SVG path data string (M...L...Z or M...L...).
+   */
+  function generateSimpleContourPath(contour) {
+    return generateVertexPathData(contour.vertices, contour.closed) + ' ';
+  }
+
+
+  /**
+   * @private
+   * Generates path data for a complex contour (may include bezier, quadratic, curve vertices).
+   * @param {Object} contour - Object with vertices array and closed boolean.
+   * @returns {string} SVG path data string with appropriate curve commands.
+   */
+  function generateComplexContourPath(contour) {
+    return generateSegmentPathData(contour.vertices, contour.closed) + ' ';
   }
 
 
@@ -1958,78 +3816,75 @@
    * @param {Object} cmd - The command object containing vertices, segments, and shape properties.
    * @returns {string} The SVG element string representing the polyline, polygon, or complex path.
    */
-  function getSvgStrPoly(cmd) {
-    let str = ""; 
-    let styleStr = getSvgStrStroke();
+  function getSvgStrPoly(cmd, renderContext) {
+    let str = "";
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
-    
-    if (cmd.type === 'polyline') {
+
+    // Handle multi-contour shapes (beginContour/endContour)
+    if (cmd.hasContours) {
+      return getSvgStrMultiContourPath(cmd, styleStr, transformStr);
+    }
+
+    // 🔁 Convert polylines to path if specified by config.exportPolylinesAsPaths
+    if (cmd.type === SVG_COMMAND.POLYLINE && config.exportPolylinesAsPaths) {
+      let d = generateVertexPathData(cmd.vertices, cmd.closed);
+      if (!hasDrawablePathData(d)) return '';
+      str += `<path d="${d}"${styleStr}${transformStr}`;
+
+      // If additional attributes are present, add them
+      str += attrsToString(cmd.attributes, 'SVG path attribute name');
+      str += `/>\n`;
+      return str;
+    }
+
+    if (cmd.type === SVG_COMMAND.POLYLINE) {
       // Simple case: use polyline or polygon
+      if (!cmd.vertices || cmd.vertices.length < 2) return '';
       let points = "";
       for (let i = 0; i < cmd.vertices.length; i++) {
         let v = cmd.vertices[i];
         points += formatNumber(v.x) + "," + formatNumber(v.y);
-        if (i < cmd.vertices.length - 1) { points += " ";}
+        if (i < cmd.vertices.length - 1) {points += " ";}
       }
-      
+
       if (cmd.closed) {
-        str += `<polygon points="${points}"${styleStr}${transformStr}/>\n`;
+        str += `<polygon points="${points}"${styleStr}${transformStr}`;
       } else {
-        str += `<polyline points="${points}"${styleStr}${transformStr}/>\n`;
+        str += `<polyline points="${points}"${styleStr}${transformStr}`;
       }
-      
-    } else if (cmd.type === 'path') {
+
+      str += attrsToString(cmd.attributes, 'SVG polyline attribute name');
+      str += `/>\n`;
+      return str;
+
+    } else if (cmd.type === SVG_COMMAND.PATH) {
       // Complex case: construct path data with mixed vertex types
-      let d = `M ${formatNumber(cmd.segments[0].x)},${formatNumber(cmd.segments[0].y)}`;
-    
-      for (let i = 1; i < cmd.segments.length; i++) {
-        let seg = cmd.segments[i];
-        if (seg.type === 'vertex') {
-          d += ` L ${formatNumber(seg.x)},${formatNumber(seg.y)}`;
-        } else if (seg.type === 'bezier') {
-          d += ` C ${formatNumber(seg.x2)},${formatNumber(seg.y2)}`; 
-          d +=   ` ${formatNumber(seg.x3)},${formatNumber(seg.y3)}`;
-          d +=   ` ${formatNumber(seg.x4)},${formatNumber(seg.y4)}`;
-        } else if (seg.type === 'quadratic') {
-          d += ` Q ${formatNumber(seg.cx)},${formatNumber(seg.cy)}`;
-          d +=   ` ${formatNumber(seg.x)},${formatNumber(seg.y)}`;
-        } else if (seg.type === 'curve') {
-          // Convert Catmull-Rom to cubic Bezier and add
-          
-          if (i > 2){
-            let sx1 = cmd.segments[Math.max(0, i - 3)].x; 
-            let sy1 = cmd.segments[Math.max(0, i - 3)].y;
-            let sx2 = cmd.segments[Math.max(0, i - 2)].x; 
-            let sy2 = cmd.segments[Math.max(0, i - 2)].y;
-            let sx3 = cmd.segments[            i - 1 ].x; 
-            let sy3 = cmd.segments[            i - 1 ].y;
-            let sx4 = cmd.segments[            i     ].x; 
-            let sy4 = cmd.segments[            i     ].y;
-            let crp = [sx1,sy1, sx2,sy2, sx3,sy3, sx4,sy4]; 
-
-            let bClosedCatmull = false;
-            let bezierSegments = catmullRom2bezier(crp, bClosedCatmull);
-            let targetSegment = bezierSegments[1];
-
-            let x2Str  = formatNumber(sx2);
-            let y2Str  = formatNumber(sy2);
-            let cx1Str = formatNumber(targetSegment[0]);
-            let cy1Str = formatNumber(targetSegment[1]);
-            let cx2Str = formatNumber(targetSegment[2]);
-            let cy2Str = formatNumber(targetSegment[3]);
-            let x3Str  = formatNumber(targetSegment[4]);
-            let y3Str  = formatNumber(targetSegment[5]);
-            
-            d += ` C`;
-            d += ` ${cx1Str},${cy1Str}`;
-            d += ` ${cx2Str},${cy2Str}`; 
-            d += ` ${x3Str },${y3Str }`;
-          }
-          
-        }
+      if (!cmd.segments || cmd.segments.length === 0) {
+        return ''; // No segments to render
       }
-      if (cmd.closed) d += ' Z'; // Close path if needed
-      str += `<path d="${d}"${styleStr}${transformStr}/>\n`;
+      let d = generateSegmentPathData(cmd.segments, cmd.closed);
+      if (!hasDrawablePathData(d)) return '';
+
+      str += `<path `;
+      // Experimental extension hook: custom command attributes.
+      let cmdAttributesHasStyle = false;
+      str += attrsToString(cmd.attributes, 'SVG path attribute name', {
+        onAttr: (attr, attrName) => {
+          if (attrName === 'style') {
+            cmdAttributesHasStyle = true;
+          }
+        }
+      });
+      // Only add the default style if not already set by cmd.attributes
+      if (!cmdAttributesHasStyle) {
+        str += `${styleStr}`;
+      }
+      str += ` d="${d}"${transformStr}`;
+
+      str += `/>\n`;
+      return str;
+
     }
     return str;
   }
@@ -2042,26 +3897,25 @@
    * @param {Object} cmd - The command object containing vertices.
    * @returns {string} The SVG group element string with formatted points.
    */
-  function getSvgStrPoints(cmd) {
+  function getSvgStrPoints(cmd, renderContext) {
     // handle beginShape(POINTS)
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
-    let pointsStr = `<g id="POINTS_${_pointsSetCount}"${styleStr}${transformStr}>\n`;
+    let pointsStr = `<g id="POINTS_${session.pointsSetCount}"${styleStr}${transformStr}>\n`;
+    renderContext.groupLevel++;
+    session.pointsSetCount++;
 
-    _svgGroupLevel++; 
-    _pointsSetCount++;
-    
-    let rStr = formatNumber(_svgPointRadius);
+    let rStr = formatNumber(config.pointRadius);
     for (let i = 0; i < cmd.vertices.length; i++) {
       const v = cmd.vertices[i];
       let xStr = formatNumber(v.x);
       let yStr = formatNumber(v.y);
-      pointsStr += getIndentStr();
+      pointsStr += getIndentStr(renderContext);
       pointsStr += `<circle cx="${xStr}" cy="${yStr}" r="${rStr}"/>\n`;
     }
-    
-    _svgGroupLevel--; 
-    pointsStr += getIndentStr();
+
+    renderContext.groupLevel--;
+    pointsStr += getIndentStr(renderContext);
     pointsStr += `</g>\n`;
     return pointsStr;
   }
@@ -2074,30 +3928,30 @@
    * @param {Object} cmd - The command object containing vertices.
    * @returns {string} The SVG group element string with formatted lines.
    */
-  function getSvgStrLines(cmd) {
+  function getSvgStrLines(cmd, renderContext) {
     // handle beginShape(LINES)
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let linesStr = "";
-    linesStr += `<g id="LINES_${_linesSetCount}"${styleStr}${transformStr}>\n`;
-    _svgGroupLevel++; 
-    _linesSetCount++;
-    
+    linesStr += `<g id="LINES_${session.linesSetCount}"${styleStr}${transformStr}>\n`;
+    renderContext.groupLevel++;
+    session.linesSetCount++;
+
     if (cmd.vertices.length > 1){
       for (let i = 0; i < cmd.vertices.length-1; i+=2) {
         let x1Str = formatNumber(cmd.vertices[i].x);
         let y1Str = formatNumber(cmd.vertices[i].y);
         let x2Str = formatNumber(cmd.vertices[i+1].x);
         let y2Str = formatNumber(cmd.vertices[i+1].y);
-        
-        linesStr += getIndentStr();
+
+        linesStr += getIndentStr(renderContext);
         linesStr += `<line x1="${x1Str}" y1="${y1Str}" `;
         linesStr += `x2="${x2Str}" y2="${y2Str}"/>\n`;
       }
     }
-    
-    _svgGroupLevel--; 
-    linesStr += getIndentStr();
+
+    renderContext.groupLevel--;
+    linesStr += getIndentStr(renderContext);
     linesStr += `</g>\n`;
     return linesStr;
   }
@@ -2105,20 +3959,20 @@
 
   /**
    * @private
-   * Generates an SVG group element string representing a set of triangles, 
+   * Generates an SVG group element string representing a set of triangles,
    * based on the given command object.Handles beginShape(TRIANGLES) in p5.js.
    * @param {Object} cmd - The command object containing vertices.
    * @returns {string} The SVG group element string with formatted triangles.
    */
-  function getSvgStrTriangles(cmd) {
+  function getSvgStrTriangles(cmd, renderContext) {
     // handle beginShape(TRIANGLES)
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let trianglesStr = "";
-    trianglesStr += `<g id="TRIANGLES_${_trianglesSetCount}"${styleStr}${transformStr}>\n`;
-    _svgGroupLevel++; 
-    _trianglesSetCount++;
-    
+    trianglesStr += `<g id="TRIANGLES_${session.trianglesSetCount}"${styleStr}${transformStr}>\n`;
+    renderContext.groupLevel++;
+    session.trianglesSetCount++;
+
     if (cmd.vertices.length >= 3){
       for (let i = 0; i < cmd.vertices.length - 2; i += 3) {
         let x1Str = formatNumber(cmd.vertices[i  ].x);
@@ -2128,14 +3982,14 @@
         let x3Str = formatNumber(cmd.vertices[i+2].x);
         let y3Str = formatNumber(cmd.vertices[i+2].y);
         let triStr = `${x1Str},${y1Str} ${x2Str},${y2Str} ${x3Str},${y3Str}`;
-        
-        trianglesStr += getIndentStr();
+
+        trianglesStr += getIndentStr(renderContext);
         trianglesStr += `<polygon points="${triStr}"/>\n`;
       }
     }
-    
-    _svgGroupLevel--; 
-    trianglesStr += getIndentStr();
+
+    renderContext.groupLevel--;
+    trianglesStr += getIndentStr(renderContext);
     trianglesStr += `</g>\n`;
     return trianglesStr;
   }
@@ -2143,20 +3997,20 @@
 
   /**
    * @private
-   * Generates an SVG group element string representing a triangle fan, 
+   * Generates an SVG group element string representing a triangle fan,
    * based on the given command object. Handles beginShape(TRIANGLE_FAN) in p5.js.
    * @param {Object} cmd - The command object containing vertices.
    * @returns {string} The SVG group element string with formatted triangles.
    */
-  function getSvgStrTriangleFan(cmd) {
+  function getSvgStrTriangleFan(cmd, renderContext) {
     // handle beginShape(TRIANGLE_FAN)
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let fanStr = "";
-    fanStr += `<g id="TRIANGLE_FAN_${_triangleFanSetCount}"${styleStr}${transformStr}>\n`;
-    _svgGroupLevel++; 
-    _triangleFanSetCount++;
-    
+    fanStr += `<g id="TRIANGLE_FAN_${session.triangleFanSetCount}"${styleStr}${transformStr}>\n`;
+    renderContext.groupLevel++;
+    session.triangleFanSetCount++;
+
     if (cmd.vertices.length >= 3){
       let x0Str = formatNumber(cmd.vertices[0].x);
       let y0Str = formatNumber(cmd.vertices[0].y);
@@ -2166,14 +4020,14 @@
         let x2Str = formatNumber(cmd.vertices[i+1].x);
         let y2Str = formatNumber(cmd.vertices[i+1].y);
         let pointsStr = `${x0Str},${y0Str} ${x1Str},${y1Str} ${x2Str},${y2Str}`;
-        
-        fanStr += getIndentStr();
+
+        fanStr += getIndentStr(renderContext);
         fanStr += `<polygon points="${pointsStr}"/>\n`;
       }
     }
-    
-    _svgGroupLevel--; 
-    fanStr += getIndentStr();
+
+    renderContext.groupLevel--;
+    fanStr += getIndentStr(renderContext);
     fanStr += `</g>\n`;
     return fanStr;
   }
@@ -2186,15 +4040,15 @@
    * @param {Object} cmd - The command object containing vertices.
    * @returns {string} The SVG group element string with formatted triangles.
    */
-  function getSvgStrTriangleStrip(cmd) {
+  function getSvgStrTriangleStrip(cmd, renderContext) {
     // handle beginShape(TRIANGLE_STRIP)
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let triStripStr = "";
-    triStripStr += `<g id="TRIANGLE_STRIP_${_triangleStripSetCount}"${styleStr}${transformStr}>\n`;
-    _svgGroupLevel++; 
-    _triangleStripSetCount++;
-    
+    triStripStr += `<g id="TRIANGLE_STRIP_${session.triangleStripSetCount}"${styleStr}${transformStr}>\n`;
+    renderContext.groupLevel++;
+    session.triangleStripSetCount++;
+
     if (cmd.vertices.length >= 3){
       for (let i = 0; i < cmd.vertices.length - 2; i++) {
         let x1Str = formatNumber(cmd.vertices[i  ].x);
@@ -2203,20 +4057,20 @@
         let y2Str = formatNumber(cmd.vertices[i+1].y);
         let x3Str = formatNumber(cmd.vertices[i+2].x);
         let y3Str = formatNumber(cmd.vertices[i+2].y);
-        
-        let triStr = ""; 
+
+        let triStr = "";
         if (i%2 == 0){
           triStr = `${x1Str},${y1Str} ${x2Str},${y2Str} ${x3Str},${y3Str}`;
         } else {
           triStr = `${x1Str},${y1Str} ${x3Str},${y3Str} ${x2Str},${y2Str}`;
         }
-        triStripStr += getIndentStr();
+        triStripStr += getIndentStr(renderContext);
         triStripStr += `<polygon points="${triStr}"/>\n`;
       }
     }
 
-    _svgGroupLevel--; 
-    triStripStr += getIndentStr();
+    renderContext.groupLevel--;
+    triStripStr += getIndentStr(renderContext);
     triStripStr += `</g>\n`;
     return triStripStr;
   }
@@ -2224,20 +4078,20 @@
 
   /**
    * @private
-   * Generates an SVG group element string representing a set of quads, 
+   * Generates an SVG group element string representing a set of quads,
    * based on the given command object. Handles beginShape(QUADS) in p5.js.
    * @param {Object} cmd - The command object containing vertices.
    * @returns {string} The SVG group element string with formatted quads.
    */
-  function getSvgStrQuads(cmd) {
+  function getSvgStrQuads(cmd, renderContext) {
     // handle beginShape(QUADS)
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let quadsStr = "";
-    quadsStr += `<g id="QUADS_${_quadsSetCount}"${styleStr}${transformStr}>\n`;
-    _svgGroupLevel++; 
-    _quadsSetCount++;
-    
+    quadsStr += `<g id="QUADS_${session.quadsSetCount}"${styleStr}${transformStr}>\n`;
+    renderContext.groupLevel++;
+    session.quadsSetCount++;
+
     if (cmd.vertices.length >= 4){
       for (let i = 0; i < cmd.vertices.length - 3; i+=4) {
         const v1 = cmd.vertices[i  ];
@@ -2248,13 +4102,13 @@
                     `${formatNumber(v2.x)},${formatNumber(v2.y)} ` +
                     `${formatNumber(v3.x)},${formatNumber(v3.y)} ` +
                     `${formatNumber(v4.x)},${formatNumber(v4.y)}`;
-        quadsStr += getIndentStr();
+        quadsStr += getIndentStr(renderContext);
         quadsStr += `<polygon points="${qStr}"/>\n`;
       }
     }
-    
-    _svgGroupLevel--; 
-    quadsStr += getIndentStr();
+
+    renderContext.groupLevel--;
+    quadsStr += getIndentStr(renderContext);
     quadsStr += `</g>\n`;
     return quadsStr;
   }
@@ -2262,37 +4116,37 @@
 
   /**
    * @private
-   * Generates an SVG group element string representing a quad strip, 
+   * Generates an SVG group element string representing a quad strip,
    * based on the given command object.Handles beginShape(QUAD_STRIP) in p5.js.
    * @param {Object} cmd - The command object containing vertices.
    * @returns {string} The SVG group element string with formatted quads.
    */
-  function getSvgStrQuadStrip(cmd) {
+  function getSvgStrQuadStrip(cmd, renderContext) {
     // handle beginShape(QUAD_STRIP)
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
     let transformStr = generateTransformString(cmd);
     let quadStripStr = "";
-    quadStripStr += `<g id="QUAD_STRIP_${_quadStripSetCount}"${styleStr}${transformStr}>\n`;
-    _svgGroupLevel++; 
-    _quadStripSetCount++;
-    
+    quadStripStr += `<g id="QUAD_STRIP_${session.quadStripSetCount}"${styleStr}${transformStr}>\n`;
+    renderContext.groupLevel++;
+    session.quadStripSetCount++;
+
     if (cmd.vertices.length >= 4){
-      for (let i = 0; i < cmd.vertices.length-2; i+=2) {
-        const v1 = cmd.vertices[i  ];
-        const v2 = cmd.vertices[i+1];
-        const v3 = cmd.vertices[i+2];
-        const v4 = cmd.vertices[i+3];
+      for (let i = 0; i < cmd.vertices.length - 3; i += 2) {
+        const v1 = cmd.vertices[i];
+        const v2 = cmd.vertices[i + 1];
+        const v3 = cmd.vertices[i + 2];
+        const v4 = cmd.vertices[i + 3];
         const qStr = `${formatNumber(v1.x)},${formatNumber(v1.y)} ` +
                     `${formatNumber(v2.x)},${formatNumber(v2.y)} ` +
                     `${formatNumber(v4.x)},${formatNumber(v4.y)} ` +
                     `${formatNumber(v3.x)},${formatNumber(v3.y)}`;
-        quadStripStr += getIndentStr();
+        quadStripStr += getIndentStr(renderContext);
         quadStripStr += `<polygon points="${qStr}"/>\n`;
       }
     }
-    
-    _svgGroupLevel--; 
-    quadStripStr += getIndentStr();
+
+    renderContext.groupLevel--;
+    quadStripStr += getIndentStr(renderContext);
     quadStripStr += `</g>\n`;
     return quadStripStr;
   }
@@ -2318,7 +4172,7 @@
    *   @param {string} cmd.content - The text content to display.
    * @returns {string} The formatted SVG <text> element string.
    */
-  function getSvgStrText(cmd) {
+  function getSvgStrText(cmd, renderContext) {
     let xStr = formatNumber(cmd.x);
     let yStr = formatNumber(cmd.y);
     let fontSizeStr = formatNumber(cmd.fontSize);
@@ -2344,10 +4198,10 @@
 
     // Generate transformation string, if applicable
     let transformStr = generateTransformString(cmd);
-    let styleStr = getSvgStrStroke();
+    let styleStr = getSvgStrStroke(renderContext);
 
     // Construct SVG <text> element
-    let str = `<text x="${xStr}" y="${adjustedYStr}" font-family="${cmd.font}" font-size="${fontSizeStr}"${styleStr}${transformStr}`;
+    let str = `<text x="${xStr}" y="${adjustedYStr}" font-family="${escapeXmlAttribute(cmd.font)}" font-size="${fontSizeStr}"${styleStr}${transformStr}`;
 
     // Handle horizontal alignment
     if (cmd.alignX === 'center') {
@@ -2364,8 +4218,8 @@
     } else if (cmd.style === 'bolditalic') {
       str += ` font-weight="bold" font-style="italic"`;
     } // Normal is default and doesn’t need additional attributes
-    
-    str += `>${cmd.content}</text>\n`;
+
+    str += `>${escapeXmlText(cmd.content)}</text>\n`;
     return str;
   }
 
@@ -2374,12 +4228,12 @@
    * @private
    * Captures the current transformation matrix from the drawing context
    * if transforms exist and we're not using a transform stack.
-   * @returns {Object|null} An object containing the transformation 
+   * @returns {Object|null} An object containing the transformation
    * matrix values or null if no transforms exist.
    */
   function captureCurrentTransformMatrix() {
-    if (_bTransformsExist && _bFlattenTransforms) {
-      const ctxTransform = _p5Instance.drawingContext.getTransform();
+    if (session.transformsExist && config.flattenTransforms) {
+      const ctxTransform = session.p5Instance.drawingContext.getTransform();
       return {
         a: ctxTransform.a,
         b: ctxTransform.b,
@@ -2404,14 +4258,14 @@
     if (cmd.transformMatrix) {
       // Calculate the scaling factor from pixelDensity()
       // and adjust the matrix values by the pixelScale
-      const pixelScale = 1.0 / _p5PixelDensity; 
+      const pixelScale = 1.0 / session.p5PixelDensity;
       const { a, b, c, d, e, f } = cmd.transformMatrix;
-      const sA = formatNumber(a * pixelScale, _svgTransformPrecision);
-      const sB = formatNumber(b * pixelScale, _svgTransformPrecision);
-      const sC = formatNumber(c * pixelScale, _svgTransformPrecision);
-      const sD = formatNumber(d * pixelScale, _svgTransformPrecision);
-      const sE = formatNumber(e * pixelScale, _svgTransformPrecision);
-      const sF = formatNumber(f * pixelScale, _svgTransformPrecision);
+      const sA = formatNumber(a * pixelScale, config.transformPrecision);
+      const sB = formatNumber(b * pixelScale, config.transformPrecision);
+      const sC = formatNumber(c * pixelScale, config.transformPrecision);
+      const sD = formatNumber(d * pixelScale, config.transformPrecision);
+      const sE = formatNumber(e * pixelScale, config.transformPrecision);
+      const sF = formatNumber(f * pixelScale, config.transformPrecision);
       return ` transform="matrix(${sA} ${sB} ${sC} ${sD} ${sE} ${sF})"`;
     }
     return '';
@@ -2422,20 +4276,49 @@
    * @private
    * Formats a number to a specified decimal precision, converting it to a string.
    * If the number is an integer, it is returned as a string without formatting.
-   * If no precision is provided, the function defaults to using `_svgCoordPrecision`.
+   * If no precision is provided, the function defaults to using `config.coordPrecision`.
    *
    * @param {number} val - The value to be formatted.
-   * @param {number} [precision] - Optional precision specifying the number of decimal places. 
-   * If omitted, the global `_svgCoordPrecision` is used.
+   * @param {number} [precision] - Optional precision specifying the number of decimal places.
+   * If omitted, the configured coordinate precision is used.
    * @returns {string} The formatted number as a string.
    */
   function formatNumber(val, precision) {
-    const precisionToUse = (typeof precision === 'number') ? precision : _svgCoordPrecision;
+    const precisionToUse = (typeof precision === 'number') ? precision : config.coordPrecision;
+    if (!Number.isFinite(val)) {
+      if (!warnings.nonFiniteNumberShown) {
+        console.warn("p5.plotSvg: Non-finite numeric value encountered during SVG export; writing 0 instead.");
+        warnings.nonFiniteNumberShown = true;
+      }
+      return '0';
+    }
+    val = clampLargeCoordinate(val);
     if (Number.isInteger(val)) {
       return val.toString();
     } else {
       return val.toFixed(precisionToUse);
     }
+  }
+
+
+  /**
+   * @private
+   * Clamps very large finite SVG numeric values to the configured magnitude.
+   * This is a broad export safety rail; it applies to serialized coordinates
+   * and other SVG numeric geometry values that pass through formatNumber().
+   * @param {number} val - Finite numeric value to clamp.
+   * @returns {number} The original or clamped value.
+   */
+  function clampLargeCoordinate(val) {
+    if (!config.clampLargeCoordinates) return val;
+    const magnitude = config.coordinateClampMagnitude;
+    if (Math.abs(val) <= magnitude) return val;
+
+    if (!warnings.largeCoordinateClampedShown) {
+      console.warn(`p5.plotSvg: Large numeric SVG value clamped to +/-${magnitude}.`);
+      warnings.largeCoordinateClampedShown = true;
+    }
+    return val < 0 ? -magnitude : magnitude;
   }
 
 
@@ -2452,6 +4335,140 @@
 
   /**
    * @private
+   * Returns a p5 constant from the active instance or global target.
+   */
+  function getP5Constant(name) {
+    if (session.p5Instance && typeof session.p5Instance[name] !== 'undefined') {
+      return session.p5Instance[name];
+    }
+    const globalTarget = getGlobalTarget();
+    if (globalTarget && typeof globalTarget[name] !== 'undefined') {
+      return globalTarget[name];
+    }
+    return undefined;
+  }
+
+
+  /**
+   * @private
+   * Returns the current p5.js v2 Bezier order, defaulting to cubic curves.
+   */
+  function getCurrentBezierOrder() {
+    const order = session.p5Instance?._renderer?.states?.bezierOrder;
+    return (order === 2 || order === 3) ? order : session.bezierOrder;
+  }
+
+
+  /**
+   * @private
+   * Sets p5.js v2's native Bezier order while keeping p5.plotSvg state in sync.
+   */
+  function setOriginalBezierOrder(order) {
+    if (typeof order === 'undefined') return;
+    if (typeof session.overrides.originals.bezierOrder === 'function') {
+      callOriginalFunction(session.overrides.originals.bezierOrder, session.p5Instance, [order]);
+    } else if (session.p5Instance?._renderer?.states) {
+      session.p5Instance._renderer.states.bezierOrder = order;
+    }
+    if (order === 2 || order === 3) {
+      session.bezierOrder = order;
+    }
+  }
+
+
+  /**
+   * @private
+   * Returns the current p5.js curve/spline tightness.
+   */
+  function getCurrentSplineTightness() {
+    const tightness = session.p5Instance?._renderer?.states?.splineProperties?.tightness;
+    if (typeof tightness === 'number') return tightness;
+    return session.curveTightness;
+  }
+
+
+  /**
+   * @private
+   * Returns the current p5.js v2 spline end-mode.
+   */
+  function getCurrentSplineEndsMode() {
+    const endsMode = session.p5Instance?._renderer?.states?.splineProperties?.ends;
+    return (typeof endsMode !== 'undefined') ? endsMode : session.splineEndsMode;
+  }
+
+
+  /**
+   * @private
+   * Sets one p5.js v2 spline property while keeping p5.plotSvg state in sync.
+   */
+  function setOriginalSplineProperty(property, value) {
+    if (typeof value === 'undefined') return;
+    if (typeof session.overrides.originals.splineProperty === 'function') {
+      callOriginalFunction(session.overrides.originals.splineProperty, session.p5Instance, [property, value]);
+    } else if (session.p5Instance?._renderer?.states?.splineProperties) {
+      session.p5Instance._renderer.states.splineProperties[property] = value;
+    }
+    if (property === 'tightness') {
+      session.curveTightness = value;
+    } else if (property === 'ends') {
+      session.splineEndsMode = value;
+    }
+  }
+
+
+  /**
+   * @private
+   * Temporarily applies a p5.js v2 spline end-mode around a native draw call.
+   */
+  function withTemporarySplineEndsMode(endsMode, drawCallback) {
+    const previousEndsMode = getCurrentSplineEndsMode();
+    setOriginalSplineProperty('ends', endsMode);
+    try {
+      return drawCallback();
+    } finally {
+      setOriginalSplineProperty('ends', previousEndsMode);
+    }
+  }
+
+
+  /**
+   * @private
+   * Starts a v1 curveVertex() compatibility span in p5.js v2.
+   */
+  function beginCurveVertexCompatIfNeeded() {
+    if (session.curveVertexCompatActive) return;
+    session.curveVertexCompatPreviousEndsMode = getCurrentSplineEndsMode();
+    setOriginalSplineProperty('ends', getP5Constant('EXCLUDE'));
+    session.curveVertexCompatActive = true;
+  }
+
+
+  /**
+   * @private
+   * Restores p5.js v2 spline settings after a v1 curveVertex() compatibility span.
+   */
+  function endCurveVertexCompatIfNeeded() {
+    if (!session.curveVertexCompatActive) return;
+    setOriginalSplineProperty('ends', session.curveVertexCompatPreviousEndsMode);
+    session.curveVertexCompatPreviousEndsMode = undefined;
+    session.curveVertexCompatActive = false;
+  }
+
+
+  /**
+   * @private
+   * Whether p5.js v2 splines should include endpoint spans in SVG output.
+   */
+  function shouldIncludeSplineEnds(endsMode) {
+    if (session.p5Instance && typeof session.p5Instance.EXCLUDE !== 'undefined' && endsMode === session.p5Instance.EXCLUDE) {
+      return false;
+    }
+    return true;
+  }
+
+
+  /**
+   * @private
    * Compares two colors and determines if they are equal.
    * Handles CSS color names, hex strings, and RGB values.
    * Ignores alpha channel and whitespace differences.
@@ -2461,54 +4478,22 @@
    * @returns {boolean} - True if the colors are equal, otherwise false.
    */
   function areColorsEqual(color1, color2) {
-    // Helper function to ensure input is a string
-    function toColorString(color) {
-      if (Array.isArray(color)) {
-        // Convert array [r, g, b] to 'rgb(r, g, b)'
-        return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-      } else if (typeof color === 'number') {
-        // Handle single number input by converting to RGB triplet (e.g., grayscale)
-        return `rgb(${color}, ${color}, ${color})`;
-      }
-      return color.toString().trim(); // Convert to string if not already
+    // Guard: if p5 instance is not available, cannot compare
+    if (!session.p5Instance) {
+      return false;
     }
 
-    // Convert colors to strings if necessary
-    color1 = toColorString(color1);
-    color2 = toColorString(color2);
-
-    // Create a temporary element to use for color parsing
-    const tempElem = document.createElement('div');
-
-    // Function to parse color and get RGB representation
-    function parseColor(color) {
-      // Set the color to the temporary element to get computed style
-      tempElem.style.color = color;
-      document.body.appendChild(tempElem);
-
-      // Get computed color value
-      const computedColor = window.getComputedStyle(tempElem).color;
-      document.body.removeChild(tempElem);
-
-      // Extract RGB values from computed color string
-      const rgbMatch = computedColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-      if (rgbMatch) {
-        return [parseInt(rgbMatch[1], 10), parseInt(rgbMatch[2], 10), parseInt(rgbMatch[3], 10)];
-      }
-      return null; // Invalid color
+    // Use p5's built-in color parsing to normalize and compare colors
+    try {
+      const c1 = session.p5Instance.color(color1);
+      const c2 = session.p5Instance.color(color2);
+      return session.p5Instance.red(c1) === session.p5Instance.red(c2) &&
+             session.p5Instance.green(c1) === session.p5Instance.green(c2) &&
+             session.p5Instance.blue(c1) === session.p5Instance.blue(c2);
+    } catch (e) {
+      // If color parsing fails, colors are not equal
+      return false;
     }
-
-    // Parse both colors
-    const rgb1 = parseColor(color1);
-    const rgb2 = parseColor(color2);
-
-    // Check if both colors are valid and compare RGB values
-    if (rgb1 && rgb2) {
-      return rgb1[0] === rgb2[0] && rgb1[1] === rgb2[1] && rgb1[2] === rgb2[2];
-    }
-
-    // Return false if either color is invalid
-    return false;
   }
 
 
@@ -2519,11 +4504,34 @@
    * whose values are in the range of 0-255 are supported.
    */
   function overrideColorModeFunction() {
-    _originalColorModeFunc = window.colorMode;
-    window.colorMode = function() {
+    session.overrides.originals.colorMode = getOriginalFunction('colorMode');
+    const newColorModeFunc = function() {
       console.warn("p5.plotSvg: Only CSS named colors, hex colors, and RGB/gray colors whose values are in the range of 0-255 are supported for SVG output.");
-      _originalColorModeFunc.apply(this, arguments);
+      callOriginalFunction(session.overrides.originals.colorMode, session.p5Instance, arguments);
     };
+    overrideFunction(session.p5Instance, 'colorMode', newColorModeFunc);
+    overrideFunction(getGlobalTarget(), 'colorMode', newColorModeFunc);
+  }
+
+
+  /**
+   * @private
+   * Overrides the p5.js clip function to provide a warning that clipping is not supported
+   * for SVG export in p5.plotSvg.
+   * @see {@link https://p5js.org/reference/p5/clip/}
+   */
+  function overrideClipFunction() {
+    session.overrides.originals.clip = getOriginalFunction('clip');
+    if (typeof session.overrides.originals.clip !== 'function') return;
+    const newClipFunc = function() {
+      if (session.recording && !warnings.clipShown) {
+        console.warn("p5.plotSvg: p5's clip() function is not currently supported for SVG export.");
+        warnings.clipShown = true;
+      }
+      callOriginalFunction(session.overrides.originals.clip, session.p5Instance, arguments);
+    };
+    overrideFunction(session.p5Instance, 'clip', newClipFunc);
+    overrideFunction(getGlobalTarget(), 'clip', newClipFunc);
   }
 
 
@@ -2536,9 +4544,9 @@
    * hex colors, or RGB/gray values.
    */
   function overrideStrokeFunction() {
-    _originalStrokeFunc = window.stroke;
-    window.stroke = function(...args) {
-      if (_bRecordingSvg) {
+    session.overrides.originals.stroke = getOriginalFunction('stroke');
+    const newStrokeFunc = function(...args) {
+      if (session.recording) {
         let scol;
 
         // If the first argument is a string and a valid CSS color, use it directly
@@ -2546,15 +4554,17 @@
           scol = args[0].trim();
         } else {
           // Otherwise, convert the arguments using p5.js color functionality
-          scol = _p5Instance.color(...args).toString();
+          scol = session.p5Instance.color(...args).toString();
         }
 
         // Add a command to the stack to update the stroke color
-        _commands.push({ type: 'stroke', color: scol });
+        session.commands.push({ type: SVG_COMMAND.STROKE, color: scol });
       }
       // Call the original p5.js `stroke` function with all arguments
-      _originalStrokeFunc.apply(this, args);
+      callOriginalFunction(session.overrides.originals.stroke, session.p5Instance, args);
     };
+    overrideFunction(session.p5Instance, 'stroke', newStrokeFunc);
+    overrideFunction(getGlobalTarget(), 'stroke', newStrokeFunc);
   }
 
   /**
@@ -2564,11 +4574,25 @@
    * @returns {boolean} - True if the string is a valid CSS color, false otherwise.
    */
   function isValidCssColor(color) {
-    // Create a temporary element to test the color
-    const tempElem = document.createElement('div');
-    tempElem.style.color = color;
-    const isValid = tempElem.style.color !== '';
-    tempElem.remove();
+    if (typeof color !== 'string') return false;
+
+    const trimmedColor = color.trim();
+    if (trimmedColor === '') return false;
+    if (cssColorValidationCache.has(trimmedColor)) {
+      return cssColorValidationCache.get(trimmedColor);
+    }
+
+    let isValid = false;
+    if (typeof CSS !== 'undefined' && typeof CSS.supports === 'function') {
+      isValid = CSS.supports('color', trimmedColor);
+    } else if (typeof document !== 'undefined' && document.createElement) {
+      const tempElem = document.createElement('div');
+      tempElem.style.color = trimmedColor;
+      isValid = tempElem.style.color !== '';
+      tempElem.remove();
+    }
+
+    cssColorValidationCache.set(trimmedColor, isValid);
     return isValid;
   }
 
@@ -2580,10 +4604,13 @@
    * Assumes that non-rgba and non-rgb colors are already in a valid format (hex or CSS named colors).
    * @returns {string} - The SVG stroke style string or an empty string if the stroke matches the default.
    */
-  function getSvgStrStroke() {
-    // Add stroke style only if it differs from the default
-    if (!areColorsEqual(_svgCurrentStrokeColor, _svgDefaultStrokeColor)) {
-      let colorStr = _svgCurrentStrokeColor;
+  function getSvgStrStroke(renderContext) {
+    // Add stroke style if:
+    // - grouping by stroke color is enabled, OR
+    // - any non-default color has been used (so all colors are explicit), OR
+    // - current color differs from the default
+    if (config.groupByStrokeColor || renderContext.hasNonDefaultStrokeColor || !areColorsEqual(renderContext.currentStrokeColor, config.defaultStrokeColor)) {
+      let colorStr = renderContext.currentStrokeColor;
 
       // If the color is in rgba format, strip out the alpha channel and convert to hex
       if (colorStr.startsWith('rgba')) {
@@ -2595,7 +4622,7 @@
           const b = parseInt(match[3], 10);
           colorStr = rgbToHex(r, g, b);
         }
-      } 
+      }
       // If the color is in rgb format, convert to hex
       else if (colorStr.startsWith('rgb')) {
         // Extract the RGB values
@@ -2608,7 +4635,7 @@
         }
       }
 
-      // Assume the color is already in hex format or a 
+      // Assume the color is already in hex format or a
       // named CSS color if it doesn't match previous conditions
       return ` style="stroke:${colorStr};"`;
     }
@@ -2638,9 +4665,13 @@
    * @param {Object} cmd - The command object containing stroke properties.
    * @param {string} cmd.color - The new stroke color to set (in hex, RGB, or named CSS color format).
    */
-  function handleSvgStrokeCommand(cmd) {
+  function handleSvgStrokeCommand(cmd, renderContext) {
     // Update the current stroke color
-    _svgCurrentStrokeColor = cmd.color;
+    renderContext.currentStrokeColor = cmd.color;
+    // Track if any non-default color has been used
+    if (!areColorsEqual(cmd.color, config.defaultStrokeColor)) {
+      renderContext.hasNonDefaultStrokeColor = true;
+    }
   }
 
 
@@ -2649,22 +4680,222 @@
    * @returns {string} - The default stroke color (in hex, RGB, or named CSS color format).
    */
   p5plotSvg.getDefaultStrokeColor = function() {
-    return _svgDefaultStrokeColor;
+    return config.defaultStrokeColor;
+  }
+
+  /**
+   * Retrieves whether or not SVG recording is active.
+   * @returns {boolean} - True if SVG recording is active, false otherwise.
+   */
+  p5plotSvg.isRecordingSVG = function() {
+    return session.recording === true;
+  };
+
+
+  /**
+   * Injects an attribute into the SVG header section.
+   */
+  p5plotSvg.injectSvgHeaderAttribute = function(attrName, attrValue) {
+    if (typeof attrName !== 'string' || typeof attrValue === 'undefined') return;
+    // Check for existing attribute by name; do not add duplicates
+    attrName = normalizeXmlName(attrName, 'SVG header attribute name');
+    if (!attrName) return;
+    attrValue = String(attrValue);
+    let existing = session.injectedHeaderAttributes.find(attr => attr.name === attrName);
+    if (existing) {
+      existing.value = attrValue;
+    } else {
+      session.injectedHeaderAttributes.push({ name: attrName, value: attrValue });
+    }
+  }
+
+  /**
+   * Injects a <defs> element into the SVG output.
+   * `type` is the tag name (e.g. "marker")
+   * `attributes` is an object of key-value pairs (e.g. {id: "marker-1", orient: "auto"})
+   */
+  p5plotSvg.injectSvgDef = function(type, attributesObj) {
+    if (typeof type !== 'string' || typeof attributesObj !== 'object' || !attributesObj) return;
+    type = normalizeXmlName(type, 'SVG defs element name');
+    if (!type) return;
+    const attrArray = [];
+    for (let key in attributesObj) {
+      if (Object.prototype.hasOwnProperty.call(attributesObj, key)) {
+        const attrName = normalizeXmlName(key, 'SVG defs attribute name');
+        if (attrName) {
+          attrArray.push({ name: attrName, value: String(attributesObj[key]) });
+        }
+      }
+    }
+    // Prevent duplicates by checking if a def with the same type and id exists
+    const idValue = (typeof attributesObj.id !== 'undefined') ? String(attributesObj.id) : undefined;
+    let existing = session.injectedDefs.find(def =>
+      def.type === type &&
+      def.attributes.some(attr => attr.name === 'id' && attr.value === idValue)
+    );
+    if (existing) {
+      existing.attributes = attrArray; // Overwrite attributes if duplicate id/type found
+    } else {
+      session.injectedDefs.push({ type: type, attributes: attrArray });
+    }
+  }
+
+  /**
+   * @private
+   * Adds p5.plotSvg methods to p5 instances without removing the existing
+   * namespace or global aliases. These wrappers are permanent addon API methods;
+   * they are separate from the temporary drawing-function overrides used while
+   * recording SVG.
+   */
+  function installPrototypeMethods(p5Ctor, fnArg) {
+    if (!p5Ctor) return;
+    const fn = fnArg || p5Ctor.prototype;
+    if (!fn) return;
+
+    const addMethod = function(name, method) {
+      if (typeof fn[name] !== 'undefined') return;
+      Object.defineProperty(fn, name, {
+        value: method,
+        writable: true,
+        configurable: true
+      });
+    };
+
+    addMethod('beginRecordSvg', function(p5InstanceOrFilename, maybeFilename) {
+      if (isP5InstanceLike(p5InstanceOrFilename) || p5InstanceOrFilename === getGlobalTarget()) {
+        return p5plotSvg.beginRecordSvg(p5InstanceOrFilename, maybeFilename);
+      }
+      if (isGlobalP5Instance(this)) {
+        return p5plotSvg.beginRecordSvg(getGlobalTarget(), p5InstanceOrFilename);
+      }
+      return p5plotSvg.beginRecordSvg(this, p5InstanceOrFilename);
+    });
+    addMethod('pauseRecordSvg', function(bPause) {
+      return p5plotSvg.pauseRecordSvg(bPause);
+    });
+    addMethod('endRecordSvg', function() {
+      return p5plotSvg.endRecordSvg();
+    });
+    addMethod('setSvgDocumentSize', function(w, h) {
+      return p5plotSvg.setSvgDocumentSize(w, h);
+    });
+    addMethod('setSvgResolutionDPI', function(dpi) {
+      return p5plotSvg.setSvgResolutionDPI(dpi);
+    });
+    addMethod('setSvgResolutionDPCM', function(dpcm) {
+      return p5plotSvg.setSvgResolutionDPCM(dpcm);
+    });
+    addMethod('setSvgDefaultStrokeWeight', function(weight) {
+      return p5plotSvg.setSvgDefaultStrokeWeight(weight);
+    });
+    addMethod('setSvgMergeNamedGroups', function(bEnabled) {
+      return p5plotSvg.setSvgMergeNamedGroups(bEnabled);
+    });
+    addMethod('setSvgInkscapeCompatibility', function(bEnabled) {
+      return p5plotSvg.setSvgInkscapeCompatibility(bEnabled);
+    });
+    addMethod('setSvgGroupByStrokeColor', function(bEnabled) {
+      return p5plotSvg.setSvgGroupByStrokeColor(bEnabled);
+    });
+    addMethod('setSvgExportMalformedNumbersWithSanitizations', function(bEnabled) {
+      return p5plotSvg.setSvgExportMalformedNumbersWithSanitizations(bEnabled);
+    });
+    addMethod('setSvgClampLargeCoordinates', function(bEnabled) {
+      return p5plotSvg.setSvgClampLargeCoordinates(bEnabled);
+    });
+    addMethod('setSvgCoordinateClampMagnitude', function(magnitude) {
+      return p5plotSvg.setSvgCoordinateClampMagnitude(magnitude);
+    });
+    addMethod('setSvgDefaultStrokeColor', function(color) {
+      return p5plotSvg.setSvgDefaultStrokeColor(color);
+    });
+    addMethod('setSvgBackgroundColor', function(color) {
+      return p5plotSvg.setSvgBackgroundColor(color);
+    });
+    addMethod('setSvgIndent', function(indentType, indentAmount) {
+      return p5plotSvg.setSvgIndent(indentType, indentAmount);
+    });
+    addMethod('setSvgFlattenTransforms', function(bFlatten) {
+      return p5plotSvg.setSvgFlattenTransforms(bFlatten);
+    });
+    addMethod('setSvgCoordinatePrecision', function(precision) {
+      return p5plotSvg.setSvgCoordinatePrecision(precision);
+    });
+    addMethod('setSvgTransformPrecision', function(precision) {
+      return p5plotSvg.setSvgTransformPrecision(precision);
+    });
+    addMethod('setSvgPointRadius', function(radius) {
+      return p5plotSvg.setSvgPointRadius(radius);
+    });
+    addMethod('setSvgExportPolylinesAsPaths', function(bEnabled) {
+      return p5plotSvg.setSvgExportPolylinesAsPaths(bEnabled);
+    });
+    addMethod('beginSvgGroup', function(gnameOrAttrs, attrs) {
+      return p5plotSvg.beginSvgGroup(gnameOrAttrs, attrs);
+    });
+    addMethod('endSvgGroup', function() {
+      return p5plotSvg.endSvgGroup();
+    });
+    addMethod('getDefaultStrokeColor', function() {
+      return p5plotSvg.getDefaultStrokeColor();
+    });
+    addMethod('isRecordingSVG', function() {
+      return p5plotSvg.isRecordingSVG();
+    });
+    addMethod('injectSvgHeaderAttribute', function(attrName, attrValue) {
+      return p5plotSvg.injectSvgHeaderAttribute(attrName, attrValue);
+    });
+    addMethod('injectSvgDef', function(type, attributesObj) {
+      return p5plotSvg.injectSvgDef(type, attributesObj);
+    });
+  }
+
+  /**
+   * Official p5.js add-on installer.
+   * p5.js v2 invokes this through p5.registerAddon(); p5.js v1 uses the same
+   * function as a direct fallback because registerAddon() does not exist there.
+   * The installer attaches p5.plotSvg's public API to p5 instances without
+   * removing the existing global and p5plotSvg namespace APIs.
+   * @param {Function} p5Ctor - The p5 constructor supplied by p5.js.
+   * @param {Object} fn - Prototype/method target supplied by p5.js v2, or p5.prototype in v1.
+   * @param {Object} lifecycles - p5.js lifecycle registry; currently unused.
+   */
+  function plotSvgAddon(p5Ctor, fn, lifecycles) {
+    installPrototypeMethods(p5Ctor, fn);
+  }
+
+  p5plotSvg.plotSvgAddon = plotSvgAddon;
+
+  if (typeof p5 !== 'undefined') {
+    if (typeof p5.registerAddon === 'function') {
+      p5.registerAddon(plotSvgAddon);
+    } else {
+      plotSvgAddon(p5, p5.prototype, {});
+    }
   }
 
 
   // Expose public functions to the namespace
   global.p5plotSvg = p5plotSvg;
 
-  // Attach functions to the global scope for easier access
-  global.beginRecordSVG = p5plotSvg.beginRecordSVG;
-  global.pauseRecordSVG = p5plotSvg.pauseRecordSVG;
-  global.endRecordSVG = p5plotSvg.endRecordSVG;
-  global.setSvgDefaultStrokeWeight = p5plotSvg.setSvgDefaultStrokeWeight;
-  global.setSvgDefaultStrokeColor = p5plotSvg.setSvgDefaultStrokeColor;
-  global.setSVGDocumentSize = p5plotSvg.setSVGDocumentSize;
+  // Attach functions to the global scope for easier access.
+  // Repeat this pattern for any other functions you wish to expose globally
+  global.beginRecordSvg      = p5plotSvg.beginRecordSvg;
+  global.pauseRecordSvg      = p5plotSvg.pauseRecordSvg;
+  global.endRecordSvg        = p5plotSvg.endRecordSvg;
+  global.setSvgDocumentSize  = p5plotSvg.setSvgDocumentSize;
+
   global.setSvgResolutionDPI = p5plotSvg.setSvgResolutionDPI;
   global.setSvgResolutionDPCM = p5plotSvg.setSvgResolutionDPCM;
+  global.setSvgDefaultStrokeWeight = p5plotSvg.setSvgDefaultStrokeWeight;
+  global.setSvgMergeNamedGroups = p5plotSvg.setSvgMergeNamedGroups;
+  global.setSvgInkscapeCompatibility = p5plotSvg.setSvgInkscapeCompatibility;
+  global.setSvgGroupByStrokeColor = p5plotSvg.setSvgGroupByStrokeColor;
+  global.setSvgExportMalformedNumbersWithSanitizations = p5plotSvg.setSvgExportMalformedNumbersWithSanitizations;
+  global.setSvgClampLargeCoordinates = p5plotSvg.setSvgClampLargeCoordinates;
+  global.setSvgCoordinateClampMagnitude = p5plotSvg.setSvgCoordinateClampMagnitude;
+  global.setSvgDefaultStrokeColor = p5plotSvg.setSvgDefaultStrokeColor;
+  global.setSvgBackgroundColor = p5plotSvg.setSvgBackgroundColor;
   global.setSvgIndent = p5plotSvg.setSvgIndent;
   global.setSvgFlattenTransforms = p5plotSvg.setSvgFlattenTransforms;
   global.setSvgCoordinatePrecision = p5plotSvg.setSvgCoordinatePrecision;
@@ -2673,14 +4904,39 @@
   global.beginSvgGroup = p5plotSvg.beginSvgGroup;
   global.endSvgGroup = p5plotSvg.endSvgGroup;
   global.getDefaultStrokeColor = p5plotSvg.getDefaultStrokeColor;
+  global.isRecordingSVG = p5plotSvg.isRecordingSVG;
+
+  // New injection utilities (v.0.1.6+)
+  global.injectSvgHeaderAttribute = p5plotSvg.injectSvgHeaderAttribute;
+  global.injectSvgDef = p5plotSvg.injectSvgDef;
+  global.setSvgExportPolylinesAsPaths = p5plotSvg.setSvgExportPolylinesAsPaths;
 
   global.SVG_INDENT_SPACES = p5plotSvg.SVG_INDENT_SPACES;
   global.SVG_INDENT_NONE = p5plotSvg.SVG_INDENT_NONE;
   global.SVG_INDENT_TABS = p5plotSvg.SVG_INDENT_TABS;
+  global.SVG_UNITS_IN = p5plotSvg.SVG_UNITS_IN;
+  global.SVG_UNITS_CM = p5plotSvg.SVG_UNITS_CM;
 
 
-  // Repeat this pattern for any other functions you wish to expose globally
+  // Global-level LEGACY aliases (deprecated):
+  global.beginRecordSVG = function() {
+    console.warn("beginRecordSVG() is deprecated. The new name is beginRecordSvg().");
+    return p5plotSvg.beginRecordSvg.apply(p5plotSvg, arguments);
+  };
+  global.pauseRecordSVG = function() {
+    console.warn("pauseRecordSVG() is deprecated. The new name is pauseRecordSvg().");
+    return p5plotSvg.pauseRecordSvg.apply(p5plotSvg, arguments);
+  };
+  global.endRecordSVG = function() {
+    console.warn("endRecordSVG() is deprecated. The new name is endRecordSvg().");
+    return p5plotSvg.endRecordSvg.apply(p5plotSvg, arguments);
+  };
+  global.setSVGDocumentSize = function() {
+    console.warn("setSVGDocumentSize() is deprecated. The new name is setSvgDocumentSize().");
+    return p5plotSvg.setSvgDocumentSize.apply(p5plotSvg, arguments);
+  };
 
+  //--------------
   // Support CommonJS and ES6 modules
   if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = p5plotSvg;
@@ -2689,7 +4945,4 @@
   }
 
 
-})(this);
-
-// Generate documentation with: 
-// npx documentation build p5.plotSvg.js -f md -o docs --shallow
+})(typeof globalThis !== 'undefined' ? globalThis : undefined);
