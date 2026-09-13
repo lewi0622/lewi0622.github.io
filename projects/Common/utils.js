@@ -6,6 +6,8 @@ const parameter_storage_name = project_name + "_gui_params";
 let canvas_x, canvas_y, cnv;
 let base_x, base_y, larger_base, smaller_base;
 let file_saved = false;
+let filename = "";
+let save_svg = false;
 
 let capture_delay_frames = 0;
 if(typeof capture_delay_seconds !== 'undefined') capture_delay_frames = capture_delay_seconds * fr;
@@ -154,6 +156,9 @@ function first_time_setup(){
   if(getParamValue("pixel_density") == undefined) pixel_density_param = build_pixel_density();
   else pixel_density_param = verify_pixel_density(getParamValue("pixel_density"));
 
+  if(getParamValue("type") == undefined) type = "png";
+  else type = verify_type(getParamValue("type"));
+
   if(controls_param != "full"){
     // disable right clicks 
     document.oncontextmenu = function() { 
@@ -233,6 +238,11 @@ function verify_pixel_density(val){
   else return build_pixel_density();
 }
 
+function verify_type(val){
+  if(val == "svg" || val == "png") return val;
+  else return "png";
+}
+
 
 function build_url(){
   const url_params = new URLSearchParams(window.location.search);
@@ -244,6 +254,7 @@ function build_url(){
   url_params.set("scale", scale_param);
   url_params.set("x_size_px", x_size_px_param);
   url_params.set("y_size_px", y_size_px_param);
+  url_params.set("type", type);
 
   //optional
   if(randomize_time_param > 0) url_params.set("randomize_time", randomize_time_param);
@@ -291,12 +302,10 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   if(!capture) frameRate(fr);
 
   //init globals
-  const stored_file_type = protected_storage_get("fileType", "session");
-  if(renderer == SVG || stored_file_type == "svg"){//override stored values by setting renderer
+  if(renderer == SVG){
     type = "svg";
-    renderer = SVG;
-    protected_storage_set("fileType", type, "session");
-  }
+    renderer = P2D; //in changing from p5.svg to p5.plotSvg, no longer reload page with different renderer
+  } else type = verify_type(getParamValue("type"));
 
   setParams();
   global_scale = find_cnv_mult(size_x, size_y);
@@ -370,6 +379,8 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   //else necessary when redrawing timed pieces
   else noLoop();
   setTimeout(exportVideo,0);
+
+  if(save_svg) beginRecordSvg(filename);
 }
 
 function setParams(){
@@ -466,7 +477,6 @@ function seed_scale_button(control_height, control_spacing){
     filetype_radio = createRadio();
     filetype_radio.option("png");
     filetype_radio.option("svg");
-    filetype_radio.selected(type);
     filetype_radio.changed(set_file_type);
     filetype_radio.id("File Type");
     if(hide) filetype_radio.style("visibility", "hidden");
@@ -595,6 +605,8 @@ function seed_scale_button(control_height, control_spacing){
     save_button.position(400*global_scale-50*global_scale, canvas_y+control_height*2);
     style_control(save_button);
   }
+
+  filetype_radio.selected(type);
   seed_input.value(seed_param); //needs to be set every time
 }
 
@@ -686,9 +698,9 @@ function set_seed(e){
 function set_file_type(){
   //radio button changed
   const val = filetype_radio.value();
-  protected_storage_set("fileType", val, "session");
-  //hard refresh of window with current url values
-  window.location.href = window.location.href;
+  type = val;
+  redraw_reason = "changed type";
+  set_seed();
 }
 
 function reduce_array(arr, remove){
@@ -731,8 +743,12 @@ function save_drawing(){
   //get project name
   let scale_text = round(global_scale*1000)/1000; //round to nearest 1000th place
   scale_text = str(scale_text).replace(".", "_");
-  const filename = str(project_name).replace("%","_") + '_seed_' + str(seed_input.value()) + '_colors_' + str(current_palette_index()) + '_scale_' + scale_text;
-  if(type == 'svg')save(filename);
+  filename = str(project_name).replace("%","_") + '_seed_' + str(seed_input.value()) + '_colors_' + str(current_palette_index()) + '_scale_' + scale_text;
+  if(type == 'svg'){
+    save_svg = true;
+    redraw_reason = "saving_svg";
+    redraw_sketch();
+  }
   else saveCanvas(filename, type);
   file_saved = true;
 }
@@ -780,6 +796,10 @@ function global_draw_start(clear_cnv=true){
 
 function global_draw_end(){
   my_frameCount += 1;
+  if(save_svg){
+    save_svg = false;
+    endRecordSvg();
+  }
 }
 
 async function exportVideo() {
@@ -980,8 +1000,6 @@ function refresh_working_palette(){
 }
 
 function find_cnv_mult(size_x, size_y){
-  //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
-  if(type == "svg") return 1;
   let smaller_multiplier;
   if(scale_param === "auto"){
     size_x = max(400, size_x); //because we center within a 400x400 canvas for things smaller than 400
@@ -1006,6 +1024,8 @@ function find_cnv_mult(size_x, size_y){
   }
   else smaller_multiplier = parseFloat(scale_param);
 
+  //for SVG work, set scale to 1 to maintain css units of 1px = 1/96inch
+  if(type == "svg") smaller_multiplier = 1;
   //check for change in multiplier due to gui param changes
   multiplier_changed = smaller_multiplier != global_scale;
   if(multiplier_changed) previous_scale = global_scale;
