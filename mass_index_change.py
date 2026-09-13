@@ -60,6 +60,9 @@ for f in to_replace:
     <script src="'''
         + os.path.join(rel_path.as_posix(), "p5.svg.js")
         + '''"></script>   
+    <script src="'''
+        + os.path.join(rel_path.as_posix(), "p5.plotSvg.js")
+        + '''"></script>   
     <!-- Pen Size Files for Plotting -->
     <script src="'''
         + os.path.join(rel_path.as_posix(), "pen_utils.js")
