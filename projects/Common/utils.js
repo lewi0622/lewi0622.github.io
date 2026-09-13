@@ -794,9 +794,10 @@ function global_draw_start(clear_cnv=true){
   }
 }
 
-function global_draw_end(){
+function global_draw_end(suppress_save = false){
+  //suppress save for multiframe files, see Ballpoint_Waves
   my_frameCount += 1;
-  if(save_svg){
+  if(save_svg && !suppress_save){
     save_svg = false;
     endRecordSvg();
   }

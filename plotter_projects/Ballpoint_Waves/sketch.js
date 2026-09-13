@@ -1,10 +1,12 @@
 'use strict';
 //setup variables
-const gif = true;
-const animation = true;
+const gif = false;
+const animation = false;
 const fr = 60;
 const capture = false;
 const capture_time = 50/fr;
+
+let no_save = true;
 
 const suggested_palettes = [];
 function gui_values(){
@@ -28,7 +30,11 @@ function setup() {
 }
 //***************************************************
 function draw() {
-  if(!isLooping()) return; //despite the noLoop command above, it still executes once
+  if(my_frameCount == 0) return; //despite the noLoop command above, it still executes once
+  if(save_svg && !no_save){
+    global_draw_end(no_save);
+    return;
+  }
   global_draw_start(false);
   push();
     const c = color("RED");
@@ -59,7 +65,7 @@ function draw() {
 
   pop();
 
-  global_draw_end();
+  global_draw_end(no_save);
 }
 //***************************************************
 //custom funcs
@@ -82,6 +88,7 @@ function lerp_coords(){
 }
 
 function mouseClicked(){
+  if(my_frameCount == 0) my_frameCount = 1;
   if(mouseX < 0 || mouseY < 0 || mouseX > canvas_x || mouseY > canvas_y) return;
   if(isLooping()) noLoop();
   else{
@@ -92,4 +99,5 @@ function mouseClicked(){
 
 function keyPressed(){
   if(keyCode == ESCAPE) clear();
+  if(keyCode == 81) no_save = false; //Q key
 }
