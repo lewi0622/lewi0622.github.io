@@ -97,6 +97,7 @@ function stalk(start_pct, end_pct, w, h, steps) {
   if(end_step - start_step < 2) end_step = start_step + 2;
 
   let start_pt, end_pt;
+  stroke("BLACK");
   beginShape();
   for (let i = start_step; i < end_step; i++) {
     const x = i * step_size;
