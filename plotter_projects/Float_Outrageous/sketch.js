@@ -14,7 +14,7 @@ function gui_values(){
   parameterize("x_margin", 0, -base_x/2, base_x/2, 1, true);
   parameterize("y_margin_top", base_y/4, -base_y/2, base_y/2, 1, true);
   parameterize("y_margin_bottom", -base_y/4, -base_y/2, base_y/2, 1, true);
-  parameterize("amplitude", base_y/2, 1, base_y, 1, false);
+  parameterize("amplitude", 200, 1, 400, 1, true);
   parameterize("close_shape", 1, 0, 1, 1, false);
 } 
 
@@ -26,7 +26,7 @@ function setup() {
 function draw() {
   global_draw_start();
   push();
-  background("WHITE")
+  strokeWeight(LEPEN * global_scale);
   const line_step = (canvas_y - (y_margin_top + y_margin_bottom))/num_lines;
   const pt_step = (canvas_x - x_margin)/num_pts;
   translate(x_margin/2, y_margin_top/2);
