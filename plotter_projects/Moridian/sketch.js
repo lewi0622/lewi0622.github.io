@@ -19,8 +19,6 @@ function gui_values(){
   parameterize("margin_y", base_y/16, -base_y/2, base_y/2, 1, true);
 }
 
-//add margin
-//add warp (a la eucalyptus and sagebrush)
 //add density per color option
 
 function setup() {
@@ -32,10 +30,10 @@ function setup() {
 function draw() {
   global_draw_start();
   push();
-  strokeWeight(POSCA * global_scale);
+  strokeWeight(BICCRISTAL * global_scale);
   for(let i=0; i<working_palette.length; i++){
     working_palette[i] = color(working_palette[i]);
-    working_palette[i].setAlpha(150);
+    working_palette[i].setAlpha(BICCRISTAL_ALPHA);
   }
   working_palette = controlled_shuffle(working_palette, true);
 
@@ -45,8 +43,8 @@ function draw() {
 
   const x_offset = random(360);
   const y_offset = random(360);
-  const num_x_warp = random(10);
-  const num_y_warp = random(10);
+  const num_x_warp = 6//random(10);
+  const num_y_warp = 10//random(10);
 
   translate(margin_x, margin_y);
 
@@ -58,7 +56,7 @@ function draw() {
       translate(x_warp, y_warp);
       translate(i*col_step_size, j*row_step_size);
       const n = noise(i/x_damp, j/y_damp);
-      line_meridian(n, col_step_size*2, row_step_size*2);
+      line_meridian(n, col_step_size*4, row_step_size*4);
       pop();
     }
   }
@@ -81,6 +79,9 @@ function line_meridian(n, w, h){
   }else{
     stroke(working_palette[4%working_palette.length])
   }
+  const c = color("BLUE");
+  c.setAlpha(BICCRISTAL_ALPHA);
+  stroke(c);
   rotate(map(n, 0,1, -max_angle, max_angle));
   line(0,0,w,h)
 }
