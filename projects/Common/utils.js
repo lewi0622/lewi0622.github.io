@@ -503,8 +503,6 @@ function seed_scale_button(control_height, control_spacing){
     unit_select = createSelect();
     unit_select.option("px");
     unit_select.option("in");
-    if(type == "png") unit_select.selected("px");
-    else unit_select.selected("in");
     unit_select.changed(populate_size_inputs);
     unit_select.id('Size Units');
     if(hide) unit_select.style("visibility", "hidden");
@@ -607,6 +605,8 @@ function seed_scale_button(control_height, control_spacing){
   }
 
   filetype_radio.selected(type);
+  if(type == "png") unit_select.selected("px");
+  else unit_select.selected("in");
   seed_input.value(seed_param); //needs to be set every time
 }
 
