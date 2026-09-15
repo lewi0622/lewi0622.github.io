@@ -8,6 +8,7 @@ const capture_time = 8;
 
 function gui_values(){
   parameterize("num_stacks", 50, 1, 200, 1, false);
+  parameterize("size", 10, 1, 100, 1, true);
 }
 
 function setup() {
@@ -20,14 +21,11 @@ function draw() {
   global_draw_start();
   //actual drawing stuff
   push();
-  stroke("BLUE")
-  rect(0,0,canvas_x, canvas_y);
-
   rectMode(CENTER);
-  const weight = LEPEN * global_scale;
+  const weight = BICCRISTAL * global_scale;
   strokeWeight(weight);
   const c = color("BLACK");
-  c.setAlpha(100);
+  c.setAlpha(BICCRISTAL_ALPHA);
   stroke(c);
   translate(canvas_x/2, canvas_y + 10 * global_scale);
 
@@ -51,7 +49,7 @@ function draw() {
 //***************************************************
 //custom funcs
 
-function isometric_tile(size=10*global_scale){
+function isometric_tile(){
   const w = size;
   const h = size/2;
   beginShape();
