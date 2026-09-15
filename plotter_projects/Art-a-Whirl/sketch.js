@@ -17,9 +17,7 @@ function gui_values(){
   parameterize("largest_rad", 200, 0, smaller_base, 1, true);
   parameterize("damp", 6, 1, 100, 1, false);
   parameterize("max_stroke_weight", 2.5, 1, 100, 0.1, false);
-  if(type == "svg"){
-    parameterize("svg_frame", 0, 0, 200, 0.05, false);
-  }
+  parameterize("svg_frame", 0, 0, 200, 0.05, false);
 } 
 
 function setup() {
@@ -31,6 +29,7 @@ function setup() {
   whirl_color = random(working_palette);
   if(type == "png"){
     strokeCap(SQUARE);
+    loop();
   }
   else{
     gif = false;
