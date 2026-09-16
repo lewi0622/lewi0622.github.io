@@ -13,13 +13,13 @@ let stalk_c, hair_array, hair_c, bg_c, wind_speed;
 function gui_values(){
   parameterize("max_width", base_x, 0, base_x*2, 1, true);
   parameterize("max_height", base_y, 0, base_y *2, 1, true);
-  parameterize("num_stalks", random(5,30), 1, 1000, 1, false);
-  parameterize("max_noise_angle", random(50), 0, 180, 1, false); //small sin on this looks like swaying in the wind
+  parameterize("num_stalks", random(5,30), 1, 100, 1, false, grid_slider_1);
+  parameterize("max_noise_angle", random(50), 0, 100, 1, false, grid_slider_3); //small sin on this looks like swaying in the wind
   parameterize("noise_damp", random(1,15), 1, 100, 1, false);
   parameterize("stalk_segment_move", random(1, 5), 0, 10, 0.1, true);
   parameterize("max_hair_repeats", round(random(5,10)), 1, 20, 1, false);
-  parameterize("max_hair_length", random(2,30), 0, 50, 0.1, true);
-  parameterize("hair_start_pct", random(0.4,0.9), 0, 1, 0.01, false);
+  parameterize("max_hair_length", random(2,30), 0, 50, 0.1, true, grid_slider_4);
+  parameterize("hair_start_pct", random(0.4,0.9), 0, 1, 0.01, false, grid_slider_2);
   parameterize("hair_move", random(0,5), 0, 20, 0.1, true);
   parameterize("hair_angle", random(50), 0, 180, 1, false);
   parameterize("hair_angle_offset", random(20), 0, 50, 0.1, false);
