@@ -1,4 +1,4 @@
-var channel, val, on, port_id;
+var channel, val, on, port_id, my_midi_values;
 var grid_connected = false;
 
 //channels
@@ -22,6 +22,15 @@ let grid_button_2_pushed = false;
 let grid_button_3_pushed = false;
 let grid_button_4_pushed = false;
 
+// Check session storage for midi values or clear
+my_midi_values = protected_storage_get("midi_values", "session");
+if(my_midi_values == null) my_midi_values = clearMIDIvalues();
+else my_midi_values = JSON.parse(my_midi_values);
+
+window.addEventListener('pagehide', () => {
+  protected_storage_set("midi_values", JSON.stringify(my_midi_values), "session");
+});
+
 function give_grid_chanel_name(ch){
   if(ch==32) return "grid_dial_1";
   if(ch==33) return "grid_dial_2";
@@ -40,20 +49,18 @@ function give_grid_chanel_name(ch){
 }
 
 function clearMIDIvalues(){
-  sessionStorage.removeItem(give_grid_chanel_name(grid_dial_1));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_dial_2));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_dial_3));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_dial_4));
+  //is it possible to request current states of dials and sliders from the intech grid?
+  return {
+    "grid_dial_1": -1,
+    "grid_dial_2": -1,
+    "grid_dial_3": -1,
+    "grid_dial_4": -1,
 
-  sessionStorage.removeItem(give_grid_chanel_name(grid_slider_1));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_slider_2));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_slider_3));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_slider_4));
-
-  sessionStorage.removeItem(give_grid_chanel_name(grid_button_1));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_button_2));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_button_3));
-  sessionStorage.removeItem(give_grid_chanel_name(grid_button_4));
+    "grid_slider_1": -1,
+    "grid_slider_2": -1,
+    "grid_slider_3": -1,
+    "grid_slider_4": -1
+  };
 }
 
 if (navigator.requestMIDIAccess){
@@ -91,49 +98,15 @@ function getMIDIMessage(midiMessage) {
   val = midiMessage.data[2];
   if(channel == grid_button_1){
     if(val == 127 && !grid_button_1_pushed){
-      document.getElementById("Bt Left").click();//previous
+      document.getElementById("Randomize").click();//previous
       grid_button_1_pushed = true;
     }
     else grid_button_1_pushed = false;
-  }
-  else if(channel == grid_button_2){
-    if(val == 127 && !grid_button_2_pushed){
-      document.getElementById("Bt Right").click();//next
-      grid_button_2_pushed = true;
-    }
-    else grid_button_2_pushed = false;
-  }
-  else if(channel == grid_button_3){
-    if(val == 127 && !grid_button_3_pushed){
-      document.getElementById("Randomize").click();//randomize
-      grid_button_3_pushed = true;
-    }
-    else grid_button_3_pushed = false;
-  }
-  else if(channel == grid_button_4){
-    if(val == 127 && !file_saved && !grid_button_4_pushed){
-      save_drawing();//save
-      grid_button_4_pushed = true;
-    }
-    else grid_button_4_pushed = false;
-  }
-  else if(channel == grid_dial_4 && type != "svg"){
-    //scroll through colors
-    const select_elem = document.getElementById("Color Select");
-    const select_options = Array.from(select_elem.options);
-    
-    const new_val = round(map(val, 0,127, 0, select_options.length-1));
-    select_elem.value = select_options[new_val].value;
-
-    if(current_palette_index()!=int(getParamValue('colors'))) set_seed();
-    protected_storage_set(give_grid_chanel_name(channel), val, "session");
-  }
-  else{
-    //capture dials and sliders in session memory
-    protected_storage_set(give_grid_chanel_name(channel), val, "session");
+  } else{
+    //capture dials and sliders in object
+    my_midi_values[give_grid_chanel_name(channel)] = val;
 
     redraw_reason = "midi";
-
     redraw_sketch();
   }
 }

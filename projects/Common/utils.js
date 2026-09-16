@@ -672,6 +672,7 @@ function set_seed(e){
 
   update_size_params();
   seed_param = String(seed_input.value());
+  if(seed_param != getParamValue("seed")) redraw_reason = "seed changed";
   colors_param = String(current_palette_index());
   palette_changed = current_palette_index() != int(getParamValue('colors'));
   size_changed = x_size_px_param != getParamValue("x_size_px") ||  y_size_px_param != getParamValue("y_size_px");
@@ -680,6 +681,7 @@ function set_seed(e){
   if(auto) scale_param = build_scale(); 
   else scale_param = scale_input.value();
   
+  //TODO why need reload whole page?
   const reload_page = controls_param != getParamValue("controls"); //controls change mean reload the whole page
 
   //using pushState allows for changing the url, and then redrawing without needing to reload the page
@@ -687,6 +689,7 @@ function set_seed(e){
   if(reload_page) location.reload();
 
   if(event_id == "Color Select"){
+    redraw_reason = "palette changed";
     palette_changed = true; //color picker was used
     document.getElementById("Color Select").blur(); //un-focus color select 
   }
@@ -979,7 +982,7 @@ function windowResized(e) {
 function redraw_sketch(){
   redrawn = true;
   if(gif && animation && (redraw_reason == "gui" || redraw_reason == "midi")){
-    gui_values();
+    gui_values(); //update params but let draw keep looping
     return;
   }
   setup();
@@ -1172,6 +1175,29 @@ function check_param_in_URL(name){
 function parameterize(name, val, min, max, step, scale, midi_channel){
   if(redraw_reason == "gui" && name != gui_element_changed) return;
 
+  //optional args validation
+  if(scale == undefined || scale != true) scale=false;
+  if(midi_channel == undefined) midi_channel = false;
+
+  if((animation || gif) && redraw_reason == "midi" && !midi_channel) return;
+
+  if(midi_channel){
+    if(!redrawn){
+      for(const key of Object.keys(gui_params)){
+        gui_params[key].frozen = false;
+      }
+    }
+    if(redrawn) gui_params[name].frozen = false;
+    const channel_name = give_grid_chanel_name(midi_channel);
+    const channel_value = my_midi_values[channel_name];
+    if(channel_value != -1){
+      val = map(channel_value, 0, 127, min, max); //midi vals go from 0 to 127
+      val = round(val/step)*step; //coerce to nearest step val
+    }
+
+    if(redrawn && channel_value == -1) return; //already got initial val, no update from midi yet
+  }
+
   let freeze_new_param = false;
 
   const url_val = check_param_in_URL(name)
@@ -1196,19 +1222,9 @@ function parameterize(name, val, min, max, step, scale, midi_channel){
     }
     url_params.set(name, gui_val);
   } else url_params.set(name, val);
-  window.history.replaceState({}, "", window.location.origin + window.location.pathname + "?" + url_params.toString()); 
+  const my_new_url = window.location.origin + window.location.pathname + "?" + url_params.toString();
+  if(my_new_url != window.location.href) window.history.replaceState({}, "", my_new_url); 
 
-  if(scale == undefined || scale != true) scale=false;
-  if(midi_channel == undefined) midi_channel = false;
-
-  if(midi_channel){
-    const channel_name = give_grid_chanel_name(midi_channel);
-    const channel_value = protected_storage_get(channel_name, "session");
-    if(channel_value != null){
-      val = map(channel_value, 0, 127, min, max); //midi vals go from 0 to 127
-      val = round(val/step)*step; //coerce to nearest step val
-    }
-  }
   if(redrawn && controls_param == "full"){
     for(const control_name in gui.prototype._controls){
       if(control_name != name) continue;
