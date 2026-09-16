@@ -102,7 +102,18 @@ function getMIDIMessage(midiMessage) {
       grid_button_1_pushed = true;
     }
     else grid_button_1_pushed = false;
-  } else{
+  }
+  else if(channel == grid_dial_4){
+    //scroll through colors
+    const select_elem = document.getElementById("Color Select");
+    const select_options = Array.from(select_elem.options);
+    
+    const new_val = round(map(val, 0,127, 0, select_options.length-1));
+    select_elem.value = select_options[new_val].value;
+
+    if(current_palette_index()!=int(getParamValue('colors'))) set_seed();
+  }
+  else{
     //capture dials and sliders in object
     my_midi_values[give_grid_chanel_name(channel)] = val;
 
