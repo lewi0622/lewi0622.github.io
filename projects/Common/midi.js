@@ -21,6 +21,8 @@ let grid_button_1_pushed = false;
 let grid_button_2_pushed = false;
 let grid_button_3_pushed = false;
 let grid_button_4_pushed = false;
+let midi_redraw_scheduled = false;
+const midi_redraw_interval = 50;
 
 // Check session storage for midi values or clear
 my_midi_values = protected_storage_get("midi_values", "session");
@@ -92,11 +94,23 @@ function update_devices(e){
   if(!grid_connected) midiConnect();
 }
 
+function scheduleMIDIRedraw(){
+  //when messages are coming too quickly and/or the redraw takes a long time, schedule and wait
+  if(midi_redraw_scheduled) return;
+
+  midi_redraw_scheduled = true;
+  setTimeout(() => {
+    midi_redraw_scheduled = false;
+    redraw_reason = "midi";
+    redraw_sketch();
+  }, midi_redraw_interval);
+}
+
 function getMIDIMessage(midiMessage) {
   on = midiMessage.data[0];
   channel = midiMessage.data[1];
   val = midiMessage.data[2];
-  if(channel == grid_button_1){
+  if(channel == grid_button_4){
     if(val == 127 && !grid_button_1_pushed){
       document.getElementById("Randomize").click();//previous
       grid_button_1_pushed = true;
@@ -117,7 +131,6 @@ function getMIDIMessage(midiMessage) {
     //capture dials and sliders in object
     my_midi_values[give_grid_chanel_name(channel)] = val;
 
-    redraw_reason = "midi";
-    redraw_sketch();
+    scheduleMIDIRedraw();
   }
 }
