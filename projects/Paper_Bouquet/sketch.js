@@ -34,7 +34,7 @@ function draw() {
   blendMode(MULTIPLY);
   center_rotate(rotation);
   noStroke();
-  curveTightness(tightness);
+  splineProperty("tightness", tightness);
   background("#fffbf1")
   const startX = random(x_padding, x_padding*2);
   const startY = canvas_y/2;
@@ -56,17 +56,17 @@ function draw() {
 
     c.setAlpha(loop_alpha);
     fill(c);
-    curveVertex(startX, startY);
-    curveVertex(startX, startY);
+    splineVertex(startX, startY);
+    splineVertex(startX, startY);
     const var_div = 10;
     for(let j=0; j<num_points; j++){
       const mid_vec = p5.Vector.lerp(start, end, (j+1)/num_points);
       const x = mid_vec.x + random(-variation/var_div, variation/var_div);
       let y = mid_vec.y + map(noise(mid_vec.x+offset, i/damp), 0,1, 0, variation);
       y = random(y, canvas_y-y);
-      curveVertex(x, y);
+      splineVertex(x, y);
     }
-    curveVertex(endX, endY);
+    splineVertex(endX, endY);
     endShape();
   }
   pop();

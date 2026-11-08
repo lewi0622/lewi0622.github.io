@@ -82,8 +82,12 @@ function petal(){
       x: working_width/2 * random(1-diff, 1+diff), 
       y: -working_height * random(1-diff, 1+diff)
     }
-    bezierVertex(0, 0, -working_width, -working_height, midpoint.x, midpoint.y);
-    bezierVertex(midpoint.x, midpoint.y, working_width*1.5,-working_height, working_width, 0);
+    bezierVertex(0, 0);
+    bezierVertex(-working_width, -working_height);
+    bezierVertex(midpoint.x, midpoint.y);
+    bezierVertex(midpoint.x, midpoint.y);
+    bezierVertex(working_width*1.5,-working_height);
+    bezierVertex(working_width, 0);
     endShape(CLOSE);
 
     pop();

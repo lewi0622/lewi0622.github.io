@@ -115,8 +115,8 @@ function draw_curve(i, z, y, starting_col, ending_col){
     for(let k=0; k<horiz_steps_per_tile; k++){
       x += col_step/horiz_steps_per_tile;
       y = lerp(y, tile.y + z*line_spacing, 0.01);
-      curveVertex(x,y);
-      if(j+1 == ending_col) curveVertex(x,y);
+      splineVertex(x,y);
+      if(j+1 == ending_col) splineVertex(x,y);
     }
   }
   endShape();
@@ -130,7 +130,7 @@ function draw_squares(i, z, y, starting_col, ending_col){
       x += col_step/horiz_steps_per_tile;
       y = lerp(y, tile.y + z*line_spacing, 0.01);
       if(k%2==0) square(x,y,2*global_scale);
-      if(j+1 == ending_col) curveVertex(x,y);
+      if(j+1 == ending_col) splineVertex(x,y);
     }
   }
 }

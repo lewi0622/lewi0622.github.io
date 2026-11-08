@@ -73,15 +73,15 @@ function draw() {
       //multi line signature?
 
       beginShape();
-      curveTightness(tightness);
-      curveVertex(random(-10,5)*global_scale,0);
-      curveVertex(random(-10,5)*global_scale,0);
+      splineProperty("tightness", tightness);
+      splineVertex(random(-10,5)*global_scale,0);
+      splineVertex(random(-10,5)*global_scale,0);
       let x_movement;
       for(let i = 0;  i<word_len; i++){
         const l_r = random([-1,1,1])*tile_x*3;
         const u_d = random([-1,1])*random([letter_amplitude*3/4, letter_amplitude*3/4, letter_amplitude]);
         x_movement = i*tile_x+noise(i+j)*l_r;
-        curveVertex(x_movement, noise(i+j)*u_d);
+        splineVertex(x_movement, noise(i+j)*u_d);
       }
       endShape();
 
@@ -97,10 +97,10 @@ function draw() {
         //period
         translate(current_x - space_size, current_y + letter_amplitude/2);
         beginShape();
-        curveVertex(0, 0);
-        curveVertex(0, 0);
+        splineVertex(0, 0);
+        splineVertex(0, 0);
         for(let i=0; i<2; i++){
-          curveVertex(random(-1,1)*global_scale, random(-0.25, 0.25)*global_scale);
+          splineVertex(random(-1,1)*global_scale, random(-0.25, 0.25)*global_scale);
         }
         endShape();
         pop();
@@ -109,10 +109,10 @@ function draw() {
           push();
           translate(current_x - space_size, current_y + letter_amplitude/2-4*global_scale);
           beginShape();
-          curveVertex(0,0);
-          curveVertex(0,0);
-          curveVertex(random(0,4*global_scale), random(0.5, 1)*(-letter_amplitude));
-          curveVertex(4*global_scale, -letter_amplitude);
+          splineVertex(0,0);
+          splineVertex(0,0);
+          splineVertex(random(0,4*global_scale), random(0.5, 1)*(-letter_amplitude));
+          splineVertex(4*global_scale, -letter_amplitude);
           endShape();
           pop();
         }
@@ -120,15 +120,15 @@ function draw() {
           //question mark
           push();
           translate(current_x - space_size, current_y + letter_amplitude/2-4*global_scale);
-          curveTightness(random(-1, 0.5));
+          splineProperty("tightness", random(-1, 0.5));
           rotate(random(-5,5));
           beginShape();
-          curveVertex(0,0);
-          curveVertex(0,0);
-          curveVertex(0, random(0.9,1.1)*(-letter_amplitude/3));
-          curveVertex(random(0.9,1.1)*6*global_scale, -letter_amplitude*3/4);
-          curveVertex(0, random(0.9,1.1)*(-letter_amplitude));
-          curveVertex(0, random(0.9,1.1)*(-letter_amplitude/2));
+          splineVertex(0,0);
+          splineVertex(0,0);
+          splineVertex(0, random(0.9,1.1)*(-letter_amplitude/3));
+          splineVertex(random(0.9,1.1)*6*global_scale, -letter_amplitude*3/4);
+          splineVertex(0, random(0.9,1.1)*(-letter_amplitude));
+          splineVertex(0, random(0.9,1.1)*(-letter_amplitude/2));
           endShape();
           pop();
         }
@@ -139,14 +139,14 @@ function draw() {
       if(random()>0.98){
         //underline
         push();
-        curveTightness(0);
+        splineProperty("tightness", 0);
         translate(current_x - x_movement + space_size, current_y + letter_amplitude*3/4);
         beginShape();
         const y_start = random(-1,1)*letter_amplitude/4;
-        curveVertex(0,y_start);
-        curveVertex(0,y_start);
+        splineVertex(0,y_start);
+        splineVertex(0,y_start);
         for(let i=0; i<5; i++){
-          curveVertex(x_movement*i/5, random(-1,1)*letter_amplitude/16 + y_start)
+          splineVertex(x_movement*i/5, random(-1,1)*letter_amplitude/16 + y_start)
         }
         endShape();
         pop();

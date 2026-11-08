@@ -23,7 +23,8 @@ function setup() {
   gui_values();
 
   xoff = 0;
-  bg_c = random(palette)
+  bg_c = random(working_palette)
+  reduce_array(working_palette, bg_c)
 }
 //***************************************************
 function draw() {
@@ -31,7 +32,7 @@ function draw() {
 
   //apply background
   background(bg_c)
-  reduce_array(working_palette, bg_c)
+
   //actual drawing stuff
   push();
 

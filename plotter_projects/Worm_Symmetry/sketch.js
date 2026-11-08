@@ -49,16 +49,14 @@ function draw() {
         let x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
         let y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));
         if(j == 0){
-          curveVertex(x, y);
+          splineVertex(x, y);
         }
-        curveVertex(x, y);
+        splineVertex(x, y);
       }
       endShape();
     pop();
     center_rotate(360/sym_angs);
   }
-
-  xoff+= inc;
 
   pop();
   global_draw_end();

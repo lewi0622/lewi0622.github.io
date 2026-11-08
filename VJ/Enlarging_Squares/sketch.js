@@ -101,9 +101,9 @@ function newSquares(arr){
 function cullSquares(arr){
   for(let i=0; i<arr.length; i++){
     if(arr[i].size > base_x/4 || arr[i].size > base_y/4){  //Size check for starting fade
-      arr[i].color.setAlpha(lerp(arr[i].color.levels[3], 0, 0.3))
+      arr[i].color.setAlpha(lerp(arr[i].color._getAlpha(), 0, 0.3))
     }
-    if(arr[i].color.levels[3] <= 10){ //remove if faded enough
+    if(arr[i].color._getAlpha() <= 10){ //remove if faded enough
       arr.splice(i,1);
     }
   }

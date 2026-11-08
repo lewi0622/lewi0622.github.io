@@ -47,10 +47,10 @@ function draw() {
       if(x<last_x[i]) x += minimum_x;
       if(i/step_number<0.25 || i/step_number>0.75) x /= 2;
       y = i*step_size;
-      curveVertex(dir*x,y);
+      splineVertex(dir*x,y);
       last_x[i] = x;
     }
-    curveVertex(x,y);
+    splineVertex(x,y);
     endShape();
     amplitude += inc_per_line;
   }

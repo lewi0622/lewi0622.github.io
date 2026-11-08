@@ -16,19 +16,18 @@ let offset_x, offset_y;
 let cols;
 
 let font;
-function preload() {
-  font = loadFont('..\\..\\fonts\\Porcine-Heavy.ttf');
-}
 
 function gui_values(){
   parameterize("x_damp", random(10, random(10,400)), 1, 1000, 1, false);
   parameterize("y_damp", random([x_damp,random(10,400)]), 1, 1000, 1, false);
-  parameterize("roughness", random(75), 1, 255, 1, false);
+  parameterize("roughness", random(30), 1, 100, 1, false);
 }
 
-function setup() {
+async function setup() {
+  if(font === undefined) font = await loadFont('..\\..\\fonts\\Porcine-Heavy.ttf');
   common_setup();
   gui_values();
+
   refresh_working_palette();
   noStroke();
   colorMode(HSB);
@@ -44,8 +43,8 @@ function setup() {
 
   grid_step_size = round(canvas_x/cols);
   rows = round(canvas_y/grid_step_size);
-  
-  const points = font.textToPoints("FUCK ICE", 0,0, 150*global_scale, { sampleFactor:  2 });
+  textSize(150*global_scale);
+  const points = font.textToPoints("PIXEL", 0,0, { sampleFactor:  2 });
   let min_x = canvas_x;
   let max_x = -canvas_x;
   let min_y = canvas_y;
@@ -91,17 +90,17 @@ function draw() {
     for(let j=0; j<row.length; j++){
       push();
       translate(i*grid_step_size, j*grid_step_size);
-      const c = tile_colors[i][j];
+      let c = tile_colors[i][j];
       let noise_val;
       let words = false;
-      if(arrayEquals(c.levels, c1.levels)) noise_val = map(pnoise.simplex2(i/x_damp + xoff, j/y_damp + yoff), -1,1, 0, 255);
+      if(arrayEquals(c._getRGBA(), c1._getRGBA())) noise_val = map(pnoise.simplex2(i/x_damp + xoff, j/y_damp + yoff), -1,1, 0, 100);
       else{
-        noise_val = map(pnoise.simplex2(i/x_damp + xoff, j/y_damp + yoff), -1,1, 255, 0);
+        noise_val = map(pnoise.simplex2(i/x_damp  + xoff, j/y_damp + yoff), -1,1, 100, 0);
         words = true;
       }
       noise_val = round(noise_val/roughness)*roughness;
 
-      c["levels"][1] = noise_val;
+      c = color(hue(c), noise_val, brightness(c));
       if(words) {
         stroke(c);
         strokeWeight(10*global_scale);

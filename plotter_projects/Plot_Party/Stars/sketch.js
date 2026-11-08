@@ -26,18 +26,18 @@ function draw() {
   const angle_step = 360/num_pts;
   translate(canvas_x/2, canvas_y/2);
 
-  curveTightness(tightness);
+  splineProperty("tightness", tightness);
 
   beginShape();
   for(let i=0; i<num_steps; i++){
     let radius = lerp(starting_radius, 0, i/num_steps);
     let x = radius * cos(i*2*angle_step);
     let y = radius * sin(i*2*angle_step);
-    curveVertex(x,y);
+    splineVertex(x,y);
 
     x = radius/2 * cos(i*2*angle_step + angle_step/2);
     y = radius/2 * sin(i*2*angle_step + angle_step/2);
-    curveVertex(x,y);
+    splineVertex(x,y);
   }
   endShape();
 

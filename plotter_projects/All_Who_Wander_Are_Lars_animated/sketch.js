@@ -332,7 +332,7 @@ function draw_shape(pts, shape_color = random(working_palette)){
     const pt = polar_shape[i%polar_shape.length];
     const x = pt.radius * cos(pt.theta);
     const y = pt.radius * sin(pt.theta);
-    curveVertex(x,y);
+    splineVertex(x,y);
   }
   endShape();
   pop();

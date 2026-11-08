@@ -25,7 +25,6 @@ function gui_values(){
   parameterize("num_colors", round(random(1, working_palette.length-1)), 1, working_palette.length-1, 1, false);
   parameterize("simplex", round(random()), 0, 1, 1, false);
   parameterize("brush_size", TRANSON_10, 0, 50, 0.1*96, true);
-  console.log(brush_size);
 }
 
 function setup() {
@@ -61,7 +60,7 @@ function draw() {
       for(let i=0; i<iterations; i++){
         const starting_pt = pts[i];
     
-        curveVertex(starting_pt.x, starting_pt.y);
+        splineVertex(starting_pt.x, starting_pt.y);
         let angle;
         if(simplex){
           angle = pnoise.simplex3(starting_pt.x/global_scale/x_damp, starting_pt.y/global_scale/y_damp, i/i_damp) * 360*5;

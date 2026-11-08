@@ -72,8 +72,8 @@ function draw() {
         let center_y = 0;
         for(let j=0; j<num_inline; j++){
           if(type == "png" && j>0) noStroke();
-          if(j/num_inline > 0.05) curveTightness(1);
-          else curveTightness(0);
+          if(j/num_inline > 0.05) splineProperty("tightness", 1);
+          else splineProperty("tightness",0);
           //full outline plus ears
           beginShape();
           for(let i=0; i<shape_points.length+3; i++){
@@ -82,7 +82,7 @@ function draw() {
             pty = lerp(pty, center_y, j/num_inline);
             if(i%shape_points.length==0) pty *= 0.8;
             if((i+1)%shape_points.length>0 && i%shape_points.length<0) pty *= 0.8;
-            curveVertex(ptx, pty);
+            splineVertex(ptx, pty);
             //trying to remove feet, tbd
 
             // if(i>(shape_points.length+3)/2) circle(ptx,pty,5);

@@ -9,19 +9,18 @@ const capture_time = 20;
 let x_fourth, y_fourth, copic_palette;
 const suggested_palettes = [BUMBLEBEE, SUMMERTIME, SOUTHWEST, JAZZCUP];
 let font, img;
-function preload(){
-  img = loadImage('PXL_20240211_034853145.jpg');
-  font = loadFont("../../fonts/Porcine-Heavy.ttf");
-}
 
 function gui_values(){
   parameterize("img_x", 0, -base_x/2, base_x/2, 1, true);
   parameterize("img_y", 0, -img.height/2, img.height/2, 1, true);
 } 
 
-function setup() {
+async function setup() {
+  if(img === undefined) img = await loadImage('PXL_20240211_034853145.jpg');
+  if(font === undefined) font = await loadFont("../../fonts/Porcine-Heavy.ttf");
   common_setup();
   gui_values();
+
 }
 //***************************************************
 function draw() {

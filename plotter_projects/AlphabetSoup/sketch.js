@@ -9,9 +9,6 @@ const capture_time = 10;
 const suggested_palettes = [];
 
 let font;
-function preload() {
-  font = loadFont('..\\..\\fonts\\Roboto-Black.ttf');
-}
 
 function gui_values(){
   parameterize("rows", round(base_y/4), 1, base_y, 1, false);
@@ -22,7 +19,8 @@ function gui_values(){
   parameterize("length_mult", 3, 1, 10, 0.1, false);
 } 
 
-function setup() {
+async function setup() {
+  if(font === undefined) font = await loadFont('..\\..\\fonts\\Roboto-Black.ttf');
   common_setup();
   gui_values();
 }
@@ -36,8 +34,8 @@ function draw() {
   const grid_size = canvas_y / rows;
   const cols = round(canvas_x / grid_size);
 
-
-  const points = font.textToPoints(random(["Z"]), 0,0, font_size, { sampleFactor:  2 });
+  textSize(font_size);
+  const points = font.textToPoints(random(["Z"]), 0,0,{ sampleFactor:  2 });
   const letter_map = map_letter_edges(points, rows, cols, grid_size)
 
   //find upper left starting tile

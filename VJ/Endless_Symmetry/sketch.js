@@ -39,7 +39,7 @@ function draw() {
 
   //actual drawing stuff
   const [x_off, y_off] = noise_loop_2d(fr, capture_time, 1);
-  curveTightness(map(pnoise.simplex2(x_off, y_off), -1, 1, -5, 5));
+  splineProperty("tightness", map(pnoise.simplex2(x_off, y_off), -1, 1, -5, 5));
   translate(canvas_x/2, canvas_y/2);
 
   const pts = [];
@@ -56,7 +56,7 @@ function draw() {
     beginShape();
     for(let j=0; j<pts.length; j++){
       const pt = pts[j];
-      curveVertex(pt.x, pt.y);
+      splineVertex(pt.x, pt.y);
     }
     endShape();
   }

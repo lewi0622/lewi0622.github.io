@@ -21,7 +21,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(6*96, 4*96, SVG);
+  common_setup(6*96, 4*96);
   gui_values();
 
   if(!redrawn){
@@ -40,7 +40,8 @@ function draw() {
   push();
   const body_text = "Name Here";
   translate(x_move, y_move);
-  const path = font.getPath(body_text, 0,0, font_size);
+  textSize(font_size);
+  const path = font.getPath(body_text, 0,0);
   draw_open_type_js_path_p5_commands(path);
 
   pop();

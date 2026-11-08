@@ -81,7 +81,7 @@ function dress(w, h, weight){
   const dress_c = color(random(working_palette));
 
   if(type == "png") fill(dress_c);
-  else dress_c.setAlpha(100);
+  // else dress_c.setAlpha(100);
   stroke(dress_c);
 
   const upper_left = {x: -w/8, y: -h/4};
@@ -111,19 +111,19 @@ function dress(w, h, weight){
     right_control_x = constrain(right_control_x - step, 0, right_control_x);
 
     beginShape();
-    vertex(upper_left.x, upper_left.y); //upper left
-    bezierVertex(//lower left
-      left_control_x, left_control_y, 
-      lower_left.x, lower_left.y, 
-      lower_left.x, lower_left.y); 
-    bezierVertex(//lower right
-      lower_left.x, lower_left.y, 
-      lower_right.x, lower_right.y, 
-      lower_right.x, lower_right.y); 
-    bezierVertex(// upper right
-      lower_right.x, lower_right.y, 
-      right_control_x, upper_right.y, 
-      upper_right.x, upper_right.y); 
+    //upper left
+    vertex(upper_left.x, upper_left.y); 
+    bezierVertex(left_control_x, left_control_y);
+    bezierVertex(lower_left.x, lower_left.y);
+    bezierVertex(lower_left.x, lower_left.y); 
+    //lower right
+    bezierVertex(lower_left.x, lower_left.y);
+    bezierVertex(lower_right.x, lower_right.y);
+    bezierVertex(lower_right.x, lower_right.y); 
+    // upper right
+    bezierVertex(lower_right.x, lower_right.y);
+    bezierVertex(right_control_x, upper_right.y);
+    bezierVertex(upper_right.x, upper_right.y); 
     endShape(CLOSE);
 
     if(type == "png") break;
@@ -134,7 +134,7 @@ function dress(w, h, weight){
 
 function arms(w, h, num_lines){
   //arms and legs should use beizer curves with slightly varying control points to go from thin to thick to thin
-
+  stroke("BLACK");
   //left arm, start on the outer edge
   let control_x, left_x;
   const left_y = random(-h*3/5, h/8);
@@ -191,7 +191,7 @@ function arms(w, h, num_lines){
 
 function legs(w, h, num_lines){
   //arms and legs should use beizer curves with slightly varying control points to go from thin to thick to thin
-
+  stroke("BLACK");
   //left leg, start on the outer edge
   let leg_x = random(-w/2,w/8);
   let leg_y = h/2;
@@ -228,6 +228,7 @@ function curved_flair(x, y, w, h){ //keith harring style movement lines
 
 // HEAD --------------------------------------
 function head(w,h, interval){
+  stroke("BLACK")
   let head_w = random(0.6, 0.8)*w/8;
   let head_h = random(1,1.5)*head_w;
   let head_size = min(head_w, head_h);

@@ -28,7 +28,7 @@ function draw() {
   noFill();
   strokeWeight(1*global_scale);
   const colors = gen_n_colors(sym_angs);
-  curveTightness(tightness);
+  splineProperty("tightness", tightness);
 
   translate(canvas_x/2, canvas_y/2);
 
@@ -44,9 +44,9 @@ function draw() {
           const x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.5, canvas_x*.5));
           const y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.5, canvas_y*.5));
           if(j == 0){
-            curveVertex(x, y);
+            splineVertex(x, y);
           }
-          curveVertex(x, y);
+          splineVertex(x, y);
         }
         endShape();
         pop();

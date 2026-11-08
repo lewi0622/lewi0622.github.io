@@ -16,14 +16,15 @@ const rot_inc = 2.5;
 let face_rotation;
 
 let font;
-function preload() { font = loadFont('..\\..\\..\\fonts\\SquarePeg-Regular.ttf'); }
 
 function gui_values(){
 }
 
-function setup() {
+async function setup() {
+  if(font === undefined) font = await loadFont('..\\..\\..\\fonts\\SquarePeg-Regular.ttf');
   common_setup();
   gui_values();
+  
   //parameter
   weight = 7*global_scale;
   rotation_amount = random(360);

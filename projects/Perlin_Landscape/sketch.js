@@ -64,9 +64,11 @@ function draw() {
   let primary_color = random(working_palette);
   reduce_array(working_palette, primary_color);
   let secondary_color;
-  if(random()>0.5 || palette.length >= 3) secondary_color = primary_color;
-  else secondary_color = random(working_palette);
-  reduce_array(working_palette, secondary_color);
+  if(random()>0.5 || palette.length <= 3) secondary_color = primary_color;
+  else{
+    secondary_color = random(working_palette);
+    reduce_array(working_palette, secondary_color);
+  }
   bg_c = color(bg_c);
   primary_color = color(primary_color);
   secondary_color = color(secondary_color);
@@ -100,10 +102,9 @@ function draw() {
     colorMode(RGB);
     if(j/shape_number<0.5) c = lerpColor(bg_c, primary_color, constrain(map(j/shape_number, 0,0.5, 0,1), lerp_start, 1));
     else c = lerpColor(primary_color,secondary_color, map(j/shape_number, 0.5,1, 0,1));
-    
     //convert to HSB
     colorMode(HSB);
-    c = RGBA_to_HSBA(...c.levels);
+    c = RGBA_to_HSBA(c._getRed(), c._getGreen(), c._getBlue(), c._getAlpha());
 
     //vary brightness
     let brightness_reduction = map(j/shape_number, 0, 1, 0, 360*10);

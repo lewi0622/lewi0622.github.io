@@ -126,20 +126,20 @@ function buildColumn(col_width){
     col_width = size_buildings;
   };
   push();
-  curveTightness(1);
+  splineProperty("tightness", 1);
   beginShape();
   //ll
-  curveVertex(0,0);
-  curveVertex(0,0);
-  curveVertex(col_width/4, -col_width/4);
-  curveVertex(col_width/4, -size_buildings+col_width/4);
+  splineVertex(0,0);
+  splineVertex(0,0);
+  splineVertex(col_width/4, -col_width/4);
+  splineVertex(col_width/4, -size_buildings+col_width/4);
   //ul
-  curveVertex(0,-size_buildings);
+  splineVertex(0,-size_buildings);
   //ur
-  curveVertex(col_width,-size_buildings);
-  curveVertex(col_width*3/4, -size_buildings+col_width/4);
-  curveVertex(col_width*3/4, -col_width/4);
-  curveVertex(col_width, 0);
+  splineVertex(col_width,-size_buildings);
+  splineVertex(col_width*3/4, -size_buildings+col_width/4);
+  splineVertex(col_width*3/4, -col_width/4);
+  splineVertex(col_width, 0);
 
   endShape(CLOSE);
   pop();
@@ -269,7 +269,9 @@ function buildHalfArch(){
   vertex(0,-size_buildings);
   vertex(size_buildings*dir,-size_buildings);
   vertex(size_buildings*dir, -size_buildings*3/4);
-  bezierVertex(size_buildings/4*dir,-size_buildings*3/4, size_buildings/4*dir,-size_buildings*3/4, size_buildings/4*dir,0);
+  bezierVertex(size_buildings/4*dir,-size_buildings*3/4);
+  bezierVertex(size_buildings/4*dir,-size_buildings*3/4);
+  bezierVertes(size_buildings/4*dir,0);
   endShape();
   pop();
 }

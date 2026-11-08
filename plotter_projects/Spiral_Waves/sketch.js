@@ -31,7 +31,7 @@ function draw() {
   if(type == "png") background("WHITE");
   noFill();
   stroke(0, 0, 0, 75);
-  curveTightness(tightness);
+  splineProperty("tightness", tightness);
   translate(canvas_x/2, canvas_y/2);
 
   for(let z=0; z<z_iterations; z++){
@@ -47,7 +47,7 @@ function draw() {
 
       const x = radius * cos(theta);
       const y = radius * sin(theta);
-      curveVertex(x,y);
+      splineVertex(x,y);
     }
     endShape();
   }

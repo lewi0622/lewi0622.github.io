@@ -8,9 +8,6 @@ const capture_time = 15;
 
 const suggested_palettes = [BUMBLEBEE, GAMEDAY, SUPPERWARE];
 let font;
-function preload(){
-  font = loadFont("../../../fonts/Porcine-Heavy.ttf");
-}
 
 function gui_values(){
   parameterize("starting_radius", 0, 0, 400, 1, true);
@@ -19,7 +16,8 @@ function gui_values(){
   parameterize("rotation_damp", random(250, 1250), 1, 2000, 1, false);
 }
 
-function setup() {
+async function setup() {
+  if(font === undefined) font = await loadFont("../../../fonts/Porcine-Heavy.ttf");
   common_setup(400, 600);
   gui_values();
   canvas_y *= 3/4;

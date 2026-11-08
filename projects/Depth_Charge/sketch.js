@@ -15,7 +15,7 @@ function gui_values(){
   parameterize("circle_rad", random(5,10), 1, 200, 1, true);
   parameterize("x_margin", random(50,100), 0, 400, 1, true);
   parameterize("y_margin", random(50,100), 0, 400, 1, true);
-  parameterize("drift", random(0,1), 0, 10, 0.1, true);
+  parameterize("drift", random(0,1), 0, 10, 0.1, true, grid_slider_1);
   parameterize("growth", random(0.3), 0, 1, 0.01, true);
   parameterize("layers", round(random(10,70)), 1, 200, 1, false);
   parameterize("blur_size", random(0.5,2), 0, 20, 0.1, true);

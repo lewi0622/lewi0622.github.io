@@ -25,12 +25,6 @@ function draw() {
   //actual drawing stuff
   push();
 
-  for(let i=0; i<working_palette.length; i++){
-    const c = color(working_palette[i]);
-    c.setAlpha(150);
-    working_palette[i] = c;
-  }
-
   const weight = PITTPEN * global_scale;
   strokeWeight(weight);
   translate(canvas_x/2, canvas_y/2);
@@ -38,6 +32,12 @@ function draw() {
     let bg_c = random(working_palette);
     reduce_array(working_palette, bg_c);
     background(random(working_palette));
+  }
+
+  for(let i=0; i<working_palette.length; i++){
+    const c = color(working_palette[i]);
+    c.setAlpha(150);
+    working_palette[i] = c;
   }
 
   rotate(random([0, 45, 90, 135, 180, 225, 270, 315]));

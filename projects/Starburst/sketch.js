@@ -84,8 +84,8 @@ function newSquares(arr){
 function cullSquares(arr){
   for(let i=0; i<arr.length; i++){
     if(arr[i].size > canvas_x/2 || arr[i].size > canvas_y/2){
-      arr[i].color.setAlpha(lerp(arr[i].color.levels[3], 0, 0.3))
+      arr[i].color.setAlpha(lerp(arr[i].color._getAlpha(), 0, 0.3))
     }
-    if(arr[i].color.levels[3] <= 10) arr.splice(i,1);
+    if(arr[i].color._getAlpha() <= 10) arr.splice(i,1);
   }
 }

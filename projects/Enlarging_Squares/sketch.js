@@ -98,9 +98,11 @@ function newSquares(arr){
 function cullSquares(arr){
   for(let i=0; i<arr.length; i++){
     if(arr[i].size*global_scale > canvas_x/2 || arr[i].size*global_scale > canvas_y/2){
-      arr[i].color.setAlpha(lerp(arr[i].color.levels[3], 0, 0.3))
+      const alpha = arr[i].color._getAlpha()
+      arr[i].color.setAlpha(lerp(alpha, 0, 0.3))
     }
-    if(arr[i].color.levels[3] <= 10){
+    const alpha = arr[i].color._getAlpha()
+    if(alpha <= 0.04){
       arr.splice(i,1);
     }
   }

@@ -63,24 +63,24 @@ function draw() {
       const y = weight/4;
 
       beginShape();
-      curveVertex(x,y);
-      curveVertex(x,y);
+      splineVertex(x,y);
+      splineVertex(x,y);
       
-      curveVertex(shape_width, grid_size/2);
+      splineVertex(shape_width, grid_size/2);
       
-      curveVertex(x, grid_size - y);
-      curveVertex(x, grid_size - y);
+      splineVertex(x, grid_size - y);
+      splineVertex(x, grid_size - y);
       endShape();
 
       beginShape();
-      curveVertex(x,y);
-      curveVertex(x,y);
+      splineVertex(x,y);
+      splineVertex(x,y);
       
-      curveVertex(shape_width/2, grid_size/2);
+      splineVertex(shape_width/2, grid_size/2);
 
       
-      curveVertex(x, grid_size - y);
-      curveVertex(x, grid_size - y);
+      splineVertex(x, grid_size - y);
+      splineVertex(x, grid_size - y);
       endShape();
 
       line(x, y, x, grid_size - y);

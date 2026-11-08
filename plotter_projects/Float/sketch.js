@@ -99,7 +99,7 @@ function draw() {
       const pt = l[i];
       const weight = LEPEN*global_scale * 3/4;
       center_rotate(rotate_per_line);
-      curveVertex(pt[0], pt[1]);
+      splineVertex(pt[0], pt[1]);
       last_x = pt[0];
       last_y = pt[1];
       push();

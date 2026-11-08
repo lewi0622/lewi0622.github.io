@@ -35,12 +35,11 @@ function draw() {
 
   this_petal = petal_size;
   translate(canvas_x/2, canvas_y/2);
-  if(no_stroke==0){
-    noStroke();
-  }
+  if(no_stroke==0) noStroke();
   else{  
     stroke('black');
-    strokeWeight(weight);}
+    strokeWeight(weight);
+  }
   let distance = canvas_y/random(3,5);
   for(let i=0; i<petal_rings; i++){
     rotate(random(0,360));
@@ -67,17 +66,13 @@ function petal(start_y, close){
   push();
   translate(0, start_y);
   beginShape();
-  curveVertex(0,0);
-  curveVertex(0,0);
-  curveVertex(this_petal/2, this_petal/2);
-  curveVertex(0, this_petal);
-  curveVertex(-this_petal/2, this_petal/2);
-  if(close){
-    endShape(CLOSE);
-  }
-  else{
-    endShape()
-  }
+  splineVertex(0,0);
+  splineVertex(this_petal/2, this_petal/2);
+  splineVertex(0, this_petal);
+  splineVertex(-this_petal/2, this_petal/2);
+  if(close) endShape(CLOSE);
+  //This was supposed to help with the overlap of the last petal, but doesn't work with spline
+  // else endShape();
   pop();
 }
 

@@ -108,7 +108,7 @@ function setup() {
       floor(random(working_palette.length))
     ]
   }
-  print(selected_colors)
+
   dark_c1 = working_palette[selected_colors[0]];
   dark_c2 = working_palette[selected_colors[1]];
   light_c1 = working_palette[selected_colors[2]];
@@ -186,12 +186,12 @@ function squig(max_x, max_y, iterations){
   //creates squiggles within max vals
   noFill();
   const x_vals = [0, max_x/2, max_x, max_x/2];
-  curveTightness(tightness);
+  splineProperty("tightness", tightness);
   beginShape();
   for(let i=0; i<iterations; i++){
     const x = x_vals[i%x_vals.length] +  random(max_x);
     const y = random(-max_y/2, max_y*1.5);
-    curveVertex(x,y);
+    splineVertex(x,y);
   }
   endShape();
 }

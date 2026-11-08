@@ -50,13 +50,13 @@ function draw() {
 
     beginShape();
     noFill();
-    curveTightness(tightness);
-    curveVertex(-10*global_scale,0);
-    curveVertex(-10*global_scale,0);
+    splineProperty("tightness", tightness);
+    splineVertex(-10*global_scale,0);
+    splineVertex(-10*global_scale,0);
     for(let i = 0;  i<200; i++){
       const l_r = random([-1,1,1])*tile_x*3;
       const u_d = random([-1,1])*amp;
-      curveVertex(i*tile_x+noise(i+j)*l_r, noise(i+j)*u_d);
+      splineVertex(i*tile_x+noise(i+j)*l_r, noise(i+j)*u_d);
       amp +=amp_inc;
     }
 

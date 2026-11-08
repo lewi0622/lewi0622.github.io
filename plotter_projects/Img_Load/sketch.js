@@ -13,10 +13,6 @@ let imgbuffer;
 let target_height, target_width;
 let syntax;
 let weight;
-function preload(){
-  img = loadImage("PXL_20221210_165219121.MP.jpg");
-}
-
 function gui_values(){
   parameterize("step_size", 10, 1, 50, 1, false);
   parameterize("r_damp", 255, 1, 500, 1, false);
@@ -30,7 +26,8 @@ function gui_values(){
 
 //could order color palette based on brightness?
 
-function setup() {
+async function setup() {
+  if(img === undefined) img = await loadImage("PXL_20221210_165219121.MP.jpg");
   common_setup();
   gui_values();
 

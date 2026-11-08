@@ -92,7 +92,7 @@ function a_to_b(a, b, angle){
 function vert_pt(x,y, angle, amp){
     const offset_x = amp * cos(angle);
     const offset_y = amp * sin(angle);
-    curveVertex(x + offset_x, y + offset_y);
+    splineVertex(x + offset_x, y + offset_y);
 }
 
 function get_amp(x,y, angle){

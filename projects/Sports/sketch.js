@@ -40,7 +40,7 @@ function draw() {
   noStroke();
   center_rotate(canvas_rotaion);
   translate(padding, padding);
-  if(my_frameCount == 1){
+  if(my_frameCount == 0){
     bg_c = random(working_palette);
     reduce_array(working_palette, bg_c);
 
@@ -79,7 +79,6 @@ function draw() {
         x = random(canvas_x);
         y = 2 * canvas_y;
       }
-
       shapes.push({
         start_x:start_x,
         start_y:start_y,

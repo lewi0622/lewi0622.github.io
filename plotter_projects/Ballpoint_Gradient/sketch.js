@@ -89,7 +89,6 @@ function overlapped_circle(radius, radius_step){
   let num_overlaps = 1;
 
   while(radius > 0){
-    console.log(floor(num_overlaps));
     for(let i=0; i<floor(num_overlaps); i++){
       circle(0,0,radius);
     }

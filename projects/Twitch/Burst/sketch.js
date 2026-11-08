@@ -17,13 +17,12 @@ const phase_1_max = 10;
 const phase_4_max = 30;
 
 let font;
-function preload() { font = loadFont('..\\..\\..\\fonts\\SquarePeg-Regular.ttf'); }
-
 function gui_values(){
   // parameterize("weight", 200, 1, 200, 1, true);
 }
 
-function setup() {
+async function setup() {
+  if(font === undefined) font = await loadFont('..\\..\\..\\fonts\\SquarePeg-Regular.ttf');
   common_setup();
   gui_values();
   //parameter

@@ -8,18 +8,17 @@ const capture_time = 5;
 
 const suggested_palettes = [COTTONCANDY, SIXTIES, SUPPERWARE]
 let rot = 0;
-let rot_inc = capture_time * fr / 360;
+const rot_inc = 1;
 let bg_c;
 
 function gui_values(){
-  parameterize("num_circles", 50, 1, 500, 1, false);
-  parameterize("starting_radius", 300, 1, 1000, 1, true);
-  parameterize("ending_radius", 0, 0, 500, 1, true);
+  parameterize("num_circles", 50, 2, 200, 1, false, grid_slider_1);
+  parameterize("starting_radius", 300, 20, 1000, 1, true, grid_slider_2);
   parameterize("drift_x_per_loop", 0, -10, 10, 0.1, true);
   parameterize("drift_y_per_loop", 0, -10, 10, 0.1, true);
-  parameterize("cornering_end", 0, -4, 4, 0.1, false);
+  parameterize("cornering_end", 0, -4, 4, 0.1, false, grid_slider_3);
   parameterize("cornering_start", 0.5, -4, 4, 0.1, false);
-  parameterize("rotation_per_loop", 0, -180, 180, 0.01, false);
+  parameterize("rot_inc", 0, -5,5, 0.01, false, grid_slider_4);
 }
 
 function setup() {
@@ -28,7 +27,7 @@ function setup() {
   bg_c = random(working_palette);
   working_palette = controlled_shuffle(working_palette, true);
   if(working_palette.length>3) working_palette.splice(3, working_palette.length-3);
-  pixelDensity(2);
+  // pixelDensity(2);
 }
 //***************************************************
 function draw() {
@@ -41,6 +40,7 @@ function draw() {
   rect(0,0,canvas_x, canvas_y);
   rectMode(CENTER);
   translate(canvas_x/2, canvas_y/2);
+  const ending_radius = 0;
   
   for(let i=0; i<num_circles; i++){ 
     if(i==0) continue;
@@ -49,7 +49,8 @@ function draw() {
     const y = i*drift_y_per_loop;
 
     translate(x,y);
-    rotate(angle_loop(fr, capture_time, 1)*i);
+    if(capture) rotate(angle_loop(fr, capture_time, 1)*i);
+    else rotate(rot * i);
 
     const radius = lerp(starting_radius, ending_radius, i/num_circles);
     let corner_radius = constrain(lerp(radius*cornering_start, radius*cornering_end, (i+1)/num_circles), 0, starting_radius);

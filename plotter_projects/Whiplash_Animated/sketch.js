@@ -49,7 +49,7 @@ function draw() {
     xoff = map(cos((i+phase_off)*i_mult), -1,1, 0, noise_maximum);  
     yoff = map(sin((i+phase_off)*i_mult), -1,1, 0, noise_maximum);
     const y = map(noise(xoff, yoff), 0,1, -line_size,line_size)
-    curveVertex(x, y)
+    splineVertex(x, y)
     
     i_mult += i_mult_inc;
 

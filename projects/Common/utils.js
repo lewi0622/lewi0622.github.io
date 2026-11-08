@@ -302,11 +302,6 @@ function common_setup(size_x=x_size_px_param, size_y=y_size_px_param, renderer=P
   if(!capture) frameRate(fr);
 
   //init globals
-  if(renderer == SVG){
-    type = "svg";
-    renderer = P2D; //in changing from p5.svg to p5.plotSvg, no longer reload page with different renderer
-  } else type = verify_type(getParamValue("type"));
-
   setParams();
   global_scale = find_cnv_mult(size_x, size_y);
   const control_height = control_height_base * global_scale;
@@ -1474,10 +1469,17 @@ function draw_open_type_js_path_p5_commands(path, inc_color=false, color_start=1
       started = true;
       vertex(cmd.x, cmd.y);
     } 
-    else if (cmd.type === 'L')vertex(cmd.x, cmd.y); //line to
-    else if (cmd.type === 'C') bezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y); // bezier to 
-    else if (cmd.type === 'Q') quadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y); //quadratic to
-    else if (cmd.type === 'Z'){ //likely deprecated, but will leave in just in case
+    else if (cmd.type === 'L') vertex(cmd.x, cmd.y); //line to
+    else if (cmd.type === 'C'){// bezier to
+      bezierOrder(3);
+      bezierVertex(cmd.x1, cmd.y1);
+      bezierVertex(cmd.x2, cmd.y2);
+      bezierVertex(cmd.x, cmd.y);  
+    }else if (cmd.type === 'Q'){//quadratic to
+      bezierOrder(2);
+      bezierVertex(cmd.x1, cmd.y1);
+      bezierVertex(cmd.x, cmd.y); 
+    } else if (cmd.type === 'Z'){ //likely deprecated, but will leave in just in case
       endShape(CLOSE); // close shape
       if(inc_color) color_start += 1;
     }
@@ -1520,18 +1522,22 @@ function set_radial_gradient(colors, start_x, start_y, start_radius, end_x, end_
   else drawingContext.strokeStyle = gradient;
 }
 
-function controlled_shuffle(array, standardize=false, len=longest_palette_length) {
+function controlled_shuffle(color_array_in, standardize=false, len=longest_palette_length) {
   //shuffle algorithm that can standardize the size of the array so 
   //it won't cause seed issues using different palette lengths.
   if(standardize){
-    while(array.length<len){
-      array.push([""]);
+    while(color_array_in.length<len){
+      color_array_in.push([""]);
     }
   }
   //call original shuffle function
-  array = shuffle(array);
-
-  return array.filter(a => !arrayEquals(a, [""]));
+  color_array_in = shuffle(color_array_in);
+  const color_array_out = [];
+  for(let i=0; i<color_array_in.length; i++){
+    const c = color_array_in[i];
+    if(!arrayEquals(c, [""])) color_array_out.push(c);
+  }
+  return color_array_out
 }
 
 function line_blur(line_color, blur_size, offset_x=0, offset_y=0){

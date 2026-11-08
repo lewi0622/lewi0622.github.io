@@ -14,7 +14,7 @@ function gui_values(){
   parameterize("x_offset", random(1,70), 1,70,1, true);
   parameterize("weight", 1, 0.1, 10, 0.1, true);
   parameterize("rad", random(100,200), 10, 400, 1, true);
-  parameterize("bright", floor(random(150,600)), 0, 600, 1, false);
+  parameterize("bright", floor(random(100,200)), 0, 600, 1, false);
   parameterize("cloud_rad", 200, 1, 400, 1, true);
 }
 

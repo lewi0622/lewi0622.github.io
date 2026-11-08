@@ -60,12 +60,12 @@ function draw() {
   const y_3 = random(y_2, max_y);
   const y_4 = random(y_1, max_y);
   
-  curveTightness(random(-3,2));
+  splineProperty("tightness", random(-3,2));
   beginShape();
-  curveVertex(x_1, y_1);
-  curveVertex(x_2, y_2);
-  curveVertex(x_2, y_3);
-  curveVertex(x_1, y_4);
+  splineVertex(x_1, y_1);
+  splineVertex(x_2, y_2);
+  splineVertex(x_2, y_3);
+  splineVertex(x_1, y_4);
   endShape(CLOSE);
   pop();
   global_draw_end();

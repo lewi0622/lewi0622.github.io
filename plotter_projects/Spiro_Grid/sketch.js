@@ -72,7 +72,7 @@ function draw() {
         main_theta += main_theta_per_loop;
         sec_theta += sec_theta_per_loop;
 
-        if(curved) curveVertex(x, y);
+        if(curved) splineVertex(x, y);
         else vertex(x, y);
       }
       endShape();

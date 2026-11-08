@@ -59,7 +59,7 @@ function draw() {
     for(let i=0; i<num_segments; i++){
       let x = i*canvas_x*2/num_segments;
       let y = map(noise(offset + i/i_damp, j/10, z), 0, 1, 0,-amp);
-      curveVertex(x,y);
+      splineVertex(x,y);
     }
     vertex(canvas_x*2,0);
     vertex(canvas_x*2,canvas_y);

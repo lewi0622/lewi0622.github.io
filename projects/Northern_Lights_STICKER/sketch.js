@@ -9,10 +9,7 @@ const capture_time = 10;
 
 const suggested_palettes = [COTTONCANDY, GAMEDAY, BIRDSOFPARADISE, SUMMERTIME, SOUTHWEST, SIXTIES, JAZZCUP];
 
-let minnesota;
-function preload(){
-  minnesota = loadJSON("..\\..\\projects\\WIP\\Minnesota\\minnesota.json");
-}
+let minnesota, mn_padding;
 
 function gui_values(){
   parameterize("cols", round(random(10,100)), 1, 100, 1, false);
@@ -24,7 +21,8 @@ function gui_values(){
   parameterize("y_offset", 0, -base_y, base_y, 1, true);
 }
 
-function setup() {
+async function setup() {
+  if(minnesota === undefined) minnesota = await loadJSON("..\\..\\projects\\WIP\\Minnesota\\minnesota.json");
   common_setup();
   gui_values();
 }
@@ -32,20 +30,15 @@ function setup() {
 function draw() {
   global_draw_start();
   push();
+  mn_padding = 50*global_scale;
 
   fill("BLACK");
-  stroke("WHITE");
-  strokeWeight(10*global_scale);
-  // circle(canvas_x/2, canvas_y/2, canvas_x);
   translate(x_offset, y_offset);
-  noFill();
-  strokeJoin(ROUND);
-  strokeWeight(5*global_scale);
-  const mn_padding = 50*global_scale;
-  draw_minnesota(mn_padding);
+  noStroke();
+  draw_minnesota();
   pop();
   push();
-  drawingContext.clip();
+  clip(draw_minnesota);
   noStroke();
   working_palette = controlled_shuffle(working_palette, true);
   const c0 = color("BLACK");
@@ -92,10 +85,20 @@ function draw() {
     pop();
   }
   pop();
+  push();
+  stroke("WHITE");
+  translate(x_offset, y_offset);
+  noFill();
+  strokeJoin(ROUND);
+  strokeWeight(4*global_scale);
+  draw_minnesota();
+
+  pop();
   global_draw_end();
 }
 //***************************************************
-function draw_minnesota(padding){
+function draw_minnesota(){
+  const padding = mn_padding;
   //there are 3416 coordinates
   push();
   let coords = minnesota.geometry.coordinates[0];
@@ -131,7 +134,6 @@ function draw_minnesota(padding){
   
   translate((canvas_x-max_x-min_x)/2,(canvas_y-max_y-min_y)/2);
 
-  console.log(coords.length);
   beginShape();
   for (let i = 0; i < coords.length; i++) {
     let lon = coords[i][0];

@@ -6,18 +6,20 @@ const fr = 30;
 const capture = false;
 const capture_time = 10;
 
-let bg_c, weight, c_id, lines, sub_lines;
+let bg_c, c_id;
 const suggested_palettes = [BEACHDAY, SOUTHWEST, SUPPERWARE];
 
 //project variables
 const noiseMax = 1;
 let phase;
 const phase_off = 20;
-const phase_inc = 1.5;
 
 
 function gui_values(){
-
+  parameterize("phase_inc", random(1,5), 1, 20, 1, false, grid_slider_1);
+  parameterize("lines", floor(random(10, 150)), 6, 200, 1, false, grid_slider_2);
+  parameterize("sub_lines", ceil(random(2, palette.length-1)), 2, palette.length-1, 1, false, grid_slider_3);
+  parameterize("weight", random(1, 5), 1, 20, 1, true, grid_slider_4);
 }
 
 function setup() {
@@ -30,18 +32,14 @@ function setup() {
   working_palette = controlled_shuffle(working_palette, true);
   bg_c = random(working_palette);
   reduce_array(working_palette, bg_c);
-  weight = 2*global_scale;
-  strokeWeight(weight);
   strokeCap(ROUND);
   noFill();
   c_id = 0;
-
-  lines = floor(random(40, 100));
-  sub_lines = ceil(random(2, palette.length));
 }
 //***************************************************
 function draw() {
   global_draw_start();
+  strokeWeight(weight);
 
   //reset loop variables
   const min_len = (sin(phase)*4+40)*global_scale;
@@ -52,7 +50,7 @@ function draw() {
   push();
 
   translate(canvas_x/2, canvas_y/2);
-  stroke(palette[c_id])
+  stroke(working_palette[c_id])
   circle(0,0,min_len*2);
 
   for(let i=0; i<360; i+=360/lines){
@@ -66,7 +64,7 @@ function draw() {
     const cos_i = cos(i);
     const sin_i = sin(i);
     for(let j=0; j<sub_lines; j++){
-      stroke(palette[c_id])
+      stroke(working_palette[c_id])
 
       const start_x = sub_min_len*cos_i;
       const start_y = sub_min_len*sin_i;

@@ -29,7 +29,7 @@ function draw() {
   //actual drawing stuff
   push();
   translate(canvas_x/2, canvas_y/2);
-  curveTightness(tightness);
+  splineProperty("tightness", tightness);
   const num_pts = num_sides * num_swirls;
   const ang_step = 360/num_sides;
   let rad = starting_radius;
@@ -38,7 +38,7 @@ function draw() {
   let radius_dec = random(min_radius_dec, max_radius_dec);
   beginShape();
   //tuck
-  // curveVertex(rad-radius_dec*5,0);
+  // splineVertex(rad-radius_dec*5,0);
   
 
   for(let i=0; i<num_pts; i++){
@@ -50,7 +50,7 @@ function draw() {
     const theta = ang_step*i + rotation;
     let x = rad * cos(theta);
     let y = rad * sin(theta);
-    curveVertex(x,y);
+    splineVertex(x,y);
     rad -= radius_dec;
     rotation += rotation_amt;
     if(rad <= 0) break;

@@ -26,7 +26,7 @@ function gui_values(){
 function setup() {
   common_setup(450, 800);
   gui_values();
-  pixelDensity(3);
+  // pixelDensity(3);
 
   background(random(working_palette));
   rectMode(CENTER);

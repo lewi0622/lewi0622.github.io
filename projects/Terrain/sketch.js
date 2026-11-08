@@ -34,7 +34,6 @@ function draw() {
   let water_color = random(working_palette);
   colorMode(HSB);
   water_color[3] = 0.5;
-  print(water_color);
 
   noStroke();
   noiseDetail(octaves, falloff);

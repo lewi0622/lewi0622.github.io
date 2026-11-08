@@ -6,6 +6,8 @@ const fr = 1;
 const capture = false;
 const capture_time = 10;
 
+let line_collection, pts;
+
 const suggested_palettes = [SAGEANDCITRUS, COTTONCANDY, MUTEDEARTH]
 
 
@@ -35,12 +37,11 @@ function draw() {
   strokeCap(SQUARE);
   strokeWeight(30*global_scale)
   noFill();
-  beginShape(TRIANGLES);
 
+  line_collection = []
+  pts = [];
   for(let i=0; i<num_pts; i++){
-    stroke(random(working_palette));
-    //vertex
-    vertex(xPos, yPos);
+    pts.push({x:xPos, y:yPos});
 
     //move
     xPos += random(-5,10)*global_scale;
@@ -51,9 +52,27 @@ function draw() {
     xPos = pos[0];
     yPos = pos[1];
   }
-  //don't stroke last line to avoid one that ends in the middle of the page
-  noStroke();
-  endShape();
+
+  line_collection.push(pts);
+
+  for(let i=0; i<line_collection.length; i++){
+    if(line_collection[i].length < 3) continue;
+
+    let num_pts = line_collection[i].length;
+    num_pts = floor(num_pts/3)*3;
+
+    beginShape(TRIANGLES);
+    for(let j=0; j<num_pts; j++){
+      stroke(random(working_palette));
+      const pt = line_collection[i][j];
+      vertex(pt.x, pt.y);
+      if((j+1)%3 == 0){
+        endShape();
+        beginShape(TRIANGLES);
+      }
+    }
+    endShape();
+  }
   
   pop();
   global_draw_end();
@@ -63,99 +82,98 @@ function draw() {
 function wrap(force_x, force_y, xPos, yPos){
   //-x, -y
   if(xPos < 0 && yPos < 0){
-    vertex(xPos, yPos);
-    endShape();
+    pts.push({x:xPos, y:yPos});
+    line_collection.push(pts);
 
     xPos = canvas_x;
     yPos = canvas_y;
     xPos = force_num(xPos, force_x);
     yPos = force_num(yPos, force_y);
 
-    
-    beginShape(TRIANGLES);
+    pts = [];
   }
 
   //-x, +y
   else if(xPos < 0 && yPos > canvas_y){
-    vertex(xPos, yPos);
-    endShape();
+    pts.push({x:xPos, y:yPos});
+    line_collection.push(pts);
     
     xPos = canvas_x;
     yPos = 0;
     xPos = force_num(xPos, force_x);
     yPos = force_num(yPos, force_y);
     
-    beginShape(TRIANGLES);
+    pts = [];
   }
 
   //+x, +y
   else if(xPos > canvas_x && yPos > canvas_y){
-    vertex(xPos, yPos);
-    endShape();
+    pts.push({x:xPos, y:yPos});
+    line_collection.push(pts);
     
     xPos = 0;
     yPos = 0;
     xPos = force_num(xPos, force_x);
     yPos = force_num(yPos, force_y);
     
-    beginShape(TRIANGLES);
+    pts = [];
   }
 
   //+x, -y
   else if(xPos > canvas_x && yPos < 0){
-    vertex(xPos, yPos);
-    endShape();
+    pts.push({x:xPos, y:yPos});
+    line_collection.push(pts);
     
     xPos = 0;
     yPos = canvas_y;
     xPos = force_num(xPos, force_x);
     yPos = force_num(yPos, force_y);
     
-    beginShape(TRIANGLES);
+    pts = [];
   }
 
   //-x
   else if(xPos < 0){
-    vertex(xPos, yPos);
-    endShape();
+    pts.push({x:xPos, y:yPos});
+    line_collection.push(pts);
 
     xPos = canvas_x;
     yPos = force_num(yPos, force_y);
 
-    beginShape(TRIANGLES);
+    pts = [];
   }
   
   //+x
   else if(xPos > canvas_x){
-    vertex(xPos, yPos);
-    endShape();
+    pts.push({x:xPos, y:yPos});
+    line_collection.push(pts);
 
     xPos = 0;
     yPos = force_num(yPos, force_y);
 
-    beginShape(TRIANGLES);
+    pts = [];
   }
 
   //-y
   else if(yPos < 0){
-    vertex(xPos, yPos);
-    endShape();
+    pts.push({x:xPos, y:yPos});
+    line_collection.push(pts);
 
     yPos = canvas_y;
     xPos = force_num(xPos, force_x);
 
-    beginShape(TRIANGLES);
+    pts = [];
   }
   
   //+y
   else if(yPos > canvas_y){
-    vertex(xPos, yPos);
-    endShape();
+    pts.push({x:xPos, y:yPos});
+    line_collection.push(pts);f
 
     yPos = 0;
     xPos = force_num(xPos, force_x);
 
-    beginShape(TRIANGLES);
+    pts = [];
   }
   return [xPos, yPos];
 }

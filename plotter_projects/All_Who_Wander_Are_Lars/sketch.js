@@ -17,7 +17,7 @@ function gui_values(){
   parameterize("iteration_jump", 1, 1, 100, 1, false);
   parameterize("min_shape_pts", 3, 1, 100, 1, false);
   parameterize('flow_step_size', random(20,50), 0, 100, 1, true);
-  parameterize("alpha", 20, 0, 255, 1, false);
+  parameterize("my_alpha", 20, 0, 255, 1, false);
 }
 
 function setup() {
@@ -56,7 +56,7 @@ function draw() {
     for(let j=0; j<shapes.length; j++){
       const current_shape = shapes[j];
       let shape_pts = trace_shape(current_shape, i);
-      curveTightness(random(-0.5,0));
+      splineProperty("tightness", random(-0.5,0));
       if(shape_pts.length>min_shape_pts) draw_shape(shape_pts, shape_color);
     
       // show_shape_tiles(current_shape, shape_color);
@@ -298,7 +298,7 @@ function draw_shape(pts, shape_color = random(working_palette)){
   }
   else{
     const c = color(shape_color);
-    c.setAlpha(alpha);
+    c.setAlpha(my_alpha);
     stroke(c);
     noFill();
   }
@@ -353,7 +353,7 @@ function draw_shape(pts, shape_color = random(working_palette)){
       const pt = polar_shape[i%polar_shape.length];
       const x = pt.radius * cos(pt.theta);
       const y = pt.radius * sin(pt.theta);
-      curveVertex(x,y);
+      splineVertex(x,y);
 
       if(pt.radius<min_radii) min_radii = pt.radius;
       if(pt.radius>max_radii) max_radii = pt.radius;

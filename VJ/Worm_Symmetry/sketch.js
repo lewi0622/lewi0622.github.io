@@ -54,7 +54,7 @@ function draw() {
   for(let i=0; i<sym_angs; i++){
       beginShape();
       for(let j=0; j<pts.length; j++){
-        curveVertex(pts[j].x, pts[j].y);
+        splineVertex(pts[j].x, pts[j].y);
       }
       endShape();
     rotate(360/sym_angs);

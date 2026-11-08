@@ -48,7 +48,7 @@ function draw() {
       const y = map(noise(start_y + noise_y_offset, i, j*line_step_size), 0,1, -amp, amp)
       start_x += x;
       start_y += y;
-      curveVertex(start_x, start_y);
+      splineVertex(start_x, start_y);
 
       if(j/line_steps>0.5 && (start_x>canvas_x || start_x<0 || start_y>canvas_y || start_y<0)) break;
     }

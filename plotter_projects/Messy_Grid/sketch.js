@@ -40,16 +40,16 @@ function draw() {
   let y_2 = y;
 
   for(let i=0; i<steps; i++){
-    curveTightness(1);
+    splineProperty("tightness", 1);
     if(x<canvas_x/4 || x>canvas_x*3/4 || y<canvas_y/4 || y>canvas_y*3/4){
-      curveTightness(0.9);
+      splineProperty("tightness", 0.9);
     } 
     beginShape();
 
-    curveVertex(x_2, y_2);
-    curveVertex(x_1, y_1);
-    curveVertex(x,y);
-    curveVertex(x,y);
+    splineVertex(x_2, y_2);
+    splineVertex(x_1, y_1);
+    splineVertex(x,y);
+    splineVertex(x,y);
 
     x_2 = x_1;
     y_2 = y_1;

@@ -93,7 +93,6 @@ function draw() {
         else{
           end_theta = (180 + find_theta_y(end_y, brush_rad)) * -1;
         }
-  
         end_x = polar_to_cartesian(brush_rad, end_theta).x;
       }
       else{
@@ -104,7 +103,6 @@ function draw() {
         }
         end_y = polar_to_cartesian(brush_rad, end_theta).y;
       }
-
       vertex(end_x, end_y);
       endShape();
 
@@ -142,8 +140,8 @@ function cartesian_to_polar(x, y){
 }
 
 function find_theta_y(y, r){
-  return asin(y/r);
+  return asin(constrain(y/r, -1,1));
 }
 function find_theta_x(x, r){
-  return acos(x/r);
+  return acos(constrain(x/r,-1,1));
 }

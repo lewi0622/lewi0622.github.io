@@ -45,11 +45,11 @@ function draw() {
         let noise_scale = working_radius/(canvas_x/2)*global_scale;
         const scale_factor = 6;
         // if(radius == canvas_x/2){
-          // curveVertex(x,y);
-        curveVertex(x,y);
+          // splineVertex(x,y);
+        splineVertex(x,y);
         // }
         // else{
-        //   curveVertex(x+map(noise(i*j), 0,1, -scale_factor,scale_factor)*noise_scale, y+map(noise(i*j+noise_off), 0,1, -scale_factor,scale_factor)*noise_scale);
+        //   splineVertex(x+map(noise(i*j), 0,1, -scale_factor,scale_factor)*noise_scale, y+map(noise(i*j+noise_off), 0,1, -scale_factor,scale_factor)*noise_scale);
         // }
         working_radius -= tightness;
       }

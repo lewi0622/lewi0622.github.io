@@ -95,7 +95,6 @@ function setup() {
       floor(random(working_palette.length))
     ]
   }
-  print(selected_colors)
   dark_c1 = working_palette[selected_colors[0]];
   dark_c2 = working_palette[selected_colors[1]];
   light_c1 = working_palette[selected_colors[2]];

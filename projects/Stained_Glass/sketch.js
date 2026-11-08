@@ -102,7 +102,8 @@ function draw_indices(pts, pt){
   const c = color(random(working_palette));
   //assuming all palette colors use 255 for alpha, 
   //this check allows for color picker opacity settings
-  if(c.levels[3] == 255) c.setAlpha(floor(random(100,220)));
+  print(c._getAlpha())
+  if(c._getAlpha() == 255) c.setAlpha(floor(random(100,220)));
   fill(c);
   drawingContext.filter= 'brightness(125%) blur(1px)'
   triangle(pts[pt.idxs[0]].x, pts[pt.idxs[0]].y, pts[pt.idxs[1]].x, pts[pt.idxs[1]].y, pt.x, pt.y);

@@ -47,85 +47,85 @@ function draw() {
       beginShape();
       let hair_width = 0;
       let last_pt;
-      curveVertex(first_pt.x, first_pt.y);
-      curveVertex(first_pt.x, first_pt.y);
+      splineVertex(first_pt.x, first_pt.y);
+      splineVertex(first_pt.x, first_pt.y);
       while(hair_width<face_width){
         last_pt = {x:hair_width, y: random(hair_height)};
-        curveVertex(last_pt.x, last_pt.y)
+        splineVertex(last_pt.x, last_pt.y)
         hair_width += random(-hair_step_size/8, hair_step_size);
       }
     
       //ear
-      curveVertex(last_pt.x, last_pt.y);
-      curveVertex(last_pt.x, last_pt.y);
+      splineVertex(last_pt.x, last_pt.y);
+      splineVertex(last_pt.x, last_pt.y);
       //shift down for ear
       last_pt.y += face_height/6;
       const end_point = {x: last_pt.x, y: last_pt.y};
-      curveVertex(last_pt.x, last_pt.y);
-      curveVertex(last_pt.x, last_pt.y + ear_height);//side of face
+      splineVertex(last_pt.x, last_pt.y);
+      splineVertex(last_pt.x, last_pt.y + ear_height);//side of face
       for(let i=0; i<ear_iterations; i++){
-        curveVertex(last_pt.x+random(ear_width), last_pt.y+random(ear_height));
+        splineVertex(last_pt.x+random(ear_width), last_pt.y+random(ear_height));
       }
     
       //move in to the eye
       last_pt.x -= face_width/3;
       let eye_pt = {x: last_pt.x, y:last_pt.y+eye_height/2};
       for(let i=0; i<3; i++){
-        curveVertex(eye_pt.x, eye_pt.y);
-        curveVertex(eye_pt.x + eye_width/2, eye_pt.y-eye_height/2);
-        curveVertex(eye_pt.x + eye_width, eye_pt.y);
-        curveVertex(eye_pt.x + eye_width/2, eye_pt.y+eye_height);
+        splineVertex(eye_pt.x, eye_pt.y);
+        splineVertex(eye_pt.x + eye_width/2, eye_pt.y-eye_height/2);
+        splineVertex(eye_pt.x + eye_width, eye_pt.y);
+        splineVertex(eye_pt.x + eye_width/2, eye_pt.y+eye_height);
       }
     
       const iris = {x: last_pt.x+random(eye_width), y:last_pt.y+random(eye_height)};
       const iris_width = eye_width/4;
       const iris_height = eye_height/4;
       for(let i=0; i<5; i++){
-        curveVertex(iris.x + random(iris_width), iris.y + random(iris_height));
+        splineVertex(iris.x + random(iris_width), iris.y + random(iris_height));
       }
       
       //nose
       last_pt = {x: face_width/2, y:face_height/3};
-      curveVertex(last_pt.x, last_pt.y-nose_height);
-      curveVertex(last_pt.x, last_pt.y);
-      for(let i=0; i<4; i++) curveVertex(last_pt.x + random(-nose_width, nose_width), last_pt.y+random(-nose_height, nose_height/2));
+      splineVertex(last_pt.x, last_pt.y-nose_height);
+      splineVertex(last_pt.x, last_pt.y);
+      for(let i=0; i<4; i++) splineVertex(last_pt.x + random(-nose_width, nose_width), last_pt.y+random(-nose_height, nose_height/2));
     
       //left eye
       eye_pt.x = face_width-eye_pt.x;
       for(let i=0; i<3; i++){
-        curveVertex(eye_pt.x, eye_pt.y);
-        curveVertex(eye_pt.x + eye_width/2, eye_pt.y-eye_height/2);
-        curveVertex(eye_pt.x + eye_width, eye_pt.y);
-        curveVertex(eye_pt.x + eye_width/2, eye_pt.y+eye_height);
+        splineVertex(eye_pt.x, eye_pt.y);
+        splineVertex(eye_pt.x + eye_width/2, eye_pt.y-eye_height/2);
+        splineVertex(eye_pt.x + eye_width, eye_pt.y);
+        splineVertex(eye_pt.x + eye_width/2, eye_pt.y+eye_height);
       }
       iris.x = face_width - iris.x + eye_width/2;
       for(let i=0; i<5; i++){
-        curveVertex(iris.x + random(iris_width), iris.y + random(iris_height));
+        splineVertex(iris.x + random(iris_width), iris.y + random(iris_height));
       }
     
       //ear
       last_pt.x = 0;
       last_pt.y = face_height/6;
-      curveVertex(last_pt.x, last_pt.y);
+      splineVertex(last_pt.x, last_pt.y);
       for(let i=0; i<ear_iterations; i++){
-        curveVertex(last_pt.x-random(ear_width), last_pt.y+random(ear_height));
+        splineVertex(last_pt.x-random(ear_width), last_pt.y+random(ear_height));
       }
     
       //lower face/jaw
-      curveVertex(last_pt.x, last_pt.y);
-      curveVertex(0, face_height*3/4);
-      curveVertex(face_width/2, face_height);
-      curveVertex(face_width, face_height*2/3);
+      splineVertex(last_pt.x, last_pt.y);
+      splineVertex(0, face_height*3/4);
+      splineVertex(face_width/2, face_height);
+      splineVertex(face_width, face_height*2/3);
     
       //mouth
-      curveVertex(face_width-random(0.7,1)*mouth_width, face_height*2/3);
-      curveVertex(face_width-mouth_width/2, face_height*2/3+random(0.7,1)*mouth_height);
-      curveVertex(face_width-random(0.5)*mouth_width, face_height*2/3+mouth_height);
+      splineVertex(face_width-random(0.7,1)*mouth_width, face_height*2/3);
+      splineVertex(face_width-mouth_width/2, face_height*2/3+random(0.7,1)*mouth_height);
+      splineVertex(face_width-random(0.5)*mouth_width, face_height*2/3+mouth_height);
     
       //end, finally
-      curveVertex(face_width, face_height*2/3);
-      curveVertex(end_point.x, end_point.y);
-      curveVertex(end_point.x, end_point.y);
+      splineVertex(face_width, face_height*2/3);
+      splineVertex(end_point.x, end_point.y);
+      splineVertex(end_point.x, end_point.y);
       endShape();
       pop();
     }

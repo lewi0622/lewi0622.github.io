@@ -53,6 +53,7 @@ function draw() {
   translate((canvas_x - bbox.x2 - bbox.x1)/2, (canvas_y - bbox.y2 - bbox.y1)/2);
 
   const point_counter = 0;
+  let started = false;
   for (let cmd of path.commands) {
     if(cmd.x != undefined) cmd.x += map(noise(cmd.x/global_scale/loc_damp, z), 0,1, -amp,amp);
     if(cmd.y != undefined) cmd.y += map(noise(cmd.y/global_scale/loc_damp, z), 0,1, -amp,amp);
@@ -62,14 +63,26 @@ function draw() {
     if(cmd.y2 != undefined) cmd.y2 += map(noise(cmd.y2/global_scale/loc_damp, z), 0,1, -amp,amp);
 
     if (cmd.type === 'M') { //move to
+      if(started) endShape(CLOSE);
       beginShape();
+      started = true;
       vertex(cmd.x, cmd.y);
     } 
-    else if (cmd.type === 'L')vertex(cmd.x, cmd.y); //line to
-    else if (cmd.type === 'C') bezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y); // bezier to 
-    else if (cmd.type === 'Q') quadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y); //quadratic to
-    else if (cmd.type === 'Z') endShape(CLOSE); // close shape
-  } 
+    else if (cmd.type === 'L') vertex(cmd.x, cmd.y); //line to
+    else if (cmd.type === 'C'){// bezier to
+      bezierOrder(3);
+      bezierVertex(cmd.x1, cmd.y1);
+      bezierVertex(cmd.x2, cmd.y2);
+      bezierVertex(cmd.x, cmd.y);  
+    }else if (cmd.type === 'Q'){//quadratic to
+      bezierOrder(2);
+      bezierVertex(cmd.x1, cmd.y1);
+      bezierVertex(cmd.x, cmd.y); 
+    } else if (cmd.type === 'Z'){ //likely deprecated, but will leave in just in case
+      endShape(CLOSE); // close shape
+    }
+  }
+  endShape(CLOSE); 
   z += z_inc;
   pop();
   global_draw_end();

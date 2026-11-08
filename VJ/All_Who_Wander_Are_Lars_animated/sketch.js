@@ -2,14 +2,14 @@
 //setup variables
 const gif = true;
 const animation = true;
-const fr = 30;
+const fr = 20;
 const capture = false;
 const capture_time = 30;
 
 const suggested_palettes = [BIRDSOFPARADISE, SOUTHWEST, SIXTIES, SUPPERWARE];
 const clockwise_directions = ["right", "down", "left", "up"];
 const counterclockwise_directions = ["right", "up", "left", "down"];
-let concave_corner, num_rows, tile_size, weight, c_idx, bg_c, num_cols;
+let concave_corner, num_rows, tile_size, weight, c_idx, bg_c;
 
 let time_offset=100*30/fr; 
 const time_inc = 0.04;
@@ -23,13 +23,13 @@ function gui_values(){
   parameterize("map_iterations", floor(random(1,6)), 1, 10, 1, false, grid_slider_1);
   parameterize("min_shape_pts", 1, 1, 100, 1, false);
   parameterize('flow_step_size', random(30,40), 15, 60, 1, true, grid_slider_2);
-  parameterize("perlin_simplex", 0, 0, 1, 1, false, grid_slider_3);
+  parameterize("perlin_simplex", 0, 0, 1, 1, false);
+  parameterize("num_cols", floor(base_x/8), 1, floor(base_x/4), 1, false);
 }
 
 function setup() {
   common_setup();
   gui_values();
-  num_cols = floor(base_x/8);
   working_palette = controlled_shuffle(working_palette, true)
   // bg_c = png_bg(true);
   time_direction = random([-1,1]);
@@ -336,7 +336,7 @@ function draw_shape(pts, shape_color = random(working_palette)){
     const pt = polar_shape[i%polar_shape.length];
     const x = pt.radius * cos(pt.theta);
     const y = pt.radius * sin(pt.theta);
-    curveVertex(x,y);
+    splineVertex(x,y);
   }
   endShape();
   pop();

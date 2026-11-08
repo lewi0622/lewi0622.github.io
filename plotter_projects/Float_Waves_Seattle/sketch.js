@@ -103,7 +103,7 @@ function draw() {
     for(let i=0; i<l.length; i++){
       const pt = l[i];
       center_rotate(rotate_per_line);
-      curveVertex(pt[0], pt[1]);
+      splineVertex(pt[0], pt[1]);
       push();
       if(!circle_drawn && random()>1.9999){
         strokeWeight(weight);

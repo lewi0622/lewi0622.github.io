@@ -80,7 +80,7 @@ function draw_pts(pt_length){
   else iterations = pts.length;
   for(let i=0; i<iterations; i++){
     const pt = pts[i];
-    if(curved) curveVertex(pt.x, pt.y);
+    if(curved) splineVertex(pt.x, pt.y);
     else vertex(pt.x, pt.y);
   }
   endShape();

@@ -57,7 +57,6 @@ function draw() {
 
     shapes.forEach(shape_data => {
       push();
-      print(shape_data.x, shape_data.y);
       translate(shape_data.x, shape_data.y);
       rotate(shape_data.rotation);
       square(0,0, shape_data.size);

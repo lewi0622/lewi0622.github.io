@@ -65,7 +65,6 @@ function draw() {
         const vec = createVector(x,y);
         const diff = p5.Vector.sub(vec, prev_vec);
         if(diff.mag()<tolerance){
-          console.log("HERE")
           x = prev_vec.x + tolerance * cos(diff.heading());
           y = prev_vec.y + tolerance * sin(diff.heading());
           stroke("BLACK");

@@ -50,7 +50,7 @@ function draw() {
     }
     if(!circle_bad) circles.push(new_c);
   }
-  curveTightness(curve_tightness);
+  splineProperty('tightness', curve_tightness)
   circles.forEach(c => {
     push();
     stroke(random(working_palette));
@@ -62,7 +62,7 @@ function draw() {
     for(let i=0; i<squiggle_pts; i++){
       const x = random(-curve_rad, curve_rad);
       const y = random(-curve_rad, curve_rad);
-      curveVertex(x,y);
+      splineVertex(x,y);
     }
     endShape();
     // circle(c.x, c.y, c.r*2);

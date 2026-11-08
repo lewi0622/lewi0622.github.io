@@ -54,17 +54,17 @@ function draw() {
       translate(canvas_x/2, canvas_y/2);
       noFill();
       strokeWeight(1.5*global_scale);
-      if(type == "png") curveTightness(map(noise(xoff/100), 0, 1, -5, 5));
-      else curveTightness(tightness);
+      if(type == "png") splineProperty("tightness",map(noise(xoff/100), 0, 1, -5, 5));
+      else splineProperty("tightness", tightness);
       beginShape();
       for(let j=0; j<line_segs; j++){
         const dampening = map(noise(j), 0, 1, 10, 100);
         const x = floor(map(noise((j + xoff)/dampening), 0, 1, -smaller_base*global_scale*.75, smaller_base*global_scale*.75));
         const y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -smaller_base*global_scale*.75, smaller_base*global_scale*.75));
         if(j == 0){
-          curveVertex(x, y);
+          splineVertex(x, y);
         }
-        curveVertex(x, y);
+        splineVertex(x, y);
       }
       endShape();
     pop();

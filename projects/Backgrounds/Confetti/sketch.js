@@ -84,8 +84,10 @@ function slices(rad, dir){
   noStroke();
   drawingContext.fillStyle = fill_gradient;
   beginShape();
-  vertex(rad,0);
-  bezierVertex(random(-rad,rad),rad, -random(-rad,rad),rad, -rad,0); //first control point, second control point, endpoint
+  bezierVertex(rad,0);
+  bezierVertex(random(-rad,rad),rad);
+  bezierVertex(-random(-rad,rad),rad);
+  bezierVertex(-rad, 0); 
   endShape();
   pop();
 
@@ -96,7 +98,9 @@ function slices(rad, dir){
   translate(0, rad*0.1);
   rad *=0.8;
   beginShape();
-  vertex(rad,0);
-  bezierVertex(random(-rad,rad),rad, -random(-rad,rad),rad, -rad,0); //first control point, second control point, endpoint
+  bezierVertex(rad,0);
+  bezierVertex(random(-rad,rad),rad);
+  bezierVertex(-random(-rad,rad),rad);
+  bezierVertex(-rad,0 );
   endShape();
 }

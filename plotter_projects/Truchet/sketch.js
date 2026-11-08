@@ -125,12 +125,16 @@ function outline_arc(size){
   let x2, y2, x3, y3;
   [x2, y2, x3, y3] = bezier_arc_controls(0,0, x1, 0, 0, y4);
   vertex(x1,0);
-  bezierVertex(x2, y2, x3, y3, 0, y4);
+  bezierVertex(x2, y2);
+  bezierVertex(x3, y3);
+  bezierVertex(0, y4);
   const large_size = size*2/3;
   x1 = large_size;
   y4 = large_size;
   [x2, y2, x3, y3] = bezier_arc_controls(0,0, x1, 0, 0, y4);
   vertex(0,y4);
-  bezierVertex(x3, y3, x2, y2, x1, 0);
+  bezierVertex(x3, y3);
+  bezierVertex(x2, y2);
+  bezierVertex(x1, 0);
   endShape(CLOSE);
 }

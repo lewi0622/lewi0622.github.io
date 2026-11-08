@@ -44,7 +44,7 @@ function draw() {
   const segment_step_size = canvas_x/line_segments;
   const line_step_size = canvas_y/number_of_lines;
   const y_noise_offset = random(-500, 500);
-  curveTightness(curve_tightness);
+  splineProperty("tightness", curve_tightness);
   noiseDetail(octaves, falloff);
   for(let j=0; j<number_of_lines; j++){
     push();
@@ -53,7 +53,7 @@ function draw() {
     for(let i=0; i<line_segments; i++){
       const x = i*segment_step_size + map(noise(i/x_i_damp, j/x_j_damp), 0,1, -x_amp, x_amp);
       const y = map(noise((i + y_noise_offset)/y_i_damp, j/y_j_damp), 0,1, -y_amp, y_amp);
-      curveVertex(x,y);
+      splineVertex(x,y);
     }
     endShape();
     pop();

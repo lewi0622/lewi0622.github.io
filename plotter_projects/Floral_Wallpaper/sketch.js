@@ -76,7 +76,7 @@ function draw() {
         beginShape();
         //set points+3 to close loops, or +4 to overlap loops and not have closed shapes
         for(let i=0; i<points+3; i++){
-          curveVertex(pts[i%pts.length].x, pts[i%pts.length].y)
+          splineVertex(pts[i%pts.length].x, pts[i%pts.length].y)
         }
         endShape();
         noFill();

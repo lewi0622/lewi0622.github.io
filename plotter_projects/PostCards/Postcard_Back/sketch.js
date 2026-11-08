@@ -25,7 +25,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(5.8*96, 3.8*96, SVG);
+  common_setup(5.8*96, 3.8*96);
   gui_values();
 
   if(!redrawn){
@@ -64,7 +64,8 @@ function draw() {
   for(let i=0; i<address_text.length; i++){
     push();
     translate(0, i*0.4*96);
-    const path = font.getPath(address_text[i], 0,0, font_size_address);
+    textSize(font_size_address);
+    const path = font.getPath(address_text[i], 0,0);
     line(0,0, canvas_x/2-margin*2, 0);
     translate(x_address, y_address);
     draw_open_type_js_path_p5_commands(path);
@@ -81,7 +82,8 @@ function draw() {
   for(let i=0; i<body_text.length; i++){
     push();
     translate(0, i*0.4*96);
-    const path = font.getPath(body_text[i], 0,0, font_size_body);
+    textSize(font_size_body);
+    const path = font.getPath(body_text[i], 0,0);
     // translate(x_address, y_address);
     draw_open_type_js_path_p5_commands(path);
     pop();

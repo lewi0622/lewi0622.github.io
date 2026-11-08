@@ -37,7 +37,7 @@ function setup() {
   drawingContext.shadowColor = line_color
   stroke(line_color);
   noFill();
-  strokeWeight(1.5*global_scale);
+  // strokeWeight(1.5*global_scale);
   loop();
 }
 //***************************************************
@@ -55,9 +55,9 @@ function draw() {
         const x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.5, canvas_x*.5));
         const y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.5, canvas_y*.5));
         if(j == 0){
-          curveVertex(x, y);
+          splineVertex(x, y);
         }
-        curveVertex(x, y);
+        splineVertex(x, y);
       }
       endShape(CLOSE);
     pop();

@@ -17,7 +17,7 @@ function gui_values(){
 }
 
 function setup() {
-  common_setup(6*96, 4*96, SVG);
+  common_setup(6*96, 4*96);
   gui_values();
 
   if(!redrawn){
@@ -53,7 +53,8 @@ function draw() {
   for(let i=0; i<body_text.length; i++){
     push();
     translate(0,i * font_size);
-    const path = font.getPath(body_text[i], 0,0, font_size);
+    textSize(font_size);
+    const path = font.getPath(body_text[i], 0,0);
     draw_open_type_js_path_p5_commands(path);
     pop();
   }

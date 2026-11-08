@@ -7,9 +7,6 @@ const capture = false;
 const capture_time = 10;
 
 let font;
-function preload() {
-  font = loadFont('..\\..\\fonts\\SquarePeg-Regular.ttf');
-}
 
 //project variables
 let letter_idx = 0;
@@ -22,7 +19,8 @@ function gui_values(){
   parameterize("sample_factor", 0.05, 0.001, 1, 0.001, false);
 }
 
-function setup() {
+async function setup() {
+  if(font === undefined) font = await loadFont('..\\..\\fonts\\SquarePeg-Regular.ttf');
   common_setup();
   if(bg_c == undefined) gui_values();
   bg_c = png_bg(true);
@@ -31,7 +29,6 @@ function setup() {
   stroke(stroke_c);
   line_blur(color(stroke_c), 2*global_scale);
   strokeWeight(1*global_scale);
-
 }
 //***************************************************
 function draw() {
@@ -42,7 +39,8 @@ function draw() {
   background(bg_c);
 
   const letter = letters[letter_idx%letters.length];
-  const points = font.textToPoints(letter, 0,0, font_size, {
+  textSize(font_size);
+  const points = font.textToPoints(letter, 0,0, {
     sampleFactor: sample_factor,
     simplifyThreshold: 0
   });

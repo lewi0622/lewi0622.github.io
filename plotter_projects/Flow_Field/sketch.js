@@ -92,7 +92,7 @@ function draw() {
     beginShape();
     for(let i=0; i<all_pts.length; i++){
       const pt = all_pts[i];
-      curveVertex(pt.x, pt.y);
+      splineVertex(pt.x, pt.y);
     }
     endShape();
   }

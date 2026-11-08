@@ -52,14 +52,14 @@ function draw() {
   for(let j=0; j<num_pts; j++){
     const x = j * pt_step_size;
     const y = map(pnoise.simplex3(j/pt_damp, 1/bank_damp + xoff, yoff), -1,1, -amp, amp);
-    curveVertex(x,y);
+    splineVertex(x,y);
   }
 
   //back
   for(let j=0; j<num_pts; j++){
     const x = (num_pts - j) * pt_step_size;
     const y = map(pnoise.simplex3((num_pts - j)/pt_damp, 2/bank_damp + xoff, yoff), -1,1, -amp, amp);
-    curveVertex(x,y+river_width);
+    splineVertex(x,y+river_width);
   }
 
   endShape(CLOSE);

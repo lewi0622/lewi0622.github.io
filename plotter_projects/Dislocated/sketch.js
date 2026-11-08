@@ -48,7 +48,6 @@ function draw() {
       if((i+j) % 2 == 0) rotate(map(noise_val, 0,1, -180, 0));
       else rotate(map(noise_val, 0,1, 0, 180));
       let num_lines = floor(map(noise_val, 0,1, 5, 10));
-      console.log(num_lines);
 
       const line_step = row_step/num_lines;
       for(let k=0; k<num_lines; k++){

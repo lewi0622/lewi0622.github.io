@@ -88,8 +88,12 @@ function leaf_of_grass(w, h, wave_index, row_index){
 
   beginShape();
   vertex(0,0);
-  bezierVertex(0,0, w/2 + wave, h, w/2 + wave, h);
-  bezierVertex(w/2 + wave, h,w,0, w,0);
+  bezierVertex(0,0);
+  bezierVertex(w/2 + wave, h);
+  bezierVertex(w/2 + wave, h);
+  bezierVertex(w/2 + wave);
+  bezierVertex(h,w);
+  bezierVertex(0, w,0);
 
   if(type == "png") endShape();
   else{

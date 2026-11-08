@@ -21,7 +21,7 @@ function gui_values(){
   parameterize("y_j_damp", random(base_y/4,base_y*2), 1, base_y*2, 1, true);
   parameterize("y_sin_amp", random(base_y), 0, base_x, 1, true);
   parameterize("sin_range", random(180), 0, 720, 1, false);
-  parameterize("rotate_per_line", random(-0.003, 0.003), -0.1, 0.1, 0.001, false);
+  parameterize("rotate_per_line", random(-0.5, 0.5), -20, 20, 0.001, false);
   parameterize("x_move", 0, -400, 400, 1, true);
   parameterize("y_move", 0, -400, 400, 1, true);
   parameterize("single_line", 0, 0, 1, 1, false);
@@ -94,26 +94,26 @@ function draw() {
 
   let shape_began = false;
   lines.forEach((l,index) => {
+    push();
+    if(!single_line) center_rotate(rotate_per_line * index);
     if(!shape_began || !single_line){
       beginShape();
       shape_began = true;
     }
-
     if(index%2==0){
       for(let i=0; i<l.length; i++){
         const pt = l[i];
-        if(!single_line) center_rotate(rotate_per_line);
-        curveVertex(pt[0], pt[1]);
+        splineVertex(pt[0], pt[1]);
       }
     }
     else{
       for(let i=l.length-1; i>=0; i--){
         const pt = l[i];
-        if(!single_line) center_rotate(rotate_per_line);
-        curveVertex(pt[0], pt[1]);
+        splineVertex(pt[0], pt[1]);
       }
     }
     if(!single_line) endShape();
+    pop();
   });
 
   if(single_line) endShape();

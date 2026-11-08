@@ -38,7 +38,7 @@ function draw() {
 
   //actual drawing stuff
   push();
-  curveTightness(tightness);
+  splineProperty("tightness", tightness);
   noiseDetail(octaves, falloff);
   center_rotate(rotation);
   let working_i_mult = i_mult_coarse + i_mult_fine;
@@ -53,7 +53,7 @@ function draw() {
     xoff = map(cos((i+phase_off)*working_i_mult), -1,1, 0, noise_maximum);  
     yoff = map(sin((i+phase_off)*working_i_mult), -1,1, 0, noise_maximum);
     const y = map(noise(xoff, yoff), 0,1, -line_size,line_size)
-    curveVertex(x, y)
+    splineVertex(x, y)
     
     working_i_mult += i_mult_inc;
 

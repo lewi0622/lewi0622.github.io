@@ -47,10 +47,16 @@ function draw() {
     drawingContext.shadowOffsetY = blur_offset_y;
     stroke(circ_c);
     circle(0,0, rad);
-    drawingContext.clip();
+
+    beginClip();
+    circle(0,0, rad);
+    endClip();
     //change shadow color to clear so no artifacting shows up on circle
     drawingContext.shadowColor = color(0,0,0,0);
-    image(criss_cross(rad, circ_c),-rad/2,-rad/2);
+    image(criss_cross(ceil(rad), circ_c),-rad/2,-rad/2);
+
+    noFill();
+    // circle(0,0, rad);
     pop();
   }
   pop();
@@ -66,7 +72,7 @@ function criss_cross(rad, c){
   pg.translate(-rad/2, -rad/2);
   pg.strokeWeight(random(2, 8)*global_scale);
   let grid_c = c;
-  while(grid_c == c) grid_c = random(working_palette);
+  while(arrayEquals(c, grid_c)) grid_c = random(working_palette);
   grid_c = color(grid_c);
   grid_c.setAlpha(150);
   pg.stroke(grid_c);

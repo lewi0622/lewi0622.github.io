@@ -19,7 +19,7 @@ function gui_values(){
   parameterize("circle_skip", 0.1, 0, 1, 0.05, false);
   parameterize("x_damp", 10, 0.01, 1000, 0.1, false);
   parameterize("y_damp", 10, 0.01, 1000, 0.1, false);
-  parameterize("alpha", 255, 0, 255, 1, false);
+  parameterize("my_alpha", 255, 0, 255, 1, false);
 }
 
 function setup() {
@@ -35,14 +35,14 @@ function draw() {
   noFill();
   
   strokeWeight(0.25*global_scale);
-  controlled_shuffle(working_palette, true);
+  working_palette = controlled_shuffle(working_palette, true);
 
   png_bg(true);
-
   const color_array = [];
   for(let i=0; i<working_palette.length; i++){
-    color_array.push(color(working_palette[i]));
-    color_array[i].setAlpha(alpha);
+    const c = color(working_palette[i]);
+    c.setAlpha(my_alpha);
+    color_array.push(c);
   }
 
   const x_grid_size = canvas_x/circles_per_row;

@@ -11,8 +11,8 @@ const suggested_palettes = [SUPPERWARE];
 
 function gui_values(){
   parameterize("cols", random(30,150), 1, 200, 1, false);
-  parameterize("margin_x", -base_x/16, -base_x, base_x, 1, true);
-  parameterize("margin_y", -base_y/16, -base_y, base_y, 1, true);
+  parameterize("margin_x", -base_x/16, -base_x, base_x, 1, true, grid_slider_1);
+  parameterize("margin_y", -base_y/16, -base_y, base_y, 1, true, grid_slider_2);
 }
 
 function setup() {
@@ -22,7 +22,7 @@ function setup() {
 //***************************************************
 function draw() {
   global_draw_start();
-  pixelDensity(15)
+  // pixelDensity(15)
   push();
   // center_rotate(random([0,90,180,270]));
   png_bg(true);

@@ -56,8 +56,7 @@ function draw() {
   let weight = map(num_circles, 50,300, 1,0.1)*global_scale
   strokeWeight(weight);
 
-  drawingContext.shadowBlur = 1*global_scale;
-
+  if(!grid_connected) drawingContext.shadowBlur = 1*global_scale;
 
   for(let i=0; i<num_circles; i++){ 
     push();

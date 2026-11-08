@@ -68,8 +68,12 @@ function draw() {
 function ribbon_curl(h, w){
   beginShape();
   vertex(0,0);
-  bezierVertex(w, h/4, w, h*3/4, 0, h);
-  bezierVertex(w/2, h*3/4, w/2, h/4, 0,0);
+  bezierVertex(w, h/4);
+  bezierVertex(w, h*3/4);
+  bezierVertex(0, h);
+  bezierVertex(w/2, h*3/4);
+  bezierVertex(w/2, h/4);
+  bezierVertex(0,0);
   endShape();
 }
 

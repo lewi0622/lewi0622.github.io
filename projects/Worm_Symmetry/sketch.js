@@ -46,7 +46,7 @@ function draw() {
       for(let j=0; j<line_segs; j++){
         const x = floor(map(noise((j + xoff)/dampening), 0, 1, -canvas_x*.75, canvas_x*.75));
         const y = floor(map(noise((j + xoff + noise_off)/dampening), 0,1, -canvas_y*.75, canvas_y*.75));
-        curveVertex(x, y);
+        splineVertex(x, y);
       }
       endShape();
     rotate(360/sym_angs);

@@ -33,7 +33,7 @@ function draw() {
       push();
       rotate(j * 180 + random(-40,40));
       translate(canvas_x/4, canvas_y/4);
-      curveTightness(random([-5, -5, 0, 5, 5]));
+      splineProperty("tightness", random([-5, -5, 0, 5, 5]));
       translate(
         random([-1, 1]) * random(random(canvas_x/3)),
         random([-1, 1]) * random(random(canvas_y/3))
@@ -55,7 +55,7 @@ function squiggle(steps, h_amp, v_amp, j) {
   for (let i = 0; i < steps; i++) {
     const l_r = random([-1, 1, 1]) * h_amp;
     const u_d = random([-1, 1]) * v_amp;
-    curveVertex(i * random(h_amp) + noise(i, j) * l_r, noise(i, j) * u_d);
+    splineVertex(i * random(h_amp) + noise(i, j) * l_r, noise(i, j) * u_d);
   }
   endShape();
 }

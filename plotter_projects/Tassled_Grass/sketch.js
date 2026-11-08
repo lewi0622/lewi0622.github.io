@@ -30,7 +30,7 @@ function setup() {
   common_setup();
   gui_values();
   stalk_c = color(BIC_BLACK);
-  stalk_c.setAlpha(BICCRISTAL_ALPHA);
+  // stalk_c.setAlpha(BICCRISTAL_ALPHA);
   stroke(stalk_c);
 
   png_bg(true);
@@ -39,7 +39,7 @@ function setup() {
   working_palette = controlled_shuffle(working_palette, true);
   for(let i=0; i<num_colors; i++){
     const c = color(working_palette[i]);
-    c.setAlpha(BICCRISTAL_ALPHA);
+    // c.setAlpha(BICCRISTAL_ALPHA);
     hair_array.push(c);
   }
 

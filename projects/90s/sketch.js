@@ -14,8 +14,7 @@ function gui_values(){
   parameterize("grid_size", 400, 50, 400, 10, true, grid_slider_1);
   parameterize("wobble_x", 50, -400, 400, 5, true, grid_slider_2);
   parameterize("wobble_y", 30, -400, 400 ,5, true, grid_slider_3);
-  parameterize("arc_size", 130, 1, 400, 1, true, grid_slider_4);
-  parameterize("weight", 20, 1, 100, 1, true, grid_dial_1);
+  parameterize("arc_size", 130, 1, 250, 10, true, grid_slider_4);
 }
 
 function setup() {
@@ -42,6 +41,7 @@ function draw() {
   const num_arcs = 2;
 
   background(grid_bg_c);
+  const weight = arc_size / 130 * 20; 
   strokeWeight(weight);
   for(let col=0; col<num_cols; col++){
     for(let row=0; row<num_rows; row++){
@@ -83,8 +83,10 @@ function slices(rad, dir){
   noStroke();
   drawingContext.fillStyle = fill_gradient;
   beginShape();
-  vertex(rad,0);
-  bezierVertex(random(-rad,rad),rad, -random(-rad,rad),rad, -rad,0); //first control point, second control point, endpoint
+  bezierVertex(rad,0);
+  bezierVertex(random(-rad,rad),rad);
+  bezierVertex(-random(-rad,rad),rad);
+  bezierVertex(-rad,0 ); //first control point, second control point, endpoint
   endShape();
   pop();
 
@@ -95,7 +97,9 @@ function slices(rad, dir){
   translate(0, rad*0.1);
   rad *=0.8;
   beginShape();
-  vertex(rad,0);
-  bezierVertex(random(-rad,rad),rad, -random(-rad,rad),rad, -rad,0); //first control point, second control point, endpoint
+  bezierVertex(rad,0);
+  bezierVertex(random(-rad,rad),rad);
+  bezierVertex(-random(-rad,rad),rad);
+  bezierVertex(-rad, 0); 
   endShape();
 }
