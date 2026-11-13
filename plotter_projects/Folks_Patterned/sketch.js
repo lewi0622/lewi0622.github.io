@@ -74,7 +74,7 @@ function draw() {
     let folk_counter = 0;
     for(let i=0; i<cols; i++){
       for(let j=0; j<rows; j++){
-        let new_filename = folk_counter + "_people_" + filename;
+        let new_filename = "‡CLIP_" + folk_counter + "DKDI‡‡COMP" + folk_counter+"people‡" + filename;
         beginRecordSvg(new_filename);
         const current_folk = folk_array[folk_counter];
         push();
@@ -82,11 +82,23 @@ function draw() {
         draw_svg_folk(current_folk, weight);
         pop();
         endRecordSvg();
-        new_filename = folk_counter + "_dress_" + filename;
+
+        new_filename = "‡CLIP_" + folk_counter + "‡‡COMP" + folk_counter+"pattern‡" + filename;
         beginRecordSvg(new_filename); 
         push();
         translate_folk(current_folk, col_step, row_step, i, j);
         draw_svg_pattern(current_folk, weight);
+        pop();
+        endRecordSvg();
+
+        push();
+        new_filename = "‡CLIP_" +folk_counter + "MASK‡" + filename;
+        beginRecordSvg(new_filename); 
+        translate_folk(current_folk, col_step, row_step, i, j);
+        global_dress_path = current_folk.dress_path;
+        stroke(current_folk.dress_c);
+        strokeWeight(POSCA * global_scale);
+        draw_dress();
         pop();
         endRecordSvg();
         folk_counter++;
@@ -136,20 +148,12 @@ function draw_svg_folk(folk, weight){
   arms(folk.limb_thickness, folk.w, folk.h);
   legs(folk.limb_thickness, folk.w, folk.h);
   head(weight, folk.w, folk.h);
-  global_dress_path = folk.dress_path;
-  stroke(folk.dress_c);
-  strokeWeight(POSCA * global_scale);
-  draw_dress();
   pop();
 }
 
 function draw_svg_pattern(folk, weight){
   push();
   polka_dots(weight, folk.w, folk.h);
-  global_dress_path = folk.dress_path;
-  stroke(folk.dress_c);
-  strokeWeight(POSCA * global_scale);
-  draw_dress();
   pop();
 }
 
@@ -167,6 +171,7 @@ function polka_dots(weight, w, h){
   for(let i=0; i<columns; i++){
     for(let j=0; j<rows; j++){
       push();
+      stroke(random(working_palette));
       translate(i * x_step, j * y_step);
       if(j %2==0)translate(x_step/2,0);
       let radius = 0.1*global_scale;

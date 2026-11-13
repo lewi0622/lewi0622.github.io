@@ -19,7 +19,7 @@ function gui_values(){
   parameterize("y_j_damp", random(base_y/4,base_y*2), 1, base_y*2, 1, true);
   parameterize("y_sin_amp", random(base_y), 0, base_x, 1, true);
   parameterize("sin_range", random(180), 0, 720, 1, false);
-  parameterize("rotate_per_line", random(-0.003, 0.003), -0.1, 0.1, 0.001, false);
+  parameterize("rotate_per_line", random(-0.5, 0.5), -20, 20, 0.001, false);
   parameterize("x_move", 0, -base_x, base_x, 1, true);
   parameterize("y_move", 0, -base_y, base_y, 1, true);
   parameterize("margin_x", base_x/2, -base_x/2, base_x, 1, true);
@@ -47,7 +47,7 @@ function draw() {
   // circle(random(orb_size/2, canvas_x-orb_size/2),orb_size/2, random(orb_size/2, orb_size));
 
   if(type == "png") stroke(stroke_c);
-  else stroke("black");
+  else stroke("RED");
   strokeWeight(0.5*global_scale);
   strokeWeight(LEPEN*global_scale);
   translate(x_move, y_move);
@@ -89,8 +89,9 @@ function draw() {
 
   for(let j=0; j<lines.length;j++){
     if(random()>(1-skip_chance)) continue;
+    push();
+    center_rotate(rotate_per_line*j);
     const l = lines[j];
-
     beginShape();
 
     let circle_drawn = true//false;
@@ -98,7 +99,6 @@ function draw() {
     for(let i=0; i<l.length; i++){
       const pt = l[i];
       const weight = LEPEN*global_scale * 3/4;
-      center_rotate(rotate_per_line);
       splineVertex(pt[0], pt[1]);
       last_x = pt[0];
       last_y = pt[1];
@@ -119,24 +119,24 @@ function draw() {
     }
 
     const shrink_pct = j/lines.length;
-    vertex(
+    splineVertex(
       lerp(last_x + canvas_x, last_x, shrink_pct),
       last_y
     );
 
-    vertex(
+    splineVertex(
       lerp(last_x + canvas_x, last_x, shrink_pct),
       lerp(max_y + canvas_y*2, max_y + canvas_y, shrink_pct)
     );
 
-    vertex(
+    splineVertex(
       lerp(-canvas_x*2, -canvas_x, shrink_pct),
       lerp(max_y + canvas_y*2, max_y + canvas_y, shrink_pct)
     );
 
     endShape(CLOSE);
 
-
+    pop();
   }
 
 
